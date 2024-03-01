@@ -5,7 +5,7 @@ import threading
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 import json
-s.connect(("127.0.0.1", 9999))
+s.connect((sys.argv[1], int(sys.argv[2])))
 
 def handle_message(data):
     print(f"{data['id']}: {data['data']}")

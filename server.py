@@ -3,7 +3,7 @@ import threading
 import json
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind(("127.0.0.1", 9999))
+s.bind(("0.0.0.0", 5000))
 
 print("Server up!")
 
@@ -14,7 +14,10 @@ def handle_message(data):
     print("New message:", data["data"])
     for addr2 in connections:
         if addr2 != data["from"]:
-            connections[addr2].sendall(send)
+            try:
+                connections[addr2].sendall(send)
+            except:
+                print("")
 
 handlers = {
     "msg": handle_message
@@ -29,6 +32,10 @@ def handle_connection(conn, addr):
         except:
             pass
         else:
+            if not data:
+                print("Disconnect:", addr)
+                del connections[addr]
+                return
             parsed = json.loads(data.decode())
             for label in handlers:
                 if "type" in parsed and parsed["type"] == label:
