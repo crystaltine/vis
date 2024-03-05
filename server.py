@@ -17,7 +17,8 @@ def handle_message(data):
             try:
                 connections[addr2].sendall(send)
             except:
-                print("")
+                print(f"Error sending to {addr2}, removing...")
+                del connections[addr2]
 
 handlers = {
     "msg": handle_message
