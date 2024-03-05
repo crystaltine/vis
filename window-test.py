@@ -8,6 +8,14 @@ from math import floor, ceil
 global corners
 corners = {}
 
+import platform
+
+def clear():
+    if platform.system() == "Windows":
+        os.system("cls")
+    else:
+        os.system("clear")
+
 class Box:
     def __init__(self, left, right, top, bottom):
         self.left = left
@@ -82,7 +90,9 @@ main = [
 for item in main:
     item.render(0, 0, term.width, term.height)
 
-main[1].print_at(5, 5, "hello world")
+main[1].children.append(Box(
+    20, 80, 25, 75
+))
 
 #b.print_at(0, 5, "Hiiiiii >_< :3")
 
@@ -118,8 +128,7 @@ while True:
     w = term.width 
     h = term.height
     if lx != w or ly != h:
-        os.system("cls")
-        print(term.home + term.clear)
+        clear()
         corners = {}
         for item in main:
             item.render(0, 0, w, h)
