@@ -1,3 +1,6 @@
+import os
+
+""" commented out cuz school comps have py 3.7 and these unions are causing errors :skull:
 def fcode(foreground: str | tuple[int] = None, background: str | tuple[int] = None, style: str = None) -> str:
     '''
     Returns an ANSI format string matching the given styles. This may not be supported in all terminals.
@@ -86,3 +89,12 @@ def fcode(foreground: str | tuple[int] = None, background: str | tuple[int] = No
         format_str += style_format_string
     
     return format_str
+"""
+
+def cls():
+    """
+    Clears the terminal using 'cls'
+
+    @TODO - uh i forgot how to check for OS names, idk if cls works everywhere. works on ps win11 tho.
+    """
+    os.system('cls')
