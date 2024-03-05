@@ -6,7 +6,7 @@ class CameraUtils:
 
     CAMERA_LEFT_OFFSET = 10 # amount of blocks the camera_left is behind the player x
 
-    DEFAULT_GROUND_LEVEL = 10 # num blocks from top; lower = higher ground
+    DEFAULT_GROUND_LEVEL_TOP = 70 # percent from top the ground will be located at
 
     def screen_width_blocks(term: blessed.Terminal) -> int:
         """

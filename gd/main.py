@@ -1,9 +1,23 @@
 from render.camera import Camera
-from engine.level import Level
+from engine.objects import OBJECTS
 from time import sleep
 
-thing = Level()
-camera = Camera(thing)
+leveldata = [
+    [],
+    [],
+    [],
+    [],
+    [OBJECTS.block, OBJECTS.block],
+    [OBJECTS.spike],
+    [OBJECTS.spike],
+    [OBJECTS.spike],
+    [],
+    [],
+    [],
+    [],
+    [OBJECTS.spike],
+]
+camera = Camera(leveldata)
 
 camera.render_init()
 

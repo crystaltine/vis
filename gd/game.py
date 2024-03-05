@@ -1,10 +1,12 @@
-from engine.constants import OBJECTS, CONSTANTS
+from engine.objects import OBJECTS
+from engine.constants import CONSTANTS
 from engine.player import Player
-from time import time_ns
+from render.camera import Camera
+from time import time_ns, sleep
 from threading import Thread
 from math import floor, ceil
 
-class Level:
+class Game:
     """
     Represents a level "world" and contains a player object.
 
@@ -16,7 +18,7 @@ class Level:
         Creates a `Player` object automatically.
         """
 
-        self.leveldata = [
+        self.leveldata = leveldata or [
             [],
             [],
             [],
@@ -27,12 +29,14 @@ class Level:
             [OBJECTS.spike],
         ]
         """
-        Lists start at the bottom (nearest ground)
+        Each column's objects start at the bottom (on the ground)
         """
 
         self.player = Player()
+        self.camera = Camera(self.leveldata)
 
         self.running = False
+        self.last_tick = None
 
     def start_level(self):
         """
@@ -40,13 +44,24 @@ class Level:
         """
 
         self.running = True
-        self.last_tick = time_ns()
 
-        def ticker():
+        # Initialize camera rendering
+        self.camera.render_init()
+
+        def render_thread():
             while True:
+                self.camera.render(self.player.pos[0])
+                sleep(1/CONSTANTS.TARGET_FRAMERATE)
 
-                self.player.tick()
+                if not self.running:
+                    break
 
+        def physics_thread():
+            while True:
+                self.player.tick((time_ns() - self.last_tick)/1e9)
+
+                if not self.running:
+                    break
 
                 """
                 # check collisions
@@ -67,17 +82,23 @@ class Level:
                     break
                 """
         
-        Thread(target=ticker).start()
+        self.last_tick = time_ns()
+        Thread(target=render_thread).start()
+        Thread(target=physics_thread).start()
 
     def run_effect(self, effect):
         if effect == 'neg-gravity':
             self.player.gravity = -CONSTANTS.GRAVITY
-        if effect == 'pos-gravity':
+        elif effect == 'pos-gravity':
             self.player.gravity = CONSTANTS.GRAVITY
-        if effect == 'crash':
+        elif effect == 'crash':
             self.crash()
+        else:
+            return # unknown, do nothing
 
     def crash(self):
+        self.running = False
+        sleep(1)
         exit() # TODO
 
     def check_collisions(self) -> list:

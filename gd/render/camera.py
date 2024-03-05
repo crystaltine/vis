@@ -3,15 +3,12 @@ from typing import TYPE_CHECKING
 from render.constants import CameraUtils
 from render.utils import fcode
 from render.rect import Rect
-from math import floor
-
-if TYPE_CHECKING:
-    from engine.level import Level
+from math import floor, ceil
 
 class Camera:
 
-    BG_COLOR = "#0091ff"
-    GROUND_COLOR = "#0d7bf1"
+    BG_COLOR = "#287DFF"
+    GROUND_COLOR = "#0066ff"
     BLOCK_COLOR_1 = "#555"
     BLOCK_COLOR_2 = "#666"
 
@@ -26,11 +23,11 @@ class Camera:
         ]
     }
 
-    def __init__(self, level: "Level"):
+    def __init__(self, leveldata: list):
         self.term = blessed.Terminal()
         self.left = -CameraUtils.CAMERA_LEFT_OFFSET # since player starts at 0
-        self.ground = CameraUtils.DEFAULT_GROUND_LEVEL
-        self.level = level
+        self.ground = (CameraUtils.DEFAULT_GROUND_LEVEL_TOP * CameraUtils.screen_height_blocks(self.term))//100
+        self.leveldata = leveldata
 
     def draw_obj(self, x: int, y: int, obj_name: str):
         """
@@ -67,27 +64,35 @@ class Camera:
         Call this once. Draws the background and the floor, 
         which don't need to be updated every frame.
         """
+        
+        self.term.clear()
+
         stuff = [
             Rect(0, 0, 100, 100, self.term, Camera.BG_COLOR), # bg
-            Rect(0, 70, 100, 100, self.term, Camera.GROUND_COLOR), # ground
+            Rect(0, 77, 100, 100, self.term, Camera.GROUND_COLOR), # ground
         ]
         [item.render() for item in stuff]
         print("\x1b[0m")
 
-    def render(self):
+    def render(self, player_x: float):
         """
         Renders a frame onto the screen.
+
+        Sets `self.left` to `player_x - CameraUtils.CAMERA_LEFT_OFFSET`
+        to make it so that the player is kinda sorta near the center of the screen
         """
+
+        self.left = player_x
         
         # Only load columns max(0,cam_left) -> cam_left + term_width_lines
         for i in range(
-            floor(max(0,self.left)), 
+            floor(max(0,ceil(self.left))), 
             floor(min(
-                len(self.level.leveldata), 
-                self.left+CameraUtils.screen_width_blocks(self.term)
+                len(self.leveldata), 
+                ceil(self.left+CameraUtils.screen_width_blocks(self.term))
             ))
         ):
-            level_column = self.level.leveldata[i]
+            level_column = self.leveldata[i]
 
             # these level columns look like this:
             # [OBJECTS.block, OBJECTS.spike, ...],
