@@ -101,7 +101,7 @@ with term.cbreak():
 
             else:
                 code = key.code
-                if code == 258 and y < 3:
+                if code in [258, 512, 343] and y < 3:
                     if y == 0:
                         update_user(w, h, False)
                         update_passwd(w, h, True)
@@ -112,7 +112,7 @@ with term.cbreak():
                         update_confirm(w, h, False)
                         update_button(w, h, True)
                     y += 1
-                if code == 259 and y > 0:
+                elif code in [259, 353] and y > 0:
                     if y == 2:
                         update_confirm(w, h, False)
                         update_passwd(w, h, True)
@@ -124,7 +124,7 @@ with term.cbreak():
                         update_confirm(w, h, True)
                     y -= 1
 
-                if code == 263:
+                elif code == 263:
                     if y == 0:
                         USER = USER[:-1]
                         update_user(w, h, True)
@@ -135,7 +135,7 @@ with term.cbreak():
                         CONFIRM = CONFIRM[:-1]
                         update_confirm(w, h, True)
 
-                if code == 343 and y == 3:
+                elif code == 343 and y == 3:
                     ERROR_MSG = ""
                     if not USER:
                         ERROR_MSG = "[Username cannot be blank.]"
