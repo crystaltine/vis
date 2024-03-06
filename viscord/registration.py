@@ -53,7 +53,7 @@ def update_passwd(w, h, focused):
     if not PASSWD:
         t = "____"
     else:
-        t = PASSWD
+        t = "*" * len(PASSWD)
     if focused:
         print(term.move_yx(int(h * 0.5) - 0, 0) + term.clear_eol + term.move_yx(int(h * 0.5-0), int(w/2 - len(t)/2)) + term.black_on_cyan + t + term.normal)
     else:
@@ -63,7 +63,7 @@ def update_confirm(w, h, focused):
     if not CONFIRM:
         t = "____"
     else:
-        t = CONFIRM
+        t = "*" * len(CONFIRM)
     if focused:
         print(term.move_yx(int(h * 0.5) +2, 0) + term.clear_eol + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)) + term.black_on_cyan + t + term.normal + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)))
     else:
