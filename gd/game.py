@@ -2,9 +2,10 @@ from engine.objects import OBJECTS
 from engine.constants import CONSTANTS
 from engine.player import Player
 from render.camera import Camera
-from time import time_ns, sleep
+from time import time_ns, sleep, time
 from threading import Thread
 from math import floor, ceil
+from logger import Logger
 
 class Game:
     """
@@ -49,16 +50,35 @@ class Game:
         self.camera.render_init()
 
         def render_thread():
-            while True:
-                self.camera.render(self.player.pos[0])
-                sleep(1/CONSTANTS.TARGET_FRAMERATE)
+            with open(f"logs/{int(time())}.log", "w") as log_f:
+                last_frame = time_ns()
+                while True:
+                    curr_frame = time_ns()
+                    Logger.log(f"Rendering frame with player@{[f'{num:2f}' for num in self.player.pos]}. It has been {((curr_frame-last_frame)/1e9):2f}s since last f.")
+                    last_frame = curr_frame
 
-                if not self.running:
-                    break
+                    self.camera.render(self.player.pos[0])
+                    sleep(1/CONSTANTS.TARGET_FRAMERATE)
+
+                    if not self.running:
+                        break
+
+        def keylistener_thread():
+            with self.camera.term.cbreak():
+
+                val = ''
+                while val.lower() != 'q':
+                    val = self.camera.term.inkey()
+                    if not self.running: return
+
+                # stop all loops if q is pressed.
+                self.running = False                
 
         def physics_thread():
             while True:
-                self.player.tick((time_ns() - self.last_tick)/1e9)
+                curr_time = time_ns()
+                self.player.tick((curr_time - self.last_tick)/1e9)
+                self.last_tick = curr_time
 
                 if not self.running:
                     break
@@ -83,6 +103,7 @@ class Game:
                 """
         
         self.last_tick = time_ns()
+        Thread(target=keylistener_thread).start()
         Thread(target=render_thread).start()
         Thread(target=physics_thread).start()
 

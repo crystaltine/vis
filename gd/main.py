@@ -1,27 +1,20 @@
 from render.camera import Camera
 from engine.objects import OBJECTS
+from game import Game
 from time import sleep
+from logger import Logger
 
-leveldata = [
-    [],
-    [],
-    [],
-    [],
-    [OBJECTS.block, OBJECTS.block],
-    [OBJECTS.spike],
-    [OBJECTS.spike],
-    [OBJECTS.spike],
-    [],
-    [],
-    [],
-    [],
-    [OBJECTS.spike],
-]
-camera = Camera(leveldata)
+def main():
+    leveldata = [
+        [None, None, None, OBJECTS.spike, OBJECTS.spike, None, None         ],
+        [None, None, None, OBJECTS.block, OBJECTS.block, None, OBJECTS.spike],
+        [None, None, None, None,          None,          None, OBJECTS.block],
+    ]
 
-camera.render_init()
+    game = Game(leveldata)
 
-for i in range(200):
-    camera.left += 0.25
-    camera.render()
-    sleep(1/30)
+    game.start_level()
+
+if __name__ == "__main__":
+    main()
+    Logger.write()
