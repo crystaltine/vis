@@ -9,6 +9,8 @@ USER = ""
 PASSWD = ""
 CONFIRM = ""
 
+ERROR_MSG = ""
+
 
 import cursor
 cursor.hide()
@@ -28,6 +30,9 @@ def update_screen(w, h, y): # honestly idk why either
     update_confirm(w, h, y == 2)
 
     update_button(w, h, y == 3)
+
+    if ERROR_MSG:
+        print(term.move_yx(-1, 0) + term.clear_eol + term.move_yx(h-1, int(w/2 - len(ERROR_MSG)/2)) + term.black_on_red + ERROR_MSG + term.normal)
 
 y = 0
 
@@ -69,11 +74,13 @@ def update_button(w, h, focused):
     if focused:
         print(term.move_yx(int(h * 0.5) +4, 0) + term.clear_eol + term.move_yx(int(h * 0.5+4), int(w/2 - len(t)/2)) + term.black_on_lime + t + term.normal + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)))
     else:
-        print(term.move_yx(int(h * 0.5) +4, 0) + term.clear_eol + term.move_yx(int(h * 0.5+4), int(w/2 - len(t)/2)) + term.normal + t + term.normal)
+        print(term.move_yx(int(h * 0.5) +4, 0) + term.clear_eol + term.move_yx(int(h * 0.5+4), int(w/2 - len(t)/2)) + term.lime + t + term.normal)
 
+def check_username():
+    # TODO: actually access db to check if username exists or not
+    return True
 
 update_screen(w, h, y)
-
 
 with term.cbreak():
     while True:
@@ -127,6 +134,24 @@ with term.cbreak():
                     elif y == 2:
                         CONFIRM = CONFIRM[:-1]
                         update_confirm(w, h, True)
+
+                if code == 343 and y == 3:
+                    ERROR_MSG = ""
+                    if not USER:
+                        ERROR_MSG = "[Username cannot be blank.]"
+                    elif not check_username():
+                        ERROR_MSG = "[User already exists.]"
+                    elif not PASSWD:
+                        ERROR_MSG = "[Password cannot be blank.]"
+                    elif PASSWD != CONFIRM:
+                        ERROR_MSG = "[Passwords do not match.]"
+                    
+                    if ERROR_MSG:
+                        print(term.move_yx(h-2, 0) + term.clear_eol + term.move_yx(h-2, int(w/2 - len(ERROR_MSG)/2)) + term.black_on_red + ERROR_MSG + term.normal + "\a")
+                    else:
+                        ...
+                        # TODO: registration confirmation link-up
+
 
         else:
             if lw != w or lh != h:
