@@ -8,13 +8,23 @@ message_term = blessed.Terminal()
 
 height = message_term.height 
 width = message_term.width 
-print(message_term.clear)
+counter = 0 
+counter2 = 0 
+b = True
+b2 = True
 
-while True:
-    print(message_term.on_blue) 
+#sets the background color of the terminal 
+while b:
+    counter += 1
+    print(message_term.on_gray21)
+    if counter == width:
+        b = False 
 
+while b2:
+    counter2 += 1
+    print(message_term.on_gray21)
+    if counter2 == height:
+        b2 = False
 
-
-print("width: " + str(width) + " , " + " height: " + str(height))
-
-
+print(str(width))
+print(message_term.normal) 
