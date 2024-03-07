@@ -1,33 +1,19 @@
 import blessed
 from typing import TYPE_CHECKING, List, Dict
 from render.constants import CameraUtils
-from render.utils import fcode
-from render.rect import Rect
+from render.utils import fcode, closest_quarter, len_no_ansi
+from render.rect import PxRect
 from logger import Logger
 from math import floor, ceil
+from render.TEXTURES import TEXTURES
 
-class Camera:
-
-    BG_COLOR = "#287DFF"
-    GROUND_COLOR = "#0066ff"
-    BLOCK_COLOR_1 = "#444"
-    BLOCK_COLOR_2 = "#555"
-
-    TEXTURES = {
-        "spike": [
-            f"{fcode(background=BG_COLOR)} {fcode(foreground='000')}/\\{fcode(background=BG_COLOR)} ",
-            f"{fcode(foreground='000')}/__\\"
-        ],
-        "block": [
-            f"{fcode(background=BLOCK_COLOR_1)}    ",
-            f"{fcode(background=BLOCK_COLOR_2)}    "
-        ]
-    }
+class Camera:    
 
     def __init__(self, leveldata: List[List[Dict]]):
         self.term = blessed.Terminal()
-        self.left = -CameraUtils.CAMERA_LEFT_OFFSET # since player starts at 0
-        self.ground = CameraUtils.DEFAULT_GROUND_LEVEL
+        self.left = 0 # start at 0. player starts at 10 (we get a nice padding)
+        self.ground = ((CameraUtils.DEFAULT_GROUND_TOP_PERCENT * self.term.height) // 100) // CameraUtils.GRID_PX_Y
+        """ Measured in blocks from the top of the screen. """
         self.leveldata = leveldata
 
     def draw_obj(self, x: int, y: int, obj_name: str):
@@ -50,7 +36,7 @@ class Camera:
             y > CameraUtils.screen_height_blocks(self.term)):
             return
 
-        obj_texture = Camera.TEXTURES[obj_name]
+        obj_texture = TEXTURES.get(obj_name)
         
         terminal_pos = CameraUtils.grid_to_terminal_pos(x, y)
         
@@ -58,7 +44,7 @@ class Camera:
 
             # a clever way to not have to rerender the entire bg every time.
             # we cover up the entire texture after done
-            refresh_optimization = fcode(background=Camera.BG_COLOR) + " "*len(obj_texture[i])
+            refresh_optimization = fcode(background=TEXTURES.BG_COLOR) + " "*len(obj_texture[i])
             print(self.term.move_yx(round(terminal_pos[1]+i), round(terminal_pos[0])) + obj_texture[i] + refresh_optimization)
 
     def render_init(self):
@@ -69,15 +55,15 @@ class Camera:
         
         self.term.clear()
 
-        ground_percent = (100*self.ground*CameraUtils.GRID_PX_Y)//self.term.height
-
+        ground_char_idx = self.ground*CameraUtils.GRID_PX_Y
+        
         stuff = [
-            Rect(0, 0, 100, 100, self.term, Camera.BG_COLOR), # bg
-            Rect(0, ground_percent, 100, 100, self.term, Camera.GROUND_COLOR), # ground
+            PxRect(0, 0, self.term.width, ground_char_idx, self.term, TEXTURES.BG_COLOR), # bg
+            PxRect(0, ground_char_idx, self.term.width, self.term.height, self.term, TEXTURES.GROUND_COLOR), # ground
         ]
         [item.render() for item in stuff]
 
-    def render(self, player_x: float):
+    def render(self, player_pos: tuple):
         """
         Renders a frame onto the screen.
 
@@ -97,15 +83,27 @@ class Camera:
         the first strip of the ground is drawn at row self.ground
         thus, there are self.ground strips to render.
         
-        for example, if ground=14, then we have to render 14 strips of the level
-        which would be 7 blocks. So we pick the last 7 lists in leveldata.
-        This can be defined by the slice `[-7:]`. general: `[-self.ground//2:]`
-        (note that int div rounds down for x<0, thus -17//2 == -9 which is perfect)
-
-        if ground is odd, round the div/2 up. e.g. ground=15 -> render 8 rows.
-        ^ HOWEVER, we must skip the first render strip in this case, since otherwise 
-        we would go below the ground. So when we render all the strips, check if
-        self.ground is odd. if it is, skip first strip.
+        render starting from the ground-number of strips, so that the last strip is at ground level.
+        
+        ### Partial rendering
+        
+        we also need a system to draw half-blocks when they go off the screen. This allows
+        much more draw resolution (since without rendering partial blocks each "pixel" becomes 4x2 chars.
+        We want to be able to draw a block moving left using all the characters, not just 1/4 of them.
+        
+        Here's how we do this:
+        
+        at each frame we have a self.left. this is block-based, but SUPPORTS DECIMALS.
+        we have to figure out which quarter it is closest to (.0, .25, .50, .75) and
+        then offset each strip by 4* that amount of characters.
+        
+        For example, if the camera left is at 10.25, and we have a block at x=12,
+        then we should render that block 7 characters (1.75 blocks) from the left,
+        instead of 2 full blocks (8 characters).
+        
+        Thus, on each frame we must find the closest quarter, then delete the first 4* that amount of characters.
+        Note that this will never remove more than a full block, which is consistent
+        with our goal of only partially culling blocks that go off the screen.
 
         ### pseudocode
 
@@ -132,44 +130,110 @@ class Camera:
         to make it so that the player is kinda sorta near the center of the screen
         """
 
-        self.left = player_x - CameraUtils.CAMERA_LEFT_OFFSET
+        self.left = player_pos[0] - CameraUtils.CAMERA_LEFT_OFFSET
 
         all_strips = []
 
         for row in self.leveldata[-self.ground//2:]:
-            render_strip_1 = ""
-            render_strip_2 = ""
+            render_strip_1 = fcode(background=TEXTURES.BG_COLOR) # start as the bg format code
+            render_strip_2 = fcode(background=TEXTURES.BG_COLOR) # start as the bg format code
+            
+            if (floor(self.left)) >= len(row):
+                continue # row is all behind us
+            
+            # TODO - add negative cam support or add an assert
+            
+            # FOR THE FIRST OBJECT (idx floor(self.left)):
+            # we need to render this separately because it could be cut off by left side.
+            # we render 4*nearest_quarter chars from the right side of its texture.
+            # for example, if self.left = 0.21, nearest quarter is 0.25
+            # another ex: if self.left = 1.0 exactly, then nearest quarter is 0.0
+            # ^ in this case, a slice [0:] would render the entire texture, WHICH IS WHAT WE WANT.
+            # and we only render the 2 rightmost chars of the texture.
+            
+            partial_render_offset = round(4 * closest_quarter(self.left))
+            first_obj = row[floor(self.left)]
+            
+            # TODO - for now we just render some spaces (no texture)
+            # for textures, we need a way to slice them while ignoring ANSI escape codes.
+            
+            #if first_obj is None:
+                # 4 spaces to both strips(empty)
+            empty_block = " "*(4-partial_render_offset)
+            render_strip_1 += empty_block
+            render_strip_2 += empty_block
 
-            for obj in row[max(0, floor(self.left)) : min(len(row), self.left + ceil(CameraUtils.screen_width_blocks(self.term)))]:
+            #else: 
+            #    render_strip_1 += TEXTURES.get(first_obj["name"])[0][partial_render_offset:]
+            #    render_strip_2 += TEXTURES.get(first_obj["name"])[1][partial_render_offset:]
+                
+            #Logger.log(f"[rendering leftmost obj]: self.left is {self.left}, partial_render_offset is {partial_render_offset}, idx is {floor(self.left)}")
+
+            
+            # render everything else fully
+            # TODO - does right side work? blessed should handle overflow... maybe
+            #Logger.log(f"rendering a row from {floor(self.left)+1} to {min(len(row), ceil(self.left + CameraUtils.screen_width_blocks(self.term)))}")
+            for obj in row[floor(self.left)+1 : min(len(row), floor(self.left + CameraUtils.screen_width_blocks(self.term)))]:
                 if obj is None:
                     # 4 spaces to both strips(empty)
-                    empty_block = fcode(background=Camera.BG_COLOR) + " "*CameraUtils.GRID_PX_X
+                    empty_block = " "*CameraUtils.GRID_PX_X
                     render_strip_1 += empty_block
                     render_strip_2 += empty_block
 
                 else: 
                     # TODO - (see docstring), this only works with 2-char tall textures
-                    render_strip_1 += Camera.TEXTURES[obj["name"]][0]
-                    render_strip_2 += Camera.TEXTURES[obj["name"]][1]
+                    # we end off each texture with bg color so whitespace is not visible
+                    render_strip_1 += TEXTURES.get(obj["name"])[1] + fcode(background=TEXTURES.BG_COLOR)
+                    render_strip_2 += TEXTURES.get(obj["name"])[0] + fcode(background=TEXTURES.BG_COLOR)
             
+            # @old (NVM IM BACK)-
             # make sure all strips are the char length of the terminal.
             # basically pad each one until they are at self.term.width
-
-            render_strip_1 += fcode(background=Camera.BG_COLOR) + " "*max(0, self.term.width-len(render_strip_1))
-            render_strip_2 += fcode(background=Camera.BG_COLOR) + " "*max(0, self.term.width-len(render_strip_2))
+            # (!) had to bring this back to auto-erase the player texture as it moves
+            render_strip_1 += " "*max(0, self.term.width-len_no_ansi(render_strip_1))
+            render_strip_2 += " "*max(0, self.term.width-len_no_ansi(render_strip_2))
+            
+            # @new- (EXILED) only add a block's worth at the end. NOTE: this will break at low fps.
+            # ^ however, this does save a lot of printing.
+            # render_strip_1 += " "*CameraUtils.GRID_PX_X
+            # render_strip_2 += " "*CameraUtils.GRID_PX_X
 
             # add to strips
             all_strips.append(render_strip_1)
             all_strips.append(render_strip_2)
+
         
-        Logger.log(f"[Renderer]: ground@{self.ground}, all_strips len=${len(all_strips)}")
+        
+        # draw every row starting from 0 to ground * block height
+        # i know drawing the air is useless, but we need to cover up the player trail
+        for i in range(self.ground*CameraUtils.GRID_PX_Y - len(all_strips)):
+            print(self.term.move_yx(i, 0) + fcode(background=TEXTURES.BG_COLOR) + " "*self.term.width)
         
         # we keep track of this cuz we might skip an index, so it wont be matched
-        row_in_terminal = self.ground*CameraUtils.GRID_PX_Y - len(all_strips)
+        row_in_terminal = (self.ground)*CameraUtils.GRID_PX_Y - len(all_strips)
         for i in range(len(all_strips)):
-            # if first strip and ground is odd, skip
-            if i == 0 and (self.ground % 2):
-                continue
+            # TODO - removed for now since just testing
+            # if first strip and ground is odd, and strips reach all the way to the top, skip
+            # if i == 0 and (self.ground % 2):
+            #    continue
             
             print(self.term.move_yx(row_in_terminal, 0) + all_strips[i])
             row_in_terminal += 1
+            
+        # draw the player
+        self.draw_player(player_pos[0], player_pos[1])
+    
+    def draw_player(self, player_x: float, player_y: float):
+        """
+        Draws the player at the specified position.
+        The player is 1 block by 1 block for cube mode (the only mode rn)
+        """
+        
+        # offset to ground level
+        player_topmost_y = round((self.ground-player_y-1) * CameraUtils.GRID_PX_Y)
+        
+        # camera has a bit of left padding
+        camera_offset_chars = CameraUtils.GRID_PX_X * CameraUtils.CAMERA_LEFT_OFFSET
+        
+        for i in range(len(TEXTURES.PLAYER_ICON)):
+            print(self.term.move_yx(player_topmost_y+i, camera_offset_chars) + TEXTURES.PLAYER_ICON[i])

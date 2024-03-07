@@ -1,14 +1,25 @@
 class CONSTANTS:
-    BLOCKS_PER_SECOND = 5
-    GRAVITY = 5
-    TERMINAL_VEL = 10
+    BLOCKS_PER_SECOND = 9
+    GRAVITY = 40
+    TERMINAL_VEL = 20
 
     PLAYER_HITBOX_X = 1
     PLAYER_HITBOX_Y = 1
+    
+    PLAYER_JUMP_STRENGTH = 15
+    """ How much the player's yvel is set to when they jump. """
+    
+    PURPLE_ORB_MULTIPLIER = 0.5
+    
+    BLUE_ORB_STARTING_VELOCITY = 3
 
     SOLID_SURFACE_LENIENCY = 0.2
-
-    TARGET_FRAMERATE = 30
+    
+    PHYSICS_FRAMERATE = 240
+    
+    QUIT_KEYS = ['q', 'ctrl+c']
+    JUMP_KEYS = [' ', 'up', 'w']
+    ALL_KEYS = set(QUIT_KEYS + JUMP_KEYS)
 
 class SPEEDS:
     slow = 0.8

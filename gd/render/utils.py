@@ -1,6 +1,5 @@
-import blessed
 from typing import Union
-
+import re
 import os
 
 def fcode(foreground: Union[str, 'tuple[int]'] = None, background: Union[str, 'tuple[int]'] = None) -> str:
@@ -72,3 +71,53 @@ def cls():
     @TODO - uh i forgot how to check for OS names, idk if cls works everywhere. works on ps win11 tho.
     """
     os.system('cls')
+
+def len_no_ansi(string: str) -> str:
+    """
+    @see - https://github.com/chalk/ansi-regex/blob/0755e661553387cfebcb62378181e9f55b2567ff/index.js
+    """
+    return len(re.sub(
+        r'[\u001B\u009B][\[\]()#;?]*((([a-zA-Z\d]*(;[-a-zA-Z\d\/#&.:=?%@~_]*)*)?\u0007)|((\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-ntqry=><~]))', '', string))
+
+def remove_ansi(string: str) -> str:
+    """
+    @see - https://github.com/chalk/ansi-regex/blob/0755e661553387cfebcb62378181e9f55b2567ff/index.js
+    """
+    return re.sub(
+        r'[\u001B\u009B][\[\]()#;?]*((([a-zA-Z\d]*(;[-a-zA-Z\d\/#&.:=?%@~_]*)*)?\u0007)|((\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-ntqry=><~]))', '', string)
+    
+def closest_quarter(x: float) -> float:
+    """
+    Returns the (positive) quarter that's closest to x. 
+    Supports negative numbers too!
+    
+    Only returns something in `[0, 0.25, 0.5, 0.75]`
+    
+    Examples:
+    - `0.1` -> `0`
+    - `74.3` -> `0.25`
+    - `-199.6` -> `0.5`
+    """
+    # Extract the decimal part of x
+    decimal_part = abs(x - int(x))
+    
+    # Define the quarters
+    quarters = [0, 0.25, 0.5, 0.75]
+    
+    # Find the closest quarter to the decimal part
+    closest = min(quarters, key=lambda q: abs(decimal_part - q))
+    
+    return closest
+
+def nearest_quarter(x: float) -> float:
+    """
+    Returns the nearest quarter to x. 
+    Supports negative numbers too!
+    
+    Examples:
+    - `0.1` -> `0`
+    - `2.99` -> `3.0`
+    - `-1.13` -> `-1.25`
+    - `-1.12` -> `-1.0`
+    """
+    return round(x * 4) / 4
