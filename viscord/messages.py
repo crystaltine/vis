@@ -1,7 +1,6 @@
 import blessed 
 import os, sys 
 
-
 message_term = blessed.Terminal()
 
 #prints out the height and width of the terminal
@@ -9,7 +8,13 @@ message_term = blessed.Terminal()
 
 height = message_term.height 
 width = message_term.width 
-print("width: " + str(width) + " , " + " height: " + str(height))
+print(message_term.clear)
 
+while True:
+    print(message_term.on_blue) 
+
+
+
+print("width: " + str(width) + " , " + " height: " + str(height))
 
 
