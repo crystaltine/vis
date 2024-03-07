@@ -9,6 +9,7 @@ USER = ""
 PASSWD = ""
 
 ERROR_MSG = ""
+BAD_USERNAME = False
 BAD_PASSWORD = False
 
 import cursor
@@ -42,9 +43,15 @@ def update_user(w, h, focused):
     else:
         t = USER
     if focused:
-        print(term.move_yx(int(h * 0.5) - 2, 0) + term.clear_eol + term.move_yx(int(h * 0.5-2), int(w/2 - len(t)/2)) + term.black_on_cyan + t + term.normal)
+        if BAD_USERNAME:
+            print(term.move_yx(int(h * 0.5) - 2, 0) + term.clear_eol + term.move_yx(int(h * 0.5-2), int(w/2 - len(t)/2)) + term.black_on_red + t + term.normal)
+        else:
+            print(term.move_yx(int(h * 0.5) - 2, 0) + term.clear_eol + term.move_yx(int(h * 0.5-2), int(w/2 - len(t)/2)) + term.black_on_cyan + t + term.normal)
     else:
-        print(term.move_yx(int(h * 0.5) - 2, 0) + term.clear_eol + term.move_yx(int(h * 0.5-2), int(w/2 - len(t)/2)) + term.cyan + t + term.normal)
+        if BAD_USERNAME:
+            print(term.move_yx(int(h * 0.5) - 2, 0) + term.clear_eol + term.move_yx(int(h * 0.5-2), int(w/2 - len(t)/2)) + term.red + t + term.normal)
+        else:
+            print(term.move_yx(int(h * 0.5) - 2, 0) + term.clear_eol + term.move_yx(int(h * 0.5-2), int(w/2 - len(t)/2)) + term.cyan + t + term.normal)
 
 def update_passwd(w, h, focused):
     if not PASSWD:
@@ -93,6 +100,10 @@ with term.cbreak():
                         BAD_PASSWORD = False
                         ERROR_MSG = ""
                         update_passwd(w, h, False)
+                        print(term.move_yx(h-2, 0) + term.clear_eol)
+                    if BAD_USERNAME:
+                        ERROR_MSG = ""
+                        BAD_USERNAME = False
                         print(term.move_yx(h-2, 0) + term.clear_eol)
                     update_user(w, h, True)
                 elif y == 1:
@@ -145,6 +156,8 @@ with term.cbreak():
                     ERROR_MSG = ""
                     if not USER:
                         ERROR_MSG = "[Username cannot be blank.]"
+                        BAD_USERNAME = True
+                        update_user(w, h, False)
                     elif not PASSWD:
                         ERROR_MSG = "[Password cannot be blank.]"
                         BAD_PASSWORD = True
