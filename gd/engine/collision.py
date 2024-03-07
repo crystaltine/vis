@@ -1,3 +1,8 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from engine.objects import LevelObject
+
 class Collision:
     """
     Wrapper for objects that the player is currently touching, 
@@ -5,7 +10,7 @@ class Collision:
     Contains the object that the player is touching, and the side of the hitbox that the player  into.
     """
     
-    def __init__(self, obj: dict, vert_side: str = None, vert_coord: float = None): 
+    def __init__(self, obj: 'LevelObject', vert_side: str = None, vert_coord: float = None): 
         """
         `obj` must be a dict directly from the `engine.objects.OBJECTS` dict.
         
@@ -23,3 +28,5 @@ class Collision:
         self.obj = obj
         self.vert_side = vert_side
         self.vert_coord = vert_coord
+        
+        self.has_been_activated = False

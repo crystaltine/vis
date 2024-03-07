@@ -7,7 +7,10 @@ from time import time_ns, sleep
 from threading import Thread
 from math import floor, ceil
 from logger import Logger
-from typing import List
+from typing import List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from engine.objects import LevelObject
 
 class Game:
     """
@@ -16,12 +19,12 @@ class Game:
     Handles physics ticks for the player and animations
     """
 
-    def __init__(self, leveldata=[]):
+    def __init__(self, leveldata: List[List['LevelObject']] = []):
         """
         Creates a `Player` object automatically.
         """
 
-        self.leveldata = leveldata or []
+        self.leveldata = leveldata
 
         self.player = Player()
         self.camera = Camera(self.leveldata)
@@ -39,7 +42,6 @@ class Game:
         # Initialize camera rendering
         self.camera.render_init()
         def render_thread():
-            i = 0
             with self.camera.term.hidden_cursor():
                 last_frame = time_ns()
                 while True:
@@ -56,35 +58,38 @@ class Game:
 
         def physics_thread():
             
-            for row in self.leveldata:
-                Logger.log(f"Leveldata: {[obj['name'] if obj is not None else 'None' for obj in row]}")
-            
-            while True:
-                
-                if not self.running: break
-                
-                # check collisions
-                self.player.curr_collisions = self.generate_collisions_2()
+            # for row in self.leveldata:
+            #     Logger.log(f"Leveldata: {[obj.data['name'] if obj is not None else 'None' for obj in row]}")
+            try:
+                while True:
+                    
+                    if not self.running: break
+                    
+                    # check collisions
+                    self.player.curr_collisions = self.generate_collisions()
 
-                # apply effects
-                for collision in self.player.curr_collisions:                    
-                    # don't auto-run effect here if it requires click. That's a job for the key input thread.
-                    if not collision.obj.get("requires_click"):
-                        self.run_collision_effect(collision)
-                
-                # after collisions is updated, tick physics.                
-                curr_time = time_ns()
-                self.player.tick((curr_time - self.last_tick)/1e9)
-                self.last_tick = curr_time
-                
-                # if player's y-pos exceeds camera's ground offset (hit top of screen), crash
-                if self.player.pos[1] >= self.camera.ground:
-                    self.crash()
-                
-                # DO NOT REMOVE. removing this slows down the renderer by A LOT
-                # even if the physics fps is like 389429 it still speeds things up a lot
-                # to have this sleep here. DONT ASK ME WHY IDK EITHER
-                sleep(1/CONSTANTS.PHYSICS_FRAMERATE)
+                    # apply effects
+                    for collision in self.player.curr_collisions:                    
+                        # don't auto-run effect here if it requires click. That's a job for the key input thread.
+                        if not collision.obj.data.get("requires_click"):
+                            self.run_collision_effect(collision)
+                    
+                    # after collisions is updated, tick physics.                
+                    curr_time = time_ns()
+                    self.player.tick((curr_time - self.last_tick)/1e9)
+                    self.last_tick = curr_time
+                    
+                    # if player's y-pos exceeds camera's ground offset (hit top of screen), crash
+                    if self.player.pos[1] >= self.camera.ground:
+                        self.crash()
+                    
+                    # DO NOT REMOVE. removing this slows down the renderer by A LOT
+                    # even if the physics fps is like 389429 it still speeds things up a lot
+                    # to have this sleep here. DONT ASK ME WHY IDK EITHER
+                    sleep(1/CONSTANTS.PHYSICS_FRAMERATE)
+            except Exception as e:
+                Logger.log(f"[][[][][][][][][][[]] Physics thread crashed: {e}")
+                self.running = False
         
         self.last_tick = time_ns()
         Thread(target=render_thread).start()
@@ -110,16 +115,18 @@ class Game:
                     # also go through the player's current collisions and
                     # activate the first requires_click effect where "has_been_activated" is False
                     for collision in self.player.curr_collisions:
-                        if collision.obj.get("requires_click"):
+                        if collision.obj.data.get("requires_click"):
                             
-                            if collision.obj.get("multi_activate"): # always run effect if multi_activate
+                            if collision.obj.data.get("multi_activate"): # always run effect if multi_activate
                                 self.run_collision_effect(collision)
                                 something_got_activated = True
+                                break # can only perform one action per jump
                                 
-                            elif not collision.obj.get("has_been_activated"): # run effect if not multi_activate and not activated
+                            elif not collision.has_been_activated: # run effect if not multi_activate and not activated
                                 self.run_collision_effect(collision)
                                 something_got_activated = True
-                                collision.obj["has_been_activated"] = True
+                                collision.has_been_activated = True
+                                break # can only perform one action per jump
                     
                     Logger.log(f"something_got_activated is {something_got_activated}")
                     # if nothing got activated, then jump
@@ -131,148 +138,61 @@ class Game:
         # this only checks for crash. Gliding along top/bottom is handled in `Player.tick()`.
         
         # check gravity:
-        # If gravity is positive, then "top" is safe, "bottom" crashes.
-        # if gravity is negative, then "bottom" is safe, "top" crashes.
+        # If gravity is positive(down), but we are moving up, "bottom" crashes. (we jumped into a block.)
+        # if gravity is negative(up), but we are moving down, "top" crashes. (we jumped into a block.)
         if collision.vert_side is not None:
-            if collision.vert_side == "bottom" and self.player.sign_of_gravity() == 1:
+            if collision.vert_side == "bottom" and self.player.sign_of_gravity() == 1 and self.player.yvel > 0:
                 Logger.log("Crashed into top of block.")
                 self.crash()
-            elif collision.vert_side == "top" and self.player.sign_of_gravity() == -1:
+            elif collision.vert_side == "top" and self.player.sign_of_gravity() == -1 and self.player.yvel < 0:
                 Logger.log("Crashed into bottom of block.")
                 self.crash()
             return # don't run other effects if we are gliding
         
-        elif collision.obj["collide_effect"] == 'neg-gravity':
+        elif collision.obj.data["collide_effect"] == 'neg-gravity':
             self.player.gravity = -CONSTANTS.GRAVITY
-        elif collision.obj["collide_effect"]  == 'pos-gravity':
+        elif collision.obj.data["collide_effect"]  == 'pos-gravity':
             self.player.gravity = CONSTANTS.GRAVITY
-        elif collision.obj["collide_effect"]  == 'crash-block':
+        elif collision.obj.data["collide_effect"]  == 'crash-block':
             Logger.log("Crashed into block.")
             self.crash()
-        elif collision.obj["collide_effect"]  == 'crash-spike':
+        elif collision.obj.data["collide_effect"]  == 'crash-spike':
             Logger.log("Crashed into spike.")
             self.crash()
-        elif collision.obj["collide_effect"]  == 'yellow-orb':
+        elif collision.obj.data["collide_effect"]  == 'yellow-orb':
             Logger.log("Hit yellow orb.")
             self.player.activate_jump_orb(CONSTANTS.PLAYER_JUMP_STRENGTH)
-        elif collision.obj["collide_effect"]  == 'purple-orb':
+        elif collision.obj.data["collide_effect"]  == 'purple-orb':
             Logger.log("Hit purple orb.")
             self.player.activate_jump_orb(CONSTANTS.PLAYER_JUMP_STRENGTH*CONSTANTS.PURPLE_ORB_MULTIPLIER)
-        elif collision.obj["collide_effect"]  == 'blue-orb':
+        elif collision.obj.data["collide_effect"]  == 'blue-orb':
             Logger.log(f"Hit blue orb. sign of gravity is curr {self.player.sign_of_gravity()} and about to be changed.")
             
             self.player.change_gravity()
             
             # change velocity to a modest amount, in the sign of the NEW direction of gravity
-            self.player.yvel = CONSTANTS.BLUE_ORB_STARTING_VELOCITY * self.player.sign_of_gravity()
+            self.player.yvel = CONSTANTS.BLUE_ORB_STARTING_VELOCITY * -self.player.sign_of_gravity()
 
     def crash(self):
         self.running = False
 
-    def generate_collisions(self) -> list:
-        """
-        Returns a list of objects that the player is currently touching.
-        """
-
-        # TODO - for now, we only search nearby the player, so no large hitboxes yet
-
-        touching = []
-
-        # check the 2x2 lattice cells containing the player's hitbox
-        x_range = floor(self.player.pos[0]), ceil(self.player.pos[0]+CONSTANTS.PLAYER_HITBOX_X)
-        y_range = floor(self.player.pos[1]), ceil(self.player.pos[1]+CONSTANTS.PLAYER_HITBOX_Y)      
-        
-        # clip to the leveldata bounds
-        y_range = max(y_range[0], 0), min(y_range[1], len(self.leveldata))
-        
-        #Logger.log(f"Collisions: player is at {self.player.pos[0]:2f}, {self.player.pos[1]:2f}. x_range is {x_range}, y_range is {y_range}.")
-
-        #Logger.log(f"about to enter y loop, range is from {y_range[0]} to {y_range[1]}")
-        for y in range(*y_range):
-            
-            max_x_for_this_row = len(self.leveldata[max(-y-1, -len(self.leveldata))])
-            #Logger.log(f"about to enter x loop, range is from max({x_range[0]}, 0) to min({x_range[1]}, {max_x_for_this_row})")
-            for x in range(max(x_range[0], 0), min(x_range[1], max_x_for_this_row)):
-                # check collisions
-                
-                # index leveldata with -y-1 because the ground is backward TODO - maybe overhaul system so everything is (0,0) bottom left
-                # we also have to clip that y so it doesnt go out of bounds.
-                obj = self.leveldata[max(-y-1, -len(self.leveldata))][x]
-                
-                #Logger.log(f"in both collision loops - obj@[{y}, {x}] is {obj['name'] if obj is not None else 'None'}")
-                
-                if obj is None: continue
-
-                if obj["hitbox_type"] == "any-touch":
-
-                    # check x collision
-                    if (
-                    x+obj["hitbox_xrange"][0] < self.player.pos[0]+CONSTANTS.PLAYER_HITBOX_X or
-                    x+obj["hitbox_xrange"][1] > self.player.pos[0]-CONSTANTS.PLAYER_HITBOX_X):
-                        touching.append(Collision(obj))
-
-                    # check y collision
-                    elif (
-                    y+obj["hitbox_yrange"][0] > self.player.pos[1]-CONSTANTS.PLAYER_HITBOX_Y or
-                    y+obj["hitbox_yrange"][1] < self.player.pos[1]+CONSTANTS.PLAYER_HITBOX_Y):
-                        touching.append(Collision(obj))
-
-                elif obj["hitbox_type"] == "solid":
-
-                    # check top - here's how we approach this:
-                    # if the player is between the top and the top - constants.solid_surface_leniency,
-                    # then we set the player's y (coordinate of bottom side) to the top.
-                    # if a player is between bottom and top - constants.solid_surface_leniency, crash
-                    
-                    Logger.log(f"collisions found solid block. y is {y}, selfplayerpos[1] is {self.player.pos[1]}, objhitboxyrange[0] is {obj['hitbox_yrange'][0]}, objhitboxyrange[1] is {obj['hitbox_yrange'][1]}")
-                    
-                    if y+obj["hitbox_yrange"][1]-CONSTANTS.SOLID_SURFACE_LENIENCY < self.player.pos[1] <= y+obj["hitbox_yrange"][1]:
-                        Logger.log(f">>>>> PLAYER IS ON TOP OF BLOCK. setting _walking_on to {y}+{obj['hitbox_yrange'][1]}")
-                        
-                        # let player class handle this; see `Player.tick()`
-                        # self.player.yvel = 0 # stop falling
-                        
-                        self.player._walking_on = y+obj["hitbox_yrange"][1]
-                        self.player._walking_on_height = CONSTANTS.SOLID_SURFACE_LENIENCY
-                        
-                        touching.append(Collision(obj, {"is_on_top": True})) 
-                        # ^ still add, but the effect checker ignores collisions with top of solids.
-
-                    # check x collision
-                    elif (
-                        # object's left is less than player's right
-                        x+obj["hitbox_xrange"][0] < self.player.pos[0]+CONSTANTS.PLAYER_HITBOX_X and
-                        # object's right is greater than player's left
-                        x+obj["hitbox_xrange"][1] > self.player.pos[0]-CONSTANTS.PLAYER_HITBOX_X):
-                        
-                        touching.append(Collision(obj))
-
-                    # check y collision ONLY FOR THE BOTTOM SIDE
-                    elif (
-                        # object's bottom is less than player's top (player went too high)
-                        y+obj["hitbox_yrange"][0] < self.player.pos[1]+CONSTANTS.PLAYER_HITBOX_Y and
-                        # player's bottom is less than the object's leniency (player isn't above the block)
-                        self.player.pos[1] < y+obj["hitbox_yrange"][1]-CONSTANTS.SOLID_SURFACE_LENIENCY): # player has to be below block
-                        
-                        touching.append(Collision(obj))
-                        
-        Logger.log(f"Collisions: player is touching {[collision.obj['name'] if collision is not None else 'None' for collision in touching]}.")
-        return touching
-
-    def generate_collisions_2(self) -> List[Collision]:
+    def generate_collisions(self) -> List[Collision]:
         """
         Generates a list of `Collision` objects which represents all the objects
         the player's hitbox currently overlaps or is touching.
         """
         
         collisions = []
+        #Logger.log(f"----- New collision generation, using playerpos={self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, yvel={self.player.yvel:.2f}.")
         
         # Check a 2x2 of lattice cells, centered around the player's hitbox
-        x_range = floor(self.player.pos[0]), ceil(self.player.pos[0]+CONSTANTS.PLAYER_HITBOX_X)
-        y_range = floor(self.player.pos[1]), ceil(self.player.pos[1]+CONSTANTS.PLAYER_HITBOX_Y)
+        # we pad the positions by 0.25 so when we are at integers, we still check the next block
+        x_range = floor(self.player.pos[0]-0.25), ceil(self.player.pos[0]+CONSTANTS.PLAYER_HITBOX_X+0.25)
+        y_range = floor(self.player.pos[1]-0.25), ceil(self.player.pos[1]+CONSTANTS.PLAYER_HITBOX_Y+0.25)
         
         # clip the y-values to the leveldata bounds. For example, we can't check below index 0 or y>len(leveldata)
         y_range = max(y_range[0], 0), min(y_range[1], len(self.leveldata))
+        #Logger.log(f"#2^: setting y_range=max({y_range[0]}, 0), min({y_range[1]}, {len(self.leveldata)})." )
         
         # useful variables
         player_left = self.player.pos[0]
@@ -289,17 +209,17 @@ class Game:
             for x in range(*curr_x_range):
                 
                 # weird y-index since levels are 0,0 for bottomleft, and array indices are 0,0 for topleft
-                obj = self.leveldata[max(-y-1, -len(self.leveldata))][x] 
+                obj = self.leveldata[max(-y-1, -len(self.leveldata))][x]
                 
-                #Logger.log(f"Collisions: obj at y={y}, x={x} is {obj['name'] if obj is not None else 'None'}.")
+                # Logger.log(f"Collisions: obj at y={y}, x={x} is {obj['name'] if obj is not None else 'None'}.")
                 
-                if obj is None: continue
+                if obj.data is None: continue
                 
                 # more useful variables
-                obj_left = x+obj["hitbox_xrange"][0]
-                obj_right = x+obj["hitbox_xrange"][1]
-                obj_bottom = y+obj["hitbox_yrange"][0]
-                obj_top = y+obj["hitbox_yrange"][1]
+                obj_left = x+obj.data["hitbox_xrange"][0]
+                obj_right = x+obj.data["hitbox_xrange"][1]
+                obj_bottom = y+obj.data["hitbox_yrange"][0]
+                obj_top = y+obj.data["hitbox_yrange"][1]
                 
                 # horiz. collision - for any hitbox type:
                 # 1. player's right passed object's left, 
@@ -314,7 +234,7 @@ class Game:
                 # postcond: we are in the horizontal range of the object
                 # thus, if we are also in hostile vertical range, count as a collision.
 
-                if obj["hitbox_type"] == "any-touch":
+                if obj.data["hitbox_type"] == "any-touch":
                     # vert. collision (FOR ANYTOUCH OBJECTS ONLY):
                     # 1. player's top passed object's bottom,
                     # 2. but player's bottom hasn't passed object's top.
@@ -323,7 +243,7 @@ class Game:
                         
                     # else: nothing happens (not in y-range)
 
-                elif obj["hitbox_type"] == "solid":
+                elif obj.data["hitbox_type"] == "solid":
                     
                     # useful variables
                     object_top_leniency = obj_top-CONSTANTS.SOLID_SURFACE_LENIENCY
@@ -354,5 +274,6 @@ class Game:
                         collisions.append(Collision(obj))
 
                     # else: nothing happens (not in y-range)
-                    
+        
+        #Logger.log(f"Collisions END: player is touching {[(collision.obj.data['name'],collision.vert_side,collision.vert_coord) if collision is not None else 'None' for collision in collisions]}.")
         return collisions

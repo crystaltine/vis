@@ -7,9 +7,14 @@ class TEXTURES:
     BLOCK_COLOR_1 = "#444"
     BLOCK_COLOR_2 = "#555"
     
-    YELLOW_ORB_COLOR = "#fe0"
-    PURPLE_ORB_COLOR = "#e0f"
-    BLUE_ORB_COLOR = "#0ff"
+    YELLOW_ORB_COLOR_1 = "#fe0"
+    YELLOW_ORB_COLOR_2 = "#cb0"
+    
+    PURPLE_ORB_COLOR_1 = "#e0f"
+    PURPLE_ORB_COLOR_2 = "#b0c"
+    
+    BLUE_ORB_COLOR_1 = "#0ff"
+    BLUE_ORB_COLOR_2 = "#0cc"
     
     PLAYER_ICON = [
         fcode("00f", "ff0")+"o  o",
@@ -25,16 +30,16 @@ class TEXTURES:
         f"{fcode(background=BLOCK_COLOR_2)}    "
     ]
     yellow_orb = [
-        f'{fcode(background="fff")} {fcode(background=YELLOW_ORB_COLOR)}  {fcode(background="fff")} ',
-        f'{fcode(background="fff")} {fcode(background=YELLOW_ORB_COLOR)}  {fcode(background="fff")} ',
+        f'{fcode(background="fff")} {fcode(background=YELLOW_ORB_COLOR_1)}  {fcode(background="fff")} ',
+        f'{fcode(background="fff")} {fcode(background=YELLOW_ORB_COLOR_2)}  {fcode(background="fff")} ',
     ]
     purple_orb = [
-        f'{fcode(background="fff")} {fcode(background=PURPLE_ORB_COLOR)}  {fcode(background="fff")} ',
-        f'{fcode(background="fff")} {fcode(background=PURPLE_ORB_COLOR)}  {fcode(background="fff")} ',
+        f'{fcode(background="fff")} {fcode(background=PURPLE_ORB_COLOR_1)}  {fcode(background="fff")} ',
+        f'{fcode(background="fff")} {fcode(background=PURPLE_ORB_COLOR_2)}  {fcode(background="fff")} ',
     ]
     blue_orb = [
-        f'{fcode(background="fff")} {fcode(background=BLUE_ORB_COLOR)}  {fcode(background="fff")} ',
-        f'{fcode(background="fff")} {fcode(background=BLUE_ORB_COLOR)}  {fcode(background="fff")} ',
+        f'{fcode(background="fff")} {fcode(background=BLUE_ORB_COLOR_1)}  {fcode(background="fff")} ',
+        f'{fcode(background="fff")} {fcode(background=BLUE_ORB_COLOR_2)}  {fcode(background="fff")} ',
     ]
     
     def get(texture_name: str):

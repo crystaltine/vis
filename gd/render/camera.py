@@ -7,9 +7,12 @@ from logger import Logger
 from math import floor, ceil
 from render.TEXTURES import TEXTURES
 
+if TYPE_CHECKING:
+    from engine.objects import LevelObject
+
 class Camera:    
 
-    def __init__(self, leveldata: List[List[Dict]]):
+    def __init__(self, leveldata: List[List['LevelObject']]):
         self.term = blessed.Terminal()
         self.left = 0 # start at 0. player starts at 10 (we get a nice padding)
         self.ground = ((CameraUtils.DEFAULT_GROUND_TOP_PERCENT * self.term.height) // 100) // CameraUtils.GRID_PX_Y
@@ -134,7 +137,7 @@ class Camera:
 
         all_strips = []
 
-        for row in self.leveldata[-self.ground//2:]:
+        for row in self.leveldata[-self.ground:]:
             render_strip_1 = fcode(background=TEXTURES.BG_COLOR) # start as the bg format code
             render_strip_2 = fcode(background=TEXTURES.BG_COLOR) # start as the bg format code
             
@@ -174,7 +177,7 @@ class Camera:
             # TODO - does right side work? blessed should handle overflow... maybe
             #Logger.log(f"rendering a row from {floor(self.left)+1} to {min(len(row), ceil(self.left + CameraUtils.screen_width_blocks(self.term)))}")
             for obj in row[floor(self.left)+1 : min(len(row), floor(self.left + CameraUtils.screen_width_blocks(self.term)))]:
-                if obj is None:
+                if obj.data is None:
                     # 4 spaces to both strips(empty)
                     empty_block = " "*CameraUtils.GRID_PX_X
                     render_strip_1 += empty_block
@@ -183,8 +186,8 @@ class Camera:
                 else: 
                     # TODO - (see docstring), this only works with 2-char tall textures
                     # we end off each texture with bg color so whitespace is not visible
-                    render_strip_1 += TEXTURES.get(obj["name"])[1] + fcode(background=TEXTURES.BG_COLOR)
-                    render_strip_2 += TEXTURES.get(obj["name"])[0] + fcode(background=TEXTURES.BG_COLOR)
+                    render_strip_1 += TEXTURES.get(obj.data["name"])[1] + fcode(background=TEXTURES.BG_COLOR)
+                    render_strip_2 += TEXTURES.get(obj.data["name"])[0] + fcode(background=TEXTURES.BG_COLOR)
             
             # @old (NVM IM BACK)-
             # make sure all strips are the char length of the terminal.
@@ -199,10 +202,8 @@ class Camera:
             # render_strip_2 += " "*CameraUtils.GRID_PX_X
 
             # add to strips
-            all_strips.append(render_strip_1)
             all_strips.append(render_strip_2)
-
-        
+            all_strips.append(render_strip_1)
         
         # draw every row starting from 0 to ground * block height
         # i know drawing the air is useless, but we need to cover up the player trail

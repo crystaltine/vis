@@ -1,5 +1,5 @@
-from engine.objects import OBJECTS
-from logger import Logger
+from engine.objects import OBJECTS, LevelObject
+from typing import List
 
 SUPPORTED_CHARS = {
     " ": None,
@@ -35,13 +35,13 @@ def parse_level(filename: str) -> list:
     with open(f"levels/{filename}", "r") as f:
         lines = f.readlines()
         
-        leveldata = []
+        leveldata: List[List[LevelObject]] = []
         
-        for line in lines:
+        for reversed_y in range(len(lines)):
             row = []
-            for char in line:
-                if char in SUPPORTED_CHARS:
-                    row.append(SUPPORTED_CHARS[char])
+            for x in range(len(lines[reversed_y])):
+                if lines[reversed_y][x] in SUPPORTED_CHARS:
+                    row.append(LevelObject(SUPPORTED_CHARS[lines[reversed_y][x]], x, len(lines)-reversed_y))
             leveldata.append(row)
         
         f.close()
@@ -49,13 +49,16 @@ def parse_level(filename: str) -> list:
     # make sure every row is the same length.
     longest_row = max(len(row) for row in leveldata)
     
-    for row in leveldata:
-        row.extend([None]*(longest_row-len(row)))
+    for i in range(len(leveldata)):
         
-    # IMPORTANT: add 10 Nones to beginning of every level. This is to offset the player render
-    # without having to deal with negative grid values.
-    
-    for row in leveldata: row[:0] = [None]*10
+        # add None objects to end of every row to make them the same length
+        while len(leveldata[i]) < longest_row:
+            leveldata[i].append(LevelObject(None, len(leveldata[i]), len(leveldata)-i))
+            
+        # IMPORTANT: add 10 Nones to beginning of every level. This is to offset the player render
+        # without having to deal with negative grid values.
+        for j in range(10):
+            leveldata[i].insert(0, LevelObject(None, -j, len(leveldata)-i))
     
     return leveldata
     
