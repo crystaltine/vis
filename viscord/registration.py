@@ -1,25 +1,33 @@
 import blessed
+import cursor
 
+# initialize terminal
 term = blessed.Terminal()
 
+# initialize variables
 w = term.width
 h = term.height
-
 USER = ""
 PASSWD = ""
 CONFIRM = ""
-
 ERROR_MSG = ""
+# position of focus I think
+y = 0
+lw = term.width
+lh = term.height
 
+#TODO rename these to smth more human readable for ease of use
 
-import cursor
 cursor.hide()
 
+# clears the terminal screen
 def clear():
     print(term.clear)
 
+# updates the screen with input fields and buttons
 def update_screen(w, h, y): # honestly idk why either
     clear()
+    
     print(term.clear + term.move_yx(int(h * 0.5)-3, int(w/2) - int(len("username")/2)) + "USERNAME")
     update_user(w, h, y == 0)
 
@@ -34,11 +42,8 @@ def update_screen(w, h, y): # honestly idk why either
     if ERROR_MSG:
         print(term.move_yx(-1, 0) + term.clear_eol + term.move_yx(h-1, int(w/2 - len(ERROR_MSG)/2)) + term.black_on_red + ERROR_MSG + term.normal)
 
-y = 0
 
-lw = term.width
-lh = term.height
-
+# updates the username field
 def update_user(w, h, focused):
     if not USER:
         t = "____"
@@ -49,6 +54,7 @@ def update_user(w, h, focused):
     else:
         print(term.move_yx(int(h * 0.5) - 2, 0) + term.clear_eol + term.move_yx(int(h * 0.5-2), int(w/2 - len(t)/2)) + term.cyan + t + term.normal)
 
+# updates the password field
 def update_passwd(w, h, focused):
     if not PASSWD:
         t = "____"
@@ -59,6 +65,7 @@ def update_passwd(w, h, focused):
     else:
         print(term.move_yx(int(h * 0.5) - 0, 0) + term.clear_eol + term.move_yx(int(h * 0.5-0), int(w/2 - len(t)/2)) + term.cyan + t + term.normal)
 
+# updates the confirm password field
 def update_confirm(w, h, focused):
     if not CONFIRM:
         t = "____"
@@ -69,6 +76,7 @@ def update_confirm(w, h, focused):
     else:
         print(term.move_yx(int(h * 0.5) +2, 0) + term.clear_eol + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)) + term.cyan + t + term.normal)
 
+# updates the register button
 def update_button(w, h, focused):
     t = "[Register]"
     if focused:
@@ -76,19 +84,26 @@ def update_button(w, h, focused):
     else:
         print(term.move_yx(int(h * 0.5) +4, 0) + term.clear_eol + term.move_yx(int(h * 0.5+4), int(w/2 - len(t)/2)) + term.lime + t + term.normal)
 
+# check if username already exists (placeholder implementation)
 def check_username():
     # TODO: actually access db to check if username exists or not
     return True
 
+# Initial screen update
 update_screen(w, h, y)
 
+# Main loop to handle user input
 with term.cbreak():
     while True:
+        # handles in case of resizing probably 
         w = term.width
         h = term.height
+        
+        
         key = term.inkey(timeout=0.01)
         if key: 
-            if key.lower() in r"qwertyuiopasdfghjklzxcvbnm12345667890-=!@#$%^&*()_+[]{}":
+            if key.lower() in r"`qwertyuiopasdfghjklzxcvbnm12345667890-=!@#$%^&*()_+[]{}":
+                # handle alphanumeric input
                 if y == 0:
                     USER += key.lower()
                     update_user(w, h, True)
@@ -100,6 +115,7 @@ with term.cbreak():
                     update_confirm(w, h, True)
 
             else:
+                #handles arrow keys and such
                 code = key.code
                 if code in [258, 512, 343] and y < 3:
                     if y == 0:
@@ -136,6 +152,8 @@ with term.cbreak():
                         update_confirm(w, h, True)
 
                 elif code == 343 and y == 3:
+                    # TODO prob implement other rules
+                    # register button press
                     ERROR_MSG = ""
                     if not USER:
                         ERROR_MSG = "[Username cannot be blank.]"
@@ -151,8 +169,7 @@ with term.cbreak():
                     else:
                         ...
                         # TODO: registration confirmation link-up
-
-
+        # also resizing I think
         else:
             if lw != w or lh != h:
                 lw = w
