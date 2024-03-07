@@ -9,7 +9,7 @@ message_term = blessed.Terminal()
 
 height = message_term.height 
 width = message_term.width 
-print("width: " + str(width) + " height: " + str(height))
+print("width: " + str(width) + " , " + " height: " + str(height))
 
 
 
