@@ -17,13 +17,13 @@ b2 = True
 while b:
     counter += 1
     print(message_term.on_gray21)
-    if counter == width:
+    if counter == 300:
         b = False 
 
 while b2:
     counter2 += 1
     print(message_term.on_gray21)
-    if counter2 == height:
+    if counter2 == 300:
         b2 = False
 
 print(str(width))
