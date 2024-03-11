@@ -1,18 +1,51 @@
+from typing import Union
+import re
 import os
 
-""" commented out cuz school comps have py 3.7 and these unions are causing errors :skull:
+STYLE_CODES = {
+    'bold': '\033[1m',
+    'italic': '\033[3m',
+    'underline': '\033[4m',
+    'dim': '\033[2m',
+    'blink': '\033[5m',
+    'reset': '\033[0m',
+    'regular': '\033[0m',
+    'none': '\033[0m',
+    'default': '\033[0m',
+}
+
+PREDEFINED_COLORS = {
+    "white": (255, 255, 255),
+    "silver": (192, 192, 192),
+    "gray": (128, 128, 128),
+    "black": (0, 0, 0),
+    "red": (255, 0, 0),
+    "maroon": (128, 0, 0),
+    "yellow": (255, 255, 0),
+    "olive": (128, 128, 0),
+    "lime": (0, 255, 0),
+    "green": (0, 128, 0),
+    "aqua": (0, 255, 255),
+    "teal": (0, 128, 128),
+    "blue": (0, 0, 255),
+    "navy": (0, 0, 128),
+    "fuchsia": (255, 0, 255),
+    "purple": (128, 0, 128)
+}
+
 def fcode(foreground: str | tuple[int] = None, background: str | tuple[int] = None, style: str = None) -> str:
     '''
     Returns an ANSI format string matching the given styles. This may not be supported in all terminals.
     
     ## Parameters
     
-    `foreground` and `background`: can be hex code (with or without `#`) or a 3-tuple of rgb values. Examples:
+    `foreground` and `background`: can be hex code (with or without `#`), a 3-tuple of rgb values, or a predefined supported colorname (see `PREDEFINED_COLORS`).
     - `'#ff00ff'` (regular hex code)
     - `'d208c7'` (no hashtag)
     - `'#cd3'` (short hex code, 4 bit color)
     - `'778'` (short hex code without hashtag)
     - `(255, 0, 255)` (standard rgb tuple)
+    - 'fuchsia' (supported color name - see `PREDEFINED_COLORS`)
     
     If either are omitted, the default color will be used. (probably white for foreground, and transparent for background)
     
@@ -45,7 +78,10 @@ def fcode(foreground: str | tuple[int] = None, background: str | tuple[int] = No
     
     if foreground is not None:
         
-        if isinstance(foreground, str):
+        if foreground in PREDEFINED_COLORS:
+            foreground = PREDEFINED_COLORS[foreground]
+            
+        elif isinstance(foreground, str):
             # get rid of hashtag if it exists
             foreground = foreground[1:] if foreground[0] == '#' else foreground
             
@@ -58,9 +94,12 @@ def fcode(foreground: str | tuple[int] = None, background: str | tuple[int] = No
         
         format_str += '\033[38;2;{};{};{}m'.format(*foreground)
         
-    if background is not None:
+    if background is not None and background != 'transparent':
+        
+        if background in PREDEFINED_COLORS:
+            background = PREDEFINED_COLORS[background]
             
-        if isinstance(background, str):
+        elif isinstance(background, str):
             # get rid of hashtag if it exists
             background = background[1:] if background[0] == '#' else background
             
@@ -89,7 +128,6 @@ def fcode(foreground: str | tuple[int] = None, background: str | tuple[int] = No
         format_str += style_format_string
     
     return format_str
-"""
 
 def cls():
     """
@@ -98,3 +136,53 @@ def cls():
     @TODO - uh i forgot how to check for OS names, idk if cls works everywhere. works on ps win11 tho.
     """
     os.system('cls')
+
+def len_no_ansi(string: str) -> str:
+    """
+    @see - https://github.com/chalk/ansi-regex/blob/0755e661553387cfebcb62378181e9f55b2567ff/index.js
+    """
+    return len(re.sub(
+        r'[\u001B\u009B][\[\]()#;?]*((([a-zA-Z\d]*(;[-a-zA-Z\d\/#&.:=?%@~_]*)*)?\u0007)|((\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-ntqry=><~]))', '', string))
+
+def remove_ansi(string: str) -> str:
+    """
+    @see - https://github.com/chalk/ansi-regex/blob/0755e661553387cfebcb62378181e9f55b2567ff/index.js
+    """
+    return re.sub(
+        r'[\u001B\u009B][\[\]()#;?]*((([a-zA-Z\d]*(;[-a-zA-Z\d\/#&.:=?%@~_]*)*)?\u0007)|((\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-ntqry=><~]))', '', string)
+    
+def closest_quarter(x: float) -> float:
+    """
+    Returns the (positive) quarter that's closest to x. 
+    Supports negative numbers too!
+    
+    Only returns something in `[0, 0.25, 0.5, 0.75]`
+    
+    Examples:
+    - `0.1` -> `0`
+    - `74.3` -> `0.25`
+    - `-199.6` -> `0.5`
+    """
+    # Extract the decimal part of x
+    decimal_part = abs(x - int(x))
+    
+    # Define the quarters
+    quarters = [0, 0.25, 0.5, 0.75]
+    
+    # Find the closest quarter to the decimal part
+    closest = min(quarters, key=lambda q: abs(decimal_part - q))
+    
+    return closest
+
+def nearest_quarter(x: float) -> float:
+    """
+    Returns the nearest quarter to x. 
+    Supports negative numbers too!
+    
+    Examples:
+    - `0.1` -> `0`
+    - `2.99` -> `3.0`
+    - `-1.13` -> `-1.25`
+    - `-1.12` -> `-1.0`
+    """
+    return round(x * 4) / 4

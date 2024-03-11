@@ -1,6 +1,0 @@
-<tss src="./style.tss">
-<body>
-    <div className="red-bg">
-        Hello
-    </div>
-</body>
