@@ -16,7 +16,7 @@ class MessageUI:
             print(message_term.move_yx(box_y + i, box_x) + message_term.bold("│") + " " * (box_width - 2) + message_term.bold('│'))
         print(message_term.move_yx(box_y + box_height - 1, box_x) + message_term.bold("└") + message_term.bold("─") * (box_width - 2) + message_term.bold('┘'))
 
-    draw_a_box(25, 100, 10, 20)
+    draw_a_box(25, 100, 30, 20)
     print(message_term.purple(str(y) + str(x)))
 
 """
