@@ -1,29 +1,32 @@
 import blessed 
 import os, sys 
-
+import curses 
+#Creates Terminal Object 
 message_term = blessed.Terminal()
+print(message_term.clear)
 
-#prints out the height and width of the terminal
-#if the terminal is resized by hand, the vars will change value <- TO BE DELETED 
+class MessageUI:
+    #Terminal Height 
+    y = message_term.height 
+    x = message_term.width 
+    #Box height,width,top,left
+    box_height = 40
+    box_width = 100
+    box_x = 5
+    box_y = 10 
+    #Draw Box 
+    print(message_term.move_yx())
+    #for i in box_height: 
+    print(message_term.move_yx())
+    
+    #print(message_term.purple(str(y)))
 
-height = message_term.height 
-width = message_term.width 
-
-#sets the background color of the terminal using 
+"""
 counter = 0 
-b = True
-while b:
-    counter += 1
-    print(message_term.on_gray21)
-    if counter == 30:
-        b = False 
-
-counter2 = 0 
-b2 = True
-while b2:
-    counter2 += 1
-    print(message_term.on_gray21)
-    if counter2 == 50:
-        b2 = False 
-
-print(message_term.purple(str(width)))
+    b = True
+    while b:
+        counter += 1
+        print(message_term.on_gray21)
+        if counter == 30:
+            b = False 
+"""
