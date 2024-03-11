@@ -11,6 +11,8 @@ CONFIRM = ""
 
 ERROR_MSG = ""
 
+BAD_USERNAME = BAD_PASSWD = BAD_CONF = False
+
 import cursor
 cursor.hide()
 
@@ -44,9 +46,15 @@ def update_user(w, h, focused):
     else:
         t = USER
     if focused:
-        print(term.move_yx(int(h * 0.5) - 2, 0) + term.clear_eol + term.move_yx(int(h * 0.5-2), int(w/2 - len(t)/2)) + term.black_on_cyan + t + term.normal)
+        if BAD_USERNAME:
+            print(term.move_yx(int(h * 0.5) - 2, 0) + term.clear_eol + term.move_yx(int(h * 0.5-2), int(w/2 - len(t)/2)) + term.black_on_red + t + term.normal)
+        else:
+            print(term.move_yx(int(h * 0.5) - 2, 0) + term.clear_eol + term.move_yx(int(h * 0.5-2), int(w/2 - len(t)/2)) + term.black_on_cyan + t + term.normal)
     else:
-        print(term.move_yx(int(h * 0.5) - 2, 0) + term.clear_eol + term.move_yx(int(h * 0.5-2), int(w/2 - len(t)/2)) + term.cyan + t + term.normal)
+        if BAD_USERNAME:
+            print(term.move_yx(int(h * 0.5) - 2, 0) + term.clear_eol + term.move_yx(int(h * 0.5-2), int(w/2 - len(t)/2)) + term.red + t + term.normal)
+        else:
+            print(term.move_yx(int(h * 0.5) - 2, 0) + term.clear_eol + term.move_yx(int(h * 0.5-2), int(w/2 - len(t)/2)) + term.cyan + t + term.normal)
 
 def update_passwd(w, h, focused):
     if not PASSWD:
@@ -54,9 +62,15 @@ def update_passwd(w, h, focused):
     else:
         t = "*" * len(PASSWD)
     if focused:
-        print(term.move_yx(int(h * 0.5) - 0, 0) + term.clear_eol + term.move_yx(int(h * 0.5-0), int(w/2 - len(t)/2)) + term.black_on_cyan + t + term.normal)
+        if BAD_PASSWD:
+            print(term.move_yx(int(h * 0.5) - 0, 0) + term.clear_eol + term.move_yx(int(h * 0.5-0), int(w/2 - len(t)/2)) + term.black_on_red + t + term.normal)
+        else:
+            print(term.move_yx(int(h * 0.5) - 0, 0) + term.clear_eol + term.move_yx(int(h * 0.5-0), int(w/2 - len(t)/2)) + term.black_on_cyan + t + term.normal)
     else:
-        print(term.move_yx(int(h * 0.5) - 0, 0) + term.clear_eol + term.move_yx(int(h * 0.5-0), int(w/2 - len(t)/2)) + term.cyan + t + term.normal)
+        if BAD_PASSWD:
+            print(term.move_yx(int(h * 0.5) - 0, 0) + term.clear_eol + term.move_yx(int(h * 0.5-0), int(w/2 - len(t)/2)) + term.red + t + term.normal)
+        else:
+            print(term.move_yx(int(h * 0.5) - 0, 0) + term.clear_eol + term.move_yx(int(h * 0.5-0), int(w/2 - len(t)/2)) + term.cyan + t + term.normal)
 
 def update_confirm(w, h, focused):
     if not CONFIRM:
@@ -64,9 +78,16 @@ def update_confirm(w, h, focused):
     else:
         t = "*" * len(CONFIRM)
     if focused:
-        print(term.move_yx(int(h * 0.5) +2, 0) + term.clear_eol + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)) + term.black_on_cyan + t + term.normal + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)))
+        if BAD_CONF:
+            print(term.move_yx(int(h * 0.5) +2, 0) + term.clear_eol + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)) + term.black_on_red + t + term.normal + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)))
+        else:
+            print(term.move_yx(int(h * 0.5) +2, 0) + term.clear_eol + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)) + term.black_on_cyan + t + term.normal + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)))
+        
     else:
-        print(term.move_yx(int(h * 0.5) +2, 0) + term.clear_eol + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)) + term.cyan + t + term.normal)
+        if BAD_CONF:
+            print(term.move_yx(int(h * 0.5) +2, 0) + term.clear_eol + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)) + term.red + t + term.normal)
+        else:
+            print(term.move_yx(int(h * 0.5) +2, 0) + term.clear_eol + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)) + term.cyan + t + term.normal)
 
 def update_button(w, h, focused):
     t = "[Register]"
@@ -94,12 +115,25 @@ with term.cbreak():
             if key.lower() in r"qwertyuiopasdfghjklzxcvbnm1234567890-=!@#$%^&*()_+[]{}":
                 if y == 0:
                     USER += key.lower()
+                    if BAD_USERNAME:
+                        BAD_USERNAME = False
+                        ERROR_MSG = ""
+                        print(term.move_yx(h-2, 0) + term.clear_eol)
                     update_user(w, h, True)
+
                 elif y == 1:
                     PASSWD += key
+                    if BAD_PASSWD:
+                        BAD_PASSWD = False
+                        ERROR_MSG = ""
+                        print(term.move_yx(h-2, 0) + term.clear_eol)
                     update_passwd(w, h, True)
                 elif y == 2:
                     CONFIRM += key
+                    if BAD_CONF:
+                        BAD_CONF = False
+                        ERROR_MSG = ""
+                        print(term.move_yx(h-2, 0) + term.clear_eol)
                     update_confirm(w, h, True)
 
             else:
@@ -129,25 +163,56 @@ with term.cbreak():
 
                 elif code == 263:
                     if y == 0:
+                        check = len(USER) > 0
                         USER = USER[:-1]
+                        if BAD_USERNAME and check:
+                            BAD_USERNAME = False
+                            ERROR_MSG = ""
+                            print(term.move_yx(h-2, 0) + term.clear_eol)
                         update_user(w, h, True)
                     elif y == 1:
                         PASSWD = PASSWD[:-1]
+                        if BAD_PASSWD:
+                            BAD_PASSWD = False
+                            ERROR_MSG = ""
+                            print(term.move_yx(h-2, 0) + term.clear_eol)
+                        if BAD_CONF:
+                            BAD_CONF = False
+                            ERROR_MSG = ""
+                            print(term.move_yx(h-2, 0) + term.clear_eol)
+                            update_confirm(w, h, False)
                         update_passwd(w, h, True)
                     elif y == 2:
                         CONFIRM = CONFIRM[:-1]
+                        if BAD_CONF:
+                            BAD_CONF = False
+                            ERROR_MSG = ""
+                            print(term.move_yx(h-2, 0) + term.clear_eol)
+                        if BAD_PASSWD:
+                            BAD_PASSWD = False
+                            ERROR_MSG = ""
+                            print(term.move_yx(h-2, 0) + term.clear_eol)
+                            update_passwd(w, h, False)
                         update_confirm(w, h, True)
 
                 elif code == 343 and y == 3:
                     ERROR_MSG = ""
                     if not USER:
                         ERROR_MSG = "[Username cannot be blank.]"
+                        BAD_USERNAME = True
+                        update_user(w, h, False)
                     elif not check_username():
                         ERROR_MSG = "[User already exists.]"
+                        BAD_USERNAME =  True
+                        update_user(w, h, False)
                     elif not PASSWD:
                         ERROR_MSG = "[Password cannot be blank.]"
+                        BAD_PASSWD = True
+                        update_passwd(w, h, False)
                     elif PASSWD != CONFIRM:
                         ERROR_MSG = "[Passwords do not match.]"
+                        BAD_CONF = True
+                        update_confirm(w, h, False)
                     
                     if ERROR_MSG:
                         print(term.move_yx(h-2, 0) + term.clear_eol + term.move_yx(h-2, int(w/2 - len(ERROR_MSG)/2)) + term.black_on_red + ERROR_MSG + term.normal + "\a")
