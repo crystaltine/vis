@@ -45,11 +45,9 @@ class Div(Element):
     
     SUPPORTS_CHILDREN = True
 
-    def __init__(self, style: DivStyleProps = {}, id: str = None, children: List["Element"] = []):
+    def __init__(self, id: str = None, class_str: str = "", style_str: str = "", children: List["Element"] = []):
         """
-        `style`: See `DivStyle`. If a value is not provided, it will be set to the default.
-        
-        Note: For options that conflict, such as "top"/"bottom" and "height", the ones listed higher
+        Note: For style options that conflict, such as "top"/"bottom" and "height", the ones listed higher
         in the default dict above take precedence. Specifically, for dimensions/positioning, here are the rules:
         
         - if both top and bottom are provided, height is completely ignored.
@@ -65,7 +63,7 @@ class Div(Element):
         be either raw numbers or strings ending in 'ch', e.g. 50 or '50ch'.
         """
         
-        super().__init__(id, style, DivStyleProps)
+        super().__init__(id, class_str, style_str, DivStyleProps)
         
         # assert that ONE of left/right and ONE of top/bottom is provided
         assert (self.left is not None or self.right is not None), "[Div]: At least one of left or right must not be None."

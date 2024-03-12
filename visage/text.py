@@ -42,9 +42,9 @@ class Text(Element):
     """
     Represents text that can be placed inside any element.
     """
-    def __init__(self, text: str = "", style: TextStyleProps = {}, id: str = None):
+    def __init__(self, text: str = "", class_str: str = "", style_str: str = "", id: str = None):
         
-        super().__init__(id, style, TextStyleProps)
+        super().__init__(id, class_str, style_str, TextStyleProps)
         self.text = text
         
         # assert that not both left and right are None

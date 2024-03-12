@@ -1,15 +1,34 @@
 import re
-from typing import List, TYPE_CHECKING
+from shlex import split
+from typing import List, Dict, TYPE_CHECKING
 from document import Document
-from common import Element
 from div import Div
 from text import Text
 
 if TYPE_CHECKING:
+    from common import Element
     from document import Document
-    
+
+TAG_TO_ELEMENT: Dict[str, "Element"] = {
+    "div": Div,
+    "text": Text,
+}
+
 def create_element(tag: str, attrs: dict) -> "Element":
-    pass
+    """
+    Returns an `Element` object based on the provided tag (name) with the specified attributes.
+    Example attributes dict:
+    ```python
+    attrs = {
+        "class": "class1 class2 class3",
+        "id": "some-unique-element-id",
+    }
+    ```
+
+    Throws `KeyError` if the specified tag is not supported. 
+    """
+
+    return TAG_TO_ELEMENT[tag](**attrs)
 
 def read(relative_filepath: str) -> Document:
     """
@@ -56,14 +75,36 @@ def read(relative_filepath: str) -> Document:
         "/"
     ]
     ```
-    
     """
-    
-    tags
     
     curr_index = 0
     current_element_path = [__vis_document__]
     """ A list of the elements we are currently nested inside. Always begins with document. """
+
+    for tag in tags:
+
+        # if the tag is "/", move up one level
+        if tag.startswith("/"):
+            current_element_path.pop()
+            continue
+
+        tokens = split(tag) # this splits by spaces but keeps nested strings intact (e.g. class strings)
+
+        # now we might have something like this
+        # tokens = ['div', 'class=class1 class2 class3', 'id=some-random-id']
+
+        attrs = {}
+        tag_name, tag_attrs = tokens[0], tokens[1:]
+
+        for attr_definition in tag_attrs:
+            # each one of these is like "class=class1 class2 class3"
+            # attr name is .split()[0]
+            attr_name, attr_params = attr_definition.split(maxsplit=1)
+            attrs[attr_name] = attr_params
+
+        element = create_element(tag_name, attrs)
+        current_element_path[-1].add_child(element)
+        current_element_path.append(element)
 
 # test
 doc = read("example.vis")

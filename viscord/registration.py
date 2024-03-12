@@ -88,7 +88,7 @@ with term.cbreak():
         h = term.height
         key = term.inkey(timeout=0.01)
         if key: 
-            if key.lower() in r"qwertyuiopasdfghjklzxcvbnm12345667890-=!@#$%^&*()_+[]{}":
+            if key.lower() in r"qwertyuiopasdfghjklzxcvbnm12345667890-=!$%^&*()_+[]{}":
                 if y == 0:
                     USER += key.lower()
                     update_user(w, h, True)

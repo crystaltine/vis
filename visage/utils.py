@@ -1,4 +1,9 @@
 import os
+import json
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from common import StylePropDict
 
 STYLE_CODES = {
     'bold': '\033[1m',
@@ -127,7 +132,7 @@ def fcode(foreground: str | tuple[int] = None, background: str | tuple[int] = No
     
     return format_str
 
-def cls():
+def cls() -> None:
     """
     Clears the terminal using 'cls'
 
@@ -135,7 +140,7 @@ def cls():
     """
     os.system('cls')
     
-def parseattrs(object, provided_opts: dict | None, default: dict):
+def parseattrs(object, provided_opts: dict | None, default: dict) -> None:
     """
     Looks at `provided_opts` and, for every key in `provided_opts` that also appears in `default`,
     sets the associated value as a field on `object`, using the value from `default` if not provided.
@@ -171,3 +176,9 @@ def calculate_dim(container_dim: int, dimvalue: int | str) -> int:
         return round(container_dim * int(dimvalue[:-1]) / 100)
     else:
         raise ValueError(f"Invalid dimvalue: {dimvalue}. Must end in 'ch' or '%'.")    
+
+def parse_style_string(style_str: str) -> StylePropDict:
+    """
+    Parses a style string into a `Dict`
+    """
+    return json.loads(style_str)

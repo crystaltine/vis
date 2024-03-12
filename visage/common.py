@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from typing import TypedDict, TYPE_CHECKING
-from utils import parseattrs
+from utils import parseattrs, parse_style_string
 
 if TYPE_CHECKING:
     from document import Document
@@ -43,9 +43,11 @@ class Element:
     """ 1 + the absolute y-position of the bottom of the element on the screen. 
     0 is still the top edge of the screen. (notice the +1). is `None` if element hasn't been rendered yet. """
 
-    def __init__(self, id: str | None, class_str: str, style: dict | None, style_dict: StylePropDict,  *args, **kwargs):
+    def __init__(self, id: str | None, class_str: str, style_str: str | None, supported_styles: StylePropDict, *args, **kwargs):
         
-        parseattrs(self, style, style_dict.DEFAULT)
+        style_dict = parse_style_string(style_str)
+
+        parseattrs(self, style_dict, supported_styles.DEFAULT)
         
         self.document = globals()["__vis_document__"]
         self.class_list = class_str.split(" ")
