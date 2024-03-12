@@ -3,7 +3,6 @@ import textwrap
 #Creates Terminal Object 
 message_term = blessed.Terminal()
 print(message_term.clear)
-
 class MessageUI:
     #Terminal Height and Width 
     y = message_term.height 
@@ -24,7 +23,7 @@ class MessageUI:
               (box_width - 2) + message_term.blue(message_term.bold('┘'))) 
     #Draw the messages box 
     box = draw_a_box(25, 100, 30, 20, message_term.green_on_gray21(message_term.bold("Viscord Chat"))) 
-    #Allows user to write in box 
+    # Function which allows user to write in box 
     def write_in_box(text):
         with message_term.location(31, 19):
             print(message_term.purple_on_gray21(text))
@@ -42,5 +41,6 @@ class MessageUI:
                 wrapped = textwrap.fill(line, line_length)
                 line = wrapped 
             write_in_box(line)
+
     
     
