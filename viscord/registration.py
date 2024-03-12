@@ -256,7 +256,7 @@ with term.cbreak():
                         clear()
                         exit() # TODO: link up to main ui
 
-        ...
+        
                         
         # also resizing I think
         else:
