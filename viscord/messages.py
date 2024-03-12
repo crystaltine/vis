@@ -1,6 +1,5 @@
 import blessed 
-import os, sys 
-import curses 
+import textwrap
 #Creates Terminal Object 
 message_term = blessed.Terminal()
 print(message_term.clear)
@@ -31,13 +30,17 @@ class MessageUI:
             print(message_term.purple_on_gray21(text))
     #allows words to be built 
     with message_term.cbreak(): 
-        word = ""
+        line = ""
         while True: 
-            word += message_term.inkey() 
-            if message_term.inkey() == ' ':
-                "\n" + write_in_box(word)
+            line += message_term.inkey() 
+            if message_term.inkey() == '\x32':
+                '\n' + write_in_box(line)
             if message_term.inkey() == '\x08':
-                word = word[:-1]
-            write_in_box(word)
+                line = line[:-1]
+            if len(line) > 100:
+                line_length = 98
+                wrapped = textwrap.fill(line, line_length)
+                line = wrapped 
+            write_in_box(line)
     
     
