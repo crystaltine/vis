@@ -19,7 +19,7 @@ cursor.hide()
 def clear():
     print(term.clear)
 
-def update_screen(w, h, y): # honestly idk why either
+def update_screen(w, h, y):
     clear()
     print(term.clear + term.move_yx(int(h * 0.5)-3, int(w/2) - int(len("username")/2)) + "USERNAME")
     update_user(w, h, y == 0)
@@ -31,6 +31,7 @@ def update_screen(w, h, y): # honestly idk why either
     update_confirm(w, h, y == 2)
 
     update_button(w, h, y == 3)
+    update_back(w, h, y == 4)
 
     if ERROR_MSG:
         print(term.move_yx(-1, 0) + term.clear_eol + term.move_yx(h-1, int(w/2 - len(ERROR_MSG)/2)) + term.black_on_red + ERROR_MSG + term.normal)
@@ -96,6 +97,14 @@ def update_button(w, h, focused):
     else:
         print(term.move_yx(int(h * 0.5) +4, 0) + term.clear_eol + term.move_yx(int(h * 0.5+4), int(w/2 - len(t)/2)) + term.lime + t + term.normal)
 
+def update_back(w, h, focused):
+    t = "[Back]"
+    if focused:
+        print(term.move_yx(int(h * 0.5) +5, 0) + term.clear_eol + term.move_yx(int(h * 0.5+5), int(w/2 - len(t)/2)) + term.black_on_white + t + term.normal + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)))
+    else:
+        print(term.move_yx(int(h * 0.5) +5, 0) + term.clear_eol + term.move_yx(int(h * 0.5+5), int(w/2 - len(t)/2)) + term.white + t + term.normal)
+    
+
 def check_username():
     # TODO: actually access db to check if username exists or not
     return True
@@ -110,6 +119,7 @@ with term.cbreak():
             key = term.inkey(timeout=0.01)
         except KeyboardInterrupt:
             clear()
+            cursor.show()
             exit()
         if key: 
             if key.lower() in r"qwertyuiopasdfghjklzxcvbnm1234567890-=!@#$%^&*()_+[]{}":
@@ -138,7 +148,7 @@ with term.cbreak():
 
             else:
                 code = key.code
-                if code in [258, 512, 343] and y < 3:
+                if (code in [258, 512] and y < 4) or (code == 343 and y < 3):
                     if y == 0:
                         update_user(w, h, False)
                         update_passwd(w, h, True)
@@ -148,8 +158,14 @@ with term.cbreak():
                     if y == 2:
                         update_confirm(w, h, False)
                         update_button(w, h, True)
+                    if y == 3:
+                        update_button(w, h, False)
+                        update_back(w, h, True)
                     y += 1
                 elif code in [259, 353] and y > 0:
+                    if y == 4:
+                        update_back(w, h, False)
+                        update_button(w, h, True)
                     if y == 2:
                         update_confirm(w, h, False)
                         update_passwd(w, h, True)
@@ -194,7 +210,8 @@ with term.cbreak():
                             print(term.move_yx(h-2, 0) + term.clear_eol)
                             update_passwd(w, h, False)
                         update_confirm(w, h, True)
-
+                elif y == 4 and code == 343:
+                    break
                 elif code == 343 and y == 3:
                     ERROR_MSG = ""
                     if not USER:
@@ -220,7 +237,7 @@ with term.cbreak():
                         import registered
                         registered.show(USER)
                         clear()
-                        exit()
+                        exit() # TODO: link up to main ui
 
 
         else:

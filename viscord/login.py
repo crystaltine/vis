@@ -28,6 +28,7 @@ def update_screen(w, h, y): # honestly idk why either
     
 
     update_button(w, h, y == 2)
+    update_back(w, h, y == 3)
 
     if ERROR_MSG:
         print(term.move_yx(y-1, 0) + term.clear_eol + term.move_yx(h-2, int(w/2 - len(ERROR_MSG)/2)) + term.black_on_red + ERROR_MSG + term.normal)
@@ -72,9 +73,17 @@ def update_passwd(w, h, focused):
 def update_button(w, h, focused):
     t = "[Log In]"
     if focused:
-        print(term.move_yx(int(h * 0.5) +4, 0) + term.clear_eol + term.move_yx(int(h * 0.5+3), int(w/2 - len(t)/2)) + term.black_on_lime + t + term.normal + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)))
+        print(term.move_yx(int(h * 0.5) +2, 0) + term.clear_eol + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)) + term.black_on_lime + t + term.normal + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)))
     else:
-        print(term.move_yx(int(h * 0.5) +4, 0) + term.clear_eol + term.move_yx(int(h * 0.5+3), int(w/2 - len(t)/2)) + term.lime + t + term.normal)
+        print(term.move_yx(int(h * 0.5) +2, 0) + term.clear_eol + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)) + term.lime + t + term.normal)
+
+def update_back(w, h, focused):
+    t = "[Back]"
+    if focused:
+        print(term.move_yx(int(h * 0.5) +3, 0) + term.clear_eol + term.move_yx(int(h * 0.5+3), int(w/2 - len(t)/2)) + term.black_on_white + t + term.normal + term.move_yx(int(h * 0.5+2), int(w/2 - len(t)/2)))
+    else:
+        print(term.move_yx(int(h * 0.5) +3, 0) + term.clear_eol + term.move_yx(int(h * 0.5+3), int(w/2 - len(t)/2)) + term.white + t + term.normal)
+    
 
 def check_creds(u, p):
     # TODO: actually access db to check if username exists or not
@@ -91,6 +100,7 @@ with term.cbreak():
             key = term.inkey(timeout=0.01)
         except KeyboardInterrupt:
             clear()
+            cursor.show()
             exit()
         if key: 
             if key.lower() in r"qwertyuiopasdfghjklzxcvbnm1234567890-=!@#$%^&*()_+[]{}":
@@ -116,15 +126,21 @@ with term.cbreak():
 
             else:
                 code = key.code
-                if code in [258, 512, 343] and y < 2:
+                if (code in [258, 512] and y < 3) or (code == 343 and y < 2):
                     if y == 0:
                         update_user(w, h, False)
                         update_passwd(w, h, True)
                     if y == 1:
                         update_passwd(w, h, False)
                         update_button(w, h, True)
+                    if y == 2:
+                        update_button(w, h, False)
+                        update_back(w, h, True)
                     y += 1
                 elif code in [259, 353] and y > 0:
+                    if y == 3:
+                        update_back(w, h, False)
+                        update_button(w, h, True)
                     if y == 2:
                         update_button(w, h, False)
                         update_passwd(w, h, True)
@@ -151,7 +167,8 @@ with term.cbreak():
                             ERROR_MSG = ""
                             print(term.move_yx(h-2, 0) + term.clear_eol)
                         update_passwd(w, h, True)
-
+                elif code == 343 and y == 3:
+                    break
                 elif code == 343 and y == 2:
                     ERROR_MSG = ""
                     if not USER:
