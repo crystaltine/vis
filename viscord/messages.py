@@ -25,5 +25,19 @@ class MessageUI:
               (box_width - 2) + message_term.blue(message_term.bold('┘'))) 
     #Draw the messages box 
     box = draw_a_box(25, 100, 30, 20, message_term.green_on_gray21(message_term.bold("Viscord Chat"))) 
+    #Allows user to write in box 
+    def write_in_box(text):
+        with message_term.location(31, 19):
+            print(message_term.purple_on_gray21(text))
+    #allows words to be built 
+    with message_term.cbreak(): 
+        word = ""
+        while True: 
+            word += message_term.inkey() 
+            if message_term.inkey() == ' ':
+                "\n" + write_in_box(word)
+            if message_term.inkey() == '\x08':
+                word = word[:-1]
+            write_in_box(word)
     
     
