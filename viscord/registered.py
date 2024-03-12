@@ -30,7 +30,10 @@ def show(username):
         while True:
             w = term.width
             h = term.height
-            key = term.inkey(timeout=0.01)
+            try:
+                key = term.inkey(timeout=0.01)
+            except:
+                break
             if key: 
                 code = key.code
                 if code == 343:
