@@ -13,6 +13,8 @@ available = [
 import cursor
 cursor.hide()
 
+
+
 def clear():
     print(term.clear)
 
