@@ -1,6 +1,9 @@
 import blessed
 import cursor
 import cursor
+import constants
+import hashlib
+import json
 
 # initialize terminal
 term = blessed.Terminal()
@@ -261,6 +264,21 @@ with term.cbreak():
                     if ERROR_MSG:
                         print(term.move_yx(h-2, 0) + term.clear_eol + term.move_yx(h-2, int(w/2 - len(ERROR_MSG)/2)) + term.black_on_red + ERROR_MSG + term.normal + "\a")
                     else:
+
+                        encoded = hashlib.sha512(PASSWD.encode("utf-8")).hexdigest()
+
+                        data = {
+                            "tag": "account_create",
+                            "data": {
+                                "username": USER,
+                                "password": encoded
+                            }
+                        }
+
+
+
+                        constants.CONNECTION.sendall(json.dumps(data).encode("utf-8"))
+
                         import registered
                         registered.show(USER)
                         clear()
