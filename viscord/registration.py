@@ -125,8 +125,18 @@ def update_back(w, h, focused):
 
 # check if username already exists (placeholder implementation)
 def check_username():
-    # TODO: actually access db to check if username exists or not
-    return True
+    data = {
+        "type": "username_check",
+        "data": USER
+    }
+
+    constants.CONNECTION.sendall(json.dumps(data).encode("utf-8"))
+    resp = constants.CONNECTION.recv(1024).decode()
+    if resp == "True":
+        return True
+    else:
+        return False
+
 
 # Initial screen update
 # Initial screen update
@@ -265,12 +275,12 @@ with term.cbreak():
                         print(term.move_yx(h-2, 0) + term.clear_eol + term.move_yx(h-2, int(w/2 - len(ERROR_MSG)/2)) + term.black_on_red + ERROR_MSG + term.normal + "\a")
                     else:
 
-                        encoded = hashlib.sha512(PASSWD.encode("utf-8")).hexdigest()
+                        encoded = hashlib.sha256(PASSWD.encode("utf-8")).hexdigest()
 
                         data = {
-                            "tag": "account_create",
+                            "type": "account_create",
                             "data": {
-                                "username": USER,
+                                "user": USER,
                                 "password": encoded
                             }
                         }
