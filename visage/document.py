@@ -4,7 +4,7 @@ from typing import List, Dict, Set, Callable, Literal, TYPE_CHECKING
 from pynput import keyboard
 
 if TYPE_CHECKING:
-    from common import Element
+    from common import Element, KeyEvent
 
 class DocumentStyleProps(StylePropDict):
     """
@@ -31,15 +31,23 @@ class Document:
         self.children = children
         self.id_map: Dict[str, "Element"] = {} # Dict[str, List["Element"]] = {} <- if we wanna allow non-unique ids
         """ Stores references to elements that were given an id. """
+        
         self.term = Terminal()
         
         self.quit_keys = quit_keys
+
+        self.selected: "Element" = None
         
-        self.keyup_listeners: Dict[str, Set[Callable]] = {}
-        """ Maps KEYUP events to callbacks. """
-        self.keydown_listeners: Dict[str, Set[Callable]] = {}
-        """ Maps KEYDOWN events to callbacks. """
-        
+        self.keyup_listeners: Set[Callable[[KeyEvent], None]] = set()
+        """ set of all KEYUP event callbacks. """
+        self.keydown_listeners: Set[Callable[[KeyEvent], None]] = set()
+        """ set of all KEYDOWN event callbacks. """
+
+        self.element_keyup_listeners: Dict["Element", Set[Callable[[KeyEvent], None]]] = {}
+        """ KEYUP event handlers registered by elements such as Input and Button """
+        self.element_keydown_listeners: Dict["Element", Set(Callable[[KeyEvent], None])] = {}
+        """ KEYDOWN event handlers registered by elements such as Input and Button """
+
         parseattrs(self, style, DocumentStyleProps.DEFAULT)
         
         self.client_left = 0
@@ -99,6 +107,10 @@ class Document:
                 cls()
                 print("\x1b[0m", end="") # reset formatting
                 exit()
+
+            # create KeyEvent object
+            key_char = getattr(key, "char", default="")
+            ev = KeyEvent()
                 
             # run all keydown listeners for this key
             [listener() for listener in self.keydown_listeners.get(key, set())]
@@ -110,9 +122,10 @@ class Document:
                 
         return keyboard.Listener(on_press=on_press, on_release=on_release)
     
-    def add_event_listener(self, keyname: str, type: Literal["keydown", "keyup"], callback: Callable):
+    def add_event_listener(self, type: Literal["keydown", "keyup"], callback: Callable[[KeyEvent], None]):
         """
-        Adds an event listener for a specific key event. Can have multiple listeners for the same key event.
+        Adds a document-wide event listener for either keydown or keyup. 
+        Can have multiple listeners for the same key event.
         """
         
         listener_bank = self.keydown_listeners if type == "keydown" else self.keyup_listeners
