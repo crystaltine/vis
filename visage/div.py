@@ -1,8 +1,8 @@
-from common import StylePropDict, Element
+from common import ElementAttributes, Element
 from utils import fcode, calculate_dim
-from typing import List
+from typing import List, TypedDict
 
-class DivStyleProps(StylePropDict):
+class DivStyleProps(TypedDict):
     """
     A schema of style options for divs.
     """
@@ -21,7 +21,16 @@ class DivStyleProps(StylePropDict):
     padding: int
     bg_color: str | tuple
     
-    DEFAULT: "DivStyleProps" = {
+class DivElementAttributes(ElementAttributes):
+    children: List["Element"]
+
+class Div(Element):
+    """
+    A general div class with customizable styling options.
+    """
+    
+    SUPPORTS_CHILDREN = True
+    DEFAULT_STYLE: "DivStyleProps" = {
         "position": "relative",
         "visible": True,
         "left": "0%",
@@ -38,15 +47,8 @@ class DivStyleProps(StylePropDict):
         "bg_color": (255, 255, 255) # can be hex code, rgb tuple, or 'transparent'
     }
 
-class Div(Element):
-    """
-    A general div class with customizable styling options.
-    """
-    
-    SUPPORTS_CHILDREN = True
-
-    def __init__(self, id: str = None, class_str: str = "", style_str: str = "", children: List["Element"] = []):
-        """
+    def __init__(self, **attrs):
+        """ Keyword arguments: see `DivStyleProps`.
         Note: For style options that conflict, such as "top"/"bottom" and "height", the ones listed higher
         in the default dict above take precedence. Specifically, for dimensions/positioning, here are the rules:
         
@@ -63,13 +65,13 @@ class Div(Element):
         be either raw numbers or strings ending in 'ch', e.g. 50 or '50ch'.
         """
         
-        super().__init__(id, class_str, style_str, DivStyleProps)
+        super().__init__(**attrs) # should ignore any unknown attributes that are provided
         
         # assert that ONE of left/right and ONE of top/bottom is provided
         assert (self.left is not None or self.right is not None), "[Div]: At least one of left or right must not be None."
         assert (self.top is not None or self.bottom is not None), "[Div]: At least one of top or bottom must not be None."
         
-        self.children = children
+        self.children = attrs.get("children", [])
         self.bg_fcode = fcode(background=self.bg_color) if self.bg_color != "transparent" else None
         #Logger.log(f"{self}'s children on init: {self.children}")
     

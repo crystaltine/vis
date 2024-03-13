@@ -1,14 +1,14 @@
-from common import StylePropDict, Element
+from common import ElementAttributes, Element
 from utils import fcode, calculate_dim
-from typing import Literal
+from typing import Literal, TypedDict
+from enum import Enum
 
-class TextStyleProps(StylePropDict):
+class TextStyleProps(TypedDict):
     """
     A schema of style options for text. No `top` or `bottom` because one line only.
     
     Left overrides right (if both not None, `right` is ignored). Cannot have both set to None.
     """
-    
     position: str
     visible: bool
     color: str | tuple 
@@ -21,7 +21,16 @@ class TextStyleProps(StylePropDict):
     y: int
     text_align: Literal["left", "center", "right"]
     
-    DEFAULT: "TextStyleProps" = {
+class TextElementAttributes(ElementAttributes):
+    text: str
+
+class Text(Element):
+    """
+    Leaf-level element that renders stylable text.
+    """
+    
+    SUPPORTS_CHILDREN = False
+    DEFAULT_STYLE: "TextStyleProps" = {
         "position": "relative",
         "visible": True,
         "color": "white",
@@ -34,18 +43,12 @@ class TextStyleProps(StylePropDict):
         "y": 0,
         "text_align": "left",
     }
-
-class Text(Element):
     
-    SUPPORTS_CHILDREN = False
-    
-    """
-    Represents text that can be placed inside any element.
-    """
-    def __init__(self, text: str = "", class_str: str = "", style_str: str = "", id: str = None):
+    def __init__(self, **attrs):
+        """ Keyword arguments: see `TextStyleProps`. """
         
-        super().__init__(id, class_str, style_str, TextStyleProps)
-        self.text = text
+        super().__init__(**attrs) # should ignore any unknown attributes that are provided
+        self.text = attrs.get("text", "")
         
         # assert that not both left and right are None
         assert (self.left is not None or self.right is not None), "[Text]: At least one of left or right must not be None."

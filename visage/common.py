@@ -5,18 +5,23 @@ from utils import parseattrs, parse_style_string
 if TYPE_CHECKING:
     from document import Document
 
-class StylePropDict(TypedDict):
-    
-    DEFAULT: "StylePropDict"
-    """ A dict that contains the default values for the style options. """
+class ElementAttributes(TypedDict):
+    """
+    A schema of props for creating a generic element.
+    """
+    id: str | None
+    class_str: str | None
+    style_str: str | None
 
 class Element:
     """
     An abstract class representing a generic element in the component tree.
     """
     
-    # static variable SUPPORTS_CHILDREN
     SUPPORTS_CHILDREN: bool
+    """ @static @constant - Whether or not the element supports children. """
+    DEFAULT_STYLE: dict[str, str]
+    """ @static @constant - The default style options for all instances of the element. """
     
     document: "Document"
     """ A reference to the root document object the element is rendered on. This is for thing like event handler registration. """
@@ -43,14 +48,15 @@ class Element:
     """ 1 + the absolute y-position of the bottom of the element on the screen. 
     0 is still the top edge of the screen. (notice the +1). is `None` if element hasn't been rendered yet. """
 
-    def __init__(self, id: str | None, class_str: str, style_str: str | None, supported_styles: StylePropDict, *args, **kwargs):
+    def __init__(self, **attrs) -> None:
         
-        style_dict = parse_style_string(style_str)
+        # style dict that merges the default style with the provided style (provided takes precedence)
+        style_dict = self.__class__.DEFAULT_STYLE | parse_style_string(attrs.get("style_str"))
 
-        parseattrs(self, style_dict, supported_styles.DEFAULT)
+        parseattrs(self, style_dict, self.__class__.DEFAULT_STYLE)
         
         self.document = globals()["__vis_document__"]
-        self.class_list = class_str.split(" ")
+        self.class_list = (cs := attrs.get("class_str")).split(" ") if cs else []
         self.id = id
         self.client_left = None
         self.client_top = None

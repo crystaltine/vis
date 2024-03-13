@@ -177,8 +177,12 @@ def calculate_dim(container_dim: int, dimvalue: int | str) -> int:
     else:
         raise ValueError(f"Invalid dimvalue: {dimvalue}. Must end in 'ch' or '%'.")    
 
-def parse_style_string(style_str: str) -> StylePropDict:
+def parse_style_string(style_str: str) -> dict[str, str]:
     """
-    Parses a style string into a `Dict`
+    Parses a style string into a `Dict` using `json.loads`.
+    This will throw a `json.JSONDecodeError` if the string is not valid JSON.
+    
+    @TODO - allow more flexible css-like style strings.
     """
+    if style_str is None: return {}
     return json.loads(style_str)
