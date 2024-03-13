@@ -28,7 +28,7 @@ def create_element(tag: str, attrs: dict) -> "Element":
     Throws `KeyError` if the specified tag is not supported. 
     """
 
-    return TAG_TO_ELEMENT[tag](**attrs)
+    return TAG_TO_ELEMENT[tag](attrs)
 
 def read(relative_filepath: str) -> Document:
     """
@@ -83,7 +83,7 @@ def read(relative_filepath: str) -> Document:
 
     for tag in tags:
 
-        # if the tag is "/", move up one level
+        # if the tag is "/" (end tag), move up one level
         if tag.startswith("/"):
             current_element_path.pop()
             continue
