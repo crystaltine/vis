@@ -25,10 +25,11 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(("0.0.0.0", 5000))
 
 print("Server up!")
+print("Running on " + str(s.getsockname()[0]) + ":" + str(s.getsockname()[1]))
 
 connections = {}
 
-def handle_message(data):
+def handle_message(data, conn):
     send = json.dumps(data).encode()
     print("New message:", data["data"])
     for addr2 in connections:
@@ -39,7 +40,7 @@ def handle_message(data):
                 print(f"Error sending to {addr2}, removing...")
                 del connections[addr2]
 
-def handle_account_creation(data):
+def handle_account_creation(data, conn):
     account_data = data["data"] # {"user": str (username), "password": str (password HASH)}
     
     uuid = str(uuid4())
@@ -52,10 +53,22 @@ def handle_account_creation(data):
     send_query='''insert into "Discord"."UserInfo" (user_id, user_name, user_password, user_color, user_symbol, user_creation_timestamp) values (%s, %s, %s, %s, %s, %s)'''
     cur.execute(send_query, (uuid, user, password, color, symbol, timestamp))
 
+def handle_username_check(data, conn):
+    user = data["data"]
+
+    send_query = """select 1 from "Discord"."UserInfo" where user_name = %s"""
+    cur.execute(send_query, (user,)) # weird tuple hack
+    records = cur.fetchall()
+    if len(records) > 0:
+        conn.sendall("False".encode("utf-8"))
+    else:
+        conn.sendall("True".encode("utf-8"))
+
 
 handlers = {
     "msg": handle_message,
-    "account_create": handle_account_creation
+    "account_create": handle_account_creation,
+    "username_check": handle_username_check
 
 }
 
@@ -76,7 +89,7 @@ def handle_connection(conn, addr):
             for label in handlers:
                 if "type" in parsed and parsed["type"] == label:
                     parsed["from"] = addr
-                    handlers[label](parsed)
+                    handlers[label](parsed, conn)
                     break
 
 
