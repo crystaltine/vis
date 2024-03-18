@@ -1,33 +1,34 @@
-from common import ElementAttributes, Element
+from common import Element
 from utils import fcode, calculate_dim
-from typing import List, TypedDict
-
-class DivStyleProps(TypedDict):
-    """
-    A schema of style options for divs.
-    """
-    position: str
-    visible: bool
-    left: str
-    top: str
-    width: str
-    height: str
-    right: str
-    bottom: str
-    padding_top: int
-    padding_right: int
-    padding_bottom: int
-    padding_left: int
-    padding: int
-    bg_color: str | tuple
-    
-class DivElementAttributes(ElementAttributes):
-    children: List["Element"]
+from typing import List, Unpack, TypedDict
 
 class Div(Element):
     """
     A general div class with customizable styling options.
     """
+    
+    class DivElementAttributes(Element.ElementAttributes):
+        children: List["Element"]
+    
+    class DivStyleProps(TypedDict):
+        """
+        A schema of style options for divs.
+        """
+        position: str
+        visible: bool
+        left: str
+        top: str
+        width: str
+        height: str
+        right: str
+        bottom: str
+        padding_top: int
+        padding_right: int
+        padding_bottom: int
+        padding_left: int
+        padding: int
+        bg_color: str | tuple
+        selectable: bool
     
     SUPPORTS_CHILDREN = True
     DEFAULT_STYLE: "DivStyleProps" = {
@@ -44,11 +45,12 @@ class Div(Element):
         "padding_bottom": 0,
         "padding_left": 0,
         "padding": 0,
-        "bg_color": (255, 255, 255) # can be hex code, rgb tuple, or 'transparent'
+        "bg_color": (255, 255, 255), # can be hex code, rgb tuple, or 'transparent'
+        "selectable": False,
     }
 
-    def __init__(self, **attrs):
-        """ Keyword arguments: see `DivStyleProps`.
+    def __init__(self, **attrs: Unpack[DivElementAttributes]):
+        """ Keyword arguments: see `DivElementAttributes`.
         Note: For style options that conflict, such as "top"/"bottom" and "height", the ones listed higher
         in the default dict above take precedence. Specifically, for dimensions/positioning, here are the rules:
         
@@ -71,8 +73,8 @@ class Div(Element):
         assert (self.left is not None or self.right is not None), "[Div]: At least one of left or right must not be None."
         assert (self.top is not None or self.bottom is not None), "[Div]: At least one of top or bottom must not be None."
         
-        self.children = attrs.get("children", [])
-        self.bg_fcode = fcode(background=self.bg_color) if self.bg_color != "transparent" else None
+        self.children: List["Element"] = attrs.get("children", [])
+        self._bg_fcode = fcode(background=self.bg_color) if self.bg_color != "transparent" else None
         #Logger.log(f"{self}'s children on init: {self.children}")
     
     def render(self, container_left: int, container_top: int, container_right: int, container_bottom: int):
@@ -109,10 +111,10 @@ class Div(Element):
         if not self.visible: return
         
         # draw the rectangle IF it is not transparent.
-        if self.bg_fcode:
+        if self._bg_fcode:
             for i in range(self.client_top, self.client_bottom):
                 with self.document.term.hidden_cursor():
-                    print(self.document.term.move_xy(self.client_left, i) + self.bg_fcode + " " * self.client_width, end="")
+                    print(self.document.term.move_xy(self.client_left, i) + self._bg_fcode + " " * self.client_width, end="")
                     
         # render children
         for child in self.children:
@@ -140,4 +142,3 @@ class Div(Element):
             self.children.insert(index, child)
             
         #Logger.log(f"Added child to {self}: {child}")
-  

@@ -1,33 +1,33 @@
-from common import ElementAttributes, Element
+from common import Element
 from utils import fcode, calculate_dim
-from typing import Literal, TypedDict
-from enum import Enum
-
-class TextStyleProps(TypedDict):
-    """
-    A schema of style options for text. No `top` or `bottom` because one line only.
-    
-    Left overrides right (if both not None, `right` is ignored). Cannot have both set to None.
-    """
-    position: str
-    visible: bool
-    color: str | tuple 
-    bg_color: str | tuple
-    bold: bool
-    italic: bool
-    underline: bool
-    left: int
-    right: int | None
-    y: int
-    text_align: Literal["left", "center", "right"]
-    
-class TextElementAttributes(ElementAttributes):
-    text: str
+from typing import Literal, TypedDict, Unpack
 
 class Text(Element):
     """
     Leaf-level element that renders stylable text.
     """
+    
+    class TextElementAttributes(Element.ElementAttributes):
+        text: str
+    
+    class TextStyleProps(TypedDict):
+        """
+        A schema of style options for text. No `top` or `bottom` because one line only.
+        
+        Left overrides right (if both not None, `right` is ignored). Cannot have both set to None.
+        """
+        position: str
+        visible: bool
+        color: str | tuple 
+        bg_color: str | tuple
+        bold: bool
+        italic: bool
+        underline: bool
+        left: int
+        right: int | None
+        y: int
+        text_align: Literal["left", "center", "right"]
+        selectable: bool
     
     SUPPORTS_CHILDREN = False
     DEFAULT_STYLE: "TextStyleProps" = {
@@ -42,9 +42,10 @@ class Text(Element):
         "right": None, # calculated from "left" and text length
         "y": 0,
         "text_align": "left",
+        "selectable": False,
     }
     
-    def __init__(self, **attrs):
+    def __init__(self, **attrs: Unpack[TextElementAttributes]):
         """ Keyword arguments: see `TextStyleProps`. """
         
         super().__init__(**attrs) # should ignore any unknown attributes that are provided

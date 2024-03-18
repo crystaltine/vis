@@ -1,6 +1,6 @@
 from common import StylePropDict, parseattrs, cls
 from blessed import Terminal
-from typing import List, Dict, Set, Callable, Literal, TYPE_CHECKING
+from typing import List, Dict, Set, Any, Callable, Literal, TYPE_CHECKING
 from pynput import keyboard
 
 if TYPE_CHECKING:
@@ -37,15 +37,16 @@ class Document:
         self.quit_keys = quit_keys
 
         self.selected: "Element" = None
+        """ The currently selected element. There can only be one at a time. """
         
-        self.keyup_listeners: Set[Callable[[KeyEvent], None]] = set()
+        self.keyup_listeners: Set[Callable[[KeyEvent], Any]] = set()
         """ set of all KEYUP event callbacks. """
-        self.keydown_listeners: Set[Callable[[KeyEvent], None]] = set()
+        self.keydown_listeners: Set[Callable[[KeyEvent], Any]] = set()
         """ set of all KEYDOWN event callbacks. """
 
-        self.element_keyup_listeners: Dict["Element", Set[Callable[[KeyEvent], None]]] = {}
+        self.element_keyup_listeners: Dict["Element", Set[Callable[[KeyEvent], Any]]] = {}
         """ KEYUP event handlers registered by elements such as Input and Button """
-        self.element_keydown_listeners: Dict["Element", Set(Callable[[KeyEvent], None])] = {}
+        self.element_keydown_listeners: Dict["Element", Set[Callable[[KeyEvent], Any]]] = {}
         """ KEYDOWN event handlers registered by elements such as Input and Button """
 
         parseattrs(self, style, DocumentStyleProps.DEFAULT)
@@ -102,25 +103,40 @@ class Document:
         """
         Returns a `Listener` thread for key presses. Run .start() on the returned object to start listening.
         """
-        def on_press(key):
-            if key in self.quit_keys:
-                cls()
-                print("\x1b[0m", end="") # reset formatting
-                exit()
+        def on_press(key: keyboard.Key | keyboard.KeyCode):
+            if key in self.quit_keys: self._quit()
 
-            # create KeyEvent object
-            key_char = getattr(key, "char", default="")
-            ev = KeyEvent()
+            # if key is KeyCode, then it was probably a character key
+            # if Key, then it was probably a special key
+            
+            ev = ...
+            if isinstance(key, keyboard.KeyCode):
+                ev = KeyEvent(key.char, "keydown", False)
+            else:
+                ev = KeyEvent(key.name, "keydown", True)
                 
             # run all keydown listeners for this key
-            [listener() for listener in self.keydown_listeners.get(key, set())]
+            [listener(ev) for listener in self.keydown_listeners]
             
-        def on_release(key):
-            #print(f"onrelease: key: {key}")
-            # run all keyup listeners for this key
-            [listener() for listener in self.keyup_listeners.get(key, set())]
+        def on_release(key: keyboard.Key | keyboard.KeyCode):
+            
+            ev = ...
+            if isinstance(key, keyboard.KeyCode): # probably character
+                ev = KeyEvent(key.char, "keyup", False)
+            else: # probably special
+                ev = KeyEvent(key.name, "keyup", True)
+            
+            [listener(ev) for listener in self.keyup_listeners.get(key, set())]
                 
         return keyboard.Listener(on_press=on_press, on_release=on_release)
+    
+    def _quit(self):
+        """
+        Quits the app.
+        """
+        cls()
+        print("\x1b[0m", end="")
+        exit()
     
     def add_event_listener(self, type: Literal["keydown", "keyup"], callback: Callable[[KeyEvent], None]):
         """
@@ -129,12 +145,9 @@ class Document:
         """
         
         listener_bank = self.keydown_listeners if type == "keydown" else self.keyup_listeners
+        listener_bank.add(callback)
         
-        if keyname not in listener_bank:
-            listener_bank[keyname] = set()
-        listener_bank[keyname].add(callback)
-        
-    def remove_event_listener(self, keyname: str, type: Literal["keydown", "keyup"], callback: Callable):
+    def remove_event_listener(self, type: Literal["keydown", "keyup"], callback: Callable):
         """
         Removes an event listener for a specific key event. 
         Must pass the exact same function that was added, meaning references must be the same.
@@ -142,13 +155,11 @@ class Document:
         Raises a KeyError if the callback is not found.
         """
         listener_bank = self.keydown_listeners if type == "keydown" else self.keyup_listeners
+        listener_bank.remove(callback)
         
-        listener_bank[keyname].remove(callback)
-        
-    def remove_all_event_listeners(self, keyname: str, type: Literal["keydown", "keyup"]):
+    def remove_all_event_listeners(self, type: Literal["keydown", "keyup"]):
         """
         Removes all event listeners for a specific key event.
         """
         listener_bank = self.keydown_listeners if type == "keydown" else self.keyup_listeners
-        
-        listener_bank[keyname].clear()
+        listener_bank.clear()

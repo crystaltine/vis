@@ -1,6 +1,6 @@
 from abc import abstractmethod
-from typing import TypedDict, Literal, TYPE_CHECKING
-from utils import parseattrs, parse_style_string
+from typing import TypedDict, Literal, TYPE_CHECKING, Unpack
+from utils import parse_class_string, parse_style_string, calculate_style
 
 if TYPE_CHECKING:
     from document import Document
@@ -23,19 +23,19 @@ class KeyEvent:
         the document's handlers.
         """
         self.canceled = True
-
-class ElementAttributes(TypedDict):
-    """
-    A schema of props for creating a generic element.
-    """
-    id: str | None
-    class_str: str | None
-    style_str: str | None
     
 class Element:
     """
     An abstract class representing a generic element in the component tree.
     """
+    
+    class ElementAttributes(TypedDict):
+        """
+        A schema of props for creating a generic element.
+        """
+        id: str | None
+        class_str: str | None
+        style_str: str | None
     
     SUPPORTS_CHILDREN: bool
     """ @static @constant - Whether or not the element supports children. """
@@ -48,8 +48,17 @@ class Element:
     id: str | None
     """ An identifier for the element, which can be used to reference it (using `Document.get_element_by_id`) """
     
-    class_list: list[str]
-    """ A list of classes that the element belongs to. """
+    is_selected: bool = False
+    """ Whether or not the element is currently selected. """
+    
+    style: dict[str, str]
+    """ A dict of the currently active style options for the element, a combination of default, class, and explicit styles. """
+    
+    _class_str: str
+    """ The class string that was last set on the element. Use `class_str` property instead of this. """
+    
+    _style_str: str
+    """ The style string that was last set on the element. Use `style_str` property instead of this. """
     
     client_left: int | None
     """ The absolute x-position of the left of the element on the screen. 
@@ -66,21 +75,41 @@ class Element:
     client_bottom: int | None
     """ 1 + the absolute y-position of the bottom of the element on the screen. 
     0 is still the top edge of the screen. (notice the +1). is `None` if element hasn't been rendered yet. """
-
-    def __init__(self, **attrs) -> None:
+    
+    # class_str, a property
+    @property
+    def class_str(self) -> str:
+        """ A space-separated string of class names that should be applied to the element. """
+        return self._class_str
+    
+    @class_str.setter
+    def class_str(self, value: str) -> None:
+        self._class_str = value
+        self.style = parse_class_string(value) | self.style
         
-        # style dict that merges the default style with the provided style (provided takes precedence)
-        style_dict = self.__class__.DEFAULT_STYLE | parse_style_string(attrs.get("style_str"))
+    @property
+    def style_str(self) -> str:
+        """ Explicit style properties that should be applied to the element. """
+        return self._style_str
+    
+    @style_str.setter
+    def style_str(self, value: str) -> None:
+        self._style_str = value
+        self.style = parse_style_string(value) | self.style
 
-        parseattrs(self, style_dict, self.__class__.DEFAULT_STYLE)
-        
+    def __init__(self, **attrs: Unpack[ElementAttributes]) -> None:
         self.document = globals()["__vis_document__"]
-        self.class_list = (cs := attrs.get("class_str")).split(" ") if cs else []
-        self.id = id
+        self._class_str = attrs.get("class_str", "")
+        self._style_str = attrs.get("style_str", "")
+        self.id = attrs.get("id", None)
+        self.is_selected = False
         self.client_left = None
         self.client_top = None
         self.client_right = None
         self.client_bottom = None
+        
+        # calculate initial style
+        self.style = calculate_style(self.style_str, self.class_str, self.DEFAULT_STYLE)
 
     @abstractmethod
     def render(self, container_left: int, container_top: int, container_right: int, container_bottom: int) -> None:

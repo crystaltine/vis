@@ -1,21 +1,38 @@
-# note - this is meant to be merged.
-# on local state this doesn't match the rest of the code
-# pls merge with home computer
-# NOTE - require Element abc to have SELECTABLE and is_selected
-# also add .selected to `Document`
-# NOTE - check out typing.Unpack! allows specifying kwargs to functions
-
-from common import ElementAttributes, Element
+from common import Element
 from utils import fcode, calculate_dim
-from typing import Literal
+from typing import Literal, TypedDict, Unpack, TYPE_CHECKING
 
-class InputElementAttributes(ElementAttributes):
-    placeholder: str | None
+if TYPE_CHECKING:
+    from common import KeyEvent
     
 class Input(Element):
     
+    class InputElementAttributes(Element.ElementAttributes):
+        """ All special props that can be used for creating an input element. """
+        placeholder: str | None
+        
+    class InputStyleProps(TypedDict):
+        """ A schema of style options for input elements. """
+        position: str
+        visible: bool
+        color: str | tuple 
+        bg_color: str | tuple
+        bold: bool
+        italic: bool
+        underline: bool
+        padding_top: int
+        padding_right: int
+        padding_bottom: int
+        padding_left: int
+        padding: int
+        left: int
+        right: int | None
+        y: int
+        text_align: Literal["left", "center", "right"]
+        selectable: bool
+        
     SUPPORTS_CHILDREN = False
-    DEFAULT_STYLE = {
+    DEFAULT_STYLE: "InputStyleProps" = {
         "position": "relative",
         "visible": True,
         "color": "black",
@@ -33,22 +50,24 @@ class Input(Element):
         "right": None, # calculated from "left" and text length
         "y": 0,
         "text_align": "left",
+        "selectable": True,
     }
     
     """
     Represents text that can be placed inside any element.
     """
-    def __init__(self, attrs: InputElementAttributes):
+    def __init__(self, **attrs: Unpack[InputElementAttributes]):
         
-        super().__init__(attrs)
+        super().__init__(**attrs)
         self.placeholder = attrs.get("placeholder", "")
+        self.cursor_pos = 0
         
         # assert that not both left and right are None
         assert not (self.left is None and self.right is None), "[Text]: At least one of left or right must not be None."
 
-    def __event_handler__(self, key):
-        """ Internal event handler for document keydown events (for typing inside the element) """
-        if not self.selected: return
+        def _event_handler(self, e: "KeyEvent"):
+            """ Internal event handler for document keydown events (for typing inside the element) """
+            if not self.selected: return
 
 
     def render(self, container_left: int, container_top: int, container_right: int, container_bottom: int):

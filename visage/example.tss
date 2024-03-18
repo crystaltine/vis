@@ -1,0 +1,11 @@
+.testclass {
+    "background_color": "red",
+    "left": "20ch",
+    "top": "10ch",
+    "width": "50ch",
+    "height": "50ch",
+}
+
+.class2 {
+    "background_color": "blue",
+}

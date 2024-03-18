@@ -2,9 +2,6 @@ import os
 import json
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from common import StylePropDict
-
 STYLE_CODES = {
     'bold': '\033[1m',
     'italic': '\033[3m',
@@ -186,3 +183,31 @@ def parse_style_string(style_str: str) -> dict[str, str]:
     """
     if style_str is None: return {}
     return json.loads(style_str)
+
+def parse_class_string(class_str: str) -> dict:
+    """
+    Looks for the class names in the global scope and returns a dict of compiled styles.
+    
+    ### Note:
+    Classnames that appear earlier in the string take precedence over those that appear later.
+    """
+    # for each class_str, look for it in globals. if exists, get the associated styledict.
+    # then merge them together with the earliest taking precedence.
+    class_strings = class_str.split(" ")
+    parsed_style = {}
+    
+    for i in range(len(class_strings)-1, -1, -1):
+        # we go in reverse so that the ones in front overwrite the ones in back
+        if class_strings[i] in globals():
+            parsed_style |= globals()["class_styles"][class_strings[i]]
+    
+    return parsed_style
+
+def calculate_style(style_str: str, class_str: str, default_style: dict) -> dict:
+    """
+    Returns a dict of styles that is a merge of the explicitly set style, class styles, and default style.
+    Order of precedence: explicitly set style > class styles > default style.
+    
+    For optimization, this should be used on init of an element, and on every change to its classstr or stylestr.
+    """
+    return default_style | parse_class_string(class_str) | parse_style_string(style_str)
