@@ -36,10 +36,11 @@ class MessageUI:
                 '\n' + write_in_box(line)
             if message_term.inkey() == '\x08':
                 line = line[:-1]
-            if len(line) > 75:
-                line_length = 70
+            if len(line) > 68:
+                line_length = 68
                 wrapped = textwrap.fill(line, line_length)
-                line = wrapped 
+                with message_term.location(31, 19):
+                    line = wrapped 
             write_in_box(line)
 
     
