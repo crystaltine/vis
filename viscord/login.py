@@ -1,4 +1,7 @@
 import blessed
+import json
+import constants
+import hashlib
 
 term = blessed.Terminal()
 
@@ -86,9 +89,29 @@ def update_back(w, h, focused):
     
 
 def check_creds(u, p):
-    # TODO: actually access db to check if username exists or not
-    import random
-    return random.choice([False, True]) # DELETE AFTER DONE
+    data = {
+        "type": "username_check",
+        "data": USER
+    }
+
+    constants.CONNECTION.sendall(json.dumps(data).encode("utf-8"))
+    resp = constants.CONNECTION.recv(1024).decode()
+    if resp == "True":
+        return True
+    
+    data = {
+        "type": "login",
+        "data": {
+            "user": USER,
+            "password": hashlib.sha256(PASSWD.encode("utf-8")).hexdigest()
+        }
+    }
+    constants.CONNECTION.sendall(json.dumps(data).encode("utf-8"))
+    token = constants.CONNECTION.recv(1024).decode()
+    if token == "False":
+        return False
+    else:
+        return token
 
 update_screen(w, h, y)
 
@@ -179,13 +202,13 @@ with term.cbreak():
                         ERROR_MSG = "[Password cannot be blank.]"
                         BAD_PASSWORD = True
                         update_passwd(w, h, False)
-                    elif not check_creds(USER, PASSWD):
+                    elif not (token := check_creds(USER, PASSWD)): # aaaaaand now we've restricted this to py 3.8+ :(
                         ERROR_MSG = "[Invalid credentials]"
                         BAD_PASSWORD = True
                         update_passwd(w, h, False)
                     else:
                         # TODO: remove later
-                        ERROR_MSG = "[Correct credentials, remove later]"
+                        ERROR_MSG = f"[{token}]"
 
                     if ERROR_MSG:
                         print(term.move_yx(h-2, 0) + term.clear_eol + term.move_yx(h-2, int(w/2 - len(ERROR_MSG)/2)) + term.black_on_red + ERROR_MSG + term.normal + "\a")

@@ -64,11 +64,28 @@ def handle_username_check(data, conn):
     else:
         conn.sendall("True".encode("utf-8"))
 
+def handle_login(data, conn):
+    account_data = data["data"]
+    user = account_data["user"]
+    password = account_data["password"]
+
+    send_query = """select 1 from "Discord"."UserInfo" where user_name = %s and user_password = %s"""
+    cur.execute(send_query, (user, password))
+    records = cur.fetchall()
+    if len(records) > 0:
+        token = str(uuid4())
+        tokens[token] = user
+        conn.sendall(token.encode("utf-8"))
+    else:
+        conn.sendall("False".encode("utf-8"))
+
+tokens = {}
 
 handlers = {
     "msg": handle_message,
     "account_create": handle_account_creation,
-    "username_check": handle_username_check
+    "username_check": handle_username_check,
+    "login": handle_login
 
 }
 
