@@ -8,12 +8,13 @@ class Div(Element):
     """
     
     class Attributes(Element.Attributes):
+        id: str | None
+        class_str: str | None
+        style_str: str | None
         children: List["Element"]
     
     class StyleProps(Element.StyleProps):
-        """
-        A schema of style options for divs.
-        """
+        """ A schema of style options for divs. """
         position: str
         visible: bool
         left: str
@@ -28,6 +29,7 @@ class Div(Element):
         padding_left: int
         padding: int
         bg_color: str | tuple
+        hoverable: bool
         selectable: bool
     
     SUPPORTS_CHILDREN = True
@@ -46,6 +48,7 @@ class Div(Element):
         "padding_left": 0,
         "padding": 0,
         "bg_color": (255, 255, 255), # can be hex code, rgb tuple, or 'transparent'
+        "hoverable": False,
         "selectable": False,
     }
 

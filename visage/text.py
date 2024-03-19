@@ -8,6 +8,9 @@ class Text(Element):
     """
     
     class Attributes(Element.Attributes):
+        id: str | None
+        class_str: str | None
+        style_str: str | None
         text: str
     
     class StyleProps(Element.StyleProps):
@@ -27,6 +30,7 @@ class Text(Element):
         right: int | None
         y: int
         text_align: Literal["left", "center", "right"]
+        hoverable: bool
         selectable: bool
     
     SUPPORTS_CHILDREN = False
@@ -42,6 +46,7 @@ class Text(Element):
         "right": None, # calculated from "left" and text length
         "y": 0,
         "text_align": "left",
+        "hoverable": False,
         "selectable": False,
     }
     

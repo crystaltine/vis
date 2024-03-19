@@ -1,6 +1,6 @@
 from element import Element
 from utils import fcode, calculate_dim
-from typing import Literal, TypedDict, Unpack, TYPE_CHECKING
+from typing import Literal, Unpack, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from key_event import KeyEvent
@@ -9,6 +9,9 @@ class Input(Element):
     
     class Attributes(Element.Attributes):
         """ All special props that can be used for creating an input element. """
+        id: str | None
+        class_str: str | None
+        style_str: str | None
         placeholder: str | None
         
     class StyleProps(Element.StyleProps):
@@ -30,6 +33,7 @@ class Input(Element):
         right: int | None
         y: int
         text_align: Literal["left", "center", "right"]
+        hoverable: bool
         selectable: bool
         
     SUPPORTS_CHILDREN = False
@@ -51,13 +55,14 @@ class Input(Element):
         "right": None, # calculated from "left" and text length
         "y": 0,
         "text_align": "left",
+        "hoverable": True,
         "selectable": True,
     }
     
     """
     Represents text that can be placed inside any element.
     """
-    def __init__(self, **attrs: Unpack[InputElementAttributes]):
+    def __init__(self, **attrs: Unpack["Attributes"]):
         
         super().__init__(**attrs)
 
@@ -81,11 +86,20 @@ class Input(Element):
                 # TODO - create enum or some way to check special keys
 
                 if e.key == 'backspace':
-                    if not self.curr_text: return
-                        self.curr_text = 
+                    # assertion: cursor_pos in [0, len(curr text)]
+                    # thus, we need to clip cursor_pos-1 to 0
+                    self.curr_text = self.curr_text[:max(0,self.cursor_pos-1)]+self.curr_text[self.cursor_pos:]
                     
                 elif e.key == 'del':
-                    if not self.curr_text: return
+                    # assertion: cursor_pos in [0, len(curr text)]
+                    # thus, we need to clip cursor_pos+1 to len(curr text)
+                    self.curr_text = self.curr_text[:self.cursor_pos]+self.curr_text[min(len(self.curr_text),self.cursor_pos+1):]
+
+                elif e.key == 'left':
+                    self.cursor_pos = max(0, self.cursor_pos - 1)
+                
+                elif e.key == 'right':
+                    self.cursor_pos = min(len(self.curr_text), self.cursor_pos + 1)
 
                 elif e.key == 'enter':
                     # deselect everything
@@ -96,7 +110,6 @@ class Input(Element):
                 elif e.key == 'tab':
                     # deselect BUT go to next element
                     pass
-                
 
         # register this element's event handler with the document's special handlers
         self.document.element_keydown_listeners[self] = set([_event_handler])
@@ -110,7 +123,7 @@ class Input(Element):
         container_top = container_top if self.style.position == "relative" else 0
         container_right = container_right if self.style.position == "relative" else self.document.term.width
         container_bottom = container_bottom if self.style.position == "relative" else self.document.term.height
-        
+
         container_width = container_right - container_left
         container_height = container_bottom - container_top
         

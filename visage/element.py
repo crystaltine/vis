@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Dict, TypedDict, TYPE_CHECKING, Unpack
+from typing import Tuple, Dict, Literal, TypedDict, TYPE_CHECKING, Unpack
 from utils import parse_class_string, parse_style_string, calculate_style
 
 if TYPE_CHECKING:
@@ -12,12 +12,9 @@ class Element:
     
     class Attributes(TypedDict):
         """
-        A base schema of props for creating a generic element.
-        Most elements will have additional props.
+        All props that can be provided when creating an element.
         """
-        id: str | None
-        class_str: str | None
-        style_str: str | None
+        ...
 
     class StyleProps(TypedDict):
         """ Generic, abstract subclass defining ALL supported style options for the element """
@@ -97,7 +94,10 @@ class Element:
         
         # calculate initial style
         self.style = calculate_style(self.style_str, self.class_str, self.DEFAULT_STYLE)
-        self.style: self.__class__.StyleProps # typecast for convenience
+        self.style: self.__class__.StyleProps # typecast for convenience <- doesnt seem to work for some reason lol
+
+        if getattr(self.style, "selectable", 0):
+            self.document.selectable_elements.add(self)
 
     @abstractmethod
     def render(self, container_left: int, container_top: int, container_right: int, container_bottom: int) -> None:
@@ -105,3 +105,21 @@ class Element:
         Renders the element to its container at the specified position, 
         given the positions of the container. Applies the most recently updated style. """
         ...
+
+    def get_center(self, format: Literal["xy", "yx"] = "xy") -> Tuple[int, int]:
+        """
+        Returns a tuple of integer coordinates for the CENTER of the element (rounded up if odd)
+        
+        By default, returns in the format `(x, y)`, where 
+        `x` is horizontal distance (characters from left of screen, with leftmost col being x=0)
+        and `y` is vertical distance (characters from top of screen, with first row being y=0)
+
+        Specify format as either `xy` or `yx`. Default `xy`. If something is provided but it isn't
+        either one of those two, returns the default, `(x, y)`.
+        """
+
+        x = round((self.client_left + self.client_right)/2)
+        y = round((self.client_top + self.client_bottom)/2)
+
+        return y,x if format == 'yx' else x,y
+

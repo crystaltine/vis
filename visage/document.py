@@ -22,7 +22,7 @@ class Document:
     A wrapper over a `blessed.Terminal` object. Represents the root of the component tree, 
     basically just one giant HTML-like div containing all the elements on the screen.
     """
-    def __init__(self, style: DocumentStyleProps = {}, children: List["Element"] = [], quit_keys: List[keyboard.Key] = [keyboard.Key.esc]):
+    def __init__(self, style: DocumentStyleProps = {}, children: List["Element"] = [], quit_keys: List[str] = ["esc"]):
         """
         `style`: See `DocumentStyle`. If a value is not provided, it will be set to the default.
         `children`: A list of elements to be rendered in the document.
@@ -37,8 +37,17 @@ class Document:
         
         self.quit_keys = quit_keys
 
-        self.selected: "Element" = None
-        """ The currently selected element. There can only be one at a time. """
+        self.hoverable_elements: Set["Element"] = set()
+        """ Stores a set of pointers to elements that are HOVERABLE. """
+        self.selectable_elements: Set["Element"] = set()
+        """ Stores a set of pointers to elements that are SELECTABLE. """
+
+        self.hovered: "Element" | None = None
+        """ The currently hovered element. There can only be one at a time. """
+        self.selected: "Element" | None = None
+        """ The currently selected element. There can only be one at a time. 
+        Also, unless we want to add a way for users to navigate the component tree
+         while still having a selected element, this should equal `self.hoverable` if not None. """
         
         self.keyup_listeners: Set[Callable[[KeyEvent], Any]] = set()
         """ set of all KEYUP event callbacks. """
@@ -57,7 +66,7 @@ class Document:
         self.client_right = self.term.width
         self.client_bottom = self.term.height
         
-    def mount(self):
+    def mount(self) -> None:
         """
         Mounts the document, renders all children, begins the app loop.
         """
@@ -69,7 +78,7 @@ class Document:
             self.listener_thread = self._get_key_listener()
             self.listener_thread.start()
             
-    def render(self):
+    def render(self) -> None:
         """
         Renders all children.
         """
@@ -77,7 +86,7 @@ class Document:
         for child in self.children:
             child.render(self.client_left, self.client_top, self.client_right, self.client_bottom)
             
-    def add_child(self, child: "Element", index: int = None):
+    def add_child(self, child: "Element", index: int = None) -> None:
         """
         Adds a child div at the specified index, which means where on the component tree it will be placed.
         If index is None, it will be added to the end of the list of children.
@@ -100,16 +109,30 @@ class Document:
         """
         return self.id_map.get(id, None)
 
-    def _get_key_listener(self):
+    def _get_key_listener(self) -> keyboard.Listener:
         """
         Returns a `Listener` thread for key presses. Run .start() on the returned object to start listening.
         """
+
+        def _builtin_keyup_handler(ev: "KeyEvent"):
+            """
+            General functions built-in to the document, 
+            such as exiting the program when quit keys are pressed,
+            or selecting elements when arrow keys or tab is pressed.
+            """
+            if ev.key in self.quit_keys: self._quit()
+
+            # select elements if tab, or arrow keys are pressed.
+            # if the currently selected element has its own arrow-key/tab functionality,
+            # then the event SHOULD be canceled by now and this shouldnt run.
+            
+            # but if here, we should find the next element to hover.
+            get_next_hoverable(self.hoverable_elements, self.hovered, ev.key)
+
         def on_press(key: keyboard.Key | keyboard.KeyCode):
-            if key in self.quit_keys: self._quit()
 
             # if key is KeyCode, then it was probably a character key
             # if Key, then it was probably a special key
-            
             ev = ...
             if isinstance(key, keyboard.KeyCode):
                 ev = KeyEvent(key.char, "keydown", False)
@@ -117,7 +140,13 @@ class Document:
                 ev = KeyEvent(key.name, "keydown", True)
                 
             # run all keydown listeners for this key
-            [listener(ev) for listener in self.keydown_listeners]
+            for listener in self.keyup_listeners:
+                if ev.canceled: return
+                listener(ev)
+
+            # if ev was canceled, we would have returned already
+            # run general document event handler last
+
             
         def on_release(key: keyboard.Key | keyboard.KeyCode):
             
@@ -127,7 +156,12 @@ class Document:
             else: # probably special
                 ev = KeyEvent(key.name, "keyup", True)
             
-            [listener(ev) for listener in self.keyup_listeners.get(key, set())]
+            for listener in self.keyup_listeners:
+                if ev.canceled: return
+                listener(ev)
+
+            # if ev was canceled, we would have returned already
+            # run general document event handler last
                 
         return keyboard.Listener(on_press=on_press, on_release=on_release)
     
