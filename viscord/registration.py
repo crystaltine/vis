@@ -292,7 +292,7 @@ with term.cbreak():
                         import registered
                         registered.show(USER)
                         clear()
-                        exit() # TODO: link up to main ui
+                        break
 
         
                         
