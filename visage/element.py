@@ -1,45 +1,31 @@
 from abc import abstractmethod
-from typing import TypedDict, Literal, TYPE_CHECKING, Unpack
+from typing import Dict, TypedDict, TYPE_CHECKING, Unpack
 from utils import parse_class_string, parse_style_string, calculate_style
 
 if TYPE_CHECKING:
     from document import Document
-
-class KeyEvent:
-    """ Represents a keyboard event that should be used as params in event handlers. """
-    def __init__(self, key: str, state: Literal["keydown", "keyup"], is_special: bool):
-        self.key = key
-        self.state = state
-        self.is_special = is_special
-        self.canceled = False
-        
-    def cancel(self) -> None:
-        """
-        Stop the propogation of the event. This is only reliable
-        if being called inside an element's event handlers, since document
-        event handlers are "unordered" sets.
-
-        Note that the selected element's event handlers are run before
-        the document's handlers.
-        """
-        self.canceled = True
     
 class Element:
     """
     An abstract class representing a generic element in the component tree.
     """
     
-    class ElementAttributes(TypedDict):
+    class Attributes(TypedDict):
         """
-        A schema of props for creating a generic element.
+        A base schema of props for creating a generic element.
+        Most elements will have additional props.
         """
         id: str | None
         class_str: str | None
         style_str: str | None
+
+    class StyleProps(TypedDict):
+        """ Generic, abstract subclass defining ALL supported style options for the element """
+        ...
     
     SUPPORTS_CHILDREN: bool
     """ @static @constant - Whether or not the element supports children. """
-    DEFAULT_STYLE: dict[str, str]
+    DEFAULT_STYLE: Dict[str, str]
     """ @static @constant - The default style options for all instances of the element. """
     
     document: "Document"
@@ -51,8 +37,9 @@ class Element:
     is_selected: bool = False
     """ Whether or not the element is currently selected. """
     
-    style: dict[str, str]
-    """ A dict of the currently active style options for the element, a combination of default, class, and explicit styles. """
+    style: Dict[str, str]
+    """ A dict of the currently active style options for the element, a combination of default, class, and explicit styles. 
+    Should be up-to-date with any dynamic styling. """
     
     _class_str: str
     """ The class string that was last set on the element. Use `class_str` property instead of this. """
@@ -97,7 +84,7 @@ class Element:
         self._style_str = value
         self.style = parse_style_string(value) | self.style
 
-    def __init__(self, **attrs: Unpack[ElementAttributes]) -> None:
+    def __init__(self, **attrs: Unpack["Attributes"]) -> None:
         self.document = globals()["__vis_document__"]
         self._class_str = attrs.get("class_str", "")
         self._style_str = attrs.get("style_str", "")
@@ -110,8 +97,11 @@ class Element:
         
         # calculate initial style
         self.style = calculate_style(self.style_str, self.class_str, self.DEFAULT_STYLE)
+        self.style: self.__class__.StyleProps # typecast for convenience
 
     @abstractmethod
     def render(self, container_left: int, container_top: int, container_right: int, container_bottom: int) -> None:
-        """ Renders the element to its container at the specified position, given the positions of the container. """
+        """ 
+        Renders the element to its container at the specified position, 
+        given the positions of the container. Applies the most recently updated style. """
         ...

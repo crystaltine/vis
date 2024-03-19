@@ -1,10 +1,11 @@
-from common import StylePropDict, parseattrs, cls
+from element import StylePropDict, parseattrs, cls
 from blessed import Terminal
 from typing import List, Dict, Set, Any, Callable, Literal, TYPE_CHECKING
 from pynput import keyboard
+from key_event import KeyEvent
 
 if TYPE_CHECKING:
-    from common import Element, KeyEvent
+    from element import Element
 
 class DocumentStyleProps(StylePropDict):
     """

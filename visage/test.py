@@ -1,4 +1,5 @@
 from pynput import keyboard
+from time import sleep
 import blessed
 
 term = blessed.Terminal()
@@ -27,7 +28,11 @@ def on_release(key):
 #        on_release=on_release) as listener:
 #    listener.join()
 
+for i in range(5, term.height-5):
+    with term.location(10, i):
+        print(f"\033[48;2;63;129;189m" + " "*(term.width-20), end="")
+        
 with term.location(20, 20):
     a = input("\033[38;2;255;255;0m\033[48;2;144;144;144m")
 
-print(a)
+print(a + " < u typed this")

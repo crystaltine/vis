@@ -1,4 +1,4 @@
-from common import Element
+from element import Element
 from utils import fcode, calculate_dim
 from typing import List, Unpack, TypedDict
 
@@ -7,10 +7,10 @@ class Div(Element):
     A general div class with customizable styling options.
     """
     
-    class DivElementAttributes(Element.ElementAttributes):
+    class Attributes(Element.Attributes):
         children: List["Element"]
     
-    class DivStyleProps(TypedDict):
+    class StyleProps(Element.StyleProps):
         """
         A schema of style options for divs.
         """
@@ -31,7 +31,7 @@ class Div(Element):
         selectable: bool
     
     SUPPORTS_CHILDREN = True
-    DEFAULT_STYLE: "DivStyleProps" = {
+    DEFAULT_STYLE: "Div.StyleProps" = {
         "position": "relative",
         "visible": True,
         "left": "0%",
@@ -49,8 +49,8 @@ class Div(Element):
         "selectable": False,
     }
 
-    def __init__(self, **attrs: Unpack[DivElementAttributes]):
-        """ Keyword arguments: see `DivElementAttributes`.
+    def __init__(self, **attrs: Unpack["Attributes"]):
+        """ Keyword arguments: see `Div.Attributes`.
         Note: For style options that conflict, such as "top"/"bottom" and "height", the ones listed higher
         in the default dict above take precedence. Specifically, for dimensions/positioning, here are the rules:
         
@@ -70,45 +70,42 @@ class Div(Element):
         super().__init__(**attrs) # should ignore any unknown attributes that are provided
         
         # assert that ONE of left/right and ONE of top/bottom is provided
-        assert (self.left is not None or self.right is not None), "[Div]: At least one of left or right must not be None."
-        assert (self.top is not None or self.bottom is not None), "[Div]: At least one of top or bottom must not be None."
+        assert (self.style.left is not None or self.style.right is not None), "[Div]: At least one of left or right must not be None."
+        assert (self.style.top is not None or self.style.bottom is not None), "[Div]: At least one of top or bottom must not be None."
         
         self.children: List["Element"] = attrs.get("children", [])
-        self._bg_fcode = fcode(background=self.bg_color) if self.bg_color != "transparent" else None
+        self._bg_fcode = fcode(background=self.style.bg_color) if self.style.bg_color != "transparent" else None
         #Logger.log(f"{self}'s children on init: {self.children}")
     
     def render(self, container_left: int, container_top: int, container_right: int, container_bottom: int):
-        """
-        Draws the rectangle to the container based on current container size
-        """
-        
+
         #Logger.log(f"{self}'s children on render: {self.children}")
         
-        container_left = container_left if self.position == "relative" else 0
-        container_top = container_top if self.position == "relative" else 0
-        container_right = container_right if self.position == "relative" else self.document.term.width
-        container_bottom = container_bottom if self.position == "relative" else self.document.term.height
+        container_left = container_left if self.style.position == "relative" else 0
+        container_top = container_top if self.style.position == "relative" else 0
+        container_right = container_right if self.style.position == "relative" else self.document.term.width
+        container_bottom = container_bottom if self.style.position == "relative" else self.document.term.height
         
         container_width = container_right - container_left
         container_height = container_bottom - container_top
         
-        self.client_top = container_top + (calculate_dim(container_height, self.top) if self.top 
-            else calculate_dim(container_height, self.bottom) - calculate_dim(container_height, self.height))
+        self.client_top = container_top + (calculate_dim(container_height, self.style.top) if self.style.top 
+            else calculate_dim(container_height, self.style.bottom) - calculate_dim(container_height, self.height))
         
-        self.client_bottom = container_top + (calculate_dim(container_height, self.bottom) if self.bottom
-            else calculate_dim(container_height, self.top) + calculate_dim(container_height, self.height))
+        self.client_bottom = container_top + (calculate_dim(container_height, self.style.bottom) if self.style.bottom
+            else calculate_dim(container_height, self.style.top) + calculate_dim(container_height, self.height))
         
         self.client_height = self.client_bottom - self.client_top
         
-        self.client_left = container_left + (calculate_dim(container_width, self.left) if self.left
-            else calculate_dim(container_width, self.right) - calculate_dim(container_width, self.width))
+        self.client_left = container_left + (calculate_dim(container_width, self.style.left) if self.style.left
+            else calculate_dim(container_width, self.style.right) - calculate_dim(container_width, self.width))
         
-        self.client_right = container_left + (calculate_dim(container_width, self.right) if self.right
-            else calculate_dim(container_width, self.left) + calculate_dim(container_width, self.width))
+        self.client_right = container_left + (calculate_dim(container_width, self.style.right) if self.style.right
+            else calculate_dim(container_width, self.style.left) + calculate_dim(container_width, self.width))
         
         self.client_width = self.client_right - self.client_left
         
-        if not self.visible: return
+        if not self.style.visible: return
         
         # draw the rectangle IF it is not transparent.
         if self._bg_fcode:
@@ -119,13 +116,13 @@ class Div(Element):
         # render children
         for child in self.children:
             
-            if self is child: continue
+            if self is child: continue # ??? - for some reason using this func adds a self pointer to its own children. try fixing later
             
             child.render(
-                self.client_left + self.padding_left or self.padding or 0,
-                self.client_top + self.padding_top or self.padding or 0,
-                self.client_right - self.padding_right or self.padding or 0,
-                self.client_bottom - self.padding_bottom or self.padding or 0
+                self.client_left + self.style.padding_left or self.style.padding or 0,
+                self.client_top + self.style.padding_top or self.style.padding or 0,
+                self.client_right - self.style.padding_right or self.style.padding or 0,
+                self.client_bottom - self.style.padding_bottom or self.style.padding or 0
             )
              
     def add_child(self, child: "Element", index: int = None):

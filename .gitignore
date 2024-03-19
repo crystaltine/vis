@@ -1,2 +1,4 @@
 gd/logs
 idek/logs
+visage/__pycache__
+**/test.py

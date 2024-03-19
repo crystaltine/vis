@@ -7,14 +7,16 @@ from typing import List, Dict, TYPE_CHECKING
 from document import Document
 from div import Div
 from text import Text
+from input import Input
 
 if TYPE_CHECKING:
-    from common import Element
+    from element import Element
     from document import Document
 
 TAG_TO_ELEMENT: Dict[str, "Element"] = {
     "div": Div,
     "text": Text,
+    "input": Input
 }
 
 class VisInterpreterError(Exception):
