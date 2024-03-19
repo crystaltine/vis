@@ -5,6 +5,7 @@ message_term = blessed.Terminal()
 print(message_term.clear)
 class MessageUI:
     #Terminal Height and Width 
+    z = None 
     y = message_term.height 
     x = message_term.width 
     #Draw Box Function 
