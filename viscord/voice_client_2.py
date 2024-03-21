@@ -42,7 +42,15 @@ output_stream = audio.open(format=FORMAT,
 input_volume = 200 # range from 0 to 200
 output_volume = 100
 
-
+import time
+def ping_thread():
+    while True:
+        x = time.time()
+        outgoing_socket.sendall(json.dumps({"type": "ping"}).encode("utf-8"))
+        incoming_socket.sendall(json.dumps({"type": "ping"}).encode("utf-8"))
+        outgoing_socket.recv(2048)
+        incoming_socket.recv(2048)
+        print(time.time() - x * 1000)
 
 def outgoing_thread():
     global input_stream
