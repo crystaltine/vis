@@ -12,6 +12,7 @@ import datetime
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind(("0.0.0.0", 5000))
+s.setblocking(False)
 
 print("Server up!")
 print("Running on " + str(s.getsockname()[0]) + ":" + str(s.getsockname()[1]))

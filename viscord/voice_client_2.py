@@ -18,11 +18,13 @@ outgoing_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 outgoing_socket.connect(("trigtbh.dev", 5000))
 outgoing_socket.sendall(json.dumps({"type": "outgoing-voice", "channel_id": "test"}).encode("utf-8"))
 outgoing_socket.recv(2048)
+outgoing_socket.setblocking(False)
 
 incoming_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 incoming_socket.connect(("trigtbh.dev", 5000))
 incoming_socket.sendall(json.dumps({"type": "incoming-voice", "channel_id": "test"}).encode("utf-8"))
 incoming_socket.recv(2048)
+incoming_socket.setblocking(False)
 
 print("Outgoing, incoming up!")
 
@@ -37,17 +39,45 @@ output_stream = audio.open(format=FORMAT,
                     rate=RATE,
                     output=True)
 
+input_volume = 200 # range from 0 to 200
+output_volume = 100
+
+dbfs_threshold = -50
+
+import time
+def send_data(data):
+    time.sleep(0.1)
+    outgoing_socket.sendall(data)
+
 def outgoing_thread():
+    clength = 0
     while True:
         data = input_stream.read(CHUNK)
         restructured = pydub.AudioSegment(data, sample_width=2, channels=1, frame_rate=RATE)
+        #
         if data:
-            outgoing_socket.sendall(restructured.raw_data)
-    
+            if restructured.dBFS > dbfs_threshold:
+                clength += 1
+                print(restructured.dBFS)
+                restructured = restructured.apply_gain(pydub.utils.ratio_to_db(input_volume / 100))
+                threading.Thread(target=send_data, args=(restructured.raw_data,)).start()
+            else:
+                if clength > 0:
+                    print("clength:", clength)
+                clength = 0
+
 def incoming_thread():
+    rlength = 0
     while True:
-        data = incoming_socket.recv(2048)
+        try:
+            data = incoming_socket.recv(CHUNK)
+        except BlockingIOError:
+            if rlength > 0:
+                print("rlength:", rlength)
+            rlength = 0
+            continue
         if data:
+            rlength += 1
             output_stream.write(data)
 
 import threading
