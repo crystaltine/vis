@@ -18,3 +18,7 @@ class KeyEvent:
         the document's handlers.
         """
         self.canceled = True
+
+    def __str__(self) -> str:
+        """ Returns a human readable string representation of the event. """
+        return f"KeyEvent('{self.key}',{self.state},special={self.is_special},canceled={self.canceled}"

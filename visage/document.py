@@ -2,7 +2,7 @@ from element import StylePropDict, parseattrs, cls
 from blessed import Terminal
 from typing import List, Dict, Set, Any, Callable, Literal, TYPE_CHECKING
 from pynput import keyboard
-from key_event import KeyEvent
+from key_event import KeyEvent, Key
 
 if TYPE_CHECKING:
     from element import Element
@@ -129,15 +129,17 @@ class Document:
             # but if here, we should find the next element to hover.
             get_next_hoverable(self.hoverable_elements, self.hovered, ev.key)
 
-        def on_press(key: keyboard.Key | keyboard.KeyCode):
+        def on_press(_key: keyboard.Key | keyboard.KeyCode):
 
             # if key is KeyCode, then it was probably a character key
             # if Key, then it was probably a special key
             ev = ...
-            if isinstance(key, keyboard.KeyCode):
-                ev = KeyEvent(key.char, "keydown", False)
+            if isinstance(_key, keyboard.KeyCode):
+                ev = KeyEvent(_key.char, "keydown", False)
             else:
-                ev = KeyEvent(key.name, "keydown", True)
+                # handle space - its treated as special due to smth
+                if ev.name == Key.space:ev = KeyEvent(" ", "keydown, False")
+                else: ev = KeyEvent(_key.name, "keydown", True)
                 
             # run all keydown listeners for this key
             for listener in self.keyup_listeners:
@@ -154,7 +156,8 @@ class Document:
             if isinstance(key, keyboard.KeyCode): # probably character
                 ev = KeyEvent(key.char, "keyup", False)
             else: # probably special
-                ev = KeyEvent(key.name, "keyup", True)
+                # handle space - its treated as special due to 
+                if ev.name == Key.space:ev = KeyEvent(" ", "keydown, False")
             
             for listener in self.keyup_listeners:
                 if ev.canceled: return
