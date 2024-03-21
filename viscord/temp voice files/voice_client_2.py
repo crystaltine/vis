@@ -18,13 +18,13 @@ outgoing_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 outgoing_socket.connect(("trigtbh.dev", 5000))
 outgoing_socket.sendall(json.dumps({"type": "outgoing-voice", "channel_id": "test"}).encode("utf-8"))
 outgoing_socket.recv(2048)
-
+print("Outgoing up!")
 incoming_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 incoming_socket.connect(("trigtbh.dev", 5000))
 incoming_socket.sendall(json.dumps({"type": "incoming-voice", "channel_id": "test"}).encode("utf-8"))
 incoming_socket.recv(2048)
 
-print("Outgoing, incoming up!")
+print("Incoming up!")
 
 global input_stream, output_stream
 
@@ -110,6 +110,6 @@ def incoming_thread():
                     continue
 
 import threading
-#threading.Thread(target=outgoing_thread).start()
+threading.Thread(target=outgoing_thread).start()
 threading.Thread(target=incoming_thread).start()
 threading.Thread(target=q_to_quit).start()

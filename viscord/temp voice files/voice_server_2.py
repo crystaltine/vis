@@ -6,7 +6,8 @@ from uuid import uuid4
 import random
 import datetime
 
-
+import numpy as np
+import time
  
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,24 +23,61 @@ connections = {}
 incoming_connections = {}
 outgoing_connections = {}
 
+data_queues = {}
+
+import queue
+
 no_voice_echo = False
+
+def rebroadcast_voice():
+    while True:
+        for conn, addr in data_queues:
+            target = time.time()
+            data = data_queues[(conn, addr)]
+            if len(data) == 0:
+                continue
+            if len(data) == 1:
+                conn.sendall(data[0])
+                data_queues[(conn, addr)] = []
+            else:
+                a = data[0]
+                b = data[1]
+                addition = np.frombuffer(b[0], dtype=np.int16)
+                addition = np.pad(addition, (0, 1024 - len(addition)))
+                full_data = np.frombuffer(a[0], dtype=np.int16)
+                full_data = np.pad(full_data, (0, 1024 - len(full_data)))
+                full_data += addition
+
+                i = 2
+                while i < len(data) and data[i][1] < target:
+                    addition = np.frombuffer(data[i][0], dtype=np.int16)
+                    addition = np.pad(addition, (0, 1024 - len(addition)))
+                    full_data += addition
+                    i += 1
+                full_data = full_data.astype(np.int16).tobytes()
+                conn.sendall(full_data)
+                data_queues[(conn, addr)] = []
+                
 
 def handle_voice(conn, addr, data):
     channel_id = incoming_connections.get(addr)
     if channel_id:
         for conn2, addr2 in outgoing_connections[channel_id]:
-            if not no_voice_echo or (addr2 != addr[0]):
-                conn2.sendall(data)
+            if (no_voice_echo and addr[0] != addr2) or not no_voice_echo:
+                data_queues[(conn2, addr2)].append((data, time.time()))
 
-def handle_outgoing_voice(conn, addr, data):
+def handle_outgoing_voice(conn, addr, data): # outgoing FROM THE CLIENT PERSPECTIVE
     if conn not in incoming_connections:
         incoming_connections[addr] = data["channel_id"]
     if data["channel_id"] not in outgoing_connections:
-        outgoing_connections[data["channel_id"]] = set()
+        outgoing_connections[data["channel_id"]] = set() 
+    
+    
     conn.sendall(b"OK")
         
-def handle_incoming_voice(conn, addr, data):
+def handle_incoming_voice(conn, addr, data): # incoming FROM THE CLIENT PERSPECTIVE
     outgoing_connections[data["channel_id"]].add((conn, addr[0]))
+    data_queues[(conn, addr[0])] = []
     conn.sendall(b"OK")
 
 handlers = {
@@ -76,6 +114,7 @@ def handle_connection(conn, addr):
                         handlers[label](conn, addr, parsed)
                         break
 
+threading.Thread(target=rebroadcast_voice).start()
 
 while True:
     s.listen()
