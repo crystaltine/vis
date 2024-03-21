@@ -26,6 +26,8 @@ incoming_socket.recv(2048)
 
 print("Outgoing, incoming up!")
 
+global input_stream, output_stream
+
 input_stream = audio.open(format=FORMAT,
                     channels=CHANNELS,
                     rate=RATE,
@@ -46,8 +48,21 @@ def send_data(data):
     outgoing_socket.sendall(data)
 
 def outgoing_thread():
+    global input_stream
     while True:
-        data = input_stream.read(CHUNK)
+        try:
+            data = input_stream.read(CHUNK)
+        except OSError as e:
+            try:
+                input_stream = audio.open(format=FORMAT,
+                    channels=CHANNELS,
+                    rate=RATE,
+                    input=True,
+                    frames_per_buffer=CHUNK)
+            except:
+                raise e
+            else:
+                continue
         restructured = pydub.AudioSegment(data, sample_width=2, channels=1, frame_rate=RATE)
 
         if data:
@@ -56,13 +71,25 @@ def outgoing_thread():
             
 
 def incoming_thread():
+    global output_stream
     while True:
         try:
             data = incoming_socket.recv(CHUNK)
         except BlockingIOError:
             continue
         if data:
-            output_stream.write(data)
+            try:
+                output_stream.write(data)
+            except OSError as e:
+                try:
+                    output_stream = audio.open(format=FORMAT,
+                        channels=CHANNELS,
+                        rate=RATE,
+                        output=True)
+                except:
+                    raise e
+                else:
+                    continue
 
 import threading
 threading.Thread(target=outgoing_thread).start()
