@@ -42,10 +42,7 @@ output_stream = audio.open(format=FORMAT,
 input_volume = 200 # range from 0 to 200
 output_volume = 100
 
-import time
-def send_data(data):
-    time.sleep(3)
-    outgoing_socket.sendall(data)
+
 
 def outgoing_thread():
     global input_stream

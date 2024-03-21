@@ -22,7 +22,7 @@ connections = {}
 incoming_connections = {}
 outgoing_connections = {}
 
-no_voice_echo = True
+no_voice_echo = False
 
 def handle_voice(conn, addr, data):
     channel_id = incoming_connections.get(addr)
@@ -58,7 +58,13 @@ def handle_connection(conn, addr):
         else:
             if not data:
                 print("Disconnect:", addr)
-                del connections[conn]
+                if conn in connections:
+                    del connections[conn]
+                channel = incoming_connections.get(addr)
+                if channel:
+                    del incoming_connections[addr]
+                    outgoing_connections[channel] = set(filter(lambda x: x[1] != addr[0], outgoing_connections[channel]))
+                conn.close()
                 return
             try:
                 parsed = json.loads(data.decode("utf-8"))
