@@ -3,5 +3,6 @@
     <text class_str="text2" text="rendering underneath fsdfaldkfhkljdfl"></>
     <div class_str="child_div">
         <text class_str="child_text" text="some stuff"></>
+        <input class_str="testinput" placeholder="enter password..."></>
     </>
 </>

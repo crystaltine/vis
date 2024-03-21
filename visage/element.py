@@ -87,10 +87,14 @@ class Element:
         
         self.id = attrs.get("id", None)
         self.is_selected = False
+        self.is_hovered = False
+
         self.client_left = None
         self.client_top = None
         self.client_right = None
         self.client_bottom = None
+
+        self.last_remembered_container = []
         
         # calculate initial style
         self.style = calculate_style(self.style_str, self.class_str, self.DEFAULT_STYLE)

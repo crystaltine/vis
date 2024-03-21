@@ -1,8 +1,7 @@
-from typing import Literal, TYPE_CHECKING
-if TYPE_CHECKING:
-    from pynput.keyboard import Key, KeyCode
+from typing import Literal
+from pynput.keyboard import Key, KeyCode
 
-type SpecialKey = Literal[
+SpecialKey = Literal[
     'space', 'tab',
     'ctrl', 'ctrl_l', 'ctrl_r', 
     'alt', 'alt_l', 'alt_r', 'alt_gr',
@@ -97,7 +96,7 @@ class KeyEvent:
         Does nothing besides updating this class's fields. If no states were changed, does absolutely nothing.
         """
         
-        if isinstance(key_event, "KeyCode"): return # these are non-special keys
+        if isinstance(key_event, KeyCode): return # these are non-special keys
         
         set_things_to = state == "keydown" # True if keydown, False if keyup
         
@@ -119,11 +118,11 @@ class KeyEvent:
         Creates a KeyEvent from a pynput key event.
         """
         ev = ...
-        if isinstance(key_event, "KeyCode"):
+        if isinstance(key_event, KeyCode):
             ev = KeyEvent(key_event.char, "keydown", False)
         else: # should be Key object
             # handle space - its treated as special due to smth
-            if key_event.name == Key.space: ev = KeyEvent(" ", "keydown", False)
+            if key_event.name == "space": ev = KeyEvent(" ", "keydown", False)
             else: ev = KeyEvent(key_event.name, "keydown", True)
         
         # set a snapshot of the current state of the modifier keys

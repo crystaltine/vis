@@ -2,11 +2,15 @@ from element import Element
 from utils import fcode, calculate_dim
 from typing import Literal, Unpack, TYPE_CHECKING
 from globalvars import Globals
+from logger import Logger
 
 if TYPE_CHECKING:
     from key_event import KeyEvent
     
 class Input(Element):
+    """
+    An editable text field
+    """
     
     class Attributes(Element.Attributes):
         """ All special props that can be used for creating an input element. """
@@ -24,6 +28,8 @@ class Input(Element):
         color: str | tuple 
         placeholder_color: str | tuple
         bg_color: str | tuple
+        hovered_bg_color: str | tuple
+        selected_bg_color: str | tuple
         bold: bool
         italic: bool
         underline: bool
@@ -34,18 +40,21 @@ class Input(Element):
         padding: int
         left: int
         right: int | None
+        width: int
         y: int
         text_align: Literal["left", "center", "right"]
         hoverable: bool
         selectable: bool
         
     SUPPORTS_CHILDREN = False
-    DEFAULT_STYLE: "Input.StyleProps" = {
+    DEFAULT_STYLE: "StyleProps" = {
         "position": "relative",
         "visible": True,
         "color": "black",
         "placeholder_color": "gray",
         "bg_color": "white",
+        "hovered_bg_color": (230, 230, 230),
+        "selected_bg_color": (190, 190, 210),
         "bold": False,
         "italic": False,
         "underline": False,
@@ -55,16 +64,14 @@ class Input(Element):
         "padding_left": 0,
         "padding": 0,
         "left": 0,
-        "right": None, # calculated from "left" and text length
+        "right": None,
+        "width": 10,
         "y": 0,
         "text_align": "left",
         "hoverable": True,
         "selectable": True,
     }
     
-    """
-    Represents text that can be placed inside any element.
-    """
     def __init__(self, **attrs: Unpack["Attributes"]):
         
         super().__init__(**attrs)
@@ -73,28 +80,33 @@ class Input(Element):
         self.max_len = attrs.get("max_len", None)
         self.curr_text = ""
         self.cursor_pos = 0
+
+        self.text_left_index = 0
+        """ Represents the index of the leftmost character to render, in case of overflow """
         
         # assert that not both left and right are None
         assert not (self.style.get("left") is None and self.style.get("right") is None), "[Text]: At least one of left or right must not be None."
 
         def _event_handler(e: "KeyEvent"):
             """ Internal event handler for document keydown events (for typing inside the element) """
-            if not self.selected: return
+            if not self.is_selected: return
 
             # else, handle key.
             if not e.is_special:
                 # add to curr_text if just regular char
-                
+                Logger.log(f"Input: non-special key '{e.key}': curr text is now {self.curr_text}")
                 if self.max_len is not None and len(self.curr_text) >= self.max_len:
                     return
                 
-                self.curr_text += e.key
+                self.curr_text = self.curr_text[:self.cursor_pos] + e.key + self.curr_text[self.cursor_pos:]
+                self.cursor_pos += 1
             else:
                 if e.key == 'backspace':
                     # assertion: cursor_pos in [0, len(curr text)]
                     # thus, we need to clip cursor_pos-1 to 0
                     self.curr_text = self.curr_text[:max(0,self.cursor_pos-1)]+self.curr_text[self.cursor_pos:]
-                    
+                    self.cursor_pos = max(0, self.cursor_pos - 1)
+
                 elif e.key == 'del':
                     # assertion: cursor_pos in [0, len(curr text)]
                     # thus, we need to clip cursor_pos+1 to len(curr text)
@@ -116,13 +128,27 @@ class Input(Element):
                     # deselect BUT go to next element (TODO)
                     pass
 
+                Logger.log(f"Input: special key {e.key}: curr_text is now {self.curr_text}, curs_pos is {self.cursor_pos}")
+            
+            self.render()
+
         # register this element's event handler with the document's special handlers
         Globals.__vis_document__.element_keydown_listeners[self] = set([_event_handler])
+        if self.style.get("selectable"): Globals.__vis_document__.selectable_elements.add(self)
+        if self.style.get("hoverable"): Globals.__vis_document__.hoverable_elements.add(self)
 
-    def render(self, container_left: int, container_top: int, container_right: int, container_bottom: int):
+    def render(self, container_left: int = None, container_top: int = None, container_right: int = None, container_bottom: int = None):
         """
         Renders the input element to its container at the specified position, given the positions of the container.
         """
+
+        if len(self.last_remembered_container) == 4:
+            container_left = container_left or self.last_remembered_container[0]
+            container_top = container_top or self.last_remembered_container[1]
+            container_right = container_right or self.last_remembered_container[2]
+            container_bottom = container_bottom or self.last_remembered_container[3]
+
+        self.last_remembered_container = [container_left, container_top, container_right, container_bottom]
         
         container_left = container_left if self.style.get("position") == "relative" else 0
         container_top = container_top if self.style.get("position") == "relative" else 0
@@ -152,25 +178,37 @@ class Input(Element):
             
         # set client_... attributes just for info
         # self.client_left is already set
-        self.client_right = self.client_left + text_len
+        self.client_right = self.style.get("right") or self.client_left + calculate_dim(container_width, self.style.get("width"))
         self.client_top = container_top + calculate_dim(container_height, self.style.get("y"))
         self.client_bottom = self.client_top + 1
         
         if not self.style.get("visible"): return
-            
+        
+        # =======================
+        # TEXT RENDERING:
+        # =======================
+
         style_string = " ".join([
             "bold" if self.style.get("bold") else "",
             "italic" if self.style.get("italic") else "",
             "underline" if self.style.get("underline") else ""
         ])
-        
-        # TODO - render cursor (only if selected)
-        
+        bg_color_to_use = self.style.get(
+            "bg_color" if (not self.is_selected and not self.is_hovered)
+            else "hovered_bg_color" if (self.is_hovered and not self.is_selected)
+            else "selected_bg_color"
+        )
+        regular_text_fcode = fcode(self.style.get("color"), background=bg_color_to_use, style=style_string)
+        placeholder_fcode = fcode(self.style.get("placeholder_color"), background=bg_color_to_use, style=style_string)
+
+        visible_curr_text = self.curr_text[self.text_left_index:min(self.text_left_index + self.client_right - self.client_left]
+
         # if curr_text is empty, render placeholder instead
         text_to_render = (
-            fcode(self.style.get("color"), background=self.bg_color, style=style_string) + self.curr_text if self.curr_text
-            else fcode(self.style.get("placeholder_color"), background=self.bg_color, style=style_string) + self.placeholder
+            fcode(self.style.get("color"), background=bg_color_to_use, style=style_string) + self.visible_curr_text if self.curr_text
+            else fcode(self.style.get("placeholder_color"), background=bg_color_to_use, style=style_string) + self.placeholder
         )
 
         with Globals.__vis_document__.term.hidden_cursor():
+            print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + " "*self.style.get("width")
             print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + text_to_render, end="")

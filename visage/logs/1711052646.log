@@ -1,0 +1,46 @@
+ev.key is a selector: tab
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': 0, 'right': None, 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: non-special key 's': curr text is now 
+Input: non-special key 'd': curr text is now s
+Input: non-special key 'f': curr text is now sd
+Input: non-special key 's': curr text is now sdf
+Input: non-special key 'd': curr text is now sdfs
+Input: non-special key 'f': curr text is now sdfsd
+Input: non-special key 'd': curr text is now sdfsdf
+Input: non-special key 's': curr text is now sdfsdfd
+Input: special key space: curr_text is now sdfsdfds, curs_pos is 8
+Input: non-special key 'd': curr text is now sdfsdfds
+Input: non-special key 's': curr text is now sdfsdfdsd
+Input: non-special key 'f': curr text is now sdfsdfdsds
+Input: special key backspace: curr_text is now sdfsdfdsds, curs_pos is 11
+Input: special key backspace: curr_text is now sdfsdfdsds, curs_pos is 11
+Input: special key backspace: curr_text is now sdfsdfdsds, curs_pos is 11
+Input: special key backspace: curr_text is now sdfsdfdsds, curs_pos is 11
+Input: special key left: curr_text is now sdfsdfdsds, curs_pos is 10
+ev.key is a selector: left
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': 0, 'right': None, 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key left: curr_text is now sdfsdfdsds, curs_pos is 9
+ev.key is a selector: left
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': 0, 'right': None, 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key left: curr_text is now sdfsdfdsds, curs_pos is 8
+ev.key is a selector: left
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': 0, 'right': None, 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key left: curr_text is now sdfsdfdsds, curs_pos is 7
+ev.key is a selector: left
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': 0, 'right': None, 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key delete: curr_text is now sdfsdfdsds, curs_pos is 7
+Input: special key delete: curr_text is now sdfsdfdsds, curs_pos is 7
+Input: special key delete: curr_text is now sdfsdfdsds, curs_pos is 7
+Input: special key delete: curr_text is now sdfsdfdsds, curs_pos is 7
+Input: special key backspace: curr_text is now sdfsdfsds, curs_pos is 7
+Input: special key backspace: curr_text is now sdfsdfds, curs_pos is 7
+Input: special key backspace: curr_text is now sdfsdfs, curs_pos is 7
+Input: special key backspace: curr_text is now sdfsdf, curs_pos is 7
+Input: special key backspace: curr_text is now sdfsdf, curs_pos is 7
+Input: special key backspace: curr_text is now sdfsdf, curs_pos is 7
+Input: special key delete: curr_text is now sdfsdf, curs_pos is 7
+Input: non-special key 'd': curr text is now sdfsdf
+Input: non-special key 's': curr text is now sdfsdfd
+Input: non-special key 'f': curr text is now sdfsdfds
+Input: non-special key 's': curr text is now sdfsdfdsf
+Input: non-special key 'd': curr text is now sdfsdfdsfs

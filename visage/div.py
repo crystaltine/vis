@@ -85,6 +85,14 @@ class Div(Element):
 
         #Logger.log(f"{self}'s children on render: {self.children}")
         
+        if len(self.last_remembered_container) == 4:
+            container_left = container_left or self.last_remembered_container[0]
+            container_top = container_top or self.last_remembered_container[1]
+            container_right = container_right or self.last_remembered_container[2]
+            container_bottom = container_bottom or self.last_remembered_container[3]
+
+        self.last_remembered_container = [container_left, container_top, container_right, container_bottom]
+
         container_left = container_left if self.style.get("position") == "relative" else 0
         container_top = container_top if self.style.get("position") == "relative" else 0
         container_right = container_right if self.style.get("position") == "relative" else Globals.__vis_document__.term.width

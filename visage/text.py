@@ -60,10 +60,18 @@ class Text(Element):
         # assert that not both left and right are None
         assert (self.style.get("left") is not None or self.style.get("right") is not None), "[Text]: At least one of left or right must not be None."
         
-    def render(self, container_left: int, container_top: int, container_right: int, container_bottom: int):
+    def render(self, container_left: int = None, container_top: int = None, container_right: int = None, container_bottom: int = None):
         """
         Renders the text to its container at the specified position, given the positions of the container.
         """
+
+        if len(self.last_remembered_container) == 4:
+            container_left = container_left or self.last_remembered_container[0]
+            container_top = container_top or self.last_remembered_container[1]
+            container_right = container_right or self.last_remembered_container[2]
+            container_bottom = container_bottom or self.last_remembered_container[3]
+
+        self.last_remembered_container = [container_left, container_top, container_right, container_bottom]
         
         container_left = container_left if self.style.get("position") == "relative" else 0
         container_top = container_top if self.style.get("position") == "relative" else 0

@@ -234,6 +234,9 @@ def get_next_hoverable(hoverable_elements: Set["Element"], currently_hovered: "E
     
     if key_ev.key in ['up', 'down', 'left', 'right', 'tab']:
         # return random element in hoverable_elements. This is a placeholder. Then, add it back
+
+        if len(hoverable_elements) == 0: return
+
         selected = hoverable_elements.pop()
         hoverable_elements.add(selected)
         return selected

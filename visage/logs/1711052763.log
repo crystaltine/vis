@@ -1,0 +1,50 @@
+ev.key is a selector: tab
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': 0, 'right': None, 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: non-special key 'd': curr text is now 
+Input: non-special key 'f': curr text is now d
+Input: non-special key 's': curr text is now df
+Input: non-special key 'd': curr text is now dfs
+Input: non-special key 'f': curr text is now dfsd
+Input: non-special key 'd': curr text is now dfsdf
+Input: special key left: curr_text is now dfsdfd, curs_pos is 5
+ev.key is a selector: left
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': 0, 'right': None, 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key left: curr_text is now dfsdfd, curs_pos is 4
+ev.key is a selector: left
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': 0, 'right': None, 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key left: curr_text is now dfsdfd, curs_pos is 3
+ev.key is a selector: left
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': 0, 'right': None, 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: non-special key 's': curr text is now dfsdfd
+Input: special key space: curr_text is now dfssdfd, curs_pos is 4
+Input: special key space: curr_text is now dfssdfd, curs_pos is 4
+Input: special key shift: curr_text is now dfssdfd, curs_pos is 4
+Input: non-special key 'K': curr text is now dfssdfd
+Input: non-special key 'e': curr text is now dfssKdfd
+Input: non-special key 'y': curr text is now dfssKedfd
+Input: non-special key 's': curr text is now dfssKeydfd
+Input: special key backspace: curr_text is now dfssKeydfd, curs_pos is 7
+Input: non-special key '.': curr text is now dfssKeydfd
+Input: non-special key 's': curr text is now dfssKey.dfd
+Input: non-special key 'p': curr text is now dfssKey.sdfd
+Input: non-special key 'a': curr text is now dfssKey.spdfd
+Input: non-special key 'c': curr text is now dfssKey.spadfd
+Input: non-special key 'e': curr text is now dfssKey.spacdfd
+Input: special key ctrl_l: curr_text is now dfssKey.spacedfd, curs_pos is 13
+Input: special key backspace: curr_text is now dfssKey.spacdfd, curs_pos is 12
+Input: special key backspace: curr_text is now dfssKey.spadfd, curs_pos is 11
+Input: special key backspace: curr_text is now dfssKey.spdfd, curs_pos is 10
+Input: special key shift: curr_text is now dfssKey.spdfd, curs_pos is 10
+Input: non-special key '"': curr text is now dfssKey.spdfd
+Input: non-special key 's': curr text is now dfssKey.sp"dfd
+Input: non-special key 'p': curr text is now dfssKey.sp"sdfd
+Input: non-special key 'a': curr text is now dfssKey.sp"spdfd
+Input: non-special key 'c': curr text is now dfssKey.sp"spadfd
+Input: non-special key 'e': curr text is now dfssKey.sp"spacdfd
+Input: special key shift: curr_text is now dfssKey.sp"spacedfd, curs_pos is 16
+Input: special key ctrl_l: curr_text is now dfssKey.sp"spacedfd, curs_pos is 16
+Input: non-special key '': curr text is now dfssKey.sp"spacedfd
+Input: special key alt_l: curr_text is now dfssKey.sp"spacedfd, curs_pos is 17
+Input: special key tab: curr_text is now dfssKey.sp"spacedfd, curs_pos is 17
+ev.key is a selector: tab
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': 0, 'right': None, 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>

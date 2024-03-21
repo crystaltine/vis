@@ -1,0 +1,19 @@
+ev.key is a selector: tab
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': 0, 'right': None, 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: non-special key 'e': curr text is now 
+Input: non-special key 'f': curr text is now e
+Input: non-special key 's': curr text is now fe
+Input: non-special key 'f': curr text is now sfe
+Input: non-special key 'd': curr text is now fsfe
+Input: special key space: curr_text is now dfsfe, curs_pos is 0
+Input: special key space: curr_text is now dfsfe, curs_pos is 0
+Input: special key space: curr_text is now dfsfe, curs_pos is 0
+Input: non-special key 'j': curr text is now dfsfe
+Input: non-special key 'j': curr text is now jdfsfe
+Input: special key space: curr_text is now jjdfsfe, curs_pos is 0
+Input: special key space: curr_text is now jjdfsfe, curs_pos is 0
+Input: special key space: curr_text is now jjdfsfe, curs_pos is 0
+Input: special key alt_l: curr_text is now jjdfsfe, curs_pos is 0
+Input: special key tab: curr_text is now jjdfsfe, curs_pos is 0
+ev.key is a selector: tab
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': 0, 'right': None, 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>

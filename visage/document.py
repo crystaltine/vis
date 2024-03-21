@@ -3,30 +3,30 @@ from blessed import Terminal
 from typing import List, Dict, Set, Any, TypedDict, Callable, Literal, TYPE_CHECKING
 from pynput import keyboard
 from key_event import KeyEvent
+from logger import Logger
 from time import sleep
 
 if TYPE_CHECKING:
     from element import Element
-
-class DocumentStyleProps(TypedDict):
-    """
-    A schema of style options for the document.
-    """
-    bg_color: str | tuple
-    
-    DEFAULT: "DocumentStyleProps" = {
-        "bg_color": "#ffffff"
-    }
 
 class Document:
     """
     A wrapper over a `blessed.Terminal` object. Represents the root of the component tree, 
     basically just one giant HTML-like div containing all the elements on the screen.
     """
+
+    class StyleProps(TypedDict):
+        """
+        A schema of style options for the document.
+        """
+        bg_color: str | tuple
     
     SUPPORTS_CHILDREN = True # obviously
+    DEFAULT_STYLE: "StyleProps" = {
+        "bg_color": "#ffffff"
+    }
     
-    def __init__(self, style: DocumentStyleProps = {}, children: List["Element"] = [], quit_keys: List[str] = ["esc"]):
+    def __init__(self, style: "StyleProps" = {}, children: List["Element"] = [], quit_keys: List[str] = ["esc"]):
         """
         `style`: See `DocumentStyle`. If a value is not provided, it will be set to the default.
         `children`: A list of elements to be rendered in the document.
@@ -40,6 +40,7 @@ class Document:
         self.term = Terminal()
         
         self.quit_keys = quit_keys
+        self._exited = False
 
         self.hoverable_elements: Set["Element"] = set()
         """ Stores a set of pointers to elements that are HOVERABLE. """
@@ -63,7 +64,7 @@ class Document:
         self.element_keydown_listeners: Dict["Element", Set[Callable[[KeyEvent], Any]]] = {}
         """ KEYDOWN event handlers registered by elements such as Input and Button """
 
-        parseattrs(self, style, DocumentStyleProps.DEFAULT)
+        parseattrs(self, style, Document.DEFAULT_STYLE)
         
         self.client_left = 0
         self.client_top = 0
@@ -87,7 +88,7 @@ class Document:
         """
         Renders the document (no bg color yet lol) and all its children.
         """
-        cls()
+        #cls()
         for child in self.children:
             child.render(self.client_left, self.client_top, self.client_right, self.client_bottom)
             
@@ -127,14 +128,30 @@ class Document:
             """
             if ev.key in self.quit_keys: self._quit()
 
+            # run the currently selected listeners IF it exists
+            if (handlers := self.element_keydown_listeners.get(self.selected)) is not None:
+                [func(ev) for func in handlers]
+
             # select elements if tab, or arrow keys are pressed.
             # if the currently selected element has its own arrow-key/tab functionality,
             # then the event SHOULD be canceled by now and this shouldnt run.
             # but if we are here, we should find the next element to hover.
             if ev.key in ['up', 'down', 'left', 'right', 'tab']:
-                self.hovered = get_next_hoverable(self.hoverable_elements, self.hovered, ev.key)
+                Logger.log(f"ev.key is a selector: {ev.key}")
+                if self.hovered is not None: 
+                    self.hovered.is_hovered = False # notify prev. element that we arent hovering anymore
+                    self.hovered.render()
+                self.hovered = get_next_hoverable(self.hoverable_elements, self.hovered, ev)
+                self.hovered.is_hovered = True # notify new element that its hovered
+                self.hovered.render()
+                Logger.log(f"^ Hovered is now {self.hovered}")
             elif ev.key == 'enter' and self.hovered and self.hovered.style.get("selectable"):
+                if self.selected is not None: 
+                    self.selected.is_selected = False # notify prev. element that no longer selected
+                    self.selected.render()
                 self.selected = self.hovered
+                self.selected.is_selected = True # notify new element that its now selected
+                self.selected.render()
         
         def _builtin_keyup_handler(ev: "KeyEvent"):
             """
@@ -142,7 +159,10 @@ class Document:
             such as exiting the program when quit keys are pressed,
             or selecting elements when arrow keys or tab is pressed.
             """
-            pass # nothing to do here yet
+
+            # run the currently selected listeners IF it exists
+            if (handlers := self.element_keyup_listeners.get(self.selected)) is not None:
+                [func(ev) for func in handlers]
 
         def on_press(key: keyboard.Key | keyboard.KeyCode):
             
@@ -179,8 +199,8 @@ class Document:
         Quits the app.
         """
         cls()
-        print("\033[0m")
-        sleep(0.5)
+        print("\033[0m", end="\r")
+        Logger.write()
         exit()
     
     def add_event_listener(self, event: Literal["keydown", "keyup"], callback: Callable[[KeyEvent], None]):
