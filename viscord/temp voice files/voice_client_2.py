@@ -41,6 +41,8 @@ output_stream = audio.open(format=FORMAT,
                     rate=RATE,
                     output=True)
 
+streams = {}
+
 input_volume = 200 # range from 0 to 200
 output_volume = 100
 
@@ -92,24 +94,27 @@ def incoming_thread():
     global output_stream
     while True:
         try:
-            data = incoming_socket.recv(4096)
+            data = incoming_socket.recv(2049)
         except BlockingIOError:
             continue
         if data:
-            try:
-                output_stream.write(data)
-            except OSError as e:
-                try:
-                    output_stream = audio.open(format=FORMAT,
-                        channels=CHANNELS,
-                        rate=RATE,
-                        output=True)
-                except:
-                    raise e
-                else:
-                    continue
+            if len(data) < 2049:
+                continue
+            channel = int.from_bytes(data[-2:], "little")
+            print(len(data[:-2]))
+            arr = np.frombuffer(data[:-2], dtype=np.int16)
+            # get last element
+            data = arr.astype(np.int16).tobytes()
+            restructured = pydub.AudioSegment(data, sample_width=2, channels=1, frame_rate=RATE)
+            restructured = restructured.apply_gain(pydub.utils.ratio_to_db(output_volume / 100))
+            if channel not in streams:
+                streams[channel] = audio.open(format=FORMAT,
+                    channels=CHANNELS,
+                    rate=RATE,
+                    output=True)
+            streams[channel].write(restructured.raw_data)
 
 import threading
-threading.Thread(target=outgoing_thread).start()
+#threading.Thread(target=outgoing_thread).start()
 threading.Thread(target=incoming_thread).start()
 threading.Thread(target=q_to_quit).start()
