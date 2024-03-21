@@ -1,7 +1,7 @@
 import pyaudio
 FORMAT = pyaudio.paInt16  # Audio format (16-bit PCM)
 CHANNELS = 1  # Number of audio channels (1 for mono, 2 for stereo)
-RATE = 44100  # Sample rate (samples per second)
+RATE = 44100 * 2  # Sample rate (samples per second)
 CHUNK = 1024  # Number of frames per buffer
 
 import io
@@ -28,6 +28,8 @@ print("Outgoing, incoming up!")
 
 global input_stream, output_stream
 
+
+
 input_stream = audio.open(format=FORMAT,
                     channels=CHANNELS,
                     rate=RATE,
@@ -51,6 +53,17 @@ def ping_thread():
         outgoing_socket.recv(2048)
         incoming_socket.recv(2048)
         print(time.time() - x * 1000)
+
+import blessed
+term = blessed.Terminal()
+def q_to_quit():
+    print("Press q to quit")
+    while True:
+        with term.cbreak():
+            val = term.inkey()
+            if val == "q":
+                import os
+                os._exit(0)
 
 def outgoing_thread():
     global input_stream
@@ -79,7 +92,7 @@ def incoming_thread():
     global output_stream
     while True:
         try:
-            data = incoming_socket.recv(CHUNK)
+            data = incoming_socket.recv(4096)
         except BlockingIOError:
             continue
         if data:
@@ -97,5 +110,6 @@ def incoming_thread():
                     continue
 
 import threading
-threading.Thread(target=outgoing_thread).start()
+#threading.Thread(target=outgoing_thread).start()
 threading.Thread(target=incoming_thread).start()
+threading.Thread(target=q_to_quit).start()
