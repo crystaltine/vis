@@ -1,13 +1,14 @@
-from element import StylePropDict, parseattrs, cls
+from utils import parseattrs, cls, get_next_hoverable
 from blessed import Terminal
-from typing import List, Dict, Set, Any, Callable, Literal, TYPE_CHECKING
+from typing import List, Dict, Set, Any, TypedDict, Callable, Literal, TYPE_CHECKING
 from pynput import keyboard
-from key_event import KeyEvent, Key
+from key_event import KeyEvent
+from time import sleep
 
 if TYPE_CHECKING:
     from element import Element
 
-class DocumentStyleProps(StylePropDict):
+class DocumentStyleProps(TypedDict):
     """
     A schema of style options for the document.
     """
@@ -22,6 +23,9 @@ class Document:
     A wrapper over a `blessed.Terminal` object. Represents the root of the component tree, 
     basically just one giant HTML-like div containing all the elements on the screen.
     """
+    
+    SUPPORTS_CHILDREN = True # obviously
+    
     def __init__(self, style: DocumentStyleProps = {}, children: List["Element"] = [], quit_keys: List[str] = ["esc"]):
         """
         `style`: See `DocumentStyle`. If a value is not provided, it will be set to the default.
@@ -42,9 +46,9 @@ class Document:
         self.selectable_elements: Set["Element"] = set()
         """ Stores a set of pointers to elements that are SELECTABLE. """
 
-        self.hovered: "Element" | None = None
+        self.hovered: "Element | None" = None
         """ The currently hovered element. There can only be one at a time. """
-        self.selected: "Element" | None = None
+        self.selected: "Element | None" = None
         """ The currently selected element. There can only be one at a time. 
         Also, unless we want to add a way for users to navigate the component tree
          while still having a selected element, this should equal `self.hoverable` if not None. """
@@ -74,13 +78,14 @@ class Document:
         
         self.render()
 
-        with self.term.cbreak():
+        with self.term.cbreak(), self.term.hidden_cursor():
             self.listener_thread = self._get_key_listener()
             self.listener_thread.start()
+            self.listener_thread.join()
             
     def render(self) -> None:
         """
-        Renders all children.
+        Renders the document (no bg color yet lol) and all its children.
         """
         cls()
         for child in self.children:
@@ -103,7 +108,7 @@ class Document:
             
             self.id_map[child.id] = child
             
-    def get_element_by_id(self, id: str) -> Element | None:
+    def get_element_by_id(self, id: str) -> "Element | None":
         """
         Returns the element with the specified id. Returns None if no such element exists.
         """
@@ -114,7 +119,7 @@ class Document:
         Returns a `Listener` thread for key presses. Run .start() on the returned object to start listening.
         """
 
-        def _builtin_keyup_handler(ev: "KeyEvent"):
+        def _builtin_keydown_handler(ev: "KeyEvent"):
             """
             General functions built-in to the document, 
             such as exiting the program when quit keys are pressed,
@@ -125,22 +130,39 @@ class Document:
             # select elements if tab, or arrow keys are pressed.
             # if the currently selected element has its own arrow-key/tab functionality,
             # then the event SHOULD be canceled by now and this shouldnt run.
+            # but if we are here, we should find the next element to hover.
+            if ev.key in ['up', 'down', 'left', 'right', 'tab']:
+                self.hovered = get_next_hoverable(self.hoverable_elements, self.hovered, ev.key)
+            elif ev.key == 'enter' and self.hovered and self.hovered.style.get("selectable"):
+                self.selected = self.hovered
+        
+        def _builtin_keyup_handler(ev: "KeyEvent"):
+            """
+            General functions built-in to the document, 
+            such as exiting the program when quit keys are pressed,
+            or selecting elements when arrow keys or tab is pressed.
+            """
+            pass # nothing to do here yet
+
+        def on_press(key: keyboard.Key | keyboard.KeyCode):
             
-            # but if here, we should find the next element to hover.
-            get_next_hoverable(self.hoverable_elements, self.hovered, ev.key)
-
-        def on_press(_key: keyboard.Key | keyboard.KeyCode):
-
-            # if key is KeyCode, then it was probably a character key
-            # if Key, then it was probably a special key
-            ev = ...
-            if isinstance(_key, keyboard.KeyCode):
-                ev = KeyEvent(_key.char, "keydown", False)
-            else:
-                # handle space - its treated as special due to smth
-                if ev.name == Key.space:ev = KeyEvent(" ", "keydown, False")
-                else: ev = KeyEvent(_key.name, "keydown", True)
+            KeyEvent.update_modifiers(key, "keydown")
+            ev = KeyEvent.create_from(key)
                 
+            # run all keydown listeners for this key
+            for listener in self.keydown_listeners:
+                if ev.canceled: return
+                listener(ev)
+
+            # if ev was canceled, we would have returned already
+            # run general document event handler last
+            _builtin_keydown_handler(ev)
+
+        def on_release(key: keyboard.Key | keyboard.KeyCode):
+            
+            KeyEvent.update_modifiers(key, "keyup")
+            ev = KeyEvent.create_from(key)
+            
             # run all keydown listeners for this key
             for listener in self.keyup_listeners:
                 if ev.canceled: return
@@ -148,23 +170,7 @@ class Document:
 
             # if ev was canceled, we would have returned already
             # run general document event handler last
-
-            
-        def on_release(key: keyboard.Key | keyboard.KeyCode):
-            
-            ev = ...
-            if isinstance(key, keyboard.KeyCode): # probably character
-                ev = KeyEvent(key.char, "keyup", False)
-            else: # probably special
-                # handle space - its treated as special due to 
-                if ev.name == Key.space:ev = KeyEvent(" ", "keydown, False")
-            
-            for listener in self.keyup_listeners:
-                if ev.canceled: return
-                listener(ev)
-
-            # if ev was canceled, we would have returned already
-            # run general document event handler last
+            _builtin_keyup_handler(ev)
                 
         return keyboard.Listener(on_press=on_press, on_release=on_release)
     
@@ -173,31 +179,32 @@ class Document:
         Quits the app.
         """
         cls()
-        print("\x1b[0m", end="")
+        print("\033[0m")
+        sleep(0.5)
         exit()
     
-    def add_event_listener(self, type: Literal["keydown", "keyup"], callback: Callable[[KeyEvent], None]):
+    def add_event_listener(self, event: Literal["keydown", "keyup"], callback: Callable[[KeyEvent], None]):
         """
         Adds a document-wide event listener for either keydown or keyup. 
         Can have multiple listeners for the same key event.
         """
         
-        listener_bank = self.keydown_listeners if type == "keydown" else self.keyup_listeners
+        listener_bank = self.keydown_listeners if event == "keydown" else self.keyup_listeners
         listener_bank.add(callback)
         
-    def remove_event_listener(self, type: Literal["keydown", "keyup"], callback: Callable):
+    def remove_event_listener(self, event: Literal["keydown", "keyup"], callback: Callable):
         """
         Removes an event listener for a specific key event. 
         Must pass the exact same function that was added, meaning references must be the same.
         
         Raises a KeyError if the callback is not found.
         """
-        listener_bank = self.keydown_listeners if type == "keydown" else self.keyup_listeners
+        listener_bank = self.keydown_listeners if event == "keydown" else self.keyup_listeners
         listener_bank.remove(callback)
         
-    def remove_all_event_listeners(self, type: Literal["keydown", "keyup"]):
+    def remove_all_event_listeners(self, event: Literal["keydown", "keyup"]):
         """
         Removes all event listeners for a specific key event.
         """
-        listener_bank = self.keydown_listeners if type == "keydown" else self.keyup_listeners
+        listener_bank = self.keydown_listeners if event == "keydown" else self.keyup_listeners
         listener_bank.clear()

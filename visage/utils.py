@@ -1,6 +1,11 @@
 import os
 import json
-from typing import TYPE_CHECKING
+from typing import Set, TYPE_CHECKING
+from globalvars import Globals
+
+if TYPE_CHECKING:
+    from element import Element
+    from key_event import KeyEvent
 
 STYLE_CODES = {
     'bold': '\033[1m',
@@ -181,7 +186,10 @@ def parse_style_string(style_str: str) -> dict[str, str]:
     
     @TODO - allow more flexible css-like style strings.
     """
-    if style_str is None: return {}
+    if not style_str: return {}
+    
+    print(f"\x1b[34mJSON.loadsing string: {style_str}\x1b[0m")
+    
     return json.loads(style_str)
 
 def parse_class_string(class_str: str) -> dict:
@@ -198,9 +206,10 @@ def parse_class_string(class_str: str) -> dict:
     
     for i in range(len(class_strings)-1, -1, -1):
         # we go in reverse so that the ones in front overwrite the ones in back
-        if class_strings[i] in globals():
-            parsed_style |= globals()["class_styles"][class_strings[i]]
+        if class_strings[i] in Globals.__class_styles__:
+            parsed_style |= Globals.__class_styles__[class_strings[i]]
     
+    print(f"\x1b[35mClassstr parser: {class_str=}, {parsed_style=}, __class_styles__={Globals.__class_styles__}\x1b[0m")
     return parsed_style
 
 def calculate_style(style_str: str, class_str: str, default_style: dict) -> dict:
@@ -210,4 +219,25 @@ def calculate_style(style_str: str, class_str: str, default_style: dict) -> dict
     
     For optimization, this should be used on init of an element, and on every change to its classstr or stylestr.
     """
+    print(f"\x1b[34mCalc_style: {style_str=}, {class_str=}, {default_style=}\x1b[0m")
     return default_style | parse_class_string(class_str) | parse_style_string(style_str)
+
+def get_next_hoverable(hoverable_elements: Set["Element"], currently_hovered: "Element | None", key_ev: "KeyEvent") -> "Element":
+    """
+    Given a set of hoverable elements, the currently hovered element, and a key, returns the next element to hover.
+    
+    Throws a ValueError if the key event is not valid for selecting elements.
+    It should be in `['up', 'down', 'left', 'right', 'tab']`, or shift+tab (but `ev.key` would still be 'tab').
+    
+    @TODO - implement arrow key functionality and also shift-tabbing
+    """
+    
+    if key_ev.key in ['up', 'down', 'left', 'right', 'tab']:
+        # return random element in hoverable_elements. This is a placeholder. Then, add it back
+        selected = hoverable_elements.pop()
+        hoverable_elements.add(selected)
+        return selected
+    else:
+        raise ValueError(f"Invalid key event for selecting elements: {key_ev.key}.")
+    # note: all this stuff will be removed when the algorithm for selecting is actually implemented.
+    

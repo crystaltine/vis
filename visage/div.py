@@ -1,6 +1,7 @@
 from element import Element
 from utils import fcode, calculate_dim
-from typing import List, Unpack, TypedDict
+from typing import List, Unpack
+from globalvars import Globals
 
 class Div(Element):
     """
@@ -73,48 +74,48 @@ class Div(Element):
         super().__init__(**attrs) # should ignore any unknown attributes that are provided
         
         # assert that ONE of left/right and ONE of top/bottom is provided
-        assert (self.style.left is not None or self.style.right is not None), "[Div]: At least one of left or right must not be None."
-        assert (self.style.top is not None or self.style.bottom is not None), "[Div]: At least one of top or bottom must not be None."
+        assert (self.style.get("left") is not None or self.style.get("right") is not None), "[Div]: At least one of left or right must not be None."
+        assert (self.style.get("top") is not None or self.style.get("bottom") is not None), "[Div]: At least one of top or bottom must not be None."
         
         self.children: List["Element"] = attrs.get("children", [])
-        self._bg_fcode = fcode(background=self.style.bg_color) if self.style.bg_color != "transparent" else None
+        self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else None
         #Logger.log(f"{self}'s children on init: {self.children}")
     
     def render(self, container_left: int, container_top: int, container_right: int, container_bottom: int):
 
         #Logger.log(f"{self}'s children on render: {self.children}")
         
-        container_left = container_left if self.style.position == "relative" else 0
-        container_top = container_top if self.style.position == "relative" else 0
-        container_right = container_right if self.style.position == "relative" else self.document.term.width
-        container_bottom = container_bottom if self.style.position == "relative" else self.document.term.height
+        container_left = container_left if self.style.get("position") == "relative" else 0
+        container_top = container_top if self.style.get("position") == "relative" else 0
+        container_right = container_right if self.style.get("position") == "relative" else Globals.__vis_document__.term.width
+        container_bottom = container_bottom if self.style.get("position") == "relative" else Globals.__vis_document__.term.height
         
         container_width = container_right - container_left
         container_height = container_bottom - container_top
         
-        self.client_top = container_top + (calculate_dim(container_height, self.style.top) if self.style.top 
-            else calculate_dim(container_height, self.style.bottom) - calculate_dim(container_height, self.height))
+        self.client_top = container_top + (calculate_dim(container_height, self.style.get("top")) if self.style.get("top") 
+            else calculate_dim(container_height, self.style.get("bottom")) - calculate_dim(container_height, self.style.get("height")))
         
-        self.client_bottom = container_top + (calculate_dim(container_height, self.style.bottom) if self.style.bottom
-            else calculate_dim(container_height, self.style.top) + calculate_dim(container_height, self.height))
+        self.client_bottom = container_top + (calculate_dim(container_height, self.style.get("bottom")) if self.style.get("bottom")
+            else calculate_dim(container_height, self.style.get("top")) + calculate_dim(container_height, self.style.get("height")))
         
         self.client_height = self.client_bottom - self.client_top
         
-        self.client_left = container_left + (calculate_dim(container_width, self.style.left) if self.style.left
-            else calculate_dim(container_width, self.style.right) - calculate_dim(container_width, self.width))
+        self.client_left = container_left + (calculate_dim(container_width, self.style.get("left")) if self.style.get("left")
+            else calculate_dim(container_width, self.style.get("right")) - calculate_dim(container_width, self.style.get("width")))
         
-        self.client_right = container_left + (calculate_dim(container_width, self.style.right) if self.style.right
-            else calculate_dim(container_width, self.style.left) + calculate_dim(container_width, self.width))
+        self.client_right = container_left + (calculate_dim(container_width, self.style.get("right")) if self.style.get("right")
+            else calculate_dim(container_width, self.style.get("left")) + calculate_dim(container_width, self.style.get("width")))
         
         self.client_width = self.client_right - self.client_left
         
-        if not self.style.visible: return
+        if not self.style.get("visible"): return
         
         # draw the rectangle IF it is not transparent.
         if self._bg_fcode:
             for i in range(self.client_top, self.client_bottom):
-                with self.document.term.hidden_cursor():
-                    print(self.document.term.move_xy(self.client_left, i) + self._bg_fcode + " " * self.client_width, end="")
+                with Globals.__vis_document__.term.hidden_cursor():
+                    print(Globals.__vis_document__.term.move_xy(self.client_left, i) + self._bg_fcode + " " * self.client_width, end="")
                     
         # render children
         for child in self.children:
@@ -122,10 +123,10 @@ class Div(Element):
             if self is child: continue # ??? - for some reason using this func adds a self pointer to its own children. try fixing later
             
             child.render(
-                self.client_left + self.style.padding_left or self.style.padding or 0,
-                self.client_top + self.style.padding_top or self.style.padding or 0,
-                self.client_right - self.style.padding_right or self.style.padding or 0,
-                self.client_bottom - self.style.padding_bottom or self.style.padding or 0
+                self.client_left + self.style.get("padding_left") or self.style.get("padding") or 0,
+                self.client_top + self.style.get("padding_top") or self.style.get("padding") or 0,
+                self.client_right - self.style.get("padding_right") or self.style.get("padding") or 0,
+                self.client_bottom - self.style.get("padding_bottom") or self.style.get("padding") or 0
             )
              
     def add_child(self, child: "Element", index: int = None):

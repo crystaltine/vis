@@ -1,6 +1,7 @@
 from element import Element
 from utils import fcode, calculate_dim
 from typing import Literal, Unpack, TYPE_CHECKING
+from globalvars import Globals
 
 if TYPE_CHECKING:
     from key_event import KeyEvent
@@ -13,6 +14,8 @@ class Input(Element):
         class_str: str | None
         style_str: str | None
         placeholder: str | None
+        max_len: int | None
+        pattern: str | None
         
     class StyleProps(Element.StyleProps):
         """ A schema of style options for input elements. """
@@ -67,11 +70,12 @@ class Input(Element):
         super().__init__(**attrs)
 
         self.placeholder = attrs.get("placeholder", "")
+        self.max_len = attrs.get("max_len", None)
         self.curr_text = ""
         self.cursor_pos = 0
         
         # assert that not both left and right are None
-        assert not (self.style.left is None and self.style.right is None), "[Text]: At least one of left or right must not be None."
+        assert not (self.style.get("left") is None and self.style.get("right") is None), "[Text]: At least one of left or right must not be None."
 
         def _event_handler(e: "KeyEvent"):
             """ Internal event handler for document keydown events (for typing inside the element) """
@@ -80,11 +84,12 @@ class Input(Element):
             # else, handle key.
             if not e.is_special:
                 # add to curr_text if just regular char
+                
+                if self.max_len is not None and len(self.curr_text) >= self.max_len:
+                    return
+                
                 self.curr_text += e.key
             else:
-                
-                # TODO - create enum or some way to check special keys
-
                 if e.key == 'backspace':
                     # assertion: cursor_pos in [0, len(curr text)]
                     # thus, we need to clip cursor_pos-1 to 0
@@ -102,27 +107,27 @@ class Input(Element):
                     self.cursor_pos = min(len(self.curr_text), self.cursor_pos + 1)
 
                 elif e.key == 'enter':
-                    # deselect everything
+                    # deselect everything (TODO)
                     pass
                 elif e.key == 'esc':
                     self.curr_text = ""
-                    # return or something/deselect
+                    # return or something/deselect (same as enter) (TODO)
                 elif e.key == 'tab':
-                    # deselect BUT go to next element
+                    # deselect BUT go to next element (TODO)
                     pass
 
         # register this element's event handler with the document's special handlers
-        self.document.element_keydown_listeners[self] = set([_event_handler])
+        Globals.__vis_document__.element_keydown_listeners[self] = set([_event_handler])
 
     def render(self, container_left: int, container_top: int, container_right: int, container_bottom: int):
         """
         Renders the input element to its container at the specified position, given the positions of the container.
         """
         
-        container_left = container_left if self.style.position == "relative" else 0
-        container_top = container_top if self.style.position == "relative" else 0
-        container_right = container_right if self.style.position == "relative" else self.document.term.width
-        container_bottom = container_bottom if self.style.position == "relative" else self.document.term.height
+        container_left = container_left if self.style.get("position") == "relative" else 0
+        container_top = container_top if self.style.get("position") == "relative" else 0
+        container_right = container_right if self.style.get("position") == "relative" else Globals.__vis_document__.term.width
+        container_bottom = container_bottom if self.style.get("position") == "relative" else Globals.__vis_document__.term.height
 
         container_width = container_right - container_left
         container_height = container_bottom - container_top
@@ -132,38 +137,40 @@ class Input(Element):
         
         # calculate text left position
         # precondition: at least one of left or right is not None (see `init`)
-        if self.style.left is not None:
-            self.client_left = container_left + calculate_dim(container_width, self.style.left) - (
-                0 if self.style.text_align == "left" else
-                text_len // 2 if self.style.text_align == "center" else
+        if self.style.get("left") is not None:
+            self.client_left = container_left + calculate_dim(container_width, self.style.get("left")) - (
+                0 if self.style.get("text_align") == "left" else
+                text_len // 2 if self.style.get("text_align") == "center" else
                 text_len
             )
         else: # we can do this because precondition guarantees that right is not None if left is None
-            self.client_left = container_left + calculate_dim(container_width, self.style.right) - text_len + (
-                0 if self.style.text_align == "left" else
-                text_len // 2 if self.style.text_align == "center" else
+            self.client_left = container_left + calculate_dim(container_width, self.style.get("right")) - text_len + (
+                0 if self.style.get("text_align") == "left" else
+                text_len // 2 if self.style.get("text_align") == "center" else
                 text_len
             )
             
         # set client_... attributes just for info
         # self.client_left is already set
         self.client_right = self.client_left + text_len
-        self.client_top = container_top + calculate_dim(container_height, self.style.y)
+        self.client_top = container_top + calculate_dim(container_height, self.style.get("y"))
         self.client_bottom = self.client_top + 1
         
-        if not self.style.visible: return
+        if not self.style.get("visible"): return
             
         style_string = " ".join([
-            "bold" if self.style.bold else "",
-            "italic" if self.style.italic else "",
-            "underline" if self.style.underline else ""
+            "bold" if self.style.get("bold") else "",
+            "italic" if self.style.get("italic") else "",
+            "underline" if self.style.get("underline") else ""
         ])
+        
+        # TODO - render cursor (only if selected)
         
         # if curr_text is empty, render placeholder instead
         text_to_render = (
-            fcode(self.style.color, background=self.bg_color, style=style_string) + self.curr_text if self.curr_text
-            else fcode(self.style.placeholder_color, background=self.bg_color, style=style_string) + self.placeholder
+            fcode(self.style.get("color"), background=self.bg_color, style=style_string) + self.curr_text if self.curr_text
+            else fcode(self.style.get("placeholder_color"), background=self.bg_color, style=style_string) + self.placeholder
         )
 
-        with self.document.term.hidden_cursor():
-            print(self.document.term.move_xy(self.client_left, self.client_top) + text_to_render, end="")
+        with Globals.__vis_document__.term.hidden_cursor():
+            print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + text_to_render, end="")

@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from typing import Tuple, Dict, Literal, TypedDict, TYPE_CHECKING, Unpack
 from utils import parse_class_string, parse_style_string, calculate_style
+from globalvars import Globals
 
 if TYPE_CHECKING:
     from document import Document
@@ -24,9 +25,6 @@ class Element:
     """ @static @constant - Whether or not the element supports children. """
     DEFAULT_STYLE: Dict[str, str]
     """ @static @constant - The default style options for all instances of the element. """
-    
-    document: "Document"
-    """ A reference to the root document object the element is rendered on. This is for thing like event handler registration. """
     
     id: str | None
     """ An identifier for the element, which can be used to reference it (using `Document.get_element_by_id`) """
@@ -81,10 +79,12 @@ class Element:
         self._style_str = value
         self.style = parse_style_string(value) | self.style
 
-    def __init__(self, **attrs: Unpack["Attributes"]) -> None:
-        self.document = globals()["__vis_document__"]
+    def __init__(self, **attrs: Unpack["Attributes"]) -> None:        
         self._class_str = attrs.get("class_str", "")
         self._style_str = attrs.get("style_str", "")
+        
+        print(f"\x1b[32mElement init: _class_str is {self._class_str}, _style_str is {self._style_str}\x1b[0m")
+        
         self.id = attrs.get("id", None)
         self.is_selected = False
         self.client_left = None
@@ -94,10 +94,12 @@ class Element:
         
         # calculate initial style
         self.style = calculate_style(self.style_str, self.class_str, self.DEFAULT_STYLE)
-        self.style: self.__class__.StyleProps # typecast for convenience <- doesnt seem to work for some reason lol
 
         if getattr(self.style, "selectable", 0):
-            self.document.selectable_elements.add(self)
+            Globals.__vis_document__.selectable_elements.add(self)
+    
+    def __str__(self) -> str:
+        return f"<Element:{self.__class__.__name__} id={self.id} style={self.style}>"
 
     @abstractmethod
     def render(self, container_left: int, container_top: int, container_right: int, container_bottom: int) -> None:
@@ -122,4 +124,3 @@ class Element:
         y = round((self.client_top + self.client_bottom)/2)
 
         return y,x if format == 'yx' else x,y
-

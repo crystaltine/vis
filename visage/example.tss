@@ -1,11 +1,34 @@
 .testclass {
-    "background_color": "red",
-    "left": "20ch",
-    "top": "10ch",
-    "width": "50ch",
-    "height": "50ch",
+    bg_color: #3b3a4c
+    left: 2ch
+    top: 1ch
+    width: 100ch
+    height: 25ch
 }
 
-.class2 {
-    "background_color": "blue",
+.text1 {
+    color: green
+    bg_color: aqua
+    left: 5ch
+    y: 5ch
+}
+.text2 {
+    color: red
+    bg_color: blue
+    left: 0ch
+    y: 10ch
+}
+
+.child_div {
+    bg_color: gray
+    left: 25ch
+    top: 5ch
+    width: 30ch
+    height: 10ch
+}
+.child_text {
+    color: white
+    bg_color: black
+    left: 5ch
+    y: 2ch
 }

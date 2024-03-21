@@ -5,9 +5,11 @@ import re
 from shlex import split
 from typing import List, Dict, TYPE_CHECKING
 from document import Document
+from globalvars import Globals
 from div import Div
 from text import Text
 from input import Input
+from time import sleep
 
 if TYPE_CHECKING:
     from element import Element
@@ -38,7 +40,7 @@ def create_element(tag: str, attrs: dict) -> "Element":
 
     return TAG_TO_ELEMENT[tag](**attrs)
 
-def read_vis(relative_filepath: str) -> Document:
+def read_vis(relative_filepath: str) -> None:
     """
     Parses a visage file and returns a `Document` object that represents it.
     
@@ -50,12 +52,9 @@ def read_vis(relative_filepath: str) -> Document:
         code = f.read()
         f.close()
         
-    # remove all newlines
+    # remove all newlines and tabs
     code = code.replace("\n", "")
-    
-    # create document
-    global __vis_document__
-    __vis_document__ = Document()
+    code = code.replace("\t", "")
     
     # split based on < and >
     tags: List[str] = re.split(r'[<>]+', code)
@@ -65,8 +64,8 @@ def read_vis(relative_filepath: str) -> Document:
     If the input code was 
     ```
     <div class=\"divclass-fdfdfse\" id=\"some random thing\">
-        <text class=\"lol\">Hello!!!!!</>
-        <text class=\"lol2\">Bye!!!!!</>
+        <text class=\"lol\" text=\"Hello!!!!!\"></>
+        <text class=\"something\" text=\"Bye?\"></>
     </>
     ```
     
@@ -74,29 +73,37 @@ def read_vis(relative_filepath: str) -> Document:
     ```python
     [
         "div class=\"divclass-fdfdfse\" id=\"some random thing\"",
-        "text class=\"lol\"",
-        "Hello!!!!!",
+        "text class=\"lol\" text=\"Hello!!!!!\"",
         "/",
-        "text class=\"lol2\"",
-        "Bye!!!!!",
+        "text class=\"lol2\" text=\"Hello!!!!!\"",
         "/"
         "/"
     ]
     ```
     """
+    Globals.__vis_document__ = Document()
+    current_element_path = [Globals.__vis_document__]
     
-    curr_index = 0
-    current_element_path = [__vis_document__]
     """ A list of the elements we are currently nested inside. Always begins with document. """
 
+    print("tags:", tags)
+
     for tag in tags:
+        
+        tag = tag.strip()
 
         # if the tag is "/" (end tag), move up one level
         if tag.startswith("/"):
             current_element_path.pop()
             continue
+        
+        if not current_element_path[-1].SUPPORTS_CHILDREN:
+            raise VisInterpreterError(f"Element {current_element_path[-1]} does not support children.")
 
         tokens = split(tag) # this splits by spaces but keeps nested strings intact (e.g. class strings)
+        print(f"Tokens: {tokens}, split from tag: {tag}")
+        
+        if len(tokens) == 0: continue # probably whitespace
 
         # now we might have something like this
         # tokens = ['div', 'class=class1 class2 class3', 'id=some-random-id']
@@ -104,14 +111,22 @@ def read_vis(relative_filepath: str) -> Document:
         attrs = {}
         tag_name, tag_attrs = tokens[0], tokens[1:]
 
+        print(f"tag attrs: {tag_attrs}")
         for attr_definition in tag_attrs:
             # each one of these is like "class=class1 class2 class3"
             # attr name is .split()[0]
-            attr_name, attr_params = attr_definition.split(maxsplit=1)
+            
+            print(f"\x1b[31mLooping thru attr_defs for tagname={tag_name}, attr_def={attr_definition}\x1b[0m")
+            attr_name, attr_params = attr_definition.split("=", maxsplit=1)
             attrs[attr_name] = attr_params
+            print(f"^Setting attrs[{attr_name}] to {attr_params}")
 
         element = create_element(tag_name, attrs)
+        print(f"\x1b[33mCreated element: {element}\x1b[0m")
+        
+        # add the element as a child of the current element                
         current_element_path[-1].add_child(element)
+        
         current_element_path.append(element)
 
 def read_styles(relative_filepath: str) -> None:
@@ -127,13 +142,13 @@ def read_styles(relative_filepath: str) -> None:
     }
 
     .class2, .class3 {
-        "background_color": "blue",
+        background_color: blue,
     }
     ```
-    """
     
-    global class_styles # accessible from anywhere in the module, specifically in `./utils.py`
-    class_styles: Dict[str, dict] = {}
+    Sets the styles into the global scope. Returns None.
+    """
+
     """ class name -> style properties """
     
     lines = []
@@ -152,18 +167,19 @@ def read_styles(relative_filepath: str) -> None:
             continue
             
         if not currently_defining:
-            # try to get new class definition
+            # try to get new class definition. This is a list of class names we are defining
             currently_defining = line.split("{")[0].strip().split(",")
             
         else:
             
-            # exit if we are done defining this class
+            # exit if we are done defining this(or these) classes
             if line.strip() == "}":
                 currently_defining = []
                 continue
             
-            # we are currently defining a class. This line should be a style property
+            # otherwise, we are currently defining styles. This line should be a style property
             split_property_def = line.strip().split(":")
+            print(f"Style parser: {split_property_def}")
             
             # if not 2 parts, then error
             if len(split_property_def) != 2:
@@ -171,12 +187,15 @@ def read_styles(relative_filepath: str) -> None:
             
             # add the property to the class
             for classname in currently_defining:
-                if classname not in class_styles:
-                    class_styles[classname] = {}
+                
+                no_dot_classname = classname[1:] # since classname defs are like .classname
+                
+                if no_dot_classname not in Globals.__class_styles__:
+                    Globals.__class_styles__[no_dot_classname] = {}
                     
-                class_styles[classname][split_property_def[0].strip()] = split_property_def[1].strip()
+                Globals.__class_styles__[no_dot_classname][split_property_def[0].strip()] = split_property_def[1].strip()
 
 # test
 read_styles("example.tss")
-doc = read_vis("example.vis")
-doc.mount()
+read_vis("example.vis")
+Globals.__vis_document__.mount()
