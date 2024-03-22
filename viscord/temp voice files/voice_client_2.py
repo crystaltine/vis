@@ -100,9 +100,9 @@ def incoming_thread():
         if data:
             if len(data) < 2049:
                 continue
-            channel = int.from_bytes(data[-2:], "little")
-            print(len(data[:-2]))
-            arr = np.frombuffer(data[:-2], dtype=np.int16)
+            channel = int.from_bytes(data[2048:], "little")
+            
+            arr = np.frombuffer(data[:2048], dtype=np.int16)
             # get last element
             data = arr.astype(np.int16).tobytes()
             restructured = pydub.AudioSegment(data, sample_width=2, channels=1, frame_rate=RATE)
