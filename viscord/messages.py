@@ -8,7 +8,7 @@ class MessageUI:
     y = message_term.height 
     x = message_term.width  
     #Draw Box Function 
-    def box_creator(self, box_height, box_width, box_x_pos, box_y_pos, title):
+    def box_creator(box_height, box_width, box_x_pos, box_y_pos, title):
         #Top Border 
         print(message_term.move_yx(box_y_pos, box_x_pos) + message_term.blue(message_term.bold("┌")) + 
             message_term.blue(message_term.bold("─")) * (box_width - 2) + message_term.blue(message_term.bold("┐")))
@@ -21,14 +21,7 @@ class MessageUI:
         #Bottom Border 
         print(message_term.move_yx(box_y_pos + box_height - 1, box_x_pos) + message_term.blue(message_term.bold("└")) + message_term.blue(message_term.bold("─")) * 
               (box_width - 2) + message_term.blue(message_term.bold('┘'))) 
-    #Draw the messages box 
-    def draw_a_box(self): 
-        with message_term.cbreak(): 
-            open_key_bind = 'm'
-            if message_term.inkey() == open_key_bind:
-                box = self.box_creator(25, 75, 30, 20, message_term.green_on_gray21(message_term.bold(""))) 
-        
-    """
+    """     
     # Function which allows user to write in box 
     def write_in_box(text):
         with message_term.location(31, 19):
@@ -49,6 +42,6 @@ class MessageUI:
                 with message_term.location(31, 19):
                     line = wrapped 
             write_in_box(line)
-    """
+        """
  
     
