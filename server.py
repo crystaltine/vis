@@ -1,22 +1,15 @@
 import socket
 import threading
 import json
-
-from uuid import uuid4
-import random
+import psycopg2
 import datetime
 
-import psycopg2
-
- 
-
-conn_uri="postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
+conn_uri = "postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
 
 def connect_to_db():
     conn = psycopg2.connect(conn_uri)
     conn.set_session(autocommit=True)
     cur = conn.cursor()
-
     return cur
 
 cur = connect_to_db()
@@ -28,6 +21,23 @@ print("Server up!")
 print("Running on " + str(s.getsockname()[0]) + ":" + str(s.getsockname()[1]))
 
 connections = {}
+
+def fetch_recent_messages(conn):
+    try:
+        send_query = """
+            SELECT mi.message_content, mi.message_timestamp, ui.user_name
+            FROM "Discord"."MessageInfo" AS mi
+            JOIN "Discord"."UserInfo" AS ui ON mi.user_id = ui.user_id
+            WHERE mi.server_id = %s
+            ORDER BY mi.message_timestamp DESC
+            LIMIT 15;
+        """
+        cur.execute(send_query, (conn,))
+        messages = cur.fetchall()
+        return messages
+    except Exception as e:
+        print("Error fetching messages:", e)
+        return []
 
 def handle_message(data, conn):
     send = json.dumps(data).encode()
@@ -85,8 +95,8 @@ handlers = {
     "msg": handle_message,
     "account_create": handle_account_creation,
     "username_check": handle_username_check,
-    "login": handle_login
-
+    "login": handle_login,
+    "get_recent_messages": fetch_recent_messages
 }
 
 def handle_connection(conn, addr):
@@ -105,12 +115,17 @@ def handle_connection(conn, addr):
             parsed = json.loads(data.decode())
             for label in handlers:
                 if "type" in parsed and parsed["type"] == label:
-                    parsed["from"] = addr
-                    handlers[label](parsed, conn)
+                    if label == "get_recent_messages":
+                        messages = handlers[label](addr)
+                        conn.sendall(json.dumps({"type": "recent_messages", "data": messages}).encode())
+                    else:
+                        parsed["from"] = addr
+                        handlers[label](parsed, conn)
                     break
-
 
 while True:
     s.listen()
     conn, addr = s.accept()
     threading.Thread(target=handle_connection, args=(conn, addr)).start()
+    print(fetch_recent_messages(conn))
+    print("zaza")
