@@ -76,6 +76,7 @@ def handle_username_check(data, conn):
         conn.sendall("True".encode("utf-8"))
 
 def handle_token_bypass(data, conn):
+    data = data["data"]
     token = data["token"]
     sys_uuid = data["uuid"]
 
