@@ -14,6 +14,7 @@ audio = pyaudio.PyAudio()
 
 import socket
 
+print("A")
 outgoing_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 outgoing_socket.connect(("trigtbh.dev", 5000))
 outgoing_socket.sendall(json.dumps({"type": "outgoing-voice", "channel_id": "test"}).encode("utf-8"))
@@ -86,6 +87,7 @@ def outgoing_thread():
         restructured = pydub.AudioSegment(data, sample_width=2, channels=1, frame_rate=RATE)
 
         if data:
+            #print("YUP")
             restructured = restructured.apply_gain(pydub.utils.ratio_to_db(input_volume / 100))
             outgoing_socket.sendall(restructured.raw_data)
             
@@ -94,15 +96,16 @@ def incoming_thread():
     global output_stream
     while True:
         try:
-            data = incoming_socket.recv(2049)
+            data = incoming_socket.recv(2050)
+            #print(len(data))
         except BlockingIOError:
+            print("Y")
             continue
         if data:
-            if len(data) < 2049:
-                continue
-            channel = int.from_bytes(data[2048:], "little")
-            
-            arr = np.frombuffer(data[:2048], dtype=np.int16)
+            #print(len(daqta))
+            channel = int.from_bytes(data[-2:], "little")
+            print(channel)
+            arr = np.frombuffer(data[:-2], dtype=np.int16)
             # get last element
             data = arr.astype(np.int16).tobytes()
             restructured = pydub.AudioSegment(data, sample_width=2, channels=1, frame_rate=RATE)

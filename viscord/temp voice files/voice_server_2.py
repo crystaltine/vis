@@ -21,7 +21,7 @@ connections = {}
 
 incoming_connections = {}
 outgoing_connections = {}
-ids = []
+ids = [0, 0, 0, 0, 0]
 
 import numpy as np
 no_voice_echo = False
@@ -29,14 +29,13 @@ no_voice_echo = False
 def handle_voice(conn, addr, data):
     channel_id = incoming_connections.get(addr)
     if channel_id:
-        for conn2, addr2 in outgoing_connections[channel_id]:
-            if not no_voice_echo or (addr2 != addr[0]):
-
-                arr = np.frombuffer(data, dtype=np.int16)
-                np.append(arr, ids.index(addr[0]))
-                data = arr.astype(np.int16).tobytes()
-
-                conn2.sendall(data)
+        arr = np.frombuffer(data, dtype=np.int16)
+        arr = np.append(arr, [ids.index(addr[0])])
+        data = arr.astype(np.int16).tobytes()
+        if len(data) == 2050:
+            for conn2, addr2 in outgoing_connections.get(channel_id, set()):
+                if conn2 != conn:
+                    conn2.sendall(data)
 
 def handle_outgoing_voice(conn, addr, data):
     if conn not in incoming_connections:
