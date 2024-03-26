@@ -78,7 +78,7 @@ def handle_token_bypass(data, conn):
     token = data["token"]
     sys_uuid = data["uuid"]
 
-    f = Fernet(key + sys_uuid.encode())
+    f = Fernet(key + str(sys_uuid).encode())
     try:
         token = f.decrypt(token.encode("utf-8")).decode("utf-8")
     except:
@@ -106,7 +106,7 @@ def handle_login(data, conn):
         
         conn.recv(1024)
 
-        f = Fernet(key + sys_uuid.encode())
+        f = Fernet(key + str(sys_uuid).encode())
         conn.sendall(f.encrypt(token.encode("utf-8")))
 
     else:
