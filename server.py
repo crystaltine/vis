@@ -119,7 +119,8 @@ handlers = {
     "msg": handle_message,
     "account_create": handle_account_creation,
     "username_check": handle_username_check,
-    "login": handle_login
+    "login": handle_login,
+    "token_bypass": handle_token_bypass
 
 }
 
