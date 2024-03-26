@@ -20,7 +20,7 @@ def reply_to_message(user_id, message_id, message_content, replied_to_id=None):
             VALUES (%s, %s, %s, %s, %s);
         """,(message_id, replied_to_id, message_content)) 
 
-        # Commit the transaction
+
         cur.commit()
 
         print("Message sent successfully!")
