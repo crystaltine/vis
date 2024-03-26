@@ -98,9 +98,10 @@ def handle_login(data, conn):
     
     sys_uuid = account_data["sys_uuid"]
 
-    send_query = """select 1 from "Discord"."UserInfo" where user_name = %s and user_password = %s"""
+    send_query = """select user_id from "Discord"."UserInfo" where user_name = %s and user_password = %s"""
     cur.execute(send_query, (user, password))
     records = cur.fetchall()
+    print(records)
     if len(records) > 0:
         token = str(uuid4())
         tokens[token] = user
@@ -142,6 +143,7 @@ def handle_connection(conn, addr):
             for label in handlers:
                 if "type" in parsed and parsed["type"] == label:
                     parsed["from"] = addr
+                    print("Endpoint " + label + " called by " + str(addr))
                     handlers[label](parsed, conn)
                     break
 
