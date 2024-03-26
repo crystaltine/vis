@@ -8,7 +8,15 @@ import datetime
 
 import psycopg2
 
- 
+import os
+
+from cryptography.fernet import Fernet
+key = os.getenv("VISCORD_KEY")
+if not key:
+    key = Fernet.generate_key()
+    os.system("export VISCORD_KEY=" + key.decode())
+else:
+    key = key.encode()
 
 conn_uri="postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
 
@@ -50,6 +58,8 @@ def handle_account_creation(data, conn):
     user = account_data["user"]
     password = account_data["password"]
 
+
+
     send_query='''insert into "Discord"."UserInfo" (user_id, user_name, user_password, user_color, user_symbol, user_creation_timestamp) values (%s, %s, %s, %s, %s, %s)'''
     cur.execute(send_query, (uuid, user, password, color, symbol, timestamp))
 
@@ -64,10 +74,27 @@ def handle_username_check(data, conn):
     else:
         conn.sendall("True".encode("utf-8"))
 
+def handle_token_bypass(data, conn):
+    token = data["token"]
+    sys_uuid = data["uuid"]
+
+    f = Fernet(key + sys_uuid.encode())
+    try:
+        token = f.decrypt(token.encode("utf-8")).decode("utf-8")
+    except:
+        conn.sendall("False".encode("utf-8"))
+        return
+    else:
+        conn.sendall(token.encode("utf-8"))
+
+
+
 def handle_login(data, conn):
     account_data = data["data"]
     user = account_data["user"]
     password = account_data["password"]
+    
+    sys_uuid = account_data["sys_uuid"]
 
     send_query = """select 1 from "Discord"."UserInfo" where user_name = %s and user_password = %s"""
     cur.execute(send_query, (user, password))
@@ -76,6 +103,12 @@ def handle_login(data, conn):
         token = str(uuid4())
         tokens[token] = user
         conn.sendall(token.encode("utf-8"))
+        
+        conn.recv(1024)
+
+        f = Fernet(key + sys_uuid.encode())
+        conn.sendall(f.encrypt(token.encode("utf-8")))
+
     else:
         conn.sendall("False".encode("utf-8"))
 
