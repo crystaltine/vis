@@ -27,6 +27,8 @@ class Input(Element):
         visible: bool
         color: str | tuple 
         placeholder_color: str | tuple
+        cursor_bg_color: str | tuple
+        cursor_fg_color: str | tuple
         bg_color: str | tuple
         hovered_bg_color: str | tuple
         selected_bg_color: str | tuple
@@ -52,6 +54,8 @@ class Input(Element):
         "visible": True,
         "color": "black",
         "placeholder_color": "gray",
+        "cursor_bg_color": "black",
+        "cursor_fg_color": "white",
         "bg_color": "white",
         "hovered_bg_color": (230, 230, 230),
         "selected_bg_color": (190, 190, 210),
@@ -100,12 +104,20 @@ class Input(Element):
                 
                 self.curr_text = self.curr_text[:self.cursor_pos] + e.key + self.curr_text[self.cursor_pos:]
                 self.cursor_pos += 1
+
+                # if length of text - leftpos is longer than the width of element, move leftpos up by one
+                if len(self.curr_text) - self.text_left_index > self.client_right - self.client_left:
+                    self.text_left_index += 1
             else:
                 if e.key == 'backspace':
                     # assertion: cursor_pos in [0, len(curr text)]
                     # thus, we need to clip cursor_pos-1 to 0
                     self.curr_text = self.curr_text[:max(0,self.cursor_pos-1)]+self.curr_text[self.cursor_pos:]
                     self.cursor_pos = max(0, self.cursor_pos - 1)
+
+                    # if length of text longer than element width, decrement leftpos (scrolling back toward beginning of text)
+                    if len(self.curr_text) > self.client_right - self.client_left:
+                        self.text_left_index = max(0, self.text_left_index - 1)
 
                 elif e.key == 'del':
                     # assertion: cursor_pos in [0, len(curr text)]
@@ -157,36 +169,27 @@ class Input(Element):
 
         container_width = container_right - container_left
         container_height = container_bottom - container_top
-        
-        # if curr text isn't empty, use it. otherwise, use placeholder
-        text_len = len(self.curr_text or self.placeholder)
-        
+
         # calculate text left position
         # precondition: at least one of left or right is not None (see `init`)
-        if self.style.get("left") is not None:
-            self.client_left = container_left + calculate_dim(container_width, self.style.get("left")) - (
-                0 if self.style.get("text_align") == "left" else
-                text_len // 2 if self.style.get("text_align") == "center" else
-                text_len
-            )
-        else: # we can do this because precondition guarantees that right is not None if left is None
-            self.client_left = container_left + calculate_dim(container_width, self.style.get("right")) - text_len + (
-                0 if self.style.get("text_align") == "left" else
-                text_len // 2 if self.style.get("text_align") == "center" else
-                text_len
-            )
+        Logger.log(f"[input] - self.style.get(left) is {self.style.get('left')}")
+        self.client_left = container_left + (calculate_dim(container_width, self.style.get("left")) if self.style.get("left")
+            else calculate_dim(container_width, self.style.get("right")) - calculate_dim(container_width, self.style.get("width")))
+        
+        self.client_right = container_left + (calculate_dim(container_width, self.style.get("right")) if self.style.get("right")
+            else calculate_dim(container_width, self.style.get("left")) + calculate_dim(container_width, self.style.get("width")))
+        
+        self.client_width = self.client_right - self.client_left
             
         # set client_... attributes just for info
-        # self.client_left is already set
-        self.client_right = self.style.get("right") or self.client_left + calculate_dim(container_width, self.style.get("width"))
         self.client_top = container_top + calculate_dim(container_height, self.style.get("y"))
-        self.client_bottom = self.client_top + 1
+        self.client_bottom = self.client_top + 1 # TODO - support padding
         
         if not self.style.get("visible"): return
         
-        # =======================
-        # TEXT RENDERING:
-        # =======================
+        # ======================= #
+        # TEXT STYLE CALCULATIONS #
+        # ======================= #
 
         style_string = " ".join([
             "bold" if self.style.get("bold") else "",
@@ -199,16 +202,40 @@ class Input(Element):
             else "selected_bg_color"
         )
         regular_text_fcode = fcode(self.style.get("color"), background=bg_color_to_use, style=style_string)
+        cursor_fcode = fcode(self.style.get("cursor_fg_color"), background=self.style.get("cursor_bg_color"), style=style_string)
         placeholder_fcode = fcode(self.style.get("placeholder_color"), background=bg_color_to_use, style=style_string)
 
-        visible_curr_text = self.curr_text[self.text_left_index:min(self.text_left_index + self.client_right - self.client_left]
 
-        # if curr_text is empty, render placeholder instead
-        text_to_render = (
-            fcode(self.style.get("color"), background=bg_color_to_use, style=style_string) + self.visible_curr_text if self.curr_text
-            else fcode(self.style.get("placeholder_color"), background=bg_color_to_use, style=style_string) + self.placeholder
-        )
+        # ============== #
+        # RENDERING TEXT #
+        # ============== #
+
+
+        visible_curr_text = self.curr_text[self.text_left_index:min(self.text_left_index + self.client_right - self.client_left, len(self.curr_text))]
+        text_to_render = ...
+
+        if self.curr_text:
+
+            if self.cursor_pos == len(self.curr_text):
+                # special case where the cursor is at the end
+                text_to_render = (
+                    # splicing the string to highlight the cursor
+                    regular_text_fcode + visible_curr_text[:self.cursor_pos-self.text_left_index-1] + 
+                    cursor_fcode + " "
+                )
+            else:
+                # the user changed the cursor pos, now it is somewhere in the middle of the text
+                text_to_render = (
+                    # splicing the string to highlight the cursor
+                    regular_text_fcode + visible_curr_text[:self.cursor_pos-self.text_left_index] + 
+                    cursor_fcode + visible_curr_text[self.cursor_pos-self.text_left_index] +
+                    regular_text_fcode + visible_curr_text[self.cursor_pos-self.text_left_index+1:]
+                )
+
+        else:
+            text_to_render = placeholder_fcode + self.placeholder[:(self.client_right-self.client_left)]
 
         with Globals.__vis_document__.term.hidden_cursor():
-            print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + " "*self.style.get("width")
+            # refill the input background first
+            print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + " "*(self.client_right - self.client_left))
             print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + text_to_render, end="")

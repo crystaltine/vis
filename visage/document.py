@@ -89,8 +89,9 @@ class Document:
         Renders the document (no bg color yet lol) and all its children.
         """
         #cls()
-        for child in self.children:
-            child.render(self.client_left, self.client_top, self.client_right, self.client_bottom)
+        with self.term.hidden_cursor():
+            for child in self.children:
+                child.render(self.client_left, self.client_top, self.client_right, self.client_bottom)
             
     def add_child(self, child: "Element", index: int = None) -> None:
         """

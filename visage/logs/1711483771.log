@@ -1,0 +1,157 @@
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now d
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now ds
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dsf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dsfe
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dsfee
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dsfees
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dsfeess
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dsfeessf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dsfeessfs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dsfeessfse
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dsfeessfsef
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dsfeessfsefs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dsfeessfsefsf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dsfeessfsefsfe
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dsfeessfsefsfes
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dsfeessfsefsfesf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dsfeessfsefsfesfe
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dsfeessfsefsfesfes
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dsfeessfsefsfesfes, curs_pos is 18
+[input] - self.style.get(left) is 5ch
+Input: non-special key ',': curr text is now dsfeessfsefsfesfes
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dsfeessfsefsfesfes,
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dsfeessfsefsfesfes, , curs_pos is 20
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'G': curr text is now dsfeessfsefsfesfes, 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dsfeessfsefsfesfes, G
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dsfeessfsefsfesfes, Gl
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dsfeessfsefsfesfes, Glo, curs_pos is 23
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now dsfeessfsefsfesfes, Glo
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dsfeessfsefsfesfes, Glo., curs_pos is 24
+[input] - self.style.get(left) is 5ch
+Input: non-special key '_': curr text is now dsfeessfsefsfesfes, Glo.
+[input] - self.style.get(left) is 5ch
+Input: non-special key '_': curr text is now dsfeessfsefsfesfes, Glo._
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'v': curr text is now dsfeessfsefsfesfes, Glo.__
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dsfeessfsefsfesfes, Glo.__v
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dsfeessfsefsfesfes, Glo.__vi
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dsfeessfsefsfesfes, Glo.__vis, curs_pos is 29
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now dsfeessfsefsfesfes, Glo.__vis
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dsfeessfsefsfesfes, Glo.__vis.
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dsfeessfsefsfesfes, Glo.__vis.t
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dsfeessfsefsfesfes, Glo.__vis.te
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'm': curr text is now dsfeessfsefsfesfes, Glo.__vis.ter
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now dsfeessfsefsfesfes, Glo.__vis.term
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dsfeessfsefsfesfes, Glo.__vis.term.
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dsfeessfsefsfesfes, Glo.__vis.term.c, curs_pos is 36
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dsfeessfsefsfesfes, Glo.__vis.term., curs_pos is 35
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dsfeessfsefsfesfes, Glo.__vis.term, curs_pos is 34
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dsfeessfsefsfesfes, Glo.__vis.ter, curs_pos is 33
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'b': curr text is now dsfeessfsefsfesfes, Glo.__vis.ter
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dsfeessfsefsfesfes, Glo.__vis.terb
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dsfeessfsefsfesfes, Glo.__vis.terbr
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dsfeessfsefsfesfes, Glo.__vis.terbre
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dsfeessfsefsfesfes, Glo.__vis.terbrea, curs_pos is 37
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dsfeessfsefsfesfes, Glo.__vis.terbrea, curs_pos is 37
+[input] - self.style.get(left) is 5ch
+Input: non-special key '(': curr text is now dsfeessfsefsfesfes, Glo.__vis.terbrea
+[input] - self.style.get(left) is 5ch
+Input: non-special key ')': curr text is now dsfeessfsefsfesfes, Glo.__vis.terbrea(
+[input] - self.style.get(left) is 5ch
+Input: special key shift_r: curr_text is now dsfeessfsefsfesfes, Glo.__vis.terbrea(), curs_pos is 39
+[input] - self.style.get(left) is 5ch
+Input: non-special key ':': curr text is now dsfeessfsefsfesfes, Glo.__vis.terbrea()
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dsfeessfsefsfesfes, Glo.__vis.terbrea():, curs_pos is 40
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now dsfeessfsefsfesfes, Glo.__vis.terbrea():
+[input] - self.style.get(left) is 5ch
+Input: special key alt_l: curr_text is now dsfeessfsefsfesfes, Glo.__vis.terbrea():, curs_pos is 41
+[input] - self.style.get(left) is 5ch
+Input: special key tab: curr_text is now dsfeessfsefsfesfes, Glo.__vis.terbrea():, curs_pos is 41
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key alt_l: curr_text is now dsfeessfsefsfesfes, Glo.__vis.terbrea():, curs_pos is 41
+[input] - self.style.get(left) is 5ch
+Input: special key tab: curr_text is now dsfeessfsefsfesfes, Glo.__vis.terbrea():, curs_pos is 41
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key alt_l: curr_text is now dsfeessfsefsfesfes, Glo.__vis.terbrea():, curs_pos is 41
+[input] - self.style.get(left) is 5ch
+Input: special key tab: curr_text is now dsfeessfsefsfesfes, Glo.__vis.terbrea():, curs_pos is 41
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>

@@ -1,5 +1,5 @@
 .testclass {
-    bg_color: #3b3a4c
+    bg_color: red
     left: 2ch
     top: 1ch
     width: 100ch
@@ -31,4 +31,9 @@
     bg_color: black
     left: 5ch
     y: 2ch
+}
+
+.testinput {
+    left: 5ch
+    width: 15ch
 }

@@ -1,0 +1,157 @@
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now d
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now df
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dfds
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dfdsf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dfdsfd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfdsfdf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dfdsfdfs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dfdsfdfsd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dfdsfdfsdf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfdsfdfsdfd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfdsfdfsdfds
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfdsfdfsdfdss
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfdsfdfsdfdsss
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfdsfdfsdfdssss
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfdsfdfsdfdsssss
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfdsfdfsdfdssssss
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfdsfdfsdfdsssssss
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dfdsfdfsdfdssssssss
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dfdsfdfsdfdsssssssse
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dfdsfdfsdfdssssssssee
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfdsfdfsdfdssssssssee, curs_pos is 21
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfdsfdfsdfdsssssssse, curs_pos is 20
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfdsfdfsdfdssssssss, curs_pos is 19
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfdsfdfsdfdsssssss, curs_pos is 18
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfdsfdfsdfdssssss, curs_pos is 17
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfdsfdfsdfdsssss, curs_pos is 16
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfdsfdfsdfdssss, curs_pos is 15
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfdsfdfsdfdsss, curs_pos is 14
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfdsfdfsdfdss, curs_pos is 13
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfdsfdfsdfds, curs_pos is 12
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfdsfdfsdfd, curs_pos is 11
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfdsfdfsdf, curs_pos is 10
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfdsfdfsd, curs_pos is 9
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfdsfdfs, curs_pos is 8
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dfdsfdfs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dfdsfdfsc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now dfdsfdfscc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dfdsfdfsccx
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now dfdsfdfsccxc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dfdsfdfsccxcx
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now dfdsfdfsccxcxc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dfdsfdfsccxcxcx
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dfdsfdfsccxcxcxa
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dfdsfdfsccxcxcxaa, curs_pos is 17
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'A': curr text is now dfdsfdfsccxcxcxaa
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dfdsfdfsccxcxcxaaA, curs_pos is 18
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'A': curr text is now dfdsfdfsccxcxcxaaA
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'A': curr text is now dfdsfdfsccxcxcxaaAA
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dfdsfdfsccxcxcxaaAAA
+[input] - self.style.get(left) is 5ch
+Input: non-special key '-': curr text is now dfdsfdfsccxcxcxaaAAA 
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dfdsfdfsccxcxcxaaAAA -
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dfdsfdfsccxcxcxaaAAA - 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dfdsfdfsccxcxcxaaAAA - l
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dfdsfdfsccxcxcxaaAAA - le
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dfdsfdfsccxcxcxaaAAA - lef
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'p': curr text is now dfdsfdfsccxcxcxaaAAA - left
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dfdsfdfsccxcxcxaaAAA - leftp
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfdsfdfsccxcxcxaaAAA - leftpo
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dfdsfdfsccxcxcxaaAAA - leftpos
+[input] - self.style.get(left) is 5ch
+Input: non-special key '-': curr text is now dfdsfdfsccxcxcxaaAAA - leftpos 
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dfdsfdfsccxcxcxaaAAA - leftpos -
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfdsfdfsccxcxcxaaAAA - leftpos - 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dfdsfdfsccxcxcxaaAAA - leftpos - s
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dfdsfdfsccxcxcxaaAAA - leftpos - se
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dfdsfdfsccxcxcxaaAAA - leftpos - sel
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now dfdsfdfsccxcxcxaaAAA - leftpos - self
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dfdsfdfsccxcxcxaaAAA - leftpos - self., curs_pos is 38
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dfdsfdfsccxcxcxaaAAA - leftpos - self., curs_pos is 38
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now dfdsfdfsccxcxcxaaAAA - leftpos - self.
+[input] - self.style.get(left) is 5ch
+Input: special key alt_l: curr_text is now dfdsfdfsccxcxcxaaAAA - leftpos - self., curs_pos is 39
+[input] - self.style.get(left) is 5ch
+Input: special key tab: curr_text is now dfdsfdfsccxcxcxaaAAA - leftpos - self., curs_pos is 39
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>

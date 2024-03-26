@@ -1,0 +1,951 @@
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now d
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now ddd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now ddda
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dddaa
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dddaaa
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dddaaaa
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaaaa
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now dddaaaaac
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now dddaaaaacx
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaaaacxx
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaaaacxxc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaaaacxxcc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaaaacxxccc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaaaacxxcccc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaaaacxxccccc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaaaacxxcccccc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaaaacxxccccccc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaaaacxxcccccccc
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxxcccccccc, curs_pos is 19
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxxccccccc, curs_pos is 18
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxxcccccc, curs_pos is 17
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxxccccc, curs_pos is 16
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaaaacxxccccc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaaaacxxcccccd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaaaacxxcccccdf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaaaacxxcccccdfd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaaaacxxcccccdfdf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaaaacxxcccccdfdfd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaaaacxxcccccdfdfdf
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxxcccccdfdfdf, curs_pos is 22
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxxcccccdfdfd, curs_pos is 21
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxxcccccdfdf, curs_pos is 20
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxxcccccdfd, curs_pos is 19
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxxcccccdf, curs_pos is 18
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxxcccccd, curs_pos is 17
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxxccccc, curs_pos is 16
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxxcccc, curs_pos is 15
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxxccc, curs_pos is 14
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxxcc, curs_pos is 13
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxxc, curs_pos is 12
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacxx, curs_pos is 11
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacx, curs_pos is 10
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaac, curs_pos is 9
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaaaac
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaaaacs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaaaacsd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaaaacsdf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaaaacsdfs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaaaacsdfsd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaaaacsdfsdf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaaaacsdfsdfd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaaaacsdfsdfdf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaaaacsdfsdfdfs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaaaacsdfsdfdfsd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaaaacsdfsdfdfsdd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaaaacsdfsdfdfsdds
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaaaacsdfsdfdfsddss
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaaaacsdfsdfdfsddssd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaaaacsdfsdfdfsddssdf
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacsdfsdfdfsddssdf, curs_pos is 24
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacsdfsdfdfsddssd, curs_pos is 23
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacsdfsdfdfsddss, curs_pos is 22
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacsdfsdfdfsdds, curs_pos is 21
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacsdfsdfdfsdd, curs_pos is 20
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacsdfsdfdfsd, curs_pos is 19
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacsdfsdfdfs, curs_pos is 18
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacsdfsdfdf, curs_pos is 17
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacsdfsdfd, curs_pos is 16
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacsdfsdf, curs_pos is 15
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacsdfsd, curs_pos is 14
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacsdfs, curs_pos is 13
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacsdf, curs_pos is 12
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacsd, curs_pos is 11
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaacs, curs_pos is 10
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaac, curs_pos is 9
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaaa, curs_pos is 8
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaaa, curs_pos is 7
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaa, curs_pos is 6
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaa
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaas
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaasdf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaasdfs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaasdfsdf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaasdfsdfsf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaasdfsdfsfs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaasdfsdfsfsd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfsfsds
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'v': curr text is now dddaaasdfsdfsfsdsf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'v': curr text is now dddaaasdfsdfsfsdsfv
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'v': curr text is now dddaaasdfsdfsfsdsfvv
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'v': curr text is now dddaaasdfsdfsfsdsfvvv
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'v': curr text is now dddaaasdfsdfsfsdsfvvvv
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'v': curr text is now dddaaasdfsdfsfsdsfvvvvv
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now dddaaasdfsdfsfsdsfvvvvvv
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now dddaaasdfsdfsfsdsfvvvvvvx
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now dddaaasdfsdfsfsdsfvvvvvvxx
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxx
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxx
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxa
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'm': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaa
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'm': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaam
+[input] - self.style.get(left) is 5ch
+Input: special key alt_l: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaamm, curs_pos is 32
+[input] - self.style.get(left) is 5ch
+Input: special key tab: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaamm, curs_pos is 32
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key alt_l: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaamm, curs_pos is 32
+[input] - self.style.get(left) is 5ch
+Input: special key tab: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaamm, curs_pos is 32
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key left: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaamm, curs_pos is 31
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: left
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key left: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaamm, curs_pos is 30
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: left
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key left: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaamm, curs_pos is 29
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: left
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: non-special key 'd': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadamm
+[input] - self.style.get(left) is 5ch
+Input: special key alt_l: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaddamm, curs_pos is 31
+[input] - self.style.get(left) is 5ch
+Input: special key tab: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaddamm, curs_pos is 31
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key enter: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaddamm, curs_pos is 31
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaddamm, curs_pos is 31
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaddamm, curs_pos is 31
+[input] - self.style.get(left) is 5ch
+Input: non-special key '#': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxaddamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd#amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# oamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# ofamm
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# ofamm, curs_pos is 35
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# oamm, curs_pos is 34
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# amm, curs_pos is 33
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# iamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# ifamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if lamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if leamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'g': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if lenamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if lengamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'h': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if lengtamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if lengthamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length oamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length ofamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of tamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of teamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of texamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of textamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text lamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text loamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'g': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text lonamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longeamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longeramm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'h': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer tamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer thamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer thaamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer thanamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than eamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than elamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'm': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than eleamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than elemamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than elemeamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than elemenamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than elementamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'w': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element wamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element wiamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element widamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'h': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element widtamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ',': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element widthamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width,amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'g': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, gamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, goamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'b': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go bamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go baamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'k': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go bacamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go backamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back oamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back onamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back oneamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one leamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'p': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one leftamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one leftpamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one leftpoamm
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one leftposamm, curs_pos is 97
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one leftpoamm, curs_pos is 96
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one leftpamm, curs_pos is 95
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one leftamm, curs_pos is 94
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefamm, curs_pos is 93
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'u': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'b': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsuamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtramm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtraamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracamm
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtractamm, curs_pos is 101
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracamm, curs_pos is 100
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdeamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecramm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'm': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecreamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecremamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecremeamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecremenamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrementamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement lamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement lefamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'p': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpoamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftposamm
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos amm, curs_pos is 118
+[input] - self.style.get(left) is 5ch
+Input: non-special key '(': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (samm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scramm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scroamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrollamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolliamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'g': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrollinamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'b': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrollingamm
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrollingamm, curs_pos is 128
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrollingamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'b': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling aamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'k': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abcamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abckamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck tamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'w': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck toamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towaamm
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towaramm, curs_pos is 139
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towaamm, curs_pos is 138
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towamm, curs_pos is 137
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'b': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towbamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towbaamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'k': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towbacamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towbackamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback tamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'w': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback towamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback towaamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback towaramm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback towardamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'b': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward bamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'g': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward begamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward begiamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginnamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginniamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'g': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginninamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginningamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning oamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning ofamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of amm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of tamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of teamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of texamm
+[input] - self.style.get(left) is 5ch
+Input: special key right: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textamm, curs_pos is 167
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: right
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key enter: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textamm, curs_pos is 167
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textamm, curs_pos is 167
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textamm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaimm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaifmm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif mm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif lmm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif lemm
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif lenmm, curs_pos is 174
+[input] - self.style.get(left) is 5ch
+Input: non-special key '(': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif lenmm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(mm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(smm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(semm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(selmm
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(selfmm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.mm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'u': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.cmm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.cumm
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curmm, curs_pos is 183
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key right: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curmm, curs_pos is 184
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: right
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curmm
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm m, curs_pos is 185
+[input] - self.style.get(left) is 5ch
+Input: non-special key '>': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm m
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm >m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > sm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > sem
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > selm
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > selfm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.cm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.clm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.clim
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.cliem
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.clienm
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.clientm, curs_pos is 198
+[input] - self.style.get(left) is 5ch
+Input: non-special key '_': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.clientm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_rm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'g': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_rim
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'h': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_rigm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_righm
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_rightm
+[input] - self.style.get(left) is 5ch
+Input: non-special key '-': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right m
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right -m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - sm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - sem
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - selm
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - selfm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.cm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.clm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.clim
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.cliem
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.clienm
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.clientm, curs_pos is 218
+[input] - self.style.get(left) is 5ch
+Input: non-special key ')': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.clientm
+[input] - self.style.get(left) is 5ch
+Input: non-special key '_': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client)m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client)_m
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client)_m, curs_pos is 220
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client)m, curs_pos is 219
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.clientm, curs_pos is 218
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.clientm, curs_pos is 218
+[input] - self.style.get(left) is 5ch
+Input: non-special key '_': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.clientm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_lm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_lem
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_lefm
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_leftm, curs_pos is 223
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_leftm, curs_pos is 223
+[input] - self.style.get(left) is 5ch
+Input: non-special key ':': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_leftm
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:m, curs_pos is 224
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:sm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:sem
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:selm
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:selfm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.cm
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.cm, curs_pos is 230
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.m, curs_pos is 229
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.tm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.tem
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.texm
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.textm, curs_pos is 233
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.textm
+[input] - self.style.get(left) is 5ch
+Input: non-special key '-': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text m
+[input] - self.style.get(left) is 5ch
+Input: non-special key '=': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -m
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -=m
+[input] - self.style.get(left) is 5ch
+Input: non-special key '1': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= m
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= 1m, curs_pos is 238
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= 1m
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= 1m, curs_pos is 238
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= m, curs_pos is 237
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -=m, curs_pos is 236
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -m, curs_pos is 235
+[input] - self.style.get(left) is 5ch
+Input: non-special key '=': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -m
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -=m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'm': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= mm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= mim
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= minm, curs_pos is 240
+[input] - self.style.get(left) is 5ch
+Input: non-special key '(': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= minm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(sm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(sem
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(selm
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(selfm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.m
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.tm
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.tem, curs_pos is 248
+[input] - self.style.get(left) is 5ch
+Input: special key left: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.tem, curs_pos is 247
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: left
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key left: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.tem, curs_pos is 246
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: left
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key left: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.tem, curs_pos is 245
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: left
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key right: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.tem, curs_pos is 246
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: right
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key right: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.tem, curs_pos is 247
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: right
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.em, curs_pos is 246
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.em, curs_pos is 246
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.em
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.aem
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.axem, curs_pos is 248
+[input] - self.style.get(left) is 5ch
+Input: special key right: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.axem, curs_pos is 249
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: right
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key right: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.axem, curs_pos is 250
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: right
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.axe, curs_pos is 249
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.ax, curs_pos is 248
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.ax, curs_pos is 248
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.a, curs_pos is 247
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self., curs_pos is 246
+[input] - self.style.get(left) is 5ch
+Input: non-special key '0': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.
+[input] - self.style.get(left) is 5ch
+Input: non-special key ',': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0,
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, s
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, se
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, sel
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, self
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, self.
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, self.t
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, self.te
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, self.tex
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, self.text, curs_pos is 258
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, self.text
+[input] - self.style.get(left) is 5ch
+Input: non-special key '-': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, self.text 
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, self.text -
+[input] - self.style.get(left) is 5ch
+Input: non-special key '1': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, self.text - 
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, self.text - 1, curs_pos is 262
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, self.text - 1
+[input] - self.style.get(left) is 5ch
+Input: special key alt_l: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, self.text - 1, curs_pos is 263
+[input] - self.style.get(left) is 5ch
+Input: special key tab: curr_text is now dddaaasdfsdfsfsdsfvvvvvvxxxxadd# if length of text longer than element width, go back one lefsubtracdecrement leftpos (scrolling abck towback toward beginning of textaif len(self.curm > self.client_right - self.client_left:self.text -= min(self.0, self.text - 1, curs_pos is 263
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>

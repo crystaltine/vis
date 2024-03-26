@@ -1,0 +1,1081 @@
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now d
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now df
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dfs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dfsd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dfsdi
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dfsdif
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsdif, curs_pos is 6
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsdi, curs_pos is 5
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'v': curr text is now dfsdi
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dfsdiv
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfsdivi
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dfsdivis
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dfsdivisi, curs_pos is 9
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsdivis, curs_pos is 8
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dfsdivis
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'u': curr text is now dfsdivisc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dfsdiviscu
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dfsdiviscur, curs_pos is 11
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsdiviscu, curs_pos is 10
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dfsdiviscu, curs_pos is 10
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dfsdiviscu, curs_pos is 10
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsdivisc, curs_pos is 9
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now dfsdivisc
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dfsdivisc., curs_pos is 10
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsdivisc, curs_pos is 9
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsdivis, curs_pos is 8
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsdivi, curs_pos is 7
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsdiv, curs_pos is 6
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsdi, curs_pos is 5
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsd, curs_pos is 4
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfs, curs_pos is 3
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now df, curs_pos is 2
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now d, curs_pos is 1
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now d, curs_pos is 1
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now d
+[input] - self.style.get(left) is 5ch
+Input: special key alt_l: curr_text is now d, curs_pos is 2
+[input] - self.style.get(left) is 5ch
+Input: special key tab: curr_text is now d, curs_pos is 2
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: non-special key 's': curr text is now d
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now ds
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dss
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dssa
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dssas
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dssasd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dssasds
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dssasdsa
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dssasdsad
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dssasdsads
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dssasdsadsa
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dssasdsadsas
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dssasdsadsasd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dssasdsadsasds
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dssasdsadsasdsa
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dssasdsadsasdsad
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dssasdsadsasdsada
+[input] - self.style.get(left) is 5ch
+Input: special key insert: curr_text is now dssasdsadsasdsadas, curs_pos is 19
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdsada, curs_pos is 18
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdsad, curs_pos is 17
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdsa, curs_pos is 16
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasds, curs_pos is 15
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasd, curs_pos is 14
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dssasdsadsasd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dssasdsadsasda
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dssasdsadsasdas
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now dssasdsadsasdasd
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdasd, curs_pos is 17
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdas, curs_pos is 16
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasda, curs_pos is 15
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dssasdsadsasda
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dssasdsadsasdac, curs_pos is 16
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dssasdsadsasdac
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'u': curr text is now dssasdsadsasdacc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dssasdsadsasdaccu
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dssasdsadsasdaccur
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dssasdsadsasdaccuro
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccuro, curs_pos is 20
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccur, curs_pos is 19
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dssasdsadsasdaccur
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dssasdsadsasdaccurs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dssasdsadsasdaccurso
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor, curs_pos is 22
+[input] - self.style.get(left) is 5ch
+Input: non-special key '_': curr text is now dssasdsadsasdaccursor
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'b': curr text is now dssasdsadsasdaccursor_
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'h': curr text is now dssasdsadsasdaccursor_b
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bh, curs_pos is 25
+[input] - self.style.get(left) is 5ch
+Input: non-special key '_': curr text is now dssasdsadsasdaccursor_bh
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bh, curs_pos is 25
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'g': curr text is now dssasdsadsasdaccursor_bh
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bh, curs_pos is 25
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_b, curs_pos is 24
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'g': curr text is now dssasdsadsasdaccursor_b
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg, curs_pos is 25
+[input] - self.style.get(left) is 5ch
+Input: non-special key '_': curr text is now dssasdsadsasdaccursor_bg
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dssasdsadsasdaccursor_bg_
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dssasdsadsasdaccursor_bg_c
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dssasdsadsasdaccursor_bg_co
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dssasdsadsasdaccursor_bg_col
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dssasdsadsasdaccursor_bg_colo
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color, curs_pos is 31
+[input] - self.style.get(left) is 5ch
+Input: non-special key ':': curr text is now dssasdsadsasdaccursor_bg_color
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dssasdsadsasdaccursor_bg_color:
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dssasdsadsasdaccursor_bg_color: 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dssasdsadsasdaccursor_bg_color: s
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dssasdsadsasdaccursor_bg_color: st
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dssasdsadsasdaccursor_bg_color: str
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str , curs_pos is 37
+[input] - self.style.get(left) is 5ch
+Input: non-special key '|': curr text is now dssasdsadsasdaccursor_bg_color: str 
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dssasdsadsasdaccursor_bg_color: str |
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | , curs_pos is 39
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dssasdsadsasdaccursor_bg_color: str | 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'u': curr text is now dssasdsadsasdaccursor_bg_color: str | t
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'p': curr text is now dssasdsadsasdaccursor_bg_color: str | tu
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dssasdsadsasdaccursor_bg_color: str | tup
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tup, curs_pos is 42
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dssasdsadsasdaccursor_bg_color: str | tup
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dssasdsadsasdaccursor_bg_color: str | tupl
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuple, curs_pos is 44
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuple, curs_pos is 44
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dssasdsadsasdaccursor_bg_color: str | tuple
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'u': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplec
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecu
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecur
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecurs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecurso
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor, curs_pos is 50
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor, curs_pos is 50
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor, curs_pos is 50
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor, curs_pos is 50
+[input] - self.style.get(left) is 5ch
+Input: non-special key '_': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_f
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_f, curs_pos is 52
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_f, curs_pos is 52
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'g': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_f
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg, curs_pos is 53
+[input] - self.style.get(left) is 5ch
+Input: non-special key '_': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_c
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_co
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_col
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_colo
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color, curs_pos is 59
+[input] - self.style.get(left) is 5ch
+Input: non-special key ':': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color
+[input] - self.style.get(left) is 5ch
+Input: non-special key ':': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color:
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color:, curs_pos is 60
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color:
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: s
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: st
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str , curs_pos is 65
+[input] - self.style.get(left) is 5ch
+Input: non-special key '|': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str 
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str |
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'u': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | t
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'p': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tu
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tup
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tupl
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple, curs_pos is 72
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple, curs_pos is 73
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple, curs_pos is 74
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple, curs_pos is 74
+[input] - self.style.get(left) is 5ch
+Input: non-special key '"': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple", curs_pos is 75
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple"
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple", curs_pos is 76
+[input] - self.style.get(left) is 5ch
+Input: non-special key '"': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple"
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple"", curs_pos is 77
+[input] - self.style.get(left) is 5ch
+Input: non-special key ':': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple""
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple"":, curs_pos is 78
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple"":, curs_pos is 78
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple"", curs_pos is 77
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple", curs_pos is 76
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple"
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" , curs_pos is 77
+[input] - self.style.get(left) is 5ch
+Input: non-special key '"': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'b': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "b
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "bl
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "bla
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'k': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "blac
+[input] - self.style.get(left) is 5ch
+Input: special key right: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black, curs_pos is 83
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: right
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: non-special key ',': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,, curs_pos is 84
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,, curs_pos is 84
+[input] - self.style.get(left) is 5ch
+Input: non-special key '"': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'u': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"c
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cu
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cur
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"curs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"curso
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor, curs_pos is 91
+[input] - self.style.get(left) is 5ch
+Input: non-special key '_': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'g': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_f
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg, curs_pos is 94
+[input] - self.style.get(left) is 5ch
+Input: non-special key '_': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_c
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_co
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_col
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_colo
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color, curs_pos is 100
+[input] - self.style.get(left) is 5ch
+Input: non-special key '"': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color
+[input] - self.style.get(left) is 5ch
+Input: non-special key ':': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color"
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color":
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": , curs_pos is 103
+[input] - self.style.get(left) is 5ch
+Input: non-special key '"': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'w': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'h': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "w
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "wh
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "whi
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "whit
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "white, curs_pos is 109
+[input] - self.style.get(left) is 5ch
+Input: non-special key ':': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "white
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "white, curs_pos is 109
+[input] - self.style.get(left) is 5ch
+Input: special key right: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "white, curs_pos is 109
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: right
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: non-special key ',': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "white
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "white,, curs_pos is 110
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "white,
+[input] - self.style.get(left) is 5ch
+Input: special key alt_l: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "white,, curs_pos is 111
+[input] - self.style.get(left) is 5ch
+Input: special key tab: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "white,, curs_pos is 111
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "white,, curs_pos is 110
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "white, curs_pos is 109
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "whit, curs_pos is 108
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "whi, curs_pos is 107
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "wh, curs_pos is 106
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": "w, curs_pos is 105
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": ", curs_pos is 104
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color": , curs_pos is 103
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color":, curs_pos is 102
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color", curs_pos is 101
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_color, curs_pos is 100
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_colo, curs_pos is 99
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_col, curs_pos is 98
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_co, curs_pos is 97
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_c, curs_pos is 96
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg_, curs_pos is 95
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_fg, curs_pos is 94
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_f, curs_pos is 93
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor_, curs_pos is 92
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cursor, curs_pos is 91
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"curso, curs_pos is 90
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"curs, curs_pos is 89
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cur, curs_pos is 88
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"cu, curs_pos is 87
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,"c, curs_pos is 86
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,", curs_pos is 85
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black,, curs_pos is 84
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "black, curs_pos is 83
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "blac, curs_pos is 82
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "bla, curs_pos is 81
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "bl, curs_pos is 80
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" "b, curs_pos is 79
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" ", curs_pos is 78
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple" , curs_pos is 77
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple", curs_pos is 76
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple", curs_pos is 75
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple, curs_pos is 74
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple, curs_pos is 73
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tuple, curs_pos is 72
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tupl, curs_pos is 71
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tup, curs_pos is 70
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | tu, curs_pos is 69
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | t, curs_pos is 68
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str | , curs_pos is 67
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str |, curs_pos is 66
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str , curs_pos is 65
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: str, curs_pos is 64
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: st, curs_pos is 63
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: s, curs_pos is 62
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color: , curs_pos is 61
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color:, curs_pos is 60
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_color, curs_pos is 59
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_colo, curs_pos is 58
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_col, curs_pos is 57
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_co, curs_pos is 56
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_c, curs_pos is 55
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg_, curs_pos is 54
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_fg, curs_pos is 53
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_f, curs_pos is 52
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor_, curs_pos is 51
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecursor, curs_pos is 50
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecurso, curs_pos is 49
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecurs, curs_pos is 48
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecur, curs_pos is 47
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplecu, curs_pos is 46
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuplec, curs_pos is 45
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tuple, curs_pos is 44
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tupl, curs_pos is 43
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tup, curs_pos is 42
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | tu, curs_pos is 41
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | t, curs_pos is 40
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str | , curs_pos is 39
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str |, curs_pos is 38
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str , curs_pos is 37
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: str, curs_pos is 36
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: st, curs_pos is 35
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: s, curs_pos is 34
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color: , curs_pos is 33
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color:, curs_pos is 32
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_color, curs_pos is 31
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_colo, curs_pos is 30
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_col, curs_pos is 29
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_co, curs_pos is 28
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_c, curs_pos is 27
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg_, curs_pos is 26
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_bg, curs_pos is 25
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_b, curs_pos is 24
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor_, curs_pos is 23
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccursor, curs_pos is 22
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccurso, curs_pos is 21
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccurs, curs_pos is 20
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccur, curs_pos is 19
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdaccu, curs_pos is 18
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdacc, curs_pos is 17
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasdac, curs_pos is 16
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasda, curs_pos is 15
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsasd, curs_pos is 14
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsas, curs_pos is 13
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsadsa, curs_pos is 12
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsads, curs_pos is 11
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsad, curs_pos is 10
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasdsa, curs_pos is 9
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasds, curs_pos is 8
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssasd, curs_pos is 7
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssas, curs_pos is 6
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dssa, curs_pos is 5
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dss, curs_pos is 4
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now ds, curs_pos is 3
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now d, curs_pos is 2
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now d, curs_pos is 1
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now , curs_pos is 0
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now , curs_pos is 0
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now , curs_pos is 0
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now , curs_pos is 0
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now , curs_pos is 0
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now , curs_pos is 0
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now , curs_pos is 0
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now , curs_pos is 0
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now 
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now , curs_pos is 1
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now 
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now s
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now s, curs_pos is 4
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now , curs_pos is 3
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now , curs_pos is 2
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now , curs_pos is 2
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'g': curr text is now f
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now fg
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now fgs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now fgsd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'g': curr text is now fgsdf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now fgsdfg
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'g': curr text is now fgsdfgd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now fgsdfgdg
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now fgsdfgdgd
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now fgsdfgdgdf, curs_pos is 13
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now fgsdfgdgdf
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now fgsdfgdgdf, curs_pos is 14
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now fgsdfgdgdf
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now fgsdfgdgdf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'b': curr text is now fgsdfgdgdf 
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now fgsdfgdgdf , curs_pos is 16
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now fgsdfgdgdf, curs_pos is 15
+[input] - self.style.get(left) is 5ch
+Input: special key left: curr_text is now fgsdfgdgdf, curs_pos is 14
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: left
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key left: curr_text is now fgsdfgdgdf, curs_pos is 13
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: left
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key left: curr_text is now fgsdfgdgdf, curs_pos is 12
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: left
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: non-special key 'k': curr text is now fgsdfgdgdf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'k': curr text is now fgsdfgdgdkf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'k': curr text is now fgsdfgdgdkkf
+[input] - self.style.get(left) is 5ch
+Input: non-special key '[': curr text is now fgsdfgdgdkkkf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now fgsdfgdgdkkk[f
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now fgsdfgdgdkkk[tf
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now fgsdfgdgdkkk[tf, curs_pos is 17
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now fgsdfgdgdkkk[f, curs_pos is 16
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now fgsdfgdgdkkk[f, curs_pos is 16
+[input] - self.style.get(left) is 5ch
+Input: non-special key ':': curr text is now fgsdfgdgdkkk[f
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now fgsdfgdgdkkk[:f
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'u': curr text is now fgsdfgdgdkkk[:cf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now fgsdfgdgdkkk[:cuf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now fgsdfgdgdkkk[:curf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now fgsdfgdgdkkk[:cursf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now fgsdfgdgdkkk[:cursof
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now fgsdfgdgdkkk[:cursorf, curs_pos is 23
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now fgsdfgdgdkkk[:cursof, curs_pos is 22
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now fgsdfgdgdkkk[:cursof
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'w': curr text is now fgsdfgdgdkkk[:cursoaf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now fgsdfgdgdkkk[:cursoawf
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now fgsdfgdgdkkk[:cursoawf, curs_pos is 24
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now fgsdfgdgdkkk[:cursoaf, curs_pos is 23
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now fgsdfgdgdkkk[:cursof, curs_pos is 22
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now fgsdfgdgdkkk[:cursof
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now fgsdfgdgdkkk[:cursosf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now fgsdfgdgdkkk[:cursosef
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now fgsdfgdgdkkk[:cursoself
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now fgsdfgdgdkkk[:cursoselff
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now fgsdfgdgdkkk[:cursoself.f
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'u': curr text is now fgsdfgdgdkkk[:cursoself.cf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now fgsdfgdgdkkk[:cursoself.cuf
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now fgsdfgdgdkkk[:cursoself.curf, curs_pos is 30
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now fgsdfgdgdkkk[:cursoself.curf, curs_pos is 30
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now fgsdfgdgdkkk[:cursoself.cuf, curs_pos is 29
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now fgsdfgdgdkkk[:cursoself.cuf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'u': curr text is now fgsdfgdgdkkk[:cursoself.cucf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now fgsdfgdgdkkk[:cursoself.cucuf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now fgsdfgdgdkkk[:cursoself.cucurf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now fgsdfgdgdkkk[:cursoself.cucursf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now fgsdfgdgdkkk[:cursoself.cucursof
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now fgsdfgdgdkkk[:cursoself.cucursorf, curs_pos is 35
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: non-special key '-': curr text is now fgsdfgdgdkkk[:cursoself.cucursorf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-f
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-sf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-sef
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-selff
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.f
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.tf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'x': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.tef
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.texf
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf, curs_pos is 45
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key right: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf, curs_pos is 46
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: right
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: non-special key ' ': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf , curs_pos is 47
+[input] - self.style.get(left) is 5ch
+Input: non-special key '+': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf 
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf +
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + , curs_pos is 49
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key up: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + , curs_pos is 49
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: up
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key up: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + , curs_pos is 49
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: up
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key ctrl_l: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + , curs_pos is 49
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + 
+[input] - self.style.get(left) is 5ch
+Input: special key up: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + , curs_pos is 50
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: up
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key enter: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + , curs_pos is 50
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key up: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + , curs_pos is 50
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: up
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key tab: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + , curs_pos is 50
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key tab: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + , curs_pos is 50
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: non-special key 'c': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'u': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + c
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cu
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cur
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + curs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + curso
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor, curs_pos is 56
+[input] - self.style.get(left) is 5ch
+Input: non-special key '_': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_f
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fco
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcod
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode
+[input] - self.style.get(left) is 5ch
+Input: non-special key '=': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode 
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode =
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = f
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fc
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fco
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcod
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode, curs_pos is 70
+[input] - self.style.get(left) is 5ch
+Input: non-special key '(': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(s
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(se
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(sel
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.s
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'y': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.st
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.sty
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.styl
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'g': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.g
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.ge
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get, curs_pos is 85
+[input] - self.style.get(left) is 5ch
+Input: non-special key '(': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get
+[input] - self.style.get(left) is 5ch
+Input: non-special key '"': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get(
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'p': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get("
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get("p
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get("pl
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'c': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get("pla
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get("plac
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'h': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get("place
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'o': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get("placeh
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get("placeho
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get("placehol
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get("placehold
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get("placeholde
+[input] - self.style.get(left) is 5ch
+Input: non-special key ',': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get("placeholder
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get("placeholder,
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get("placeholder,, curs_pos is 99
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now fgsdfgdgdkkk[:cursoself.cucursor-self.textf + cursor_fcode = fcode(self.style.get("placeholder, curs_pos is 98
+[input] - self.style.get(left) is 5ch

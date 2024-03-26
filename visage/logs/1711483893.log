@@ -1,0 +1,375 @@
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now d
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now df
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dfs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dfsn
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'n': curr text is now dfsnn
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dfsnnn
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dfsnnn 
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dfsnnn  
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'u': curr text is now dfsnnn   
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'j': curr text is now dfsnnn   u
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'j': curr text is now dfsnnn   uj
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'j': curr text is now dfsnnn   ujj
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'j': curr text is now dfsnnn   ujjj
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'j': curr text is now dfsnnn   ujjjj
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'j': curr text is now dfsnnn   ujjjjj
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'j': curr text is now dfsnnn   ujjjjjj
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'j': curr text is now dfsnnn   ujjjjjjj
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'j': curr text is now dfsnnn   ujjjjjjjj
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'j': curr text is now dfsnnn   ujjjjjjjjj
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   ujjjjjjjjj, curs_pos is 19
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   ujjjjjjjj, curs_pos is 18
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   ujjjjjjj, curs_pos is 17
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   ujjjjjj, curs_pos is 16
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   ujjjjj, curs_pos is 15
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   ujjjj, curs_pos is 14
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   ujjj, curs_pos is 13
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   ujj, curs_pos is 12
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   uj, curs_pos is 11
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'm': curr text is now dfsnnn   uj
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'm': curr text is now dfsnnn   ujm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'm': curr text is now dfsnnn   ujmm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'm': curr text is now dfsnnn   ujmmm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'm': curr text is now dfsnnn   ujmmmm
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'm': curr text is now dfsnnn   ujmmmmm
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   ujmmmmm, curs_pos is 16
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   ujmmmm, curs_pos is 15
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   ujmmm, curs_pos is 14
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   ujmm, curs_pos is 13
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   ujm, curs_pos is 12
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   uj, curs_pos is 11
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   u, curs_pos is 10
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn   , curs_pos is 9
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn  , curs_pos is 8
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn , curs_pos is 7
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnnn, curs_pos is 6
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsnn, curs_pos is 5
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsn, curs_pos is 4
+[input] - self.style.get(left) is 5ch
+Input: special key left: curr_text is now dfsn, curs_pos is 3
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: left
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key left: curr_text is now dfsn, curs_pos is 2
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: left
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key delete: curr_text is now dfsn, curs_pos is 2
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfsn
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dfssn
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dfsasn
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dfsaasn, curs_pos is 5
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dfsaasn
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dfsaaasn, curs_pos is 6
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfsaaasn
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dfsaaassn, curs_pos is 7
+[input] - self.style.get(left) is 5ch
+Input: non-special key '7': curr text is now dfsaaassn
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dfsaaas7sn, curs_pos is 8
+[input] - self.style.get(left) is 5ch
+Input: non-special key '7': curr text is now dfsaaas7sn
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dfsaaas77sn, curs_pos is 9
+[input] - self.style.get(left) is 5ch
+Input: non-special key '7': curr text is now dfsaaas77sn
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dfsaaas777sn, curs_pos is 10
+[input] - self.style.get(left) is 5ch
+Input: non-special key '7': curr text is now dfsaaas777sn
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dfsaaas7777sn, curs_pos is 11
+[input] - self.style.get(left) is 5ch
+Input: non-special key '7': curr text is now dfsaaas7777sn
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dfsaaas77777sn, curs_pos is 12
+[input] - self.style.get(left) is 5ch
+Input: non-special key '7': curr text is now dfsaaas77777sn
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dfsaaas777777sn, curs_pos is 13
+[input] - self.style.get(left) is 5ch
+Input: non-special key '7': curr text is now dfsaaas777777sn
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dfsaaas7777777sn, curs_pos is 14
+[input] - self.style.get(left) is 5ch
+Input: non-special key '7': curr text is now dfsaaas7777777sn
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dfsaaas77777777sn, curs_pos is 15
+[input] - self.style.get(left) is 5ch
+Input: non-special key '7': curr text is now dfsaaas77777777sn
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dfsaaas777777777sn, curs_pos is 16
+[input] - self.style.get(left) is 5ch
+Input: non-special key '7': curr text is now dfsaaas777777777sn
+[input] - self.style.get(left) is 5ch
+Input: special key delete: curr_text is now dfsaaas7777777777sn, curs_pos is 17
+[input] - self.style.get(left) is 5ch
+Input: non-special key '7': curr text is now dfsaaas7777777777sn
+[input] - self.style.get(left) is 5ch
+Input: special key right: curr_text is now dfsaaas77777777777sn, curs_pos is 19
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: right
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key right: curr_text is now dfsaaas77777777777sn, curs_pos is 20
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: right
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key right: curr_text is now dfsaaas77777777777sn, curs_pos is 20
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: right
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key right: curr_text is now dfsaaas77777777777sn, curs_pos is 20
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: right
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key right: curr_text is now dfsaaas77777777777sn, curs_pos is 20
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: right
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key right: curr_text is now dfsaaas77777777777sn, curs_pos is 20
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: right
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: non-special key 'z': curr text is now dfsaaas77777777777sn
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dfsaaas77777777777snz, curs_pos is 21
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'Z': curr text is now dfsaaas77777777777snz
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'Z': curr text is now dfsaaas77777777777snzZ
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'Z': curr text is now dfsaaas77777777777snzZZ
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'Z': curr text is now dfsaaas77777777777snzZZZ
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'Z': curr text is now dfsaaas77777777777snzZZZZ
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'A': curr text is now dfsaaas77777777777snzZZZZZ
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'A': curr text is now dfsaaas77777777777snzZZZZZA
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'S': curr text is now dfsaaas77777777777snzZZZZZAA
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'S': curr text is now dfsaaas77777777777snzZZZZZAAS
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'S': curr text is now dfsaaas77777777777snzZZZZZAASS
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'D': curr text is now dfsaaas77777777777snzZZZZZAASSS
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'D': curr text is now dfsaaas77777777777snzZZZZZAASSSD
+[input] - self.style.get(left) is 5ch
+Input: non-special key ';': curr text is now dfsaaas77777777777snzZZZZZAASSSDD
+[input] - self.style.get(left) is 5ch
+Input: non-special key ''': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;
+[input] - self.style.get(left) is 5ch
+Input: non-special key '\': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'
+[input] - self.style.get(left) is 5ch
+Input: non-special key ']': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\
+[input] - self.style.get(left) is 5ch
+Input: non-special key ';': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\]
+[input] - self.style.get(left) is 5ch
+Input: non-special key ']': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];
+[input] - self.style.get(left) is 5ch
+Input: non-special key ';': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];]
+[input] - self.style.get(left) is 5ch
+Input: non-special key '\': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];
+[input] - self.style.get(left) is 5ch
+Input: non-special key ']': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\
+[input] - self.style.get(left) is 5ch
+Input: non-special key ';': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\]
+[input] - self.style.get(left) is 5ch
+Input: non-special key ']': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];
+[input] - self.style.get(left) is 5ch
+Input: non-special key ';': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];]
+[input] - self.style.get(left) is 5ch
+Input: non-special key ']': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];
+[input] - self.style.get(left) is 5ch
+Input: non-special key '\': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]
+[input] - self.style.get(left) is 5ch
+Input: non-special key ';': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\
+[input] - self.style.get(left) is 5ch
+Input: non-special key '\': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'a': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\a
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\af
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afd
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfs
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsd
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdf, curs_pos is 56
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdf, curs_pos is 56
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdf, curs_pos is 56
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'w': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdf
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfw
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwi
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'h': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwit
+[input] - self.style.get(left) is 5ch
+Input: non-special key ' ': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith 
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith t
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith te
+[input] - self.style.get(left) is 5ch
+Input: special key ctrl_l: curr_text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith ter, curs_pos is 64
+[input] - self.style.get(left) is 5ch
+Input: special key backspace: curr_text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith te, curs_pos is 63
+[input] - self.style.get(left) is 5ch
+Input: non-special key 's': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith te
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith tes
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'l': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith tese
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'f': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith tesel
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself
+[input] - self.style.get(left) is 5ch
+Input: non-special key 't': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'e': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.t
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'r': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.te
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'm': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.ter
+[input] - self.style.get(left) is 5ch
+Input: non-special key '.': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'h': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term.
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'i': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term.h
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term.hi
+[input] - self.style.get(left) is 5ch
+Input: non-special key 'd': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term.hid
+[input] - self.style.get(left) is 5ch
+Input: special key enter: curr_text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term.hidd, curs_pos is 77
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term.hidd, curs_pos is 77
+[input] - self.style.get(left) is 5ch
+Input: non-special key '(': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term.hidd
+[input] - self.style.get(left) is 5ch
+Input: non-special key ')': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term.hidd(
+[input] - self.style.get(left) is 5ch
+Input: special key shift: curr_text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term.hidd(), curs_pos is 79
+[input] - self.style.get(left) is 5ch
+Input: non-special key ':': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term.hidd()
+[input] - self.style.get(left) is 5ch
+Input: special key tab: curr_text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term.hidd():, curs_pos is 80
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
+Input: special key ctrl_l: curr_text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term.hidd():, curs_pos is 80
+[input] - self.style.get(left) is 5ch
+Input: non-special key '': curr text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term.hidd():
+[input] - self.style.get(left) is 5ch
+Input: special key alt_l: curr_text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term.hidd():, curs_pos is 81
+[input] - self.style.get(left) is 5ch
+Input: special key tab: curr_text is now dfsaaas77777777777snzZZZZZAASSSDD;'\];];\];];]\;\afdfsdfwith teself.term.hidd():, curs_pos is 81
+[input] - self.style.get(left) is 5ch
+ev.key is a selector: tab
+[input] - self.style.get(left) is 5ch
+[input] - self.style.get(left) is 5ch
+^ Hovered is now <Element:Input id=None style={'position': 'relative', 'visible': True, 'color': 'black', 'placeholder_color': 'gray', 'bg_color': 'white', 'hovered_bg_color': (230, 230, 230), 'selected_bg_color': (190, 190, 210), 'bold': False, 'italic': False, 'underline': False, 'padding_top': 0, 'padding_right': 0, 'padding_bottom': 0, 'padding_left': 0, 'padding': 0, 'left': '5ch', 'right': None, 'width': '15ch', 'y': 0, 'text_align': 'left', 'hoverable': True, 'selectable': True}>
