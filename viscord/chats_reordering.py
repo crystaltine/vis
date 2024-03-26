@@ -42,7 +42,7 @@ def reorder_chats(server_id, chat_name):
     records = cur.fetchall()
     print("--------------")
     for y in range(len(records)):
-        print(records[y][3])
+        print(records[y][2])
 order = 0
 server_id = str(uuid4())
 print("Server ID: " + server_id)
