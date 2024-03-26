@@ -76,7 +76,7 @@ def handle_login(data, conn):
         token = str(uuid4())
         tokens[token] = user
         conn.sendall(token.encode("utf-8"))
-    else:
+    else:   
         conn.sendall("False".encode("utf-8"))
 
 tokens = {}
