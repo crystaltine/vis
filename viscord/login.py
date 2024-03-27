@@ -101,7 +101,7 @@ def check_creds(u, p):
     constants.CONNECTION.sendall(json.dumps(data).encode("utf-8"))
     resp = constants.CONNECTION.recv(1024).decode()
     if resp == "True":
-        return True
+        return False
     
     data = {
         "type": "login",
