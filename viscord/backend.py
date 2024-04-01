@@ -12,8 +12,6 @@ def connect_to_db():
 
 cur = connect_to_db()
 
-Message_UI_Movement.movement(blessed.Terminal())
-
 def reply_to_message(user_id, message_id, message_content, replied_to_id=None):
         cur.execute("""
             INSERT INTO Discord.MessageInfo (message_id, replied_to_id, message_content, )
