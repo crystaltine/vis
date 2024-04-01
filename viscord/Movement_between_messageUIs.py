@@ -3,8 +3,9 @@ from pinned_messages import PinnedMessageUI
 from replies import Replies
 import blessed
 
+term = blessed.Terminal()
+
 class Message_UI_Movement: 
-    term = blessed.Terminal()
     print(term.clear())
     MessageUI.box_creator(25, 75, 30, 20, term.green_on_gray21(term.bold("Viscord Chat"))) 
     
@@ -23,6 +24,8 @@ class Message_UI_Movement:
                 if term.inkey() == replies_open_key_bind:
                     print(term.clear()) 
                     Replies.create_replies_box(15, 75, 30, 50, term.red_on_gray21(term.bold("Replies")), "")
+class RunUI:
+    Message_UI_Movement.movement(term)
 
 
  
