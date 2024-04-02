@@ -2,6 +2,8 @@ import psycopg2
 import datetime
 import random
 from uuid import uuid4
+from typing import List
+from viscord._types import MessageInfo
 
 conn_uri="postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
 current_position = 0
@@ -13,7 +15,7 @@ def connect_to_db():
 
 cur = connect_to_db()
 
-def handle_create_message(message_data):
+def handle_create_message(message_data: dict):
     message_id = str(uuid4())
     user_id = message_data["user_id"]
     server_id = message_data["server_id"]
@@ -29,7 +31,7 @@ def handle_create_message(message_data):
     '''
     cur.execute(send_query, (message_id, user_id, chat_id, server_id, replied_to_id, message_content, message_timestamp, pinged_user_ids))
 
-def handle_recent_messages(data):
+def get_recent_messages(data) -> List[MessageInfo]:
     server_id = data["server"]
     chat_id = data["chat"]
 
@@ -42,23 +44,26 @@ def handle_recent_messages(data):
     """
     cur.execute(send_query, (server_id,chat_id))
     messages = cur.fetchall()
-    messages_data = [{"message_id": msg[0], "user_id": msg[1], "chat_id": msg[2], "server_id": msg[3],
-                      "replied_to_id": msg[4], "message_content": msg[5], "message_timestamp": msg[6].isoformat(),
-                      "pinged_user_ids": msg[7]} for msg in messages]
+    messages_data = [
+        {
+            "message_id": msg[0], 
+            "user_id": msg[1], 
+            "chat_id": msg[2], 
+            "server_id": msg[3],
+            "replied_to_id": msg[4], 
+            "message_content": msg[5], 
+            "message_timestamp": msg[6],
+            "pinged_user_ids": msg[7]
+        } for msg in messages
+    ]
+    
     return messages_data
 
-def handle_scroll_messages(scroll_data):
-    global current_position
+def handle_scroll_messages(scroll_data) -> dict:
     server_id = scroll_data["server"]
     chat_id = scroll_data["chat"]
-    direction = scroll_data["direction"]
-
-    if direction == "up":
-        current_position -= 1
-        if current_position < 0:
-            current_position = 0
-    else: # direction == "down"
-        current_position += 1
+    start_pos = scroll_data["start_pos"]
+    num_requested = scroll_data["num_requested"]
 
     send_query = """
     SELECT message_id, user_id, chat_id, server_id, replied_to_id, message_content, message_timestamp, pinged_user_ids
@@ -66,9 +71,9 @@ def handle_scroll_messages(scroll_data):
     WHERE server_id = %s AND chat_id = %s
     ORDER BY message_timestamp DESC
     OFFSET %s
-    LIMIT 15
+    LIMIT %s
     """
-    cur.execute(send_query, (server_id, chat_id, current_position))
+    cur.execute(send_query, (server_id, chat_id, start_pos, num_requested))
     messages = cur.fetchall()
     messages_data = [{"message_id": msg[0], "user_id": msg[1], "chat_id": msg[2], "server_id": msg[3],
                       "replied_to_id": msg[4], "message_content": msg[5], "message_timestamp": msg[6].isoformat(),
@@ -97,7 +102,6 @@ message_data =    {
         "pinged_user_ids": ["user1_id", "user2_id"]
     }
 
-#handle_create_message(message_data)
-print(handle_scroll_messages({"server":"acb76574-7a5c-4b5d-ab28-a8ce25982aed","chat":"7885de7e-eb83-4134-ae29-0df1320177bc","direction":"up"}))
+handle_create_message(message_data)
+print(get_recent_messages({"server":"acb76574-7a5c-4b5d-ab28-a8ce25982aed","chat":"7885de7e-eb83-4134-ae29-0df1320177bc"}))
 print("------------------------------------------------------------------------")
-print(handle_scroll_messages({"server":"acb76574-7a5c-4b5d-ab28-a8ce25982aed","chat":"7885de7e-eb83-4134-ae29-0df1320177bc","direction":"up"}))
