@@ -14,15 +14,30 @@ def connect_to_db():
     return cur
 
 cur = connect_to_db()
+import psycopg2
+import datetime
+import random
+
+conn_uri = "postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
+
+def connect_to_db():
+    conn = psycopg2.connect(conn_uri)
+    conn.set_session(autocommit=True)
+    cur = conn.cursor()
+    return cur
+
+cur = connect_to_db()
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(("0.0.0.0", 5000))
 
 print("Server up!")
 print("Running on " + str(s.getsockname()[0]) + ":" + str(s.getsockname()[1]))
+print("Running on " + str(s.getsockname()[0]) + ":" + str(s.getsockname()[1]))
 
 connections = {}
 
+def handle_message(data, conn):
 def handle_message(data, conn):
     send = json.dumps(data).encode()
     print("New message:", data["data"])
@@ -145,6 +160,7 @@ def handle_connection(conn, addr):
             for label in handlers:
                 if "type" in parsed and parsed["type"] == label:
                     parsed["from"] = addr
+                    handlers[label](parsed, conn)
                     handlers[label](parsed, conn)
                     break
 while True:
