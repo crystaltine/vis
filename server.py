@@ -72,7 +72,7 @@ def handle_login(data, conn):
         conn.sendall(token.encode("utf-8"))
     else:   
         conn.sendall("False".encode("utf-8"))
-
+''' 
 def handle_recent_messages(data, conn):
     server_id = data["data"]
 
@@ -117,15 +117,15 @@ def handle_scroll_messages(data, conn):
                       "replied_to_id": msg[4], "message_content": msg[5], "message_timestamp": msg[6].isoformat(),
                       "pinged_user_ids": msg[7]} for msg in messages]
     conn.sendall(json.dumps({"messages": messages_data, "current_position": current_position}).encode("utf-8"))
-
+'''
 tokens = {}
 handlers = {
     "msg": handle_message,
     "account_create": handle_account_creation,
     "username_check": handle_username_check,
     "login": handle_login,
-    "recent_messages": handle_recent_messages,
-    "scroll_messages": handle_scroll_messages
+#    "recent_messages": handle_recent_messages,
+#    "scroll_messages": handle_scroll_messages
 }
 
 def handle_connection(conn, addr):
@@ -147,8 +147,6 @@ def handle_connection(conn, addr):
                     parsed["from"] = addr
                     handlers[label](parsed, conn)
                     break
-print(handle_recent_messages(conn_uri))
-
 while True:
     s.listen()
     conn, addr = s.accept()
