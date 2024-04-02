@@ -4,6 +4,7 @@ import json
 import psycopg2
 import datetime
 import random
+from uuid import uuid4
 
 conn_uri = "postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
 
@@ -37,7 +38,6 @@ print("Running on " + str(s.getsockname()[0]) + ":" + str(s.getsockname()[1]))
 
 connections = {}
 
-def handle_message(data, conn):
 def handle_message(data, conn):
     send = json.dumps(data).encode()
     print("New message:", data["data"])
@@ -160,7 +160,6 @@ def handle_connection(conn, addr):
             for label in handlers:
                 if "type" in parsed and parsed["type"] == label:
                     parsed["from"] = addr
-                    handlers[label](parsed, conn)
                     handlers[label](parsed, conn)
                     break
 while True:
