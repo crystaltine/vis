@@ -89,6 +89,28 @@ def handle_token_bypass(data, conn):
     else:
         conn.sendall(token.encode("utf-8"))
 
+def pin_message(data, conn):
+    data = data["data"]
+    message_id = data["message_id"]
+    channel_id = data["channel_id"]
+    
+    send_query = '''select pinned_message_ids from "Discord"."ChatInfo" where chat_id = %s'''
+    cur.execute(send_query, (channel_id,))
+    records = cur.fetchall()
+    print(records)
+
+
+
+data = {
+    "type": "msg",
+    "data": {
+        "channel_id": "43eef70b-90bb-40c5-8ece-45abf6a55abb",
+        "message_id": "f4b3b3b4-0b3b-4b3b-8b3b-4b3b3b3b3b3b"
+    }
+}
+
+pin_message(data, None)
+
 
 
 def handle_login(data, conn):
