@@ -13,7 +13,16 @@ def connect_to_db():
     conn.set_session(autocommit=True)
     cur = conn.cursor()
     return cur
+import os
 
+from cryptography.fernet import Fernet
+key = os.getenv("VISCORD_KEY")
+if not key:
+    key = Fernet.generate_key()
+    os.system("export VISCORD_KEY=" + key.decode())
+else:
+    key = key.encode()
+    
 cur = connect_to_db()
 import psycopg2
 import datetime
@@ -30,6 +39,7 @@ def connect_to_db():
 cur = connect_to_db()
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind(("0.0.0.0", 5000))
 
 print("Server up!")
@@ -59,6 +69,8 @@ def handle_account_creation(data, conn):
     user = account_data["user"]
     password = account_data["password"]
 
+
+
     send_query='''insert into "Discord"."UserInfo" (user_id, user_name, user_password, user_color, user_symbol, user_creation_timestamp) values (%s, %s, %s, %s, %s, %s)'''
     cur.execute(send_query, (uuid, user, password, color, symbol, timestamp))
 
@@ -73,10 +85,28 @@ def handle_username_check(data, conn):
     else:
         conn.sendall("True".encode("utf-8"))
 
+def handle_token_bypass(data, conn):
+    data = data["data"]
+    token = data["token"]
+    sys_uuid = data["uuid"]
+
+    f = Fernet(key + str(sys_uuid).encode())
+    try:
+        token = f.decrypt(token.encode("utf-8")).decode("utf-8")
+    except:
+        conn.sendall("False".encode("utf-8"))
+        return
+    else:
+        conn.sendall(token.encode("utf-8"))
+
+
+
 def handle_login(data, conn):
     account_data = data["data"]
     user = account_data["user"]
     password = account_data["password"]
+    
+    sys_uuid = account_data["sys_uuid"]
 
     send_query = """select 1 from "Discord"."UserInfo" where user_name = %s and user_password = %s"""
     cur.execute(send_query, (user, password))
@@ -86,7 +116,12 @@ def handle_login(data, conn):
         tokens[token] = user
         conn.sendall(token.encode("utf-8"))
     else:   
-        conn.sendall("False".encode("utf-8"))
+        
+        conn.recv(1024)
+
+        f = Fernet(key + str(sys_uuid).encode())
+        conn.sendall(f.encrypt(token.encode("utf-8")))
+
 ''' 
 def handle_recent_messages(data, conn):
     server_id = data["data"]
@@ -141,6 +176,8 @@ handlers = {
     "login": handle_login,
 #    "recent_messages": handle_recent_messages,
 #    "scroll_messages": handle_scroll_messages
+    "token_bypass": handle_token_bypass
+
 }
 
 def handle_connection(conn, addr):
@@ -160,6 +197,7 @@ def handle_connection(conn, addr):
             for label in handlers:
                 if "type" in parsed and parsed["type"] == label:
                     parsed["from"] = addr
+                    print("Endpoint " + label + " called by " )
                     handlers[label](parsed, conn)
                     break
 while True:
