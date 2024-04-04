@@ -1,5 +1,4 @@
-import random
-import datetime
+
 import psycopg2
 
  
@@ -14,6 +13,7 @@ def connect_to_db():
     return cur
 
 cur = connect_to_db()
+
 
 def change_user_name(new_user_name):
     send_query='''select user_name FROM "Discord"."UserInfo" '''
