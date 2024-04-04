@@ -29,4 +29,12 @@ def change_user_name(new_user_name):
         send_query = '''insert into "Discord"."UserInfo" (user_name) values (%s)'''
         cur.execute(send_query, (new_user_name))
 
+def change_user_color(color):
+        send_query = '''update "Discord"."UserInfo" (user_color = %s) where (user_name = %s)'''
+        cur.execute(send_query, (color))
+
+def update_user_symbol(user_name, symbol):
+    send_query = """update "Discord"."UserInfo" set user_symbol = %s where user_name = %s"""
+    cur.execute(send_query, (symbol, user_name))
+
     
