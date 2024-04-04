@@ -29,6 +29,12 @@ def update_member_nickname(server_id, user_id, nickname=None):
     else:
         cur.execute(send_query, (nickname, server_id, user_id))
 
+def update_nickname_color(server_id, nickname, color):  
+    send_query = """update "Discord" . "MemberInfo" set nick_color = %s where server_id = %s and user_id = %s """ 
+    if color == None: 
+        cur.execute(send_query, (server_id, nickname, color))
+
+
     #TESTING PAST HERE -------------------------------------------------------------------------------------------------------|
 
     send_query = """select * from "Discord"."MemberInfo" where server_id = %s""" #grabs all member data for the server_id
