@@ -2,6 +2,7 @@ import psycopg2
 import datetime
 import random
 from uuid import uuid4
+from typing import Optional, Dict
 
 conn_uri="postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
 
@@ -67,7 +68,7 @@ def test_server_creation(data):
     cur.execute(send_query, (server_id, server_name, server_color, server_icon, server_timestamp))
 
 #creates chat given the chat data - if data is null will create a test chat with preset information
-def handle_chat_creation(data):
+def handle_chat_creation(data: Optional[Dict[str, str]]):
     chat_id = str(uuid4())
     if data is None:
         server_id = input("Enter server id: ")
@@ -96,19 +97,28 @@ def handle_chat_creation(data):
     '''
     cur.execute(send_query, (chat_id, server_id, chat_name, chat_type, chat_topic, chat_order, read_perm_level, write_perm_level, is_dm))
 
-def handle_chat_name_update(user_id: str, chat_id: str, new_chat_name: str) -> None:
+def handle_chat_name_update(user_id: str, server_id: str, chat_id: str, new_chat_name: str) -> None:
     """
     Update the name of a chat in the database given the chat's id. It first checks whether
     the user making the request has the necessary permissions to manage the chat. If the user does not have
     permission, it prints a message indicating so and returns without updating the database.
 
     Parameters:
+        user_id (str): The id of the user making the request.
+        server_id (str): The id of the server the chat is in.
         chat_id (str): The id of the chat whose name is to be updated.
         new_chat_name (str): The new name for the chat.
 
     Returns:
         None
     """
+
+    perms = get_server_perms(user_id, server_id)
+
+    if not perms["manage_chats"]:
+        print("You do not have permission to change the chat name")
+        return
+    
     send_query = '''
         UPDATE "Discord"."ChatInfo"
         SET chat_name = %s
@@ -116,17 +126,28 @@ def handle_chat_name_update(user_id: str, chat_id: str, new_chat_name: str) -> N
     '''    
     cur.execute(send_query, (new_chat_name, chat_id))
 
-def handle_chat_topic_update(chat_id: str, new_chat_topic: str) -> None:
+def handle_chat_topic_update(user_id: str, server_id: str, chat_id: str, new_chat_topic: str) -> None:
     """
-    Update the topic of a chat in the database given the chat's id.
+    Update the topic of a chat in the database given the chat's id. It first checks whether
+    the user making the request has the necessary permissions to manage the chat. If the user does not have
+    permission, it prints a message indicating so and returns without updating the database.
 
     Parameters:
+        user_id (str): The id of the user making the request.
+        server_id (str): The id of the server the chat is in.
         chat_id (str): The id of the chat whose topic is to be updated.
         new_chat_topic (str): The new topic for the chat.
 
     Returns:
         None
     """
+
+    perms = get_server_perms(user_id, server_id)
+
+    if not perms["manage_chats"]:
+        print("You do not have permission to change the chat topic")
+        return
+
     send_query = '''
         UPDATE "Discord"."ChatInfo"
         SET chat_topic = %s
@@ -134,23 +155,62 @@ def handle_chat_topic_update(chat_id: str, new_chat_topic: str) -> None:
     '''    
     cur.execute(send_query, (new_chat_topic, chat_id))
 
-def handle_chat_order_update(chat_id: str, new_chat_order: int) -> None:
+def handle_chat_order_update(user_id: str, server_id: str, chat_id: str, new_chat_order: int) -> None:
     """
-    Update the order of a chat in the database given the chat's id.
+    Update the order of a chat in the database given the chat's id. It first checks whether
+    the user making the request has the necessary permissions to manage the chat. If the user does not have
+    permission, it prints a message indicating so and returns without updating the database.
 
     Parameters:
+        user_id (str): The id of the user making the request.
+        server_id (str): The id of the server the chat is in.
         chat_id (str): The id of the chat whose order is to be updated.
         new_chat_order (int): The new order placement for the chat.
 
     Returns:
         None
     """
+
+    perms = get_server_perms(user_id, server_id)
+
+    if not perms["manage_chats"]:
+        print("You do not have permission to change the chat prder")
+        return
+
     send_query = '''
         UPDATE "Discord"."ChatInfo"
         SET chat_order = %s
         WHERE chat_id = %s
     '''    
     cur.execute(send_query, (new_chat_order, chat_id))
+
+def handle_chat_deletion(user_id: str, server_id: str, chat_id: str):
+    """
+    Deletes the chat in the database given the chat's id. It first checks whether
+    the user making the request has the necessary permissions to manage the chat. If the user does not have
+    permission, it prints a message indicating so and returns without updating the database.
+
+    Parameters:
+        user_id (str): The id of the user making the request.
+        server_id (str): The id of the server the chat is in.
+        chat_id (str): The id of the chat whose order is to be updated.
+
+    Returns:
+        None
+    """
+
+    perms = get_server_perms(user_id, server_id)
+
+    if not perms["manage_chats"]:
+        print("You do not have permission to delete the chat")
+        return
+    
+    send_query = '''
+        DELETE FROM "Discord"."ChatInfo"
+        WHERE chat_id = %s AND server_id = %s
+    '''    
+
+    cur.execute(send_query, (chat_id, server_id))
 
 def test_retrieve_chat_information(chat_id: str) -> None:
     """

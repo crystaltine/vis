@@ -61,6 +61,7 @@ def handle_server_creation(data: Optional[Dict[str, str]]) -> None:
     Returns:
         None
     """
+    
     server_id = str(uuid4())
     print("Server ID: " + server_id)
     server_timestamp = str(datetime.datetime.now())
