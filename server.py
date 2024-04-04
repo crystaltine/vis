@@ -13,28 +13,6 @@ def connect_to_db():
     conn.set_session(autocommit=True)
     cur = conn.cursor()
     return cur
-import os
-
-from cryptography.fernet import Fernet
-key = os.getenv("VISCORD_KEY")
-if not key:
-    key = Fernet.generate_key()
-    os.system("export VISCORD_KEY=" + key.decode())
-else:
-    key = key.encode()
-    
-cur = connect_to_db()
-import psycopg2
-import datetime
-import random
-
-conn_uri = "postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
-
-def connect_to_db():
-    conn = psycopg2.connect(conn_uri)
-    conn.set_session(autocommit=True)
-    cur = conn.cursor()
-    return cur
 
 cur = connect_to_db()
 
@@ -43,7 +21,6 @@ s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind(("0.0.0.0", 5000))
 
 print("Server up!")
-print("Running on " + str(s.getsockname()[0]) + ":" + str(s.getsockname()[1]))
 print("Running on " + str(s.getsockname()[0]) + ":" + str(s.getsockname()[1]))
 
 connections = {}
@@ -104,23 +81,22 @@ def pin_message(message_id, channel_id):
     send_query = '''select pinned_message_ids from "Discord"."ChatInfo" where chat_id = %s'''
     cur.execute(send_query, (channel_id,))
     records = cur.fetchall()
-    print(records)
     if len(records) == 0:
-        print("ACK")
         return False
     
     pinned_message_ids = records[0][0]
     if pinned_message_ids == None:
         pinned_message_ids = []
+
+    if message_id in pinned_message_ids:
+        return False
     
     pinned_message_ids.append(message_id)
     send_query = '''update "Discord"."ChatInfo" set pinned_message_ids = %s where chat_id = %s'''
     try:
         cur.execute(send_query, (pinned_message_ids, channel_id))
-        print("good")
         return True
     except Exception as e:
-        print(e)
         return False
 
 def pin_message_endpoint(data, conn):
@@ -134,21 +110,6 @@ def pin_message_endpoint(data, conn):
     else:
         if conn:
             conn.sendall("False".encode("utf-8"))
-    
-    
-    
-
-
-
-data = {
-    "type": "msg",
-    "data": {
-        "channel_id": "43eef70b-90bb-40c5-8ece-45abf6a55abb",
-        "message_id": "f4b3b3b4-0b3b-4b3b-8b3b-4b3b3b3b3b3b"
-    }
-}
-
-pin_message(data, None)
 
 
 
@@ -227,7 +188,8 @@ handlers = {
     "login": handle_login,
 #    "recent_messages": handle_recent_messages,
 #    "scroll_messages": handle_scroll_messages
-    "token_bypass": handle_token_bypass
+    "token_bypass": handle_token_bypass,
+    "pin_message": pin_message_endpoint
 
 }
 
@@ -252,10 +214,8 @@ def handle_connection(conn, addr):
                     handlers[label](parsed, conn)
                     break
 
-bypass = True # TODO: REMOVE
 
-if not bypass:
-    while True:
-        s.listen()
-        conn, addr = s.accept()
-        threading.Thread(target=handle_connection, args=(conn, addr)).start()
+while True:
+    s.listen()
+    conn, addr = s.accept()
+    threading.Thread(target=handle_connection, args=(conn, addr)).start()
