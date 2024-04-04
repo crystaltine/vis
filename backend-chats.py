@@ -13,6 +13,36 @@ def connect_to_db():
 
 cur = connect_to_db()
 
+def get_server_perms(user_id:str, server_id: str):
+    member_query="""select roles_list from "Discord"."MemberInfo" where user_id = %s and server_id= %s"""
+    cur.execute(member_query, (user_id, server_id))
+    roles_list= cur.fetchall()[0][0]
+
+    perms={"manage_server":False, "manage_chats":False, "manage_members":False, "manage_roles":False, "manage_voice":False,  
+           "manage_messages":False, "is_admin":False}
+    list_perms=list(perms.items())
+
+    # Getting all the perms based on the list of roles and updating the dict (which combines all the perms of all the roles the user has)
+
+    for role_id in roles_list:
+        perm_query="""select manage_server, manage_chats, manage_members, manage_roles, manage_voice, manage_messages, is_admin from "Discord"."RolesInfo" where role_id = %s"""
+        cur.execute(perm_query, (role_id,))
+        perm_arr=cur.fetchall()[0]
+        
+        # Checking to see if a role has a permission that isn't already true in the dict
+
+        for i in range(0,len(perm_arr)):
+            if not perms[list_perms[i][0]] and perm_arr[i]:
+                perms[list_perms[i][0]]=True
+    
+    # If the user is an admin, all perms should be true
+
+    if perms["is_admin"]:
+        for key in perms:
+            perms[key]=True
+    
+    return perms
+
 #test method to create server - just so I can test building a chat out of that server
 def test_server_creation(data):
     server_id = str(uuid4())
@@ -66,9 +96,11 @@ def handle_chat_creation(data):
     '''
     cur.execute(send_query, (chat_id, server_id, chat_name, chat_type, chat_topic, chat_order, read_perm_level, write_perm_level, is_dm))
 
-def handle_chat_name_update(chat_id: str, new_chat_name: str) -> None:
+def handle_chat_name_update(user_id: str, chat_id: str, new_chat_name: str) -> None:
     """
-    Update the name of a chat in the database given the chat's id.
+    Update the name of a chat in the database given the chat's id. It first checks whether
+    the user making the request has the necessary permissions to manage the chat. If the user does not have
+    permission, it prints a message indicating so and returns without updating the database.
 
     Parameters:
         chat_id (str): The id of the chat whose name is to be updated.
