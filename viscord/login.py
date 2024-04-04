@@ -5,6 +5,8 @@ import hashlib
 
 term = blessed.Terminal()
 
+import uuid
+
 w = term.width
 h = term.height
 
@@ -17,6 +19,8 @@ BAD_PASSWORD = False
 
 import cursor
 cursor.hide()
+
+import registry
 
 def clear():
     print(term.clear)
@@ -97,13 +101,14 @@ def check_creds(u, p):
     constants.CONNECTION.sendall(json.dumps(data).encode("utf-8"))
     resp = constants.CONNECTION.recv(1024).decode()
     if resp == "True":
-        return True
+        return False
     
     data = {
         "type": "login",
         "data": {
             "user": USER,
-            "password": hashlib.sha256(PASSWD.encode("utf-8")).hexdigest()
+            "password": hashlib.sha256(PASSWD.encode("utf-8")).hexdigest(),
+            "sys_uuid": uuid.getnode()
         }
     }
     constants.CONNECTION.sendall(json.dumps(data).encode("utf-8"))
@@ -111,6 +116,9 @@ def check_creds(u, p):
     if token == "False":
         return False
     else:
+        constants.CONNECTION.sendall(b"OK")
+        save = constants.CONNECTION.recv(1024).decode()
+        registry.set_reg("token", save)
         return token
 
 update_screen(w, h, y)
