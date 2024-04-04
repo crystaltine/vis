@@ -1,3 +1,4 @@
 # Viscord Information 
 
-# Database # 
+**Database**
+The Database is a postSQL database 
