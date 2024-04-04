@@ -54,7 +54,7 @@ create table "Discord"."RolesInfo" (
 	server_id varchar(512) not null,
 	constraint roles_info_server_id foreign key(server_id) references "ServerInfo"(server_id),
 	role_name varchar(512) not null,
-	rolor_color varchar(512) not null,
+	role_color varchar(512) not null,
 	role_symbol varchar(512) not null,
 	priority int not null,
 	permissions int not null,
@@ -69,6 +69,7 @@ create table "Discord"."RolesInfo" (
 );
 
 create table "Discord"."MemberInfo" (
+	member_id varchar(512) primary key not null,
 	user_id varchar(512) not null,
 	server_id varchar(512) not null,
 	constraint member_info_user_id foreign key(user_id) references "UserInfo"(user_id),
