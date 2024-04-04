@@ -18,21 +18,45 @@ def connect_to_db():
 
 cur = connect_to_db()
 
-def update_user_symbol(user_id, symbol):
+def update_user_symbol(user_id: str, symbol: str) -> bool:
+    """
+    @backend: server -> database
+    
+    Contacts the database to update the symbol of the specified user.
+    
+    Returns `True` if the query was successful, `False` otherwise.
+    """
+    
     send_query = """update "Discord"."UserInfo" set user_symbol = %s where user_id = %s"""
-    cur.execute(send_query, (symbol, user_id))
+    
+    try:
+        cur.execute(send_query, (symbol, user_id))
+        return True
+    except:
+        return False
 
-def update_member_nickname(server_id, user_id, nickname=None):
+def update_member_nickname(user_id: str, server_id: str, new_nickname: str = "") -> bool:
+    """
+    @backend: server -> database
+    
+    Updates the nickname of a member in a server. If the new nickname is empty, their nickname in
+    the members table 
+    """
     send_query = """update "Discord"."MemberInfo" set nickname = %s where server_id = %s and user_id = %s"""
-    if nickname == None:
-        cur.execute(send_query, (user_id, server_id, user_id))
+    if not new_nickname:
+        cur.execute(send_query, (None, server_id, user_id))
     else:
-        cur.execute(send_query, (nickname, server_id, user_id))
+        cur.execute(send_query, (new_nickname, server_id, user_id))
 
-def update_nickname_color(server_id, nickname, color):  
+def update_nick_color(user_id: str, server_id: str, new_color: str | None) -> bool:
+    """
+    @backend: server -> database
+    
+    Changes the color of a user's nickname in a server. If the new color is `None`, null is
+    inserted into the database, but this should be interpreted as something like white by the client.
+    """
     send_query = """update "Discord" . "MemberInfo" set nick_color = %s where server_id = %s and user_id = %s """ 
-    if color == None: 
-        cur.execute(send_query, (server_id, nickname, color))
+    cur.execute(send_query, (new_color, server_id, user_id))
 
 
     #TESTING PAST HERE -------------------------------------------------------------------------------------------------------|
@@ -43,7 +67,6 @@ def update_nickname_color(server_id, nickname, color):
     print("--------------")
     for y in range(len(records)):
         print(records[y][2])
-
 
 user_id_save = []
 order = 0
