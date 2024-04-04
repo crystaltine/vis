@@ -89,15 +89,44 @@ def handle_token_bypass(data, conn):
     else:
         conn.sendall(token.encode("utf-8"))
 
-def pin_message(data, conn):
-    data = data["data"]
-    message_id = data["message_id"]
-    channel_id = data["channel_id"]
-    
+
+def pin_message(message_id, channel_id):
     send_query = '''select pinned_message_ids from "Discord"."ChatInfo" where chat_id = %s'''
     cur.execute(send_query, (channel_id,))
     records = cur.fetchall()
     print(records)
+    if len(records) == 0:
+        print("ACK")
+        return False
+    
+    pinned_message_ids = records[0][0]
+    if pinned_message_ids == None:
+        pinned_message_ids = []
+    
+    pinned_message_ids.append(message_id)
+    send_query = '''update "Discord"."ChatInfo" set pinned_message_ids = %s where chat_id = %s'''
+    try:
+        cur.execute(send_query, (pinned_message_ids, channel_id))
+        print("good")
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+def pin_message_endpoint(data, conn):
+    data = data["data"]
+    message_id = data["message_id"]
+    channel_id = data["channel_id"]
+
+    if pin_message(message_id, channel_id):
+        if conn:
+            conn.sendall("True".encode("utf-8"))
+    else:
+        if conn:
+            conn.sendall("False".encode("utf-8"))
+    
+    
+    
 
 
 
@@ -168,8 +197,10 @@ def handle_connection(conn, addr):
                     handlers[label](parsed, conn)
                     break
 
+bypass = True # TODO: REMOVE
 
-while True:
-    s.listen()
-    conn, addr = s.accept()
-    threading.Thread(target=handle_connection, args=(conn, addr)).start()
+if not bypass:
+    while True:
+        s.listen()
+        conn, addr = s.accept()
+        threading.Thread(target=handle_connection, args=(conn, addr)).start()
