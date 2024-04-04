@@ -5,9 +5,20 @@ import psycopg2
 import datetime
 import random
 from uuid import uuid4
+import os
 from cryptography.fernet import Fernet
 
+
 conn_uri = "postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
+
+from cryptography.fernet import Fernet
+key = os.getenv("VISCORD_KEY")
+if not key:
+    key = Fernet.generate_key()
+    os.system("export VISCORD_KEY=" + key.decode())
+else:
+    key = key.encode()
+
 
 def connect_to_db():
     conn = psycopg2.connect(conn_uri)
@@ -25,6 +36,8 @@ print("Server up!")
 print("Running on " + str(s.getsockname()[0]) + ":" + str(s.getsockname()[1]))
 
 connections = {}
+
+
 
 def handle_message(data, conn):
     send = json.dumps(data).encode()
