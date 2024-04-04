@@ -27,8 +27,17 @@ def test_user_creation(user_id):
     '''
     cur.execute(send_query, (user_id, username, password, color, symbol, timestamp))
 
-#updates username of a user in the database given the user's id
-def handle_user_name_update(user_id, new_user_name):
+def handle_user_name_update(user_id: str, new_user_name: str) -> None:
+    """
+    Update the username of a user in the database given the user's id.
+
+    Parameters:
+        user_id (str): The id of the user whose username is to be updated.
+        new_user_name (str): The new username for the user.
+
+    Returns:
+        None
+    """
     send_query = '''
         UPDATE "Discord"."UserInfo"
         SET user_name = %s
@@ -36,8 +45,17 @@ def handle_user_name_update(user_id, new_user_name):
     '''    
     cur.execute(send_query, (new_user_name, user_id))
 
-#updates password of a user in the database given the user's id
-def handle_user_password_update(user_id, new_password):
+def handle_user_password_update(user_id: str, new_password: str) -> None:
+    """
+    Update the password of a user in the database given the user's id.
+
+    Parameters:
+        user_id (str): The id of the user whose password is to be updated.
+        new_password (str): The new password for the user.
+
+    Returns:
+        None
+    """
     send_query = '''
         UPDATE "Discord"."UserInfo"
         SET user_password = %s
@@ -45,8 +63,17 @@ def handle_user_password_update(user_id, new_password):
     '''    
     cur.execute(send_query, (new_password, user_id))
 
-#updates color of a user in the database given the user's id
-def handle_user_color_update(user_id, new_user_color):
+def handle_user_color_update(user_id: str, new_user_color: str) -> None:
+    """
+    Update the color of a user in the database given the user's id.
+
+    Parameters:
+        user_id (str): The id of the user whose color is to be updated.
+        new_user_color (str): The new color for the user.
+
+    Returns:
+        None
+    """
     send_query = '''
         UPDATE "Discord"."UserInfo"
         SET user_color = %s
@@ -54,8 +81,17 @@ def handle_user_color_update(user_id, new_user_color):
     '''    
     cur.execute(send_query, (new_user_color, user_id))
 
-#updates symbol of a user in the database given the user's id
-def handle_user_symbol_update(user_id, new_user_symbol):
+def handle_user_symbol_update(user_id: str, new_user_symbol: str) -> None:
+    """
+    Update the symbol of a user in the database given the user's id.
+
+    Parameters:
+        user_id (str): The id of the user whose symbol is to be updated.
+        new_user_symbol (str): The new symbol for the user.
+
+    Returns:
+        None
+    """
     send_query = '''
         UPDATE "Discord"."UserInfo"
         SET user_symbol = %s
@@ -63,8 +99,16 @@ def handle_user_symbol_update(user_id, new_user_symbol):
     '''    
     cur.execute(send_query, (new_user_symbol, user_id))
 
-#test command to retrieve information about a user - so I can test other commands
-def test_retrieve_user_information(user_id):
+def test_retrieve_user_information(user_id: str) -> None:
+    """
+    Retrieve information about a user from the database given the user's id.
+
+    Parameters:
+        user_id (str): The id of the user to retrieve information for.
+
+    Returns:
+        None
+    """
     send_query = '''
         SELECT * FROM "Discord"."UserInfo"
         WHERE user_id = %s
@@ -83,8 +127,6 @@ def test_retrieve_user_information(user_id):
             print("--------------------------------")
     else:
         print("User not found")
-
-
 
 test_user_id = str(uuid4())
 test_user_creation(test_user_id)

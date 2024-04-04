@@ -66,8 +66,17 @@ def handle_chat_creation(data):
     '''
     cur.execute(send_query, (chat_id, server_id, chat_name, chat_type, chat_topic, chat_order, read_perm_level, write_perm_level, is_dm))
 
-#updates name of a chat in the database given the chat's id
-def handle_chat_name_update(chat_id, new_chat_name):
+def handle_chat_name_update(chat_id: str, new_chat_name: str) -> None:
+    """
+    Update the name of a chat in the database given the chat's id.
+
+    Parameters:
+        chat_id (str): The id of the chat whose name is to be updated.
+        new_chat_name (str): The new name for the chat.
+
+    Returns:
+        None
+    """
     send_query = '''
         UPDATE "Discord"."ChatInfo"
         SET chat_name = %s
@@ -75,8 +84,17 @@ def handle_chat_name_update(chat_id, new_chat_name):
     '''    
     cur.execute(send_query, (new_chat_name, chat_id))
 
-#updates topic of a chat in the database given the chat's id
-def handle_chat_topic_update(chat_id, new_chat_topic):
+def handle_chat_topic_update(chat_id: str, new_chat_topic: str) -> None:
+    """
+    Update the topic of a chat in the database given the chat's id.
+
+    Parameters:
+        chat_id (str): The id of the chat whose topic is to be updated.
+        new_chat_topic (str): The new topic for the chat.
+
+    Returns:
+        None
+    """
     send_query = '''
         UPDATE "Discord"."ChatInfo"
         SET chat_topic = %s
@@ -84,8 +102,17 @@ def handle_chat_topic_update(chat_id, new_chat_topic):
     '''    
     cur.execute(send_query, (new_chat_topic, chat_id))
 
-#updates ordre of a chat in the database given the chat's id
-def handle_chat_order_update(chat_id, new_chat_order):
+def handle_chat_order_update(chat_id: str, new_chat_order: int) -> None:
+    """
+    Update the order of a chat in the database given the chat's id.
+
+    Parameters:
+        chat_id (str): The id of the chat whose order is to be updated.
+        new_chat_order (int): The new order placement for the chat.
+
+    Returns:
+        None
+    """
     send_query = '''
         UPDATE "Discord"."ChatInfo"
         SET chat_order = %s
@@ -93,7 +120,16 @@ def handle_chat_order_update(chat_id, new_chat_order):
     '''    
     cur.execute(send_query, (new_chat_order, chat_id))
 
-def test_retrieve_chat_information(chat_id):
+def test_retrieve_chat_information(chat_id: str) -> None:
+    """
+    Retrieve information about a chat from the database given the chat's id.
+
+    Parameters:
+        chat_id (str): The id of the chat to retrieve information for.
+
+    Returns:
+        None
+    """
     send_query = '''
         SELECT * FROM "Discord"."ChatInfo"
         WHERE chat_id = %s
