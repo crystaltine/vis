@@ -90,12 +90,11 @@ create table "Discord"."FriendsInfo" (
 	friend_timestamp timestamp not null
 );
 
-create table "Discord"."InvitesInfo" {
+create table "Discord"."InvitesInfo" (
 	invite_id varchar(512) primary key not null,
 	server_id varchar(512) not null,
 	constraint invites_info_server_id foreign key(server_id) references "ServerInfo"(server_id),
 	invite_code varchar(512) not null,
 	invite_creator_id varchar(512) not null,
 	constraint invites_info_invite_creator_id foreign key(invite_creator_id) references "UserInfo"(user_id)
-};
-}
+);
