@@ -31,7 +31,6 @@ create table "Discord"."ChatInfo" (
 	write_perm_level int not null,
 	is_dm bool not null,
 	pinned_message_ids varchar(512)[]
-	
 );
 
 create table "Discord"."MessageInfo"(
@@ -90,5 +89,14 @@ create table "Discord"."FriendsInfo" (
 	constraint friends_info_receiver_id foreign key(receiver_id) references "UserInfo"(user_id),
 	accepted int not null,
 	friend_timestamp timestamp not null
-	
 );
+
+create table "Discord"."InvitesInfo" {
+	invite_id varchar(512) primary key not null,
+	server_id varchar(512) not null,
+	constraint invites_info_server_id foreign key(server_id) references "ServerInfo"(server_id),
+	invite_code varchar(512) not null,
+	invite_creator_id varchar(512) not null,
+	constraint invites_info_invite_creator_id foreign key(invite_creator_id) references "UserInfo"(user_id)
+};
+}

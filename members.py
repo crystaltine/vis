@@ -1,5 +1,6 @@
 import psycopg2
 from uuid import uuid4
+import datetime
 
 conn_uri="postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
 
@@ -12,12 +13,15 @@ def connect_to_db():
 
 cur = connect_to_db()
 
-def handle_member_creation(user_id: str, server_id: str, member_join_date: str):
+def handle_member_creation(user_id: str, server_id: str):
+    member_join_date = str(datetime.datetime.now())
+
     send_query = '''
         INSERT into "Discord"."MembersInfo" (member_id, server_id, member_join_date) values (%s, %s, %s)
     '''
 
     cur.execute(send_query, (user_id, server_id, member_join_date))
+
 
 
 def handle_adding_member_roles(user_id: str, server_id: str, role_id: str):

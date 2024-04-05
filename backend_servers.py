@@ -52,7 +52,7 @@ def handle_server_creation(user_id: str, server_name: str, server_icon: str, ser
     cur.execute(send_query, (server_id, server_name, server_color, server_icon, server_timestamp))
 
     # add the user creating the server to the server as a member
-    handle_member_creation(user_id, server_id, server_timestamp)
+    handle_member_creation(user_id, server_id)
 
      # create an "admin" role for the user creating the server 
     handle_role_creation(server_id, "admin", "#FFD700", "🜲", 0, 0, True, True, True, True, True, True, True)
@@ -202,9 +202,6 @@ def handle_user_leaving_server(user_id: str, server_id: str) -> None:
 
     cur.execute(send_query, (user_id, server_id))
 
-#handles a new user joining a server
-def handle_user_joining_server():
-    pass
 
 
 
