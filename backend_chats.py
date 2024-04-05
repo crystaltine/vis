@@ -15,29 +15,6 @@ def connect_to_db():
 
 cur = connect_to_db()
 
-#test method to create server - just so I can test building a chat out of that server
-def test_server_creation(data):
-    server_id = str(uuid4())
-    print("Server ID: " + server_id)
-    server_timestamp = str(datetime.datetime.now())
-    server_name = None
-    server_icon = None
-    server_color = None
-    if data is None:
-        server_id = server_id
-        server_name = "test_server"
-        server_icon = random.choice("☀☁★☾♥♠♦♣♫☘☉☠")
-        server_color = "#ffffff"
-    else:
-        server_name = data["server_name"]
-        server_icon = data["server_symbol"]
-        server_color = data["server_color"]
-
-    send_query='''
-        INSERT into "Discord"."ServerInfo" (server_id, server__name, color, server_icon, server_creation_timestamp) values (%s, %s, %s, %s, %s)
-    '''
-    cur.execute(send_query, (server_id, server_name, server_color, server_icon, server_timestamp))
-
 def handle_chat_creation(user_id: str, server_id: str, chat_name: str, chat_type: str, chat_topic: str, chat_order: int, read_perm_level: int, write_perm_level: int, is_dm: bool):
     """
     Creates a new chat using the given data and inserts it into the database. Checks if the user creating the chat
@@ -220,20 +197,3 @@ def test_retrieve_chat_information(chat_id: str) -> None:
     else:
         print("Chat not found")
 
-test_server_creation(None)
-handle_chat_creation(None)
-chat_id = input("Enter chat id: ")
-test_retrieve_chat_information(chat_id)
-print()
-print("Updating chat name...")
-print()
-handle_chat_name_update(chat_id, "NEWNAME")
-print()
-print("Updating chat topic...")
-print()
-handle_chat_topic_update(chat_id, "NEW TOPIC")
-print()
-print("Updating chat order...")
-print()
-handle_chat_order_update(chat_id, 3)
-test_retrieve_chat_information(chat_id)
