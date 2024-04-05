@@ -56,7 +56,7 @@ def handle_server_creation(user_id: str, server_name: str, server_icon: str, ser
 
      # create an "admin" role for the user creating the server 
     handle_role_creation(server_id, "admin", "#FFD700", "🜲", 0, 0, True, True, True, True, True, True, True)
-    
+
     # create an "everyone" role for the server (will be assigned to all people in the server)
     handle_role_creation(server_id, "everyone", "#FFFFFF", "🌍", 1, 0, False, False, False, False, False, False, False)
 
@@ -205,23 +205,6 @@ def handle_user_leaving_server(user_id: str, server_id: str) -> None:
 #handles a new user joining a server
 def handle_user_joining_server():
     pass
-
-handle_server_creation(None)
-server_id = input("Enter server id: ")
-test_retrieve_server_information(server_id)
-print()
-print("Updating user name...")
-print()
-handle_server_name_update(server_id, "NEWNAME")
-print()
-print("Updating server color...")
-print()
-handle_server_color_update(server_id, "#000000")
-print()
-print("Updating server icon...")
-print()
-handle_server_icon_update(server_id, "☉")
-test_retrieve_server_information(server_id)
 
 
 
