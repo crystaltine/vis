@@ -12,5 +12,7 @@
 
 **Server/Client**
 
+  - Using the data in the database, the server allows us to perform login authorization, allow users to interact with our project
+
 
 **User Interface**
