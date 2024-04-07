@@ -14,9 +14,26 @@ def connect_to_db():
 
 cur = connect_to_db()
 
+from typing import List
+from typing import Dict
+import psycopg2
+from _types import *
+from uuid import uuid4
+
+conn_uri="postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
+
+def connect_to_db():
+    conn = psycopg2.connect(conn_uri)
+    conn.set_session(autocommit=True)
+    cur = conn.cursor()
+
+    return cur
+
+cur = connect_to_db()
+
 # Given a user_id, a server_id, and a chat_id, this function will return a dict containing a bool for reading and a bool for writing perms
 
-def get_chat_perms(user_id:str, server_id:str, chat_id:str) -> ChatPerms:
+def get_chat_perms(user_id:str, server_id:str, chat_id:str) -> Dict:
     
     # Stuff for testing- ignore
 
@@ -62,7 +79,7 @@ def get_chat_perms(user_id:str, server_id:str, chat_id:str) -> ChatPerms:
 
 # Given a user_id and a server_id, this function will return a dict containing bools for all the different permissions in the db based on their role
 
-def get_server_perms(user_id:str, server_id: str) -> ServerPerms:
+def get_server_perms(user_id:str, server_id: str) -> Dict:
 
     # Stuff for testing- ignore
 
@@ -100,5 +117,72 @@ def get_server_perms(user_id:str, server_id: str) -> ServerPerms:
     
     return perms
 
-print(get_chat_perms())
-print(get_server_perms())
+
+# Given a user_id, server_id, and dict containing information about a new role, this function will add the new role to the database
+
+def add_role(server_id:str, role_info:Dict, user_id=None) -> None:
+    
+    role_id=str(uuid4())
+
+    send_query='''insert into "Discord"."RolesInfo" (role_id, server_id, role_name, role_color, role_symbol, priority, permissions, manage_server, manage_chats, \
+       manage_members, manage_roles, manage_voice, manage_messages, is_admin) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
+    cur.execute(send_query, (role_id, server_id, role_info['role_name'], role_info['role_color'], role_info['role_symbol'], role_info['priority'], role_info['permissions'], \
+        role_info['manage_server'], role_info['manage_chats'], role_info['manage_members'], role_info['manage_roles'], role_info['manage_voice'], \
+        role_info['manage_messages'], role_info['is_admin']))
+    
+    # If user_id is not None, the new role will be assigned to that user
+
+    if user_id is not None:
+
+        # Getting the user's roles from MemberInfo with the user_id and the server_id
+
+        member_query="""select roles_list from "Discord"."MemberInfo" where user_id = %s and server_id= %s"""
+        cur.execute(member_query, (user_id, server_id))
+        roles_list= cur.fetchall()[0][0]
+        
+        # Adding the new role to roles_list
+        
+        roles_list.append(role_id)
+
+        # Updating the table with the new roles_list value
+
+        query='''update "Discord"."MemberInfo" set roles_list = %s where user_id = %s and server_id = %s'''
+        cur.execute(query, (roles_list, user_id, server_id))
+
+
+# Given a server_id and a role_id, remove all instances of that role from the server
+
+def remove_role(role_id:str, server_id=str) -> None:
+
+    # Remove the role from RolesInfo
+
+    query='''delete from "Discord"."RolesInfo" where role_id = %s and server_id = %s'''
+    cur.execute(query, (role_id, server_id))
+
+    # Get a list of all the rows from MemberInfo containing the server_id
+
+    query='''select * from "Discord"."MemberInfo" where server_id=%s'''
+    cur.execute(query, (server_id,))
+    rows=cur.fetchall()
+
+    # Going through each row, removing the role from each user's role_list if it exists, and updating the roles_list in the table
+
+    for row in rows:
+        roles=row[7]
+        user_id=row[1]
+        if role_id in roles:
+            roles.remove(role_id)
+        query='''update "Discord"."MemberInfo" set roles_list = %s where user_id = %s and server_id = %s'''
+        cur.execute(query, (roles, user_id, server_id))
+
+# print(get_chat_perms())
+# print(get_server_perms())
+# server_id='ad3f1cd8-ffcd-48ca-abc7-9409c17c9122'
+# role_info={"role_name":'test_role', "role_color":'#ffffff', "role_symbol":"★", "priority":3, "permissions":2, "manage_server":False, "manage_chats":False, \
+#            "manage_members":False, "manage_roles":True, "manage_voice":True,  "manage_messages":True, "is_admin":False}
+# user_id='b98757df-71aa-4615-8345-26c71cfbb304'
+# add_role(server_id, role_info, user_id)
+
+role_id='5a440e84-96b1-4caa-865e-fdc4a54d4e12'
+server_id='ad3f1cd8-ffcd-48ca-abc7-9409c17c9122'
+remove_role(role_id, server_id)
