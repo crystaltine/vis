@@ -1,3 +1,5 @@
+# this file is unused (duplicate), see ./user.py
+
 import psycopg2
 import datetime
 import random
