@@ -271,9 +271,10 @@ def remove_ansi(string: str) -> str:
     return re.sub(
         r'[\u001B\u009B][\[\]()#;?]*((([a-zA-Z\d]*(;[-a-zA-Z\d\/#&.:=?%@~_]*)*)?\u0007)|((\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-ntqry=><~]))', '', string)
 
-def indexof_first_larger(nums: list, target: int | float) -> int:
+def indexof_first_larger_than(nums: list, target: int | float) -> int:
     """
     IMPORTANT: uses binary search, so nums should be sorted in ascending order.
+    
     Returns the index of the first element in `nums` that is larger than `target`.
     If target is larger than all elements, returns len(nums).
     """

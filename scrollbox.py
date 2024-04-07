@@ -1,6 +1,6 @@
 from element import Element
-from utils import fcode, convert_to_chars
-from typing import List, Unpack
+from utils import fcode, convert_to_chars, indexof_first_larger_than
+from typing import List, Tuple, Unpack
 from globalvars import Globals
 from logger import Logger
 
@@ -60,29 +60,31 @@ class Scrollbox(Element):
         
         # TODO - create/register event handler for when this element is active: up and down arrows scroll.
     
-    def get_fully_rendered_children(self) -> List["Element"]:
+    def get_fully_rendered_child_range(self) -> Tuple[int, int]:
         """
-        Returns a list of children that can be fully rendered within the scrollbox,
-        given the current scrollY, each element's height, and the current client height.
-        
-        IMPORTANT: `self.client_height` MUST be defined before calling this.
+        Returns a tuple [start, end] where start is the index of the first child that is fully rendered
+        and end is 1+ the index of the last child that is fully rendered, based on the current scroll position.
         """
-        # create a prefix sum array of the heights of the tops of each child
-        child_bottoms = [0]
-        for i in range(len(self.children)):
-            child_bottoms.append(child_bottoms[-1] + convert_to_chars(self.client_height, self.children[i].style.get("height")))
-            
-        # remove leading 0
-        child_bottoms.pop(0)
         
-        # now we go the first number in this (sorted) list that is greater than scrollY
-        # and go until the last number that is NOT greater than scrollY + client_height
-        # all numbers in between are the indices of the children that can be fully rendered.
+        if len(self.children) == 0: return (0, 0)
+
+        child_edges = [0]
+        for child in self.children:
+            child_edges.append(child_edges[-1] + convert_to_chars(self.client_height, child.style.get("height")))
         
-        # find the first index that is greater than scrollY
-        start_idx = 0
-        for i in range(len(child_bottoms)):
-            
+        # algorithm:
+        # (child_edges is sorted)
+        # let a be the index of the first number in child_edges which is greater than scrollY
+        # let b be the index of the first number in child_edges which is greater than scrollY + client_height
+        
+        # top partially visible child is a-1
+        # fully rendered children from a -> b-2
+        # bottom partially visible child is b-1
+        
+        a = indexof_first_larger_than(child_edges, self.scroll_y)
+        b = indexof_first_larger_than(child_edges, self.scroll_y + self.client_height)
+        
+        return (a, b-1)
     
     def render(self, container_left: int = None, container_top: int = None, container_right: int = None, container_bottom: int = None):
 
