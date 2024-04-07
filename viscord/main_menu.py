@@ -13,6 +13,28 @@ available = [
 import cursor
 cursor.hide()
 
+import registry
+import uuid
+import json
+
+token = registry.get_reg("token")
+if token:
+    import constants
+    data = {
+        "type": "token_bypass",
+        "data": {
+            "token": token,
+            "uuid": uuid.getnode()
+        
+        }
+    }
+    constants.CONNECTION.sendall(json.dumps(data).encode("utf-8"))
+    token = constants.CONNECTION.recv(1024).decode()
+    if token == "False":
+        registry.del_reg("token")
+    else:
+        print(token)
+        exit()
 
 
 def clear():
