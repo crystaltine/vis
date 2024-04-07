@@ -3,10 +3,10 @@ import datetime
 import random
 from uuid import uuid4
 from typing import Optional, Dict
-from backend_chats import handle_chat_creation
-from role_perms import get_server_perms
-from roles import handle_role_creation
-from members import handle_member_creation, handle_adding_member_roles
+from chats import handle_chat_creation
+from viscord.role_perms import get_server_perms
+from viscord.roles import handle_role_creation
+from viscord.members import handle_member_creation, handle_adding_member_roles
 
 conn_uri="postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
 
