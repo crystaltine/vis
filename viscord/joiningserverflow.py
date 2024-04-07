@@ -1,7 +1,7 @@
-from invites import handle_invite_creation, handle_check_existing_invite, handle_join_code_validation
-from role_perms import get_server_perms
+from viscord.invites import handle_invite_creation, handle_check_existing_invite, handle_join_code_validation
+from viscord.role_perms import get_server_perms
 from uuid import uuid4
-from members import handle_member_creation
+from viscord.members import handle_member_creation
 
 # ok, so the flow
 # gonna be like this
