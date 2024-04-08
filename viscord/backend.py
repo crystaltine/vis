@@ -1,31 +1,32 @@
 import psycopg2
-from Movement_between_messageUIs import Message_UI_Movement
 import blessed
+import datetime
+from typing import Literal
+
 conn_uri="postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
 
 def connect_to_db():
     conn = psycopg2.connect(conn_uri)
     conn.set_session(autocommit=True)
     cur = conn.cursor()
-
     return cur
 
-cur = connect_to_db()
+db = connect_to_db()
 
-def reply_to_message(user_id, message_id, message_content, replied_to_id=None):
-        cur.execute("""
-            INSERT INTO Discord.MessageInfo (message_id, replied_to_id, message_content, )
-            VALUES (%s, %s, %s, %s, %s);
-        """,(message_id, replied_to_id, message_content)) 
-
-
-        cur.commit()
-
-        print("Message sent successfully!")
-
-reply_to_message(user_id="sender_user_id", message_id= "0123", message_content="Your reply message content", replied_to_id="id_of_the_message_being_replied_to")
-
-    
+def DB_reply_to_message(user_id, message_id, chat_id, replied_to_id, server_id, message_content) -> Literal["success", "failure", "unavailable"]:
+    try: 
+        send_query = '''SELECT replied_to_id FROM "Discord"."MessageInfo" WHERE (replied_to_id = %s)'''
+        db.execute(send_query, (replied_to_id))
+        data = db.fetchall()
+        if len(data) == 0:
+            return "failure"
+        else: 
+            send_query='''UPDATE "Discord". "MessageInfo" (user_id, message_id, chat_id, server_id, message_content, message_timestamp) values (%s, %s, %s, %s, %s, %s) WHERE replied_to_id = %s'''
+            message_timestamp = str(datetime.datetime.now)
+            db.execute(send_query, (user_id, message_id, chat_id, server_id, message_content, message_timestamp, replied_to_id))
+            return "success"
+    except: 
+        return "unavailable"
 
     
 
