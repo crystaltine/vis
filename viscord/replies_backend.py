@@ -23,7 +23,7 @@ def DB_reply_to_message(user_id, message_id, chat_id, replied_to_id, server_id, 
         if len(data) == 0:
             return "failure"
         else: 
-            send_query='''UPDATE "Discord". "MessageInfo" (user_id, message_id, chat_id, server_id, message_content, message_timestamp) values (%s, %s, %s, %s, %s, %s) WHERE replied_to_id = %s'''
+            send_query='''UPDATE "Discord". "MessageInfo" (user_id, message_content, message_timestamp) values (%s, %s, %s) WHERE (replied_to_id = %s, message_id = %s, chat_id = %s, server_id = %s)'''
             message_timestamp = str(datetime.datetime.now)
             db.execute(send_query, (user_id, message_id, chat_id, server_id, message_content, message_timestamp, replied_to_id))
             return "success"
