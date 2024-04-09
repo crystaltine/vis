@@ -13,7 +13,11 @@ def connect_to_db():
 
 db = connect_to_db()
 
-def DB_reply_to_message(user_id, message_id, chat_id, replied_to_id, server_id, message_content) -> Literal["success", "failure", "unavailable"]:
+def get_message_content():
+    None
+
+def DB_reply_to_message(user_id, message_id, chat_id, replied_to_id, server_id, ) -> Literal["success", "failure", "unavailable"]:
+    message_content = get_message_content()
     try: 
         send_query = '''SELECT replied_to_id FROM "Discord"."MessageInfo" WHERE (replied_to_id = %s)'''
         db.execute(send_query, (replied_to_id))
