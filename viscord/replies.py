@@ -1,4 +1,5 @@
 import blessed 
+from messages import MessageUI
 #Creates Terminal Object + repliesUI object 
 replies = blessed.Terminal()
 print(replies.clear())
@@ -8,7 +9,7 @@ class Replies:
     y = replies.height 
     x = replies.width 
     #Draw Box Function 
-    def create_replies_box(box_height, box_width, box_x_pos, box_y_pos, title, content=None):
+    def create_replies_box(box_height, box_width, box_x_pos, box_y_pos, title, mode):
         #Top Border 
         print(replies .move_yx(box_y_pos, box_x_pos) + replies.green(replies.bold("┌")) + 
             replies.green(replies.bold("─")) * (box_width - 2) + replies.green(replies.bold("┐")))
@@ -21,6 +22,7 @@ class Replies:
         #Bottom Border 
         print(replies.move_yx(box_y_pos + box_height - 1, box_x_pos) + replies.green(replies.bold("└")) + replies.green(replies.bold("─")) * 
               (box_width - 2) + replies.green(replies.bold('┘'))) 
+        MessageUI.input_box(mode, box_width, box_x_pos, box_y_pos, box_height)
 
         
 
