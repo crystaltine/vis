@@ -7,7 +7,7 @@ term = blessed.Terminal()
 
 class Message_UI_Movement: 
     print(term.clear())
-    MessageUI.box_creator(25, 75, 30, 20, term.green_on_gray21(term.bold("Viscord Chat"))) 
+    MessageUI.box_creator(25, 75, 30, 20, term.green_on_gray21(term.bold("Viscord Chat")), 0) 
     
     def movement(term):
         while True: 
