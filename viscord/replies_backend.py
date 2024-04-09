@@ -2,6 +2,7 @@ import psycopg2
 import blessed
 import datetime
 from typing import Literal
+from replies import Replies
 
 conn_uri="postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
 
@@ -13,11 +14,8 @@ def connect_to_db():
 
 db = connect_to_db()
 
-def get_message_content():
-    None
-
 def DB_reply_to_message(user_id, message_id, chat_id, replied_to_id, server_id, ) -> Literal["success", "failure", "unavailable"]:
-    message_content = get_message_content()
+    message_content = Replies.input_text 
     try: 
         send_query = '''SELECT replied_to_id FROM "Discord"."MessageInfo" WHERE (replied_to_id = %s)'''
         db.execute(send_query, (replied_to_id))

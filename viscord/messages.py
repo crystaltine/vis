@@ -12,7 +12,7 @@ class MessageUI:
     x = message_term.width  
     
     @staticmethod
-    def input_box(mode:int, box_width:int, box_x_pos:int, box_y_pos:int, box_height:int):
+    def input_box(mode:int, box_width:int, box_x_pos:int, box_y_pos:int, box_height:int, input_text:str=""):
         # Check mode for input box
         if mode == 0:
             input_text = ""
