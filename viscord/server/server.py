@@ -89,7 +89,9 @@ handlers = {
     "handle_user_name_update": api.users.update_username_endpoint,
     "handle_user_password_update": api.users.update_password_endpoint,
     "handle_user_color_update": api.users.update_color_endpoint,
-    "handle_user_symbol_update": api.users.update_symbol_endpoint
+    "handle_user_symbol_update": api.users.update_symbol_endpoint,
+    "handle_reorder_chats": api.chats.handle_reorder_chats,
+    
 
 }
 
