@@ -85,7 +85,11 @@ handlers = {
 #    "recent_messages": handle_recent_messages,
 #    "scroll_messages": handle_scroll_messages
     "token_bypass": api.login_flow.handle_token_bypass,
-    "pin_message": api.messages.pin_message_endpoint
+    "pin_message": api.messages.pin_message_endpoint,
+    "handle_user_name_update": api.users.update_username_endpoint,
+    "handle_user_password_update": api.users.update_password_endpoint,
+    "handle_user_color_update": api.users.update_color_endpoint,
+    "handle_user_symbol_update": api.users.update_symbol_endpoint
 
 }
 
