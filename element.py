@@ -3,10 +3,8 @@ from typing import Tuple, Dict, Literal, TypedDict, TYPE_CHECKING, Unpack
 from utils import parse_class_string, parse_style_string, calculate_style
 from globalvars import Globals
 from logger import Logger
+from boundary import Boundary
 
-if TYPE_CHECKING:
-    from document import Document
-    
 class Element:
     """
     An abstract class representing a generic element in the component tree.
@@ -56,6 +54,8 @@ class Element:
     """ 1 + the absolute y-position of the bottom of the element on the screen. 
     0 is still the top edge of the screen. (notice the +1). is `None` if element hasn't been rendered yet. """
     
+    last_remembered_container: Boundary
+    
     # class_str, a property
     @property
     def class_str(self) -> str:
@@ -85,15 +85,15 @@ class Element:
         
         self.id = attrs.get("id", None)
         
-        self.last_remembered_container = []
-        """ Stores the `[left, top, right, bottom]` of the last container the element was rendered in. Can be used for efficient re-rendering. """
-
         self.client_left = None
         self.client_top = None
         self.client_right = None
         self.client_bottom = None
+        self.client_width = None
+        self.client_height = None
 
-        self.last_remembered_container = [None] * 4
+        self.last_remembered_container = Boundary()
+        """ Stores the `[left, top, right, bottom]` of the last container the element was rendered in. Can be used for efficient re-rendering. """
         
         # calculate initial style
         self.style = calculate_style(self.style_str, self.class_str, self.DEFAULT_STYLE)
@@ -110,13 +110,13 @@ class Element:
         return f"<Element:{self.__class__.__name__} {self.class_str=} {self.id=} {self.style=}>"
 
     @abstractmethod
-    def render(self, container_left: int = None, container_top: int = None, container_right: int = None, container_bottom: int = None) -> None:
+    def render(self, container_bounds: Boundary) -> None:
         """ 
         Renders the element to its container at the specified position, 
         given the positions of the container**. Applies the most recently updated style. 
         
         ### **IMPORTANT: 
-        For any container dimension that isn't provided, attempts to use the last memorized container. 
+        For any container dimension that isn't provided in the `Boundary` object, attempts to use the last memorized container. 
         If that is unavailable as well, throws an error.
         
         ### IMPORTANT 2: 
@@ -125,11 +125,24 @@ class Element:
         """
         ...
         
-    def get_true_container_edges(self, container_left: int | None, container_top: int | None, container_right: int | None, container_bottom: int | None) -> Tuple[int, int, int, int]:
+    @abstractmethod
+    def _render_partial(self, container_bounds: Boundary, max_bounds: Boundary) -> None:
+        """
+        Basically the same thing as render but capped at certain boundaries.
+        Renders the element using the container, but maxes out at certain boundaries.
+        This means that any characters that would be rendered outside of `max_bounds` will be ignored.
+        
+        `container_bounds` is used for the same purpose as in `render()`.
+        
+        Used for scrollboxes
+        """
+        ...
+        
+    def get_true_container_edges(self, container_bounds: Boundary) -> Boundary:
         """
         Handles all the dirty memorized container, absolute positioning, unprovided dimensions, etc. stuff,
-        returns a tuple of the true container dimensions to use in rendering: 
-        `(container_left, container_top, container_right, container_bottom)`.
+        returns a Boundary containing the true container dimensions to use in rendering: 
+        `Boundary(container_left, container_top, container_right, container_bottom)`.
         
         If an element's positioning is absolute when this function is called,
         it will ignore the container dimensions and use the entire screen as the container.
@@ -143,27 +156,27 @@ class Element:
         
         Use like this:
         ```python
-        container_left, container_top, container_right, container_bottom = self.get_true_container_edges(container_left, container_top, container_right, container_bottom)
+        real_container_boundary = self.get_true_container_edges(container_left, container_top, container_right, container_bottom)
         ```
         
         Then you can do things with those values, like drawing the element, calculating width, height, etc.
         """
         # update last remembered container
-        self.last_remembered_container = [
-            container_left if container_left is not None else self.last_remembered_container[0],
-            container_top if container_top is not None else self.last_remembered_container[1],
-            container_right if container_right is not None else self.last_remembered_container[2],
-            container_bottom if container_bottom is not None else self.last_remembered_container[3]
-        ]
+        self.last_remembered_container = Boundary(
+            container_bounds.left if container_left is not None else self.last_remembered_container.left,
+            container_bounds.top if container_top is not None else self.last_remembered_container.top,
+            container_bounds.right if container_right is not None else self.last_remembered_container.right,
+            container_bounds.bottom if container_bottom is not None else self.last_remembered_container.bottom
+        )
         
-        container_left = self.last_remembered_container[0] if self.style.get("position") == "relative" else 0
-        container_top = self.last_remembered_container[1] if self.style.get("position") == "relative" else 0
-        container_right = self.last_remembered_container[2] if self.style.get("position") == "relative" else Globals.__vis_document__.term.width
-        container_bottom = self.last_remembered_container[3] if self.style.get("position") == "relative" else Globals.__vis_document__.term.height
+        container_left = self.last_remembered_container.left if self.style.get("position") == "relative" else 0
+        container_top = self.last_remembered_container.top if self.style.get("position") == "relative" else 0
+        container_right = self.last_remembered_container.right if self.style.get("position") == "relative" else Globals.__vis_document__.term.width
+        container_bottom = self.last_remembered_container.bottom if self.style.get("position") == "relative" else Globals.__vis_document__.term.height
         
-        Logger.log(f"Element's get_true_container_edges: \n^^^ MEMORIZED:{self.last_remembered_container=}")
+        # Logger.log(f"Element's get_true_container_edges: \n^^^ MEMORIZED:{self.last_remembered_container=}")
         
-        return container_left, container_top, container_right, container_bottom
+        return Boundary(container_left, container_top, container_right, container_bottom)
 
     def get_center(self, format: Literal["xy", "yx"] = "xy") -> Tuple[int, int]:
         """

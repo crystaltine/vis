@@ -158,18 +158,22 @@ def parseattrs(object, provided_opts: dict | None, default: dict) -> None:
         # print(f"\x1b[34mparseattr: setting {key} to {provided_opts.get(key, default[key])} on {object}\x1b[0m")
         setattr(object, key, provided_opts.get(key, default[key]))
  
-def convert_to_chars(container_dim: int, dimvalue: int | str) -> int:
+def convert_to_chars(container_dim: int, dimvalue: int | str | None) -> int | None:
     """
-    Returns the actual value of the dimension (in characters) based on the container size.
+    Returns the actual value of the dimension (in characters) based on the container size,
+    or `None` if the given value is None.
     
     `dimvalue` must be a string ending in 'ch' or '%'.
     
     `container_dim`: the size of the container in the dimension we're calculating.
     
     examples:
+    - `convert_to_chars(232, None) -> None`
     - `convert_to_chars(120, '50%') -> 60`
     - `convert_to_chars(120, '324234ch') -> 324234` (why would you do this)
     """
+    
+    if dimvalue is None: return None
     
     # if int, assume as raw character value
     if isinstance(dimvalue, int): return dimvalue
@@ -266,6 +270,8 @@ def len_no_ansi(string: str) -> str:
 
 def remove_ansi(string: str) -> str:
     """
+    Removes color/style codes from a string.
+    
     @see - https://github.com/chalk/ansi-regex/blob/0755e661553387cfebcb62378181e9f55b2567ff/index.js
     """
     return re.sub(

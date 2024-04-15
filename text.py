@@ -3,6 +3,7 @@ from utils import fcode, convert_to_chars
 from typing import Literal, Unpack
 from globalvars import Globals
 from logger import Logger
+from boundary import Boundary
 
 class Text(Element):
     """
@@ -17,7 +18,7 @@ class Text(Element):
     
     class StyleProps(Element.StyleProps):
         """
-        A schema of style options for text. No `top` or `bottom` because one line only.
+        A typeddict of style options for text. No `top` or `bottom` because one line only.
         
         Left overrides right (if both not None, `right` is ignored). Cannot have both set to None.
         """
@@ -28,12 +29,12 @@ class Text(Element):
         bold: bool
         italic: bool
         underline: bool
-        left: int
+        left: int | None
         right: int | None
-        y: int
-        text_align: Literal["left", "center", "right"]
-        hoverable: bool
-        selectable: bool
+        top: int | None
+        bottom: int | None
+        width: int | None
+        height: int | None
     
     SUPPORTS_CHILDREN = False
     DEFAULT_STYLE: "Text.StyleProps" = {
@@ -45,11 +46,12 @@ class Text(Element):
         "italic": False,
         "underline": False,
         "left": 0,
-        "right": None, # calculated from "left" and text length
-        "y": 0,
-        "text_align": "left",
-        "hoverable": False,
-        "selectable": False,
+        "right": None, # defaults to 100% width
+        "width": "100%",
+        "top": 0,
+        "bottom": None, # auto based on top & how many lines the text takes up
+        "height": None, # auto based on text length
+        "wrap": True,
     }
     
     def __init__(self, **attrs: Unpack["Attributes"]):
@@ -60,42 +62,43 @@ class Text(Element):
         
         # assert that not both left and right are None
         assert (self.style.get("left") is not None or self.style.get("right") is not None), "[Text]: At least one of left or right must not be None."
+        # assert that not both top and bottom are None
+        assert (self.style.get("top") is not None or self.style.get("bottom") is not None), "[Text]: At least one of top or bottom must not be None."
         
-    def render(self, container_left: int = None, container_top: int = None, container_right: int = None, container_bottom: int = None):
+    def render(self, container_bounds: Boundary):
         """
         Renders the text to its container at the specified position, given the positions of the container.
         """
 
-        container_left, container_top, container_right, container_bottom = self.get_true_container_edges(container_left, container_top, container_right, container_bottom)
+        container_bounds = self.get_true_container_edges(container_bounds)
+
+        # calculate width-related attributes
+        l = self.style.get("left")
+        r = self.style.get("right")
+        container_width = container_bounds.right - container_bounds.left
+        true_l = convert_to_chars(container_width, l)
+        true_r = convert_to_chars(container_width, r)
+        true_w = convert_to_chars(container_width, self.style.get("width"))
+        self.client_left = container_bounds.left + (true_l if l is not None else container_bounds.right - true_r - true_w)
+        self.client_right = container_bounds.right - true_r if r is not None else container_bounds.left + true_l + true_w       
+        self.client_width = self.client_right - self.client_left 
         
-        Logger.log(f"Rendering {self} in container {container_left, container_top, container_right, container_bottom}.")
-        
-        container_width = container_right - container_left
-        container_height = container_bottom - container_top
-        
-        text_len = len(self.text)
-        
-        # calculate text left position
-        # precondition: at least one of left or right is not None (see `init`)
-        if self.style.get("left") is not None:
-            self.client_left = container_left + convert_to_chars(container_width, self.style.get("left")) - (
-                0 if self.style.get("text_align") == "left" else
-                text_len // 2 if self.style.get("text_align") == "center" else
-                text_len
-            )
-        else: # we can do this because precondition guarantees that right is not None if left is None
-            self.client_left = container_left + convert_to_chars(container_width, self.style.get("right")) - text_len + (
-                0 if self.style.get("text_align") == "left" else
-                text_len // 2 if self.style.get("text_align") == "center" else
-                text_len
-            )
-            
-        # set client_... attributes just for info
-        # self.client_left is already set
-        self.client_right = self.client_left + text_len
-        self.client_top = container_top + convert_to_chars(container_height, self.style.get("y"))
-        self.client_bottom = self.client_top + 1
-        
+        # calculate height in a special way IF:
+        # top not None, bottom None, height None
+        # or bottom not None, top None, height None
+        # we assume client_width is fixed
+        if self.style.get("height") is None:
+            if self.style.get("top") is not None and self.style.get("bottom") is None:
+                self.client_top = container_bounds.top + convert_to_chars(container_bounds.bottom - container_bounds.top, self.style.get("top"))
+                # calculate height if wrap, otherwise just 1 line of text
+                self.client_height = (len(self.text) // self.client_width + 1) if self.style.get("wrap") else 1
+                self.client_bottom = self.client_top + self.client_height
+            elif self.style.get("bottom") is not None and self.style.get("top") is None:
+                self.client_bottom = container_bounds.bottom - convert_to_chars(container_bounds.bottom - container_bounds.top, self.style.get("bottom"))
+                # calculate height if wrap, otherwise just 1 line of text
+                self.client_height = (len(self.text) // self.client_width + 1) if self.style.get("wrap") else 1
+                self.client_top = self.client_bottom - self.client_height                
+                
         if not self.style.get("visible"): return
             
         style_string = " ".join([
