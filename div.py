@@ -3,6 +3,7 @@ from utils import fcode, convert_to_chars
 from typing import List, Unpack
 from globalvars import Globals
 from logger import Logger
+from boundary import Boundary
 
 class Div(Element):
     """
@@ -78,30 +79,16 @@ class Div(Element):
         self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else None
         #Logger.log(f"{self}'s children on init: {self.children}")
     
-    def render(self, container_left: int = None, container_top: int = None, container_right: int = None, container_bottom: int = None):
+    def render(self, container_bounds: Boundary):
 
-        Logger.log(f"<BEGIN DIV render func>")
-        Logger.log(f"Div render params: {container_left=} {container_top=} {container_right=} {container_bottom=}")
-        container_left, container_top, container_right, container_bottom = self.get_true_container_edges(container_left, container_top, container_right, container_bottom)
+        #Logger.log(f"<BEGIN DIV render func>")
+        #Logger.log(f"Div render params: {container_bounds.left=} {container_bounds.top=} {container_bounds.right=} {container_bounds.bottom=}")
+        container_bounds = self.get_true_container_edges(container_bounds)
         
-        container_width = container_right - container_left
-        container_height = container_bottom - container_top
+        Boundary.set_client_boundary(self, container_bounds)
         
-        self.client_top = container_top + (convert_to_chars(container_height, self.style.get("top")) if self.style.get("top") is not None
-            else container_bottom - convert_to_chars(container_height, self.style.get("bottom")) - convert_to_chars(container_height, self.style.get("height")))
-        self.client_bottom = (container_bottom - convert_to_chars(container_height, self.style.get("bottom")) if self.style.get("bottom") is not None
-            else container_top + convert_to_chars(container_height, self.style.get("top")) + convert_to_chars(container_height, self.style.get("height")))
-        
-        self.client_left = container_left + (convert_to_chars(container_width, self.style.get("left")) if self.style.get("left") is not None
-            else container_right - convert_to_chars(container_width, self.style.get("right")) - convert_to_chars(container_width, self.style.get("width")))
-        self.client_right = (container_right - convert_to_chars(container_width, self.style.get("right")) if self.style.get("right") is not None
-            else container_left + convert_to_chars(container_width, self.style.get("left")) + convert_to_chars(container_width, self.style.get("width")))
-        
-        self.client_width = self.client_right - self.client_left 
-        self.client_height = self.client_bottom - self.client_top
-        
-        Logger.log(f"Div (id={self.id}) given top: {self.style.get('top')}, bottom: {self.style.get('bottom')}, height: {self.style.get('height')}, calced client_top={self.client_top}, client_bottom={self.client_bottom}, client_height={self.client_height}")
-        Logger.log(f"^ container top: {container_top}, bottom: {container_bottom}, height: {container_height}")
+        #Logger.log(f"Div (id={self.id}) given top: {self.style.get('top')}, bottom: {self.style.get('bottom')}, height: {self.style.get('height')}, calced client_top={self.client_top}, client_bottom={self.client_bottom}, client_height={self.client_height}")
+        #Logger.log(f"^ {container_bounds.top=}, {container_bounds.bottom=}, {container_height=}")
         
         if not self.style.get("visible"): return
         
@@ -117,16 +104,50 @@ class Div(Element):
             
             if self is child: continue # ??? - for some reason using this func adds a self pointer to its own children. try fixing later
             
-            Logger.log(f"Div rendering children: cli_left, cli_top, cli_right, cli_bottom: {self.client_left=} {self.client_top=} {self.client_right=} {self.client_bottom=}")
+            # Logger.log(f"Div rendering children: cli_left, cli_top, cli_right, cli_bottom: {self.client_left=} {self.client_top=} {self.client_right=} {self.client_bottom=}")
             
-            general_padding = convert_to_chars(container_width, self.style.get("padding")) if self.style.get("padding") is not None else 0
+            general_padding_x, general_padding_y = (convert_to_chars(self.client_width, self.style.get("padding")), convert_to_chars(self.client_height, self.style.get("padding"))) if self.style.get("padding") is not None else 0
             
-            child.render(
-                self.client_left + convert_to_chars(container_width, self.style.get("padding_left")) or general_padding,
-                self.client_top + convert_to_chars(container_height, self.style.get("padding_top")) or general_padding,
-                self.client_right - convert_to_chars(container_width, self.style.get("padding_right")) or general_padding,
-                self.client_bottom - convert_to_chars(container_height, self.style.get("padding_bottom")) or general_padding
-            )
+            child.render(Boundary(
+                self.client_left + convert_to_chars(self.client_width, self.style.get("padding_left")) or general_padding_x,
+                self.client_top + convert_to_chars(self.client_height, self.style.get("padding_top")) or general_padding_y,
+                self.client_right - convert_to_chars(self.client_width, self.style.get("padding_right")) or general_padding_x,
+                self.client_bottom - convert_to_chars(self.client_height, self.style.get("padding_bottom")) or general_padding_y
+            ))
+            
+    def _render_partial(self, container_bounds: Boundary, max_bounds: Boundary) -> None:
+        
+        # first do the same stuff as render
+        container_bounds = self.get_true_container_edges(container_bounds)
+        Boundary.set_client_boundary(self, container_bounds)
+        
+        if not self.style.get("visible"): return
+        
+        if self._bg_fcode:
+            for i in range(max(self.client_top, max_bounds.top), min(self.client_bottom, max_bounds.bottom)):
+                with Globals.__vis_document__.term.hidden_cursor():
+                    # diagram:
+                    #  cli_left   bounds_left              bounds_right  cli_right
+                    #  |          |                        |             |
+                    #  --------------------------------------------------- = client_width
+                    #             -------------------------- = max_bounds.right - max_bounds.left
+                    print(Globals.__vis_document__.term.move_xy(max(self.client_left, max_bounds.left), i) + self._bg_fcode + " " * min(self.client_width, max_bounds.right - max_bounds.left), end="")
+                    
+        # render children
+        for child in self.children:
+            
+            if self is child: continue # ??? - for some reason using this func adds a self pointer to its own children. try fixing later
+            
+            # Logger.log(f"Div rendering children: cli_left, cli_top, cli_right, cli_bottom: {self.client_left=} {self.client_top=} {self.client_right=} {self.client_bottom=}")
+            
+            general_padding_x, general_padding_y = (convert_to_chars(self.client_width, self.style.get("padding")), convert_to_chars(self.client_height, self.style.get("padding"))) if self.style.get("padding") is not None else 0
+            
+            child._render_partial(Boundary(
+                self.client_left + convert_to_chars(self.client_width, self.style.get("padding_left")) or general_padding_x,
+                self.client_top + convert_to_chars(self.client_height, self.style.get("padding_top")) or general_padding_y,
+                self.client_right - convert_to_chars(self.client_width, self.style.get("padding_right")) or general_padding_x,
+                self.client_bottom - convert_to_chars(self.client_height, self.style.get("padding_bottom")) or general_padding_y
+            ), max_bounds)
              
     def add_child(self, child: "Element", index: int = None):
         """
