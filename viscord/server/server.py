@@ -3,6 +3,18 @@ import threading
 import json
 import os
 import api.users, api.login_flow, api.messages, api.chats
+import ipaddress
+
+basepath = os.path.dirname(os.path.realpath(__file__))
+blacklist = []
+
+with open(os.path.join(basepath, "blacklist.txt")) as f:
+    for line in f.read().split("\n"):
+        if "/" in line:
+            blacklist.append(ipaddress.ip_network(line))
+        else:
+            blacklist.append(ipaddress.ip_address(line))
+
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -68,4 +80,9 @@ def handle_connection(conn, addr):
 while True:
     s.listen()
     conn, addr = s.accept()
+    for net in blacklist:
+        if (isinstance(net, ipaddress.ip_address) and ipaddress.ip_address(addr[0]) == net) or (isinstance(net, ipaddress.ip_network) and ipaddress.ip_address(addr[0]) in net):
+            print("Blocked connection from " + addr[0])
+            conn.close()
+            continue
     threading.Thread(target=handle_connection, args=(conn, addr)).start()
