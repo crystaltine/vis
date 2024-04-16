@@ -24,8 +24,6 @@ class Div(Element):
         top: str
         width: str
         height: str
-        right: str
-        bottom: str
         padding_top: int
         padding_right: int
         padding_bottom: int
@@ -41,8 +39,6 @@ class Div(Element):
         "top": "0%",
         "width": "100%",
         "height": "100%",
-        "right": None, # calculated from "left" and "width"
-        "bottom": None, # calculated from "top" and "height"
         "padding_top": 0,
         "padding_right": 0,
         "padding_bottom": 0,
@@ -52,28 +48,8 @@ class Div(Element):
     }
 
     def __init__(self, **attrs: Unpack["Attributes"]):
-        """ Keyword arguments: see `Div.Attributes`.
-        Note: For style options that conflict, such as "top"/"bottom" and "height", the ones listed higher
-        in the default dict above take precedence. Specifically, for dimensions/positioning, here are the rules:
-        
-        - if both top and bottom are provided, height is completely ignored.
-        - if one of top or bottom, and height, are provided, the other top/bottom position is calculated from the height.
-        - this is true for left/right/width as well.
-        - therefore, at least two of the three positioning params for each dimension must be not None.
-        
-        (don't worry about not setting options, they have default values. Just don't set more than one of the
-        position options (height/top/bottom, width/left/right) explicitly to None.
-        
-        Provide either percents or characters for the dimension values.
-        Percents must be expressed as strings, e.g. '50%'. Characters can
-        be either raw numbers or strings ending in 'ch', e.g. 50 or '50ch'.
-        """
         
         super().__init__(**attrs) # should ignore any unknown attributes that are provided
-        
-        # assert that ONE of left/right and ONE of top/bottom is provided
-        assert (self.style.get("left") is not None or self.style.get("right") is not None), "[Div]: At least one of left or right must not be None."
-        assert (self.style.get("top") is not None or self.style.get("bottom") is not None), "[Div]: At least one of top or bottom must not be None."
         
         self.children: List["Element"] = attrs.get("children", [])
         self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else None
@@ -94,9 +70,8 @@ class Div(Element):
         
         # draw the rectangle IF it is not transparent.
         if self._bg_fcode:
-            for i in range(self.client_top, self.client_bottom):
-                with Globals.__vis_document__.term.hidden_cursor():
-                    #Logger.log(f"drawing strip of div (id={self.id}) at y={i}")
+            with Globals.__vis_document__.term.hidden_cursor():
+                for i in range(self.client_top, self.client_bottom):
                     print(Globals.__vis_document__.term.move_xy(self.client_left, i) + self._bg_fcode + " " * self.client_width, end="")
                     
         # render children
@@ -107,7 +82,6 @@ class Div(Element):
             # Logger.log(f"Div rendering children: cli_left, cli_top, cli_right, cli_bottom: {self.client_left=} {self.client_top=} {self.client_right=} {self.client_bottom=}")
             
             general_padding_x, general_padding_y = (convert_to_chars(self.client_width, self.style.get("padding")), convert_to_chars(self.client_height, self.style.get("padding"))) if self.style.get("padding") is not None else 0
-            
             child.render(Boundary(
                 self.client_left + convert_to_chars(self.client_width, self.style.get("padding_left")) or general_padding_x,
                 self.client_top + convert_to_chars(self.client_height, self.style.get("padding_top")) or general_padding_y,
@@ -123,9 +97,17 @@ class Div(Element):
         
         if not self.style.get("visible"): return
         
+        # if completely out of render, just skip all this goofy ah garbage
+        if (
+            max_bounds.left > self.client_right or
+            max_bounds.right < self.client_left or 
+            max_bounds.top > self.client_bottom or
+            max_bounds.bottom < self.client_top
+        ): return
+
         if self._bg_fcode:
-            for i in range(max(self.client_top, max_bounds.top), min(self.client_bottom, max_bounds.bottom)):
-                with Globals.__vis_document__.term.hidden_cursor():
+            with Globals.__vis_document__.term.hidden_cursor():
+                for i in range(max(self.client_top, max_bounds.top), min(self.client_bottom, max_bounds.bottom)):
                     # diagram:
                     #  cli_left   bounds_left              bounds_right  cli_right
                     #  |          |                        |             |
@@ -141,7 +123,6 @@ class Div(Element):
             # Logger.log(f"Div rendering children: cli_left, cli_top, cli_right, cli_bottom: {self.client_left=} {self.client_top=} {self.client_right=} {self.client_bottom=}")
             
             general_padding_x, general_padding_y = (convert_to_chars(self.client_width, self.style.get("padding")), convert_to_chars(self.client_height, self.style.get("padding"))) if self.style.get("padding") is not None else 0
-            
             child._render_partial(Boundary(
                 self.client_left + convert_to_chars(self.client_width, self.style.get("padding_left")) or general_padding_x,
                 self.client_top + convert_to_chars(self.client_height, self.style.get("padding_top")) or general_padding_y,

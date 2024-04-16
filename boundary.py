@@ -33,36 +33,19 @@ class Boundary:
         container_height = container_bounds.bottom - container_bounds.top
         
         l = obj.style.get("left")
-        r = obj.style.get("right")
         t = obj.style.get("top")
-        b = obj.style.get("bottom")
         w = obj.style.get("width")
         h = obj.style.get("height")
         
         true_t = convert_to_chars(container_height, t)
-        true_b = convert_to_chars(container_height, b)  
         true_l = convert_to_chars(container_width, l)
-        true_r = convert_to_chars(container_width, r)
         true_h = convert_to_chars(container_height, h)
         true_w = convert_to_chars(container_width, w)
         
-        obj.client_top = container_bounds.top + (
-            true_t if t is not None
-            else container_bounds.bottom - true_b - true_h
-        )
-        obj.client_bottom = (
-            container_bounds.bottom - true_b if b is not None
-            else container_bounds.top + true_t + true_h
-        )
-        
-        obj.client_left = container_bounds.left + (
-            true_l if l is not None
-            else container_bounds.right - true_r - true_w
-        )
-        obj.client_right = (
-            container_bounds.right - true_r if r is not None
-            else container_bounds.left + true_l + true_w
-        )
+        obj.client_top = container_bounds.top + true_t
+        obj.client_bottom = container_bounds.top + true_t + true_h
+        obj.client_left = container_bounds.left + true_l
+        obj.client_right = container_bounds.left + true_l + true_w
         
         obj.client_width = obj.client_right - obj.client_left 
         obj.client_height = obj.client_bottom - obj.client_top
