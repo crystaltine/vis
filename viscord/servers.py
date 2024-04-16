@@ -222,14 +222,14 @@ def db_on_join_server(user_id: str, server_id: str):
     except:
         return False
     
-    def get_server_chats(server_id):
-        try:
-            send_query = """select * from "Discord"."ChatInfo" where server_id = %s""" #grabs all chat data for the server_id
-            cur.execute(send_query, (server_id,))
-            records = cur.fetchall()
-            chats = []
-            for x in len(records):
-                chats.append(records[x][2])
-            return chats
-        except:
-            return []
+def get_server_chats(server_id):
+    try:
+        send_query = """select * from "Discord"."ChatInfo" where server_id = %s""" #grabs all chat data for the server_id
+        cur.execute(send_query, (server_id,))
+        records = cur.fetchall()
+        chats = []
+        for x in len(records):
+            chats.append(records[x][2])
+        return chats
+    except:
+        return []
