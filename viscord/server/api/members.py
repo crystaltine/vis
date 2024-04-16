@@ -41,3 +41,27 @@ def handle_adding_member_roles(user_id: str, server_id: str, role_id: str):
     '''
 
     cur.execute(send_query, (new_roles_list, user_id, server_id))
+
+def update_member_nickname(user_id: str, server_id: str, new_nickname: str = "") -> bool:
+    """
+    @backend: server -> database
+    
+    Updates the nickname of a member in a server. If the new nickname is empty, their nickname in
+    the members table 
+    """
+    send_query = """update "Discord"."MemberInfo" set nickname = %s where server_id = %s and user_id = %s"""
+    if not new_nickname:
+        cur.execute(send_query, (None, server_id, user_id))
+    else:
+        cur.execute(send_query, (new_nickname, server_id, user_id))
+
+def update_nick_color(user_id: str, server_id: str, new_color: str | None) -> bool:
+    """
+    @backend: server -> database
+    
+    Changes the color of a user's nickname in a server. If the new color is `None`, null is
+    inserted into the database, but this should be interpreted as something like white by the client.
+    """
+    send_query = """update "Discord" . "MemberInfo" set nick_color = %s where server_id = %s and user_id = %s """ 
+    cur.execute(send_query, (new_color, server_id, user_id))
+
