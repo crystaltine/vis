@@ -202,7 +202,44 @@ def handle_user_leaving_server(user_id: str, server_id: str) -> None:
 
     cur.execute(send_query, (user_id, server_id))
 
+def db_on_join_server(user_id: str, server_id: str):
+    """
+    Creates a MemberInfo row within the database based on the given user and server.
 
+    Parameters:
+        user_id (str): String containing the "user_id" of the user that is joining the specified server.
+        server_id (str): String containing the "server_id" of the server that the specified user is joining.
 
+    Returns:
+        None
+    """
+    try:
+        send_query = """insert into "Discord"."MemberInfo" (member_id, user_id, server_id, member_join_date) values (%s, %s, %s, %s)"""
+        member_timestamp = str(datetime.datetime.now()) #timestamp
+        member_id = str(uuid4()) #unique member id
+        cur.execute(send_query, (member_id, user_id, server_id, member_timestamp))
+        return True
+    except:
+        return False
+    
 
+def get_user_servers(user_id):
+    """
+    Retrieves the servers that the given user has activel
 
+    Parameters:
+        user_id (str): String containing the "user_id" of the user
+
+    Returns:
+        list
+    """
+    try:
+        send_query = """select * from "Discord"."MemberInfo" where user_id = %s""" #grabs all member data for the user_id
+        cur.execute(send_query, (user_id,))
+        records = cur.fetchall()
+        servers = []
+        for x in len(records):
+            servers.append(records[x][1]) #stores all the servers that the user is a member of
+        return servers
+    except:
+        return []
