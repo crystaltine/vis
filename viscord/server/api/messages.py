@@ -1,4 +1,4 @@
-from db import cur
+from .db import cur
 
 def pin_message(message_id, channel_id):
     send_query = '''select pinned_message_ids from "Discord"."ChatInfo" where chat_id = %s'''

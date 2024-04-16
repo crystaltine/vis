@@ -1,4 +1,4 @@
-from db import cur
+from .db import cur
 from cryptography.fernet import Fernet
 import os
 from uuid import uuid4

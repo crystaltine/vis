@@ -1,11 +1,8 @@
 import socket
 import threading
 import json
-import api
 import os
-from api.db import cur
-
-
+import api.users, api.login_flow, api.messages, api.chats
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

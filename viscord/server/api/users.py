@@ -1,5 +1,5 @@
 import datetime
-from db import cur
+from .db import cur
 from uuid import uuid4
 import random
 

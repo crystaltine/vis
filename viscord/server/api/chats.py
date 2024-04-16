@@ -1,4 +1,4 @@
-from db import cur
+from .db import cur
 
 def reorder_chats(server_id, chat_name):
     server_id = server_id

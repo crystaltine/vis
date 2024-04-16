@@ -1,8 +1,7 @@
-from db import cur
+from .db import cur
 from typing import Dict
 from uuid import uuid4
 
-<<<<<<<< HEAD:viscord/server/api/roles.py
 def get_chat_perms(user_id:str, server_id:str, chat_id:str) -> Dict:
     
     # Stuff for testing- ignore
@@ -144,30 +143,3 @@ def remove_role(role_id:str, server_id=str) -> None:
             roles.remove(role_id)
         query='''update "Discord"."MemberInfo" set roles_list = %s where user_id = %s and server_id = %s'''
         cur.execute(query, (roles, user_id, server_id))
-========
-conn_uri="postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
-
-def connect_to_db():
-    conn = psycopg2.connect(conn_uri)
-    conn.set_session(autocommit=True)
-    cur = conn.cursor()
-
-    return cur
-
-cur = connect_to_db()
-
-# Given a user_id, a server_id, and a chat_id, this function will return a dict containing a bool for reading and a bool for writing perms
-
-
-# print(get_chat_perms())
-# print(get_server_perms())
-# server_id='ad3f1cd8-ffcd-48ca-abc7-9409c17c9122'
-# role_info={"role_name":'test_role', "role_color":'#ffffff', "role_symbol":"★", "priority":3, "permissions":2, "manage_server":False, "manage_chats":False, \
-#            "manage_members":False, "manage_roles":True, "manage_voice":True,  "manage_messages":True, "is_admin":False}
-# user_id='b98757df-71aa-4615-8345-26c71cfbb304'
-# add_role(server_id, role_info, user_id)
-
-role_id='5a440e84-96b1-4caa-865e-fdc4a54d4e12'
-server_id='ad3f1cd8-ffcd-48ca-abc7-9409c17c9122'
-remove_role(role_id, server_id)
->>>>>>>> f1471ab7b423be6cbb7dad9a67e716d1aeb4817d:viscord/roles_hierarchy.py
