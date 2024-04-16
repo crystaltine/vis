@@ -1,23 +1,10 @@
-import psycopg2
-import datetime
-import random
+from .db import cur
 from uuid import uuid4
-from typing import Optional, Dict
-from chats import handle_chat_creation
-from viscord.role_perms import get_server_perms
-from viscord.roles import handle_role_creation
-from viscord.members import handle_member_creation, handle_adding_member_roles
+import datetime
 
-conn_uri="postgres://avnadmin:AVNS_DyzcoS4HYJRuXlJCxuw@postgresql-terminal-suite-discord-terminal-suite-discord.a.aivencloud.com:15025/Discord?sslmode=require"
-
-def connect_to_db():
-    conn = psycopg2.connect(conn_uri)
-    conn.set_session(autocommit=True)
-    cur = conn.cursor()
-
-    return cur
-
-cur = connect_to_db()
+from .roles import get_server_perms, handle_role_creation
+from .members import handle_member_creation, handle_adding_member_roles
+from .chats import handle_chat_creation
 
 def handle_server_creation(user_id: str, server_name: str, server_icon: str, server_color: str) -> None:
     """
@@ -201,8 +188,3 @@ def handle_user_leaving_server(user_id: str, server_id: str) -> None:
     '''    
 
     cur.execute(send_query, (user_id, server_id))
-
-
-
-
-

@@ -87,6 +87,23 @@ def get_server_perms(user_id:str, server_id: str) -> Dict:
     return perms
 
 
+def handle_role_creation(server_id, role_name, role_color, role_symbol, priority, permissions, manage_server, manage_chats, manage_members, manage_roles, manage_voice, manage_messages, is_admin):
+    data_dict = {
+        "role_name": role_name,
+        "role_color": role_color,
+        "role_symbol": role_symbol,
+        "priority": priority,
+        "permissions": permissions,
+        "manage_server": manage_server,
+        "manage_chats": manage_chats,
+        "manage_members": manage_members,
+        "manage_roles": manage_roles,
+        "manage_voice": manage_voice,
+        "manage_messages": manage_messages,
+        "is_admin": is_admin
+    }
+    add_role(server_id, data_dict)
+
 # Given a user_id, server_id, and dict containing information about a new role, this function will add the new role to the database
 
 def add_role(server_id:str, role_info:Dict, user_id=None) -> None:
