@@ -69,3 +69,24 @@ def update_user_symbol(user_id: str, symbol: str) -> Literal["success", "failure
         return 'success'
     except:
         return 'failure'
+
+def get_user_servers(user_id):
+    """
+    Retrieves the servers that the given user has activel
+
+    Parameters:
+        user_id (str): String containing the "user_id" of the user
+
+    Returns:
+        list
+    """
+    try:
+        send_query = """select * from "Discord"."MemberInfo" where user_id = %s""" #grabs all member data for the user_id
+        cur.execute(send_query, (user_id,))
+        records = cur.fetchall()
+        servers = []
+        for x in len(records):
+            servers.append(records[x][1]) #stores all the servers that the user is a member of
+        return servers
+    except:
+        return []
