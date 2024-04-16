@@ -3,6 +3,8 @@ from utils import fcode, convert_to_chars, indexof_first_larger_than
 from typing import List, Tuple, Unpack
 from globalvars import Globals
 from logger import Logger
+from boundary import Boundary
+from copy import deepcopy
 
 class Scrollbox(Element):
     """
@@ -10,7 +12,7 @@ class Scrollbox(Element):
     For now, auto-positions elements vertically.
     Children should have:
     - width (default 100% if unspecified)
-    - height: must be specified. If in percents, 
+    - height: must be specified. If in percents, calculated as proportion of REMAINING height
     """
     
     class Attributes(Element.Attributes):
@@ -27,8 +29,6 @@ class Scrollbox(Element):
         top: str
         width: str
         height: str
-        right: str
-        bottom: str
         bg_color: str | tuple
     
     SUPPORTS_CHILDREN = True
@@ -39,17 +39,11 @@ class Scrollbox(Element):
         "top": "0%",
         "width": "100%",
         "height": "100%",
-        "right": None, # calculated from "left" and "width"
-        "bottom": None, # calculated from "top" and "height"
         "bg_color": (255, 255, 255), # can be hex code, rgb tuple, or 'transparent'
     }
 
     def __init__(self, **attrs: Unpack["Attributes"]):        
         super().__init__(**attrs) # should ignore any unknown attributes that are provided
-        
-        # assert that ONE of left/right and ONE of top/bottom is provided
-        assert (self.style.get("left") is not None or self.style.get("right") is not None), "[Scrollbox]: At least one of left or right must not be None."
-        assert (self.style.get("top") is not None or self.style.get("bottom") is not None), "[Scrollbox]: At least one of top or bottom must not be None."
         
         self.scroll_y = 0
         """ Represents the number of characters scrolled from the top. 0 means we are at the top, 1 would mean we are scrolled down by 1 char, etc. """
@@ -86,31 +80,11 @@ class Scrollbox(Element):
         
         return (a, b-1)
     
-    def render(self, container_left: int = None, container_top: int = None, container_right: int = None, container_bottom: int = None):
+    def render(self, container_bounds: Boundary):
 
-        Logger.log(f"\n<Begin Scrollbox render func>")
-        Logger.log(f"Scrollbox render params: {container_left=} {container_top=} {container_right=} {container_bottom=}")
-        container_left, container_top, container_right, container_bottom = self.get_true_container_edges(container_left, container_top, container_right, container_bottom)
-        
-        container_width = container_right - container_left
-        container_height = container_bottom - container_top
-        
-        self.client_top = container_top + (convert_to_chars(container_height, self.style.get("top")) if self.style.get("top") is not None
-            else container_bottom - convert_to_chars(container_height, self.style.get("bottom")) - convert_to_chars(container_height, self.style.get("height")))
-        self.client_bottom = (container_bottom - convert_to_chars(container_height, self.style.get("bottom")) if self.style.get("bottom") is not None
-            else container_top + convert_to_chars(container_height, self.style.get("top")) + convert_to_chars(container_height, self.style.get("height")))
-        
-        self.client_left = container_left + (convert_to_chars(container_width, self.style.get("left")) if self.style.get("left") is not None
-            else container_right - convert_to_chars(container_width, self.style.get("right")) - convert_to_chars(container_width, self.style.get("width")))
-        self.client_right = (container_right - convert_to_chars(container_width, self.style.get("right")) if self.style.get("right") is not None
-            else container_left + convert_to_chars(container_width, self.style.get("left")) + convert_to_chars(container_width, self.style.get("width")))
-        
-        self.client_width = self.client_right - self.client_left 
-        self.client_height = self.client_bottom - self.client_top
-        
-        #Logger.log(f"Scrollbox (id={self.id}) given top: {self.style.get('top')}, bottom: {self.style.get('bottom')}, height: {self.style.get('height')}, calced client_top={self.client_top}, client_bottom={self.client_bottom}, client_height={self.client_height}")
-        #Logger.log(f"^ container top: {container_top}, bottom: {container_bottom}, height: {container_height}")
-        
+        container_bounds = self.get_true_container_edges(container_bounds)
+        Boundary.set_client_boundary(self, container_bounds)
+
         if not self.style.get("visible"): return
         
         # draw the rectangle IF it is not transparent.
@@ -119,22 +93,32 @@ class Scrollbox(Element):
                 with Globals.__vis_document__.term.hidden_cursor():
                     print(Globals.__vis_document__.term.move_xy(self.client_left, i) + self._bg_fcode + " " * self.client_width, end="")
                     
-        # render children
+        # scrollbox child rendering
         Logger.log(f"\n<Scrollbox render func: child rendering:>")
-        for child in self.children:
-            
-            if self is child: continue # ??? - for some reason using this func adds a self pointer to its own children. try fixing later
-            
-            Logger.log(f"Scrollbox rendering children: cli_left, cli_top, cli_right, cli_bottom: {self.client_left=} {self.client_top=} {self.client_right=} {self.client_bottom=}")
-            
-            general_padding = convert_to_chars(container_width, self.style.get("padding")) if self.style.get("padding") is not None else 0
-            
-            child.render(
-                self.client_left + convert_to_chars(container_width, self.style.get("padding_left")) or general_padding,
-                self.client_top + convert_to_chars(container_height, self.style.get("padding_top")) or general_padding,
-                self.client_right - convert_to_chars(container_width, self.style.get("padding_right")) or general_padding,
-                self.client_bottom - convert_to_chars(container_height, self.style.get("padding_bottom")) or general_padding
-            )
+
+        full_render_range = self.get_fully_rendered_child_range()
+        first_partially_rendered = self.children[full_render_range[0]-1] if full_render_range[0]-1 >= 0 else None
+        last_partially_rendered = self.children[full_render_range[1]+1] if full_render_range[1]+1 < len(self.children) else None
+
+        current_bottommost = 0
+        """ Where the client_bottom of the last rendered element is, absolute (relative to top of screen) """
+
+        # use this as container_bounds. update .top and .bottom after every element render
+        content_boundary = Boundary(self.client_left, self.client_top-self.scroll_y, self.client_right, self.client_bottom)
+        # use this as max_bounds
+        limit_boundary = Boundary(self.client_left, self.client_top, self.client_right, self.client_bottom)
+
+        # rendering the top child
+        if first_partially_rendered is not None:
+            first_partially_rendered._render_partial(deepcopy(content_boundary), deepcopy(limit_boundary))
+            current_bottommost = first_partially_rendered.client_bottom - self.client_top
+            content_boundary.top = current_bottommost
+
+        # rendering the things in the middle
+        for child in self.children[full_render_range[0]:full_render_range[1]]:
+            child.render(deepcopy(content_boundary))
+            height_so_far = 
+            content_boundary.top = height_so_far
              
     def add_child(self, child: "Element", index: int = None):
         """
