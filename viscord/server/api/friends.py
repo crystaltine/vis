@@ -1,6 +1,7 @@
-# Contains all server->db functions related to friends and friend requests.
-# This includes creating friend request records in the db, updating those entries when
-# they are accepted or ignored, etc.
+from .db import cur
+from uuid import uuid4
+import datetime
+
 def get_user_friends(user_id):
     try:
         send_query = """select * from "Discord"."FriendInfo" where sender_id = %s and accepted = %s""" #grabs all friendsinfo data where the user is a sender
