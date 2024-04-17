@@ -1,4 +1,4 @@
-from .db import cur
+from db import cur
 from typing import Dict
 from uuid import uuid4
 
@@ -138,7 +138,7 @@ def add_role(server_id:str, role_info:Dict, user_id=None) -> None:
 
 # Given a server_id and a role_id, remove all instances of that role from the server
 
-def remove_role(role_id:str, server_id=str) -> None:
+def remove_role(role_id:str, server_id:str) -> None:
 
     # Remove the role from RolesInfo
 
@@ -160,3 +160,28 @@ def remove_role(role_id:str, server_id=str) -> None:
             roles.remove(role_id)
         query='''update "Discord"."MemberInfo" set roles_list = %s where user_id = %s and server_id = %s'''
         cur.execute(query, (roles, user_id, server_id))
+
+# Given a role_id and a server_id, get a list of all the perms for that role
+
+def get_perms_from_role(role_id:str, server_id:str) -> Dict:
+
+    # Pulling tuple by querying database
+
+    query="""select manage_server, manage_chats, manage_members, manage_roles, manage_voice, manage_messages, is_admin from \
+        "Discord"."RolesInfo" where role_id = %s and server_id = %s"""
+    cur.execute(query, (role_id, server_id))
+    rows=cur.fetchall()[0]
+
+    # Formatting perms into dict
+
+    perm_dict = {
+        "manage_server": rows[0],
+        "manage_chats": rows[1],
+        "manage_members": rows[2],
+        "manage_roles": rows[2],
+        "manage_voice": rows[3],
+        "manage_messages": rows[4],
+        "is_admin": rows[5]
+    }
+
+    return perm_dict
