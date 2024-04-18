@@ -1,6 +1,6 @@
 from element import Element
 from utils import fcode, convert_to_chars, len_no_ansi, remove_ansi
-from typing import Literal, Unpack, TYPE_CHECKING
+from typing import Literal, Unpack, Callable, TYPE_CHECKING
 from globalvars import Globals
 from logger import Logger
 
@@ -17,10 +17,11 @@ class Input(Element):
         id: str | None
         class_str: str | None
         style_str: str | None
+        on_enter: Callable[["Input"], None]
         placeholder: str | None
         max_len: int | None
         pattern: str | None
-        
+
     class StyleProps(Element.StyleProps):
         """ A schema of style options for input elements. """
         position: str
@@ -77,6 +78,16 @@ class Input(Element):
     }
     
     def __init__(self, **attrs: Unpack["Attributes"]):
+        """
+        Attributes:
+        - id: str | None
+        - class_str: str | None
+        - style_str: str | None
+        - on_enter: Callable[[Input], None] (passes in pointer to this input object)
+        - placeholder: str | None
+        - max_len: int | None
+        - pattern: str | None
+        """
         
         super().__init__(**attrs)
 
@@ -84,6 +95,8 @@ class Input(Element):
         self.max_len = attrs.get("max_len", None)
         self.curr_text: str = ""
         self.cursor_pos = 0
+        self.on_enter = attrs.get("on_enter", lambda: None)
+        """ Callback for when user presses enter and this element is selected. """
 
         self.insert_mode = False
         """ If typing a character should replace or insert, if cursor is not at the end of the curr string. Toggled with the INS key."""
@@ -121,8 +134,7 @@ class Input(Element):
                     self._move_right()
 
                 elif e.key == 'enter':
-                    # deselect everything (TODO)
-                    pass
+                    self.on_enter(self)
 
                 elif e.key == 'esc':
                     self.curr_text = ""
@@ -199,6 +211,11 @@ class Input(Element):
         # if we go past the rightmost char, then scroll right
         if relative_cursor_pos >= self.client_width:
             self.text_left_index += 1
+
+    def clear(self) -> None:
+        """ Clears current text of the element, and rerenders it. """
+        self.curr_text = ""
+        self.render()
 
     def render(self, container_left: int = None, container_top: int = None, container_right: int = None, container_bottom: int = None):
 

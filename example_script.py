@@ -1,55 +1,53 @@
 from interpreter import read_styles, read_vis
 from globalvars import Globals
-from time import sleep
-import socket
-from typing import TYPE_CHECKING
+from div import Div
 from text import Text
-from logger import Logger
-import json
-import uuid
-from logo import plaster_logo
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from scrollbox import Scrollbox
     from input import Input
-    from div import Div
-    from button import Button
 
-# setup socket
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(("localhost", 5000))
-
-read_styles("example_style.tss")
-read_vis("example_doc.vis")
+read_styles("message_layout_style.tss")
+read_vis("message_layout.vis")
 
 document = Globals.__vis_document__
 document.mount()
 
-plaster_logo("50%", "20%")
+# dont care about resize for now, too complicated to optimize lol
 
-container: "Div" = document.get_element_by_id("text_container")
+message_scrollbox: Scrollbox = document.get_element_by_id("messages_pane")
+message_input: Input = document.get_element_by_id("message_send_input")
+num_messages_sent = 0
 
-username_input: "Input" = document.get_element_by_id("username-input")
-password_input: "Input" = document.get_element_by_id("password-input")
-submit_button: "Button" = document.get_element_by_id("submit-button")
+def Message(content: str) -> Div:
+    """
+    Generic message component
+    """
+    return Div(
+        id=f"message-{num_messages_sent}",
+        class_str="message-obj",
+        children=[
+            Text(
+                class_str="message-obj-author",
+                text="@a_random_user"
+            ),
+            Text(
+                class_str="message-obj-content",
+                text=content
+            ),
+        ]
+    )
 
-def submit_handler():
-    Logger.log(f"[SUBMIT HANDLER] submitting: {username_input.curr_text=}, {password_input.curr_text=}")
-    s.send(json.dumps({
-        "type": "login", 
-        "data": {
-            "user": username_input.curr_text, 
-            "password": password_input.curr_text,
-            "sys_uuid": uuid.getnode()
-        }
-    }).encode())
-    
-    response = s.recv(1024)
-    Logger.log(f"[RECEIVED DATA BACK FROM SERVER!!!!!!!!!!!!]: {response=}")
+def on_send_msg(content: str):
+    element = Message(content)
+    message_scrollbox.add_child(element)
+    message_scrollbox.scroll_to_bottom()
+    message_scrollbox.render()
 
-    container.add_child(Text(text=f"your sessionID (very secure i know): {response}", class_str="text1"))
-    container.render()
+def on_enter(element: Input):
+    curr_text = element.curr_text
+    on_send_msg(curr_text)
+    element.clear()
 
-submit_button.on_pressed = submit_handler
-
-while True:
-    sleep(1)
+message_input.on_enter = on_enter

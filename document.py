@@ -4,7 +4,7 @@ from typing import List, Dict, Set, Any, TypedDict, Callable, Literal, TYPE_CHEC
 from pynput import keyboard
 from key_event import KeyEvent
 from logger import Logger
-from time import sleep
+from boundary import Boundary
 import traceback
 from button import Button
 from os import _exit
@@ -94,7 +94,7 @@ class Document:
             cls()
             for child in self.children:
                 Logger.log(f"document.render: rendering child with client edges {self.client_left=} {self.client_top=} {self.client_right=} {self.client_bottom=}")
-                child.render(self.client_left, self.client_top, self.client_right, self.client_bottom)
+                child.render(Boundary(self.client_left, self.client_top, self.client_right, self.client_bottom))
                     
         except Exception as e:
             Logger.log(f"ERROR in document.render: {traceback.format_exc()}")

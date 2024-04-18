@@ -16,9 +16,9 @@
             </>
         </>
         <div id="right_pane" class_str="right_pane">
-            <div id="messages_pane" class_str="messages_pane"></>
+            <scrollbox id="messages_pane" class_str="messages_pane"></>
             <div id="send_container" class_str="send_container">
-                <input class_str="send_container_text" placeholder="Type a message..."></>
+                <input id="message_send_input" class_str="send_container_text" placeholder="Type a message..."></>
             </>
         </>
     </>
