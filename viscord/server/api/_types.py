@@ -69,3 +69,10 @@ class MessageInfo(TypedDict):
     message_content: str
     message_timestamp: datetime
     pinged_user_ids: List[str]
+
+class FriendRequestInfo(TypedDict):
+    friend_id: str
+    sender_id: str
+    receiver_id: str
+    accepted: int
+    friend_timestamp: datetime

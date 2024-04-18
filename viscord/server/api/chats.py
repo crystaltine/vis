@@ -2,9 +2,10 @@ from .db import cur
 from .roles import get_server_perms
 from uuid import uuid4
 
-def reorder_chats(server_id, chat_name):
-    server_id = server_id
-    send_query = """select * from "Discord"."ChatInfo" where server_id = %s""" #grabs all chat data for the server_id
+def reorder_chats(server_id: str, chat_id: str):
+    # TODO - use chat_id instead of chat_name (since we can have duplicate names)
+    # does this function move the specified chat to top? If so, rename the function
+    send_query = """select * from "Discord"."ChatInfo" where server_id = %s"""
     cur.execute(send_query, (server_id,))
     records = cur.fetchall()
     cur_chat = records[0][3]
