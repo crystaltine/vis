@@ -12,8 +12,8 @@ def reorder_chats(server_id: str, chat_id: str):
     if len(records) > 0:
         for x in range(len(records)):
             change_chat = cur_chat
-            send_query = """update "Discord"."ChatInfo" set chat_order = %s where chat_name = %s""" #updates the chat_order
-            if records[x][3] == chat_name: #if the chat it is updating is the same as the most recently used chat
+            send_query = """update "Discord"."ChatInfo" set chat_order = %s where chat_id = %s""" #updates the chat_order
+            if records[x][3] == chat_id: #if the chat it is updating is the same as the most recently used chat
                 cur.execute(send_query, (0, change_chat)) #sets chat_order for chat to 0 and breaks
                 break
             cur_chat = records[x + 1][3]
