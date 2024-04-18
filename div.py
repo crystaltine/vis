@@ -97,7 +97,7 @@ class Div(Element):
         
         if not self.style.get("visible"): return
         
-        # if completely out of render, just skip all this goofy ah garbage
+            # if completely out of render, just skip all this goofy ah garbage
         if (
             max_bounds.left > self.client_right or
             max_bounds.right < self.client_left or 
