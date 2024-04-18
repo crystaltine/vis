@@ -1,4 +1,4 @@
-from .db import cur
+from db import cur
 from typing import Dict
 from uuid import uuid4
 
@@ -100,8 +100,15 @@ def handle_role_creation(server_id, role_name, role_color, role_symbol, priority
         "manage_roles": manage_roles,
         "manage_voice": manage_voice,
         "manage_messages": manage_messages,
-        "is_admin": is_admin
+        "is_admin":is_admin
     }
+
+    # If is_admin is True, the user should have all the perms
+
+    if is_admin:
+        for key in data_dict:
+            data_dict[key]=True
+
     add_role(server_id, data_dict)
 
 # Given a user_id, server_id, and dict containing information about a new role, this function will add the new role to the database
@@ -136,14 +143,14 @@ def add_role(server_id:str, role_info:Dict, user_id=None) -> None:
         cur.execute(query, (roles_list, user_id, server_id))
 
 
-# Given a server_id and a role_id, remove all instances of that role from the server
+# Given a role_id, remove all instances of that role from the server
 
-def remove_role(role_id:str, server_id=str) -> None:
+def remove_role(role_id:str, server_id:str) -> None:
 
     # Remove the role from RolesInfo
 
-    query='''delete from "Discord"."RolesInfo" where role_id = %s and server_id = %s'''
-    cur.execute(query, (role_id, server_id))
+    query='''delete from "Discord"."RolesInfo" where role_id = %s '''
+    cur.execute(query, (role_id,))
 
     # Get a list of all the rows from MemberInfo containing the server_id
 
@@ -160,3 +167,34 @@ def remove_role(role_id:str, server_id=str) -> None:
             roles.remove(role_id)
         query='''update "Discord"."MemberInfo" set roles_list = %s where user_id = %s and server_id = %s'''
         cur.execute(query, (roles, user_id, server_id))
+
+# Given a role_id get a list of all the perms for that role
+
+def get_perms_from_role(role_id:str) -> Dict:
+
+    # Pulling tuple by querying database
+
+    query="""select manage_server, manage_chats, manage_members, manage_roles, manage_voice, manage_messages, is_admin from \
+        "Discord"."RolesInfo" where role_id = %s"""
+    cur.execute(query, (role_id,))
+    rows=cur.fetchall()[0]
+
+    # Formatting perms into dict
+
+    perm_dict = {
+        "manage_server": rows[0],
+        "manage_chats": rows[1],
+        "manage_members": rows[2],
+        "manage_roles": rows[2],
+        "manage_voice": rows[3],
+        "manage_messages": rows[4],
+        "is_admin":rows[5]
+    }
+
+    # If is_admin is True, then the user should have all the perms
+
+    if rows[5]:
+        for key in perm_dict:
+            perm_dict[key]=True
+
+    return perm_dict
