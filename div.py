@@ -48,6 +48,13 @@ class Div(Element):
     }
 
     def __init__(self, **attrs: Unpack["Attributes"]):
+        """
+        Attributes:
+        - id: str | None
+        - class_str: str | None
+        - style_str: str | None
+        - children: List["Element"]
+        """
         
         super().__init__(**attrs) # should ignore any unknown attributes that are provided
         

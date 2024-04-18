@@ -163,10 +163,10 @@ class Element:
         """
         # update last remembered container
         self.last_remembered_container = Boundary(
-            container_bounds.left if container_left is not None else self.last_remembered_container.left,
-            container_bounds.top if container_top is not None else self.last_remembered_container.top,
-            container_bounds.right if container_right is not None else self.last_remembered_container.right,
-            container_bounds.bottom if container_bottom is not None else self.last_remembered_container.bottom
+            container_bounds.left if container_bounds.left is not None else self.last_remembered_container.left,
+            container_bounds.top if container_bounds.top is not None else self.last_remembered_container.top,
+            container_bounds.right if container_bounds.right is not None else self.last_remembered_container.right,
+            container_bounds.bottom if container_bounds.bottom is not None else self.last_remembered_container.bottom
         )
         
         container_left = self.last_remembered_container.left if self.style.get("position") == "relative" else 0

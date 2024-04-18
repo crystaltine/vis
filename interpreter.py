@@ -7,6 +7,7 @@ from typing import List, Dict, TYPE_CHECKING
 from document import Document
 from globalvars import Globals
 from div import Div
+from scrollbox import Scrollbox
 from text import Text
 from input import Input
 from button import Button
@@ -20,7 +21,8 @@ TAG_TO_ELEMENT: Dict[str, "Element"] = {
     "div": Div,
     "text": Text,
     "input": Input,
-    "button": Button
+    "button": Button,
+    "scrollbox": Scrollbox
 }
 
 class VisInterpreterError(Exception):
