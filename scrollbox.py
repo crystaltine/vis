@@ -100,9 +100,6 @@ class Scrollbox(Element):
         first_partially_rendered = self.children[full_render_range[0]-1] if full_render_range[0]-1 >= 0 else None
         last_partially_rendered = self.children[full_render_range[1]+1] if full_render_range[1]+1 < len(self.children) else None
 
-        current_bottommost = 0
-        """ Where the client_bottom of the last rendered element is, absolute (relative to top of screen) """
-
         # use this as container_bounds. update .top and .bottom after every element render
         content_boundary = Boundary(self.client_left, self.client_top-self.scroll_y, self.client_right, self.client_bottom)
         # use this as max_bounds
@@ -111,15 +108,48 @@ class Scrollbox(Element):
         # rendering the top child
         if first_partially_rendered is not None:
             first_partially_rendered._render_partial(deepcopy(content_boundary), deepcopy(limit_boundary))
-            current_bottommost = first_partially_rendered.client_bottom - self.client_top
-            content_boundary.top = current_bottommost
+            content_boundary.top = first_partially_rendered.client_bottom
 
         # rendering the things in the middle
         for child in self.children[full_render_range[0]:full_render_range[1]]:
             child.render(deepcopy(content_boundary))
-            height_so_far = 
-            content_boundary.top = height_so_far
-             
+            content_boundary.top = child.client_bottom
+
+        # render the last child visible
+        if last_partially_rendered is not None:
+            last_partially_rendered._render_partial(deepcopy(content_boundary), deepcopy(limit_boundary))
+            content_boundary.top = first_partially_rendered.client_bottom
+
+    def scroll_to_bottom(self) -> None:
+        """ Scrolls all the way to the bottom of the element."""
+        # get total height of all elements
+        total_height = 0
+        for child in self.children:
+            total_height += child.client_height or convert_to_chars(self.client_height, child.style.get("height"))
+        
+        self.scroll_y = total_height - self.client_height
+
+    def scroll_to_top(self) -> None:
+        """ Scrolls all the way to the top of the element """
+        self.scroll_y = 0
+
+    def scroll_down(self, chars: int = 1) -> None:
+        """
+        Attempts to scroll down the number of chars. Capped at bottom.
+        """
+        total_height = 0
+        for child in self.children:
+            total_height += child.client_height or convert_to_chars(self.client_height, child.style.get("height"))
+        
+        self.scroll_y = min(total_height - self.client_height, self.scroll_y + chars)
+
+    def scroll_up(self, chars: int = 1) -> None:
+        """
+        Attempts to scroll up the number of chars. Capped at top.
+        """
+
+        self.scroll_y = max(0, self.scroll_y - chars)
+ 
     def add_child(self, child: "Element", index: int = None):
         """
         Adds a child at the specified index. IMPORTANT: index matters specifically for this element!
