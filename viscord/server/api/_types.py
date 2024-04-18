@@ -65,7 +65,7 @@ class MessageInfo(TypedDict):
     message_content: str
     server_id: str
     chat_id: str
-    replied_to_id: str
+    replied_to_id: str | None
     message_content: str
     message_timestamp: datetime
     pinged_user_ids: List[str]
