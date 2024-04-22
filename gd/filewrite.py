@@ -66,17 +66,11 @@ def read_from_file(file_path: str) -> List[List[OBJECTS]]:
             objects.append(row)
         return objects
 
-
-# Test the write_to_file and read_from_file functions
 objects_array = [
     [OBJECTS.blue_orb, None],
     [None, OBJECTS.spike]
 ]
 
-write_to_file(objects_array, 'gd/output.txt')  
-objects_array = read_from_file('gd/output.txt')
-
-for row in objects_array:
-    for item in row:
-        print(item, end=' ')
-    print()
+write_to_file(objects_array, 'output.txt')  
+objects_array = read_from_file('output.txt')
+print(objects_array)
