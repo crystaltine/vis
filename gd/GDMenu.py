@@ -4,7 +4,7 @@ Menuterm = blessed.Terminal()
 colors={
     'blue':Menuterm.blue,
     'red':Menuterm.red,
-    'green':Menuterm.green,
+    'green':Menuterm.green4,
     'purple':Menuterm.magenta2,
     'pink':Menuterm.pink,
     'yellow':Menuterm.gold,
@@ -36,10 +36,15 @@ def menu_title(title:str, x:int, y:int):
     print(Menuterm.move_yx(Menuterm.height, Menuterm.width))
 
 def draw_square(width:int, height:int, x: int, y: int, color:str) -> None:
+
     for i in range(y, y+height):
         print(Menuterm.move_yx(i, x) + colors[color]+"█"*width + Menuterm.normal, end="")
 
-
+#creates the veometry dash menu# 
 draw_rect(Menuterm.width, Menuterm.height)
+draw_square(30,15,5,20,'green')
+draw_square(40,20,41,17,'green')
+draw_square(30,15,87,20,'red')
 menu_title("VEOMETRY DASH", 54,1)
-draw_square(54, 20, 20, 20, 'green')
+
+
