@@ -62,9 +62,10 @@ class Text(Element):
         """
         
         super().__init__(**attrs) # should ignore any unknown attributes that are provided
+        self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else ""
         self.text = attrs.get("text", "")
 
-    def render(self, container_bounds: Boundary):
+    def render(self, container_bounds: Boundary = None):
 
         container_bounds = self.get_true_container_edges(container_bounds)
 
@@ -136,7 +137,9 @@ class Text(Element):
             self.client_height = (len(self.text) // self.client_width + 1) if self.style.get("wrap") else (1 if self.text else 0)              
         else: # if height is explicitly defined then, well, yeah.
             self.client_height = convert_to_chars(container_bounds.bottom-container_bounds.top, self.style.get("height"))
-        self.client_bottom = self.client_top + self.client_height 
+        self.client_bottom = self.client_top + self.client_height
+
+        Logger.log(f"[text] PARTIALRENDER: max t,b=({max_bounds.top},{max_bounds.bottom}) cli t,b=({self.client_top},{self.client_bottom})")
 
         if not self.style.get("visible"): return
             
@@ -163,16 +166,16 @@ class Text(Element):
 
         # if completely out of render, just skip all this goofy ah garbage
         if (
-            max_bounds.left > self.client_right or
+            max_bounds.left >= self.client_right or
             max_bounds.right < self.client_left or 
-            max_bounds.top > self.client_bottom or
+            max_bounds.top >= self.client_bottom or
             max_bounds.bottom < self.client_top
         ): return
 
         with Globals.__vis_document__.term.hidden_cursor():
 
             text_chunk_index = 0 # which chunk of text to render on each line
-            for row in range(self.client_top, self.client_bottom):
+            for row in range(self.client_top, self.client_bottom+1):
                 
                 if max_bounds.bottom < row < max_bounds.top:
                     text_chunk_index += 1

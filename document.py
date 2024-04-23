@@ -82,9 +82,8 @@ class Document:
         
         self.render()
 
-        with self.term.cbreak():
-            self.listener_thread = self._get_key_listener()
-            self.listener_thread.start()
+        self.listener_thread = self._get_key_listener()
+        self.listener_thread.start()
 
     def render(self) -> None:
         """

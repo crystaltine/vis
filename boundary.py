@@ -22,6 +22,9 @@ class Boundary:
         self.right = right
         self.bottom = bottom
     
+    def __str__(self) -> str:
+        return f"Boundary(ltrb={self.left},{self.top},{self.right},{self.bottom})"
+
     @staticmethod
     def set_client_boundary(obj, container_bounds: "Boundary") -> None:
         """
