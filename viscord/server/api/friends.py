@@ -28,7 +28,19 @@ def get_outgoing_friend_requests(user_id: str, pending_only: bool = True) -> Lis
         for item in records
     ]
 
-def get_outgoing_friend_requests(user_id: str, pending_only: bool = True) -> List[FriendRequestInfo]:
+def outgoing_friends_endpoint(data, conn):
+    user_id = data["data"]["user_id"]
+    if "pending_only" in data["data"]:
+        pending_only = data["data"]["pending_only"]
+    else:
+        pending_only = True
+    try:
+        friends = get_outgoing_friend_requests(user_id, pending_only=pending_only)
+        conn.sendall(str(friends).encode("utf-8"))
+    except Exception as e:
+        conn.sendall("False".encode("utf-8"))
+
+def get_incoming_friend_requests(user_id: str, pending_only: bool = True) -> List[FriendRequestInfo]:
     """
     Returns a list of incoming friend requests for to the `user_id` (only the ones they are RECEIVING)
     
@@ -51,25 +63,19 @@ def get_outgoing_friend_requests(user_id: str, pending_only: bool = True) -> Lis
         }
         for item in records
     ]
-#def get_incoming_friend_requests(user_id):
-#    try:
-#        send_query = """select * from "Discord"."FriendInfo" where receiver_id = %s and accepted = %s""" #grabs all friendsinfo data where the receiver is the user and they havent accepted the request
-#        cur.execute(send_query, (user_id, 0))
-#        records = cur.fetchall()
-#        friend_requests = [x[0] for x in records] #grabs the friend id for all requests
-#        return friend_requests
-#    except:
-#        return []
 
-#def get_unaccepted_sent_friend_requests(user_id):
-#    try:
-#        send_query = """select * from "Discord"."FriendInfo" where sender_id = %s and accepted = %s""" #grabs all friendsinfo data where the sender is the user and the receiver hasn't accepted the request
-#        cur.execute(send_query, (user_id, 0))
-#        records = cur.fetchall()
-#        sent_requests = [x[0] for x in records]
-#        return sent_requests
-#    except:
-#        return []
+
+def incoming_friends_endpoint(data, conn):
+    user_id = data["data"]["user_id"]
+    if "pending_only" in data["data"]:
+        pending_only = data["data"]["pending_only"]
+    else:
+        pending_only = True
+    try:
+        friends = get_incoming_friend_requests(user_id, pending_only=pending_only)
+        conn.sendall(str(friends).encode("utf-8"))
+    except Exception as e:
+        conn.sendall("False".encode("utf-8"))
 
 def accept_friend_request(friend_id: str):
     """
@@ -83,6 +89,16 @@ def accept_friend_request(friend_id: str):
         return True
     except:
         return False
+    
+def accept_friend_request_endpoint(data, conn):
+    friend_id = data["data"]["friend_id"]
+    try:
+        if accept_friend_request(friend_id):
+            conn.sendall("True".encode("utf-8"))
+        else:
+            conn.sendall("False".encode("utf-8"))
+    except Exception as e:
+        conn.sendall("False".encode("utf-8"))
 
 def create_friend_request(sender_id: str, receiver_id: str) -> bool:
     """
@@ -97,3 +113,14 @@ def create_friend_request(sender_id: str, receiver_id: str) -> bool:
         return True
     except:
         return False
+    
+def create_friend_request_endpoint(data, conn):
+    sender_id = data["data"]["sender_id"]
+    receiver_id = data["data"]["receiver_id"]
+    try:
+        if create_friend_request(sender_id, receiver_id):
+            conn.sendall("True".encode("utf-8"))
+        else:
+            conn.sendall("False".encode("utf-8"))
+    except Exception as e:
+        conn.sendall("False".encode("utf-8"))

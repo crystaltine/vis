@@ -141,34 +141,6 @@ def handle_server_icon_update(user_id: str, server_id: str, new_server_icon: str
 
     cur.execute(send_query, (new_server_icon, server_id))
 
-def test_retrieve_server_information(server_id: str) -> None:
-    """
-    Test command to retrieve information about a server.
-
-    Parameters:
-        server_id (str): The id of the server to retrieve information for.
-
-    Returns:
-        None
-    """
-    send_query = '''
-        SELECT * FROM "Discord"."ServerInfo"
-        WHERE server_id = %s
-    '''
-
-    cur.execute(send_query, (server_id,))
-    records = cur.fetchall()
-    if records:
-        print("Server Information:")
-        for result in records:
-            print("Server ID:", result[0])
-            print("Server Name:", result[1])
-            print("Server Color:", result[2])
-            print("Server Icon:", result[3])
-            print("Server Creation Timestamp:", result[4])
-            print("--------------------------------")
-    else:
-        print("Server not found")
 
 
 def handle_user_leaving_server(user_id: str, server_id: str) -> None:

@@ -10,6 +10,14 @@ def handle_member_creation(user_id: str, server_id: str):
 
     cur.execute(send_query, (user_id, server_id, member_join_date))
 
+def member_creation_endpoint(data, conn):
+    user_id = data["data"]["user_id"]
+    server_id = data["data"]["server_id"]
+    try:
+        handle_member_creation(user_id, server_id)
+        conn.sendall("True".encode("utf-8"))
+    except Exception as e:
+        conn.sendall("False".encode("utf-8"))
 
 
 def handle_adding_member_roles(user_id: str, server_id: str, role_id: str):
@@ -42,6 +50,16 @@ def handle_adding_member_roles(user_id: str, server_id: str, role_id: str):
 
     cur.execute(send_query, (new_roles_list, user_id, server_id))
 
+def add_member_roles_endpoint(data, conn):
+    user_id = data["data"]["user_id"]
+    server_id = data["data"]["server_id"]
+    role_id = data["data"]["role_id"]
+    try:
+        handle_adding_member_roles(user_id, server_id, role_id)
+        conn.sendall("True".encode("utf-8"))
+    except Exception as e:
+        conn.sendall("False".encode("utf-8"))
+
 def update_member_nickname(user_id: str, server_id: str, new_nickname: str = "") -> bool:
     """
     @backend: server -> database
@@ -55,6 +73,16 @@ def update_member_nickname(user_id: str, server_id: str, new_nickname: str = "")
     else:
         cur.execute(send_query, (new_nickname, server_id, user_id))
 
+def update_member_nickname_endpoint(data, conn):
+    user_id = data["data"]["user_id"]
+    server_id = data["data"]["server_id"]
+    new_nickname = data["data"]["new_nickname"]
+    try:
+        update_member_nickname(user_id, server_id, new_nickname)
+        conn.sendall("True".encode("utf-8"))
+    except Exception as e:
+        conn.sendall("False".encode("utf-8"))
+
 def update_nick_color(user_id: str, server_id: str, new_color: str | None) -> bool:
     """
     @backend: server -> database
@@ -65,3 +93,12 @@ def update_nick_color(user_id: str, server_id: str, new_color: str | None) -> bo
     send_query = """update "Discord" . "MemberInfo" set nick_color = %s where server_id = %s and user_id = %s """ 
     cur.execute(send_query, (new_color, server_id, user_id))
 
+def update_nick_color_endpoint(data, conn):
+    user_id = data["data"]["user_id"]
+    server_id = data["data"]["server_id"]
+    new_color = data["data"]["new_color"]
+    try:
+        update_nick_color(user_id, server_id, new_color)
+        conn.sendall("True".encode("utf-8"))
+    except Exception as e:
+        conn.sendall("False".encode("utf-8"))

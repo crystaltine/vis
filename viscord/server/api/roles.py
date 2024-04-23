@@ -2,6 +2,7 @@ from db import cur
 from typing import Dict
 from uuid import uuid4
 
+# API
 def get_chat_perms(user_id:str, server_id:str, chat_id:str) -> Dict:
     
     # Stuff for testing- ignore
@@ -45,9 +46,8 @@ def get_chat_perms(user_id:str, server_id:str, chat_id:str) -> Dict:
 
     return {"readable":readable, "writeable":writeable}
 
-
 # Given a user_id and a server_id, this function will return a dict containing bools for all the different permissions in the db based on their role
-
+# API
 def get_server_perms(user_id:str, server_id: str) -> Dict:
 
     # Stuff for testing- ignore
@@ -86,7 +86,7 @@ def get_server_perms(user_id:str, server_id: str) -> Dict:
     
     return perms
 
-
+# API
 def handle_role_creation(server_id, role_name, role_color, role_symbol, priority, permissions, manage_server, manage_chats, manage_members, manage_roles, manage_voice, manage_messages, is_admin):
     data_dict = {
         "role_name": role_name,
@@ -144,7 +144,7 @@ def add_role(server_id:str, role_info:Dict, user_id=None) -> None:
 
 
 # Given a role_id, remove all instances of that role from the server
-
+# API
 def remove_role(role_id:str, server_id:str) -> None:
 
     # Remove the role from RolesInfo
@@ -169,7 +169,7 @@ def remove_role(role_id:str, server_id:str) -> None:
         cur.execute(query, (roles, user_id, server_id))
 
 # Given a role_id get a list of all the perms for that role
-
+# API
 def get_perms_from_role(role_id:str) -> Dict:
 
     # Pulling tuple by querying database

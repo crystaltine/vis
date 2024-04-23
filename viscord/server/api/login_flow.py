@@ -3,7 +3,11 @@ from cryptography.fernet import Fernet
 import os
 from uuid import uuid4
 
-from cryptography.fernet import Fernet
+from flask import request, Response
+from .flask_app import app
+from .helpers import validate_fields
+import json
+
 key = os.getenv("VISCORD_KEY")
 if not key:
     key = Fernet.generate_key()
@@ -13,38 +17,49 @@ else:
 
 tokens = {}
 
-def handle_login(data, conn):
-    account_data = data["data"]
-    user = account_data["user"]
-    password = account_data["password"]
+
+@app.route("/api/login", methods=["POST"])
+def handle_login():
+
+    if not validate_fields(request.json, {"user": str, "password": str, "sys_uuid": str}): 
+        return Response(status=400)
     
-    sys_uuid = account_data["sys_uuid"]
+
+
+    user = request.json["user"]
+    password = request.json["password"]
+    sys_uuid = request.json["sys_uuid"]
 
     send_query = """select 1 from "Discord"."UserInfo" where user_name = %s and user_password = %s"""
-    cur.execute(send_query, (user, password))
-    records = cur.fetchall()
-    if len(records) > 0:
-        token = str(uuid4())
-        tokens[token] = user
-        conn.sendall(token.encode("utf-8"))
-    else:   
-        
-        conn.recv(1024)
-
-        f = Fernet(key + str(sys_uuid).encode())
-        conn.sendall(f.encrypt(token.encode("utf-8")))
-
-
-def handle_token_bypass(data, conn):
-    data = data["data"]
-    token = data["token"]
-    sys_uuid = data["uuid"]
-
-    f = Fernet(key + str(sys_uuid).encode())
     try:
-        token = f.decrypt(token.encode("utf-8")).decode("utf-8")
-    except:
-        conn.sendall("False".encode("utf-8"))
-        return
-    else:
-        conn.sendall(token.encode("utf-8"))
+        cur.execute(send_query, (user, password))
+        records = cur.fetchall()
+        if len(records) > 0:
+            token = str(uuid4())
+            tokens[token] = user
+            f = Fernet(key + str(sys_uuid).encode())
+            cache = f.encrypt(token.encode("utf-8")).decode("utf-8")
+
+            d = {"token": token, "cache": cache}
+            return Response(json.dumps(d), status=200)
+        else:
+            return Response(status=403)
+    except Exception as e:
+        return Response(status=400)
+
+
+@app.route("/api/login/bypass", methods=["POST"])
+def handle_token_bypass():
+    if not validate_fields(request.json, {"cache": str, "sys_uuid": str}):
+        return Response(status=400)
+    
+    cache = request.json["cache"]
+    sys_uuid = request.json["sys_uuid"]
+
+
+    try:
+        f = Fernet(key + str(sys_uuid).encode())
+        token = f.decrypt(cache.encode("utf-8")).decode("utf-8")
+        return Response(json.dumps({"token": token}), status=200)
+    except Exception as e:
+        return Response(status=403)

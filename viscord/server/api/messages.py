@@ -5,37 +5,6 @@ from typing import Literal, List
 from ._types import *
 from logger import Logger
 
-# old function, more efficient version below (i think)
-#def pin_message(message_id: str, chat_id: str) -> Literal["success", "failure", "already-pinned"]:
-#    """
-#    Adds the message refered to by the message_id to the pinned list of the given chat.
-#
-#    If the message is already pinned, returns 'already-pinned'.
-#    """
-#    send_query = '''select pinned_message_ids from "Discord"."ChatInfo" where chat_id = %s'''
-#    cur.execute(send_query, (chat_id,))
-#    records = cur.fetchall()
-#
-#    # chat doesn't exist
-#    if len(records) == 0:
-#        return 'failure'
-#    
-#    pinned_message_ids = records[0][0]
-#    if pinned_message_ids is None:
-#        pinned_message_ids = []
-#
-#    if message_id in pinned_message_ids:
-#        return 'already-pinned'
-#    
-#    # add new id into the list, then push back to db
-#    pinned_message_ids.append(message_id)
-#    send_query = '''update "Discord"."ChatInfo" set pinned_message_ids = %s where chat_id = %s'''
-#    try:
-#        cur.execute(send_query, (pinned_message_ids, chat_id))
-#        return 'success'
-#    except Exception as e:
-#        return 'failure')
-
 def pin_message(chat_id: str, message_id: str) -> Literal['success', 'failure']:
     try:
         # Update the ChatInfo table with the new pinned message ID
@@ -99,6 +68,10 @@ def create_message(message_data: dict) -> Literal['success', 'failure', 'incompl
     except Exception as e:
         Logger.err(f"couldn't put message in db: {e}", 'create_message')
         return 'failure'
+    
+def handle_message_creation(data, conn):
+    message_data = data["data"]
+    conn.sendall(create_message(message_data).encode("utf-8"))
 
 def get_recent_messages(chat_id: str, num: int = 15) -> List[MessageInfo]:
     """
@@ -130,6 +103,12 @@ def get_recent_messages(chat_id: str, num: int = 15) -> List[MessageInfo]:
     
     return messages_data
 
+def handle_get_recent_messages(data, conn):
+    chat_id = data["data"]["chat_id"]
+    num = data["data"].get("num", 15)
+    messages = get_recent_messages(chat_id, num)
+    conn.sendall(str(messages).encode("utf-8"))
+
 def get_message_chunk(chat_id: str, offset: int, num: int) -> List[MessageInfo]:
     send_query = """
     SELECT *
@@ -154,3 +133,10 @@ def get_message_chunk(chat_id: str, offset: int, num: int) -> List[MessageInfo]:
         } for msg in messages
     ]
     return messages_data
+
+def message_chunk_endpoint(data, conn):
+    chat_id = data["data"]["chat_id"]
+    offset = data["data"]["offset"]
+    num = data["data"]["num"]
+    messages = get_message_chunk(chat_id, offset, num)
+    conn.sendall(str(messages).encode("utf-8"))

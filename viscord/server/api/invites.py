@@ -24,7 +24,19 @@ def handle_invite_creation(user_id: str, server_id: str, invite_code: str):
 
     cur.execute(send_query, (invite_id, user_id, server_id, invite_code))   
 
+def invite_creation_endpoint(data, conn):
+    user_id = data["data"]["user_id"]
+    server_id = data["data"]["server_id"]
+    try:
+        invite_code = handle_server_invite_request(user_id, server_id)
+        if invite_code:
+            conn.sendall(str(invite_code).encode("utf-8"))
+        else:
+            conn.sendall("False".encode("utf-8"))
+    except Exception as e:
+        conn.sendall("False".encode("utf-8"))
 
+# NO API
 def handle_check_existing_invite(server_id: str) -> str:
     """
         Check if there is an existing invite for a server.
@@ -48,6 +60,7 @@ def handle_check_existing_invite(server_id: str) -> str:
         return invite_code[0]
     return None
 
+# NO API
 # will find server_id that invite code corresponds to, if none exists return None
 def handle_join_code_validation(invite_code: str) -> str:
     """
@@ -137,3 +150,12 @@ def handle_user_joining_server(user_id: str, invite_code: str):
         print("Invalid invite code. Please try again.")
         return
 
+
+def user_joining_server_endpoint(data, conn):
+    user_id = data["data"]["user_id"]
+    invite_code = data["data"]["invite_code"]
+    try:
+        handle_user_joining_server(user_id, invite_code)
+        conn.sendall("True".encode("utf-8"))
+    except Exception as e:
+        conn.sendall("False".encode("utf-8"))
