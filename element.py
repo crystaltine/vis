@@ -162,12 +162,16 @@ class Element:
         Then you can do things with those values, like drawing the element, calculating width, height, etc.
         """
         # update last remembered container
-        self.last_remembered_container = Boundary(
-            container_bounds.left if container_bounds.left is not None else self.last_remembered_container.left,
-            container_bounds.top if container_bounds.top is not None else self.last_remembered_container.top,
-            container_bounds.right if container_bounds.right is not None else self.last_remembered_container.right,
-            container_bounds.bottom if container_bounds.bottom is not None else self.last_remembered_container.bottom
-        )
+        if container_bounds is not None:
+            self.last_remembered_container = Boundary(
+                container_bounds.left if container_bounds.left is not None else self.last_remembered_container.left,
+                container_bounds.top if container_bounds.top is not None else self.last_remembered_container.top,
+                container_bounds.right if container_bounds.right is not None else self.last_remembered_container.right,
+                container_bounds.bottom if container_bounds.bottom is not None else self.last_remembered_container.bottom
+            )
+        else:
+            pass
+
         
         container_left = self.last_remembered_container.left if self.style.get("position") == "relative" else 0
         container_top = self.last_remembered_container.top if self.style.get("position") == "relative" else 0

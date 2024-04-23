@@ -80,7 +80,7 @@ class Scrollbox(Element):
         
         return (a, b-1)
     
-    def render(self, container_bounds: Boundary):
+    def render(self, container_bounds: Boundary = None):
 
         container_bounds = self.get_true_container_edges(container_bounds)
         Boundary.set_client_boundary(self, container_bounds)
@@ -94,40 +94,59 @@ class Scrollbox(Element):
                     print(Globals.__vis_document__.term.move_xy(self.client_left, i) + self._bg_fcode + " " * self.client_width, end="")
                     
         # scrollbox child rendering
-        Logger.log(f"\n<Scrollbox render func: child rendering:>")
+        Logger.log(f"\n<Scrollbox render func: child rendering:> (num children: {len(self.children)})")
 
         full_render_range = self.get_fully_rendered_child_range()
         first_partially_rendered = self.children[full_render_range[0]-1] if full_render_range[0]-1 >= 0 else None
         last_partially_rendered = self.children[full_render_range[1]+1] if full_render_range[1]+1 < len(self.children) else None
 
+        Logger.log(f"[scrollbox] render indices (before-full-after): {full_render_range[0]-1} {full_render_range} {full_render_range[1]+1}")
+
         # use this as container_bounds. update .top and .bottom after every element render
         content_boundary = Boundary(self.client_left, self.client_top-self.scroll_y, self.client_right, self.client_bottom)
         # use this as max_bounds
         limit_boundary = Boundary(self.client_left, self.client_top, self.client_right, self.client_bottom)
+        Logger.log(f"[scrollbox] CONSTANT limit boundary: {limit_boundary}")
+        Logger.log(f"[scrollbox] INITIAL {content_boundary.top=} ({self.client_top=}, {self.scroll_y=})")
+
+        # before rendering visible/partially visible children, phantom render all invisible children
+
+        Logger.log(f"[scrollbox] PRERENDER (invis children) looping range(0->{full_render_range[0]-1})")
+        for i in range(full_render_range[0]-1):
+            old_content_boundary_top = content_boundary.top # test
+            self.children[i]._render_partial(deepcopy(content_boundary), deepcopy(limit_boundary))
+            # THESE SHOULD NOT APPEAR, BUT IT WILL UPDATE THEIR CLIENT BOUNDARIES
+            content_boundary.top = self.children[i].client_bottom
+            Logger.log(f"[scrollbox] PRERENDER: content_boundary.top {old_content_boundary_top}->{content_boundary.top}")
 
         # rendering the top child
         if first_partially_rendered is not None:
             first_partially_rendered._render_partial(deepcopy(content_boundary), deepcopy(limit_boundary))
             content_boundary.top = first_partially_rendered.client_bottom
 
+        Logger.log(f"[scrollbox] AFTER FIRST {content_boundary.top=}")
+
         # rendering the things in the middle
         for child in self.children[full_render_range[0]:full_render_range[1]]:
             child.render(deepcopy(content_boundary))
             content_boundary.top = child.client_bottom
+            Logger.log(f"[scrollbox] IN LOOP (after update) {content_boundary.top=}")
 
         # render the last child visible
         if last_partially_rendered is not None:
             last_partially_rendered._render_partial(deepcopy(content_boundary), deepcopy(limit_boundary))
-            content_boundary.top = first_partially_rendered.client_bottom
+            content_boundary.top = last_partially_rendered.client_bottom
+        
+        Logger.log(f"[scrollbox] AFTER LAST {content_boundary.top=} (this is also client_bottom of last child)")
 
     def scroll_to_bottom(self) -> None:
-        """ Scrolls all the way to the bottom of the element."""
+        """ Scrolls all the way to the bottom of the element. """
         # get total height of all elements
         total_height = 0
         for child in self.children:
             total_height += child.client_height or convert_to_chars(self.client_height, child.style.get("height"))
         
-        self.scroll_y = total_height - self.client_height
+        self.scroll_y = max(0, total_height - self.client_height)
 
     def scroll_to_top(self) -> None:
         """ Scrolls all the way to the top of the element """

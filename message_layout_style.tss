@@ -20,7 +20,7 @@
 
 .panels_container {
     top: 1ch
-    bottom: 0%
+    height: 100%
     left: 0%
     width: 100%
 }
@@ -119,7 +119,7 @@
 }
 .messages_pane {
     top: 0%
-    bottom: 3ch
+    height: 19ch
     left: 0%
     width: 100%
     bg_color: #1c232e
@@ -127,9 +127,8 @@
 .send_container {
     left: 0%
     width: 100%
-    top: None
-    bottom: 0%
-    height: 4ch
+    top: 19ch
+    height: 3ch
     bg_color: #161d27
 }
 .send_container_text {
@@ -139,23 +138,24 @@
     bg_color: #1a232d
     hovered_bg_color: #202b36
     selected_bg_color: #2a3743
-    width: 20ch
+    width: 50ch
+    height: 1ch
 }
 
 .message-obj {
     height: 3ch
     width: 100%
-    bg_color: #220044
+    bg_color: transparent
 }
 .message-obj-author {
     top: 0
     width: 100%
-    color: #bbbbbb
+    color: #efc812
     bg_color: transparent
 }
 .message-obj-content {
     top: 1ch
     width: 100%
-    color: #ffff99
+    color: #eeeeee
     bg_color: transparent
 }

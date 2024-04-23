@@ -62,7 +62,7 @@ class Div(Element):
         self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else None
         #Logger.log(f"{self}'s children on init: {self.children}")
     
-    def render(self, container_bounds: Boundary):
+    def render(self, container_bounds: Boundary = None):
 
         #Logger.log(f"<BEGIN DIV render func>")
         #Logger.log(f"Div render params: {container_bounds.left=} {container_bounds.top=} {container_bounds.right=} {container_bounds.bottom=}")
@@ -97,7 +97,6 @@ class Div(Element):
             ))
             
     def _render_partial(self, container_bounds: Boundary, max_bounds: Boundary) -> None:
-        
         # first do the same stuff as render
         container_bounds = self.get_true_container_edges(container_bounds)
         Boundary.set_client_boundary(self, container_bounds)
@@ -112,9 +111,12 @@ class Div(Element):
             max_bounds.bottom < self.client_top
         ): return
 
+        Logger.log(f"[div] PARTIALRENDER: max top={max_bounds.top} max bot={max_bounds.bottom}")
+
         if self._bg_fcode:
             with Globals.__vis_document__.term.hidden_cursor():
-                for i in range(max(self.client_top, max_bounds.top), min(self.client_bottom, max_bounds.bottom)):
+                Logger.log(f"[div] PARTIALRENDER: drawing bg from max({self.client_top}, {max_bounds.top}) TO (min({self.client_bottom}, {max_bounds.bottom}))")
+                for i in range(max(self.client_top, max_bounds.top), min(self.client_bottom+1, max_bounds.bottom)):
                     # diagram:
                     #  cli_left   bounds_left              bounds_right  cli_right
                     #  |          |                        |             |

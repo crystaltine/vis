@@ -2,6 +2,7 @@ from element import Element
 from utils import fcode, convert_to_chars, len_no_ansi, remove_ansi
 from typing import Literal, Unpack, Callable, TYPE_CHECKING
 from globalvars import Globals
+from boundary import Boundary
 from logger import Logger
 
 if TYPE_CHECKING:
@@ -69,9 +70,9 @@ class Input(Element):
         "padding_left": 0,
         "padding": 0,
         "left": 0,
-        "right": None,
         "width": 10,
-        "y": 0,
+        "top": 0,
+        "height": 1,
         "text_align": "left",
         "hoverable": True,
         "selectable": True,
@@ -144,7 +145,7 @@ class Input(Element):
                     # deselect BUT go to next element (TODO)
                     pass
 
-                Logger.log(f"Input: special key {e.key}: curr_text is now {self.curr_text}, curs_pos is {self.cursor_pos}")
+                #Logger.log(f"Input: special key {e.key}: curr_text is now {self.curr_text}, curs_pos is {self.cursor_pos}")
             
             self.render()
 
@@ -167,11 +168,11 @@ class Input(Element):
         self.cursor_pos += 1
 
         # scroll right 1 unit if overflowing AND cursor is at the rightmost edge
-        Logger.log(f"Input's _insert_char: if statement for incrementing text_left_idx: {len(self.curr_text)=} >= {self.client_width=} AND {self.cursor_pos=} - {self.text_left_index=} >= {self.client_width=}")
+        #Logger.log(f"Input's _insert_char: if statement for incrementing text_left_idx: {len(self.curr_text)=} >= {self.client_width=} AND {self.cursor_pos=} - {self.text_left_index=} >= {self.client_width=}")
         if (len(self.curr_text) >= self.client_width) and (self.cursor_pos - self.text_left_index >= self.client_width):
             self.text_left_index += 1
 
-        Logger.log(f"input ele: inserted '{char}' into '{self.curr_text}', cursor_pos is now {self.cursor_pos}, text_left_index is now {self.text_left_index}")
+        #Logger.log(f"input ele: inserted '{char}' into '{self.curr_text}', cursor_pos is now {self.cursor_pos}, text_left_index is now {self.text_left_index}")
 
     def _backspace(self):
         """
@@ -215,29 +216,14 @@ class Input(Element):
     def clear(self) -> None:
         """ Clears current text of the element, and rerenders it. """
         self.curr_text = ""
+        self.cursor_pos = 0
         self.render()
 
-    def render(self, container_left: int = None, container_top: int = None, container_right: int = None, container_bottom: int = None):
+    def render(self, container_bounds: Boundary = None):
 
-        Logger.log(f"<BEGIN INPUT render func>: this element is hovered: {Globals.is_hovered(self)}, this element is active: {Globals.is_active(self)}")
-        container_left, container_top, container_right, container_bottom = self.get_true_container_edges(container_left, container_top, container_right, container_bottom)
-        
-        container_width = container_right - container_left
-        container_height = container_bottom - container_top
-
-        # calculate text left position
-        # precondition: at least one of left or right is not None (see `init`)
-        #Logger.log(f"[input] - self.style.get(left) is {self.style.get('left')}")
-        self.client_left = container_left + (convert_to_chars(container_width, self.style.get("left")) if self.style.get("left") is not None
-            else convert_to_chars(container_width, self.style.get("right")) - convert_to_chars(container_width, self.style.get("width")))
-        self.client_right = container_left + (convert_to_chars(container_width, self.style.get("right")) if self.style.get("right") is not None
-            else convert_to_chars(container_width, self.style.get("left")) + convert_to_chars(container_width, self.style.get("width")))
-        
-        self.client_width = self.client_right - self.client_left
-            
-        # set client_... attributes just for info
-        self.client_top = container_top + convert_to_chars(container_height, self.style.get("y"))
-        self.client_bottom = self.client_top + 1 # TODO - support padding
+        ##Logger.log(f"<BEGIN INPUT render func>: this element is hovered: {Globals.is_hovered(self)}, this element is active: {Globals.is_active(self)}")
+        container_bounds = self.get_true_container_edges(container_bounds)
+        Boundary.set_client_boundary(self, container_bounds)
         
         if not self.style.get("visible"): return
         
@@ -269,7 +255,7 @@ class Input(Element):
         if self.curr_text:
 
             if self.cursor_pos == len(self.curr_text):
-                Logger.log(f"calcing text to render in input: cursor at end, {self.text_left_index=}, {visible_text=}, {self.cursor_pos=}")
+                #Logger.log(f"calcing text to render in input: cursor at end, {self.text_left_index=}, {visible_text=}, {self.cursor_pos=}")
                 # special case where the cursor is at the end
                 text_to_render = (
                     # splicing the string to highlight the cursor
@@ -277,7 +263,7 @@ class Input(Element):
                     cursor_fcode + " "
                 )
             else:
-                Logger.log(f"calcing text to render in input: cursor not at end, {self.text_left_index=}, {visible_text=}, {self.cursor_pos=}")
+                #Logger.log(f"calcing text to render in input: cursor not at end, {self.text_left_index=}, {visible_text=}, {self.cursor_pos=}")
                 # the user changed the cursor pos, now it is somewhere in the middle of the text
                 text_to_render = (
                     # splicing the string to highlight the cursor:
@@ -299,7 +285,7 @@ class Input(Element):
                 # if not selected, render placeholder
                 text_to_render = placeholder_fcode + self.placeholder[:self.client_right-self.client_left]
         text_to_render += regular_text_fcode + " "*(self.client_width - len_no_ansi(text_to_render))
-        Logger.log(f"Input renderer: final stripped text_to_render is {remove_ansi(text_to_render)}")
+        #Logger.log(f"Input renderer: final stripped text_to_render is {remove_ansi(text_to_render)}")
 
-        with Globals.__vis_document__.term.hidden_cursor() as thing:
+        with Globals.__vis_document__.term.hidden_cursor():
             print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + text_to_render, end="")
