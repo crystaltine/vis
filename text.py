@@ -54,7 +54,12 @@ class Text(Element):
     }
     
     def __init__(self, **attrs: Unpack["Attributes"]):
-        """ Keyword arguments: see `Text.Attributes`. """
+        """ Keyword arguments: `Text.Attributes`:
+        - id: str | None
+        - class_str: str | None
+        - style_str: str | None
+        - text: str
+        """
         
         super().__init__(**attrs) # should ignore any unknown attributes that are provided
         self.text = attrs.get("text", "")
