@@ -39,13 +39,33 @@ def Message(content: str) -> Div:
         ]
     )
 
+def ServerItem(name: str, color: str) -> Text:
+    return Text(
+        class_str="server-obj",
+        style=f"color: {color}"
+        text=name,
+    )
+
+def ChatItem(name: str, color: str) -> Text:
+    return Text(
+        class_str="server-obj",
+        style=f"color: {color}"
+        text=name,
+    )
+
 def on_send_msg(content: str):
+    """
+    Creates a Message component, adds it to the chat history, and rerenders the chat history.
+    """
     element = Message(content)
     message_scrollbox.add_child(element)
     message_scrollbox.scroll_to_bottom()
     message_scrollbox.render()
 
 def on_enter(element: Input):
+    """
+    event handler for when the message input is submitted.
+    """
     curr_text = element.curr_text
     on_send_msg(curr_text)
     element.clear()
