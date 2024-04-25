@@ -1,3 +1,4 @@
+from xml.etree.ElementTree import tostring
 from engine.objects import OBJECTS, LevelObject
 from typing import List
 
@@ -32,7 +33,7 @@ def parse_level(filename: str) -> list:
     ```    
     """
     
-    with open(f"levels/{filename}", "r") as f:
+    with open(f"gd/levels/{filename}", "r") as f:
         lines = f.readlines()
         
         leveldata: List[List[LevelObject]] = []
@@ -61,4 +62,25 @@ def parse_level(filename: str) -> list:
             leveldata[i].insert(0, LevelObject(None, -j, len(leveldata)-i))
     
     return leveldata
+
+
+
+def test_parse_level(filename): 
+
+    for i in range(0, len(parse_level(filename)), 1): 
+        for j in range(0, len(parse_level(filename)[i]), 1):
+
+            if parse_level(filename)[i][j].data is None: 
+                print("None")
+                print('\n')
+            else: 
+                 print(parse_level(filename)[i][j].data["name"])
+                 print('\n')
+
+
+#test_parse_level("test2.level")
+#test_parse_level("test.level")
+
+
+
     
