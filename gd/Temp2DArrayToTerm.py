@@ -6,7 +6,7 @@ class transform:
     
     gameTerm = blessed.Terminal()
 
-    def ArrayToLevel (self, level:List[List['game.LevelObject']], key="temp_symbol") :
+    def Temp2DArrayToTerm (self, level:List[List['game.LevelObject']], key="temp_symbol") :
         """
         Uses a 2D array of Level Objects and creates the level based on the x and y position of each object 
 
