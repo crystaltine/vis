@@ -4,6 +4,10 @@ import game
 
 class transform:
     gameTerm = blessed.Terminal()
-    def ArrayToLevel (self, level:List[List[game.LevelObject]]):
+    def ArrayToLevel (self, level:List[List[game.LevelObject]], key):
         for obj in level: 
-            self.gameTerm(obj)
+            obj:game.LevelObject
+            term_xpos = obj.x
+            term_ypos = obj.y
+            self.gameTerm.move_xy(term_xpos, term_ypos)
+            self.gameTerm(obj.__getitem__(key))
