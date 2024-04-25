@@ -34,8 +34,7 @@
     top: 0%
     left: 0%
     height: 40%
-    padding_top: 5%
-    bg_color: #191f2a
+    bg_color: #f2a
 }
 .server_text1 {
     top: 2ch
@@ -51,10 +50,10 @@
 }
 
 .channel_list {
-    top: 30%
+    top: 40%
     left: 0%
     height: 40%
-    bg_color: #191f2a
+    bg_color: #191
 }
 
 .channel_text1 {
@@ -119,7 +118,7 @@
 }
 .messages_pane {
     top: 0%
-    height: 19ch
+    height: 26ch
     left: 0%
     width: 100%
     bg_color: #1c232e
@@ -127,7 +126,7 @@
 .send_container {
     left: 0%
     width: 100%
-    top: 19ch
+    top: 26ch
     height: 3ch
     bg_color: #161d27
 }

@@ -35,6 +35,10 @@ class Document:
         `children`: A list of elements to be rendered in the document.
         `quit_keys`: A list of keys that, when pressed, will exit the app.
         """
+
+        Logger.log(f"creating new document object")
+
+        self.stopped = False
         
         self.children = children
         self.id_map: Dict[str, "Element"] = {} # Dict[str, List["Element"]] = {} <- if we wanna allow non-unique ids
@@ -67,6 +71,8 @@ class Document:
         self.element_keydown_listeners: Dict["Element", Set[Callable[[KeyEvent], Any]]] = {}
         """ KEYDOWN event handlers registered by elements such as Input and Button """
 
+        self.listener_thread = None
+
         parseattrs(self, style, Document.DEFAULT_STYLE)
         
         self.client_left = 0
@@ -91,6 +97,8 @@ class Document:
         """
         try:
             cls()
+
+            #with self.term.hidden_cursor():
             for child in self.children:
                 Logger.log(f"document.render: rendering child with client edges {self.client_left=} {self.client_top=} {self.client_right=} {self.client_bottom=}")
                 child.render(Boundary(self.client_left, self.client_top, self.client_right, self.client_bottom))
@@ -98,6 +106,16 @@ class Document:
         except Exception as e:
             Logger.log(f"ERROR in document.render: {traceback.format_exc()}")
             self.quit_app(f"ERROR in document.render: {traceback.format_exc()}")
+
+    def derender(self) -> None:
+        """
+        Removes all traces of this document (in case of switching screens)
+        but does not terminate the main thread.
+        """
+        cls()
+        print(self.term.normal)
+        if self.listener_thread:
+            self.listener_thread.stop()
             
     def add_child(self, child: "Element", index: int = None) -> None:
         """
@@ -246,6 +264,7 @@ class Document:
         Quits the app. Also writes the log to a file.
         Prints an exit message if provided.
         """
+        self.stopped = True
         cls()
         print(self.term.normal)
         Logger.write()

@@ -3,6 +3,7 @@ from utils import fcode, convert_to_chars, len_no_ansi, remove_ansi
 from typing import Literal, Unpack, Callable, TYPE_CHECKING
 from globalvars import Globals
 from boundary import Boundary
+import pyperclip
 from logger import Logger
 
 if TYPE_CHECKING:
@@ -96,7 +97,7 @@ class Input(Element):
         self.max_len = attrs.get("max_len", None)
         self.curr_text: str = ""
         self.cursor_pos = 0
-        self.on_enter = attrs.get("on_enter", lambda: None)
+        self.on_enter = attrs.get("on_enter", lambda x: None)
         """ Callback for when user presses enter and this element is selected. """
 
         self.insert_mode = False
@@ -116,7 +117,11 @@ class Input(Element):
 
             # else, handle key.
             if not e.is_special:
-                self._insert_char(e.key)
+
+                if e.key == 'v' and e.holding_ctrl:
+                    self.curr_text += pyperclip.paste()
+                else:
+                    self._insert_char(e.key)
 
             else:
                 if e.key == 'backspace':
@@ -289,3 +294,4 @@ class Input(Element):
 
         with Globals.__vis_document__.term.hidden_cursor():
             print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + text_to_render, end="")
+            print(Globals.__vis_document__.term.move_yx(0,0), end="")

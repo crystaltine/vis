@@ -22,7 +22,7 @@
     left: 50%
     top: 0ch
     color: #ffffff
-    text_align: center
+    text_align: left
 }
 
 .username_input_label {
@@ -75,7 +75,7 @@
 }
 .submit_button_text {
     left: 50%
-    text_align: center
+    text_align: left
     top: 0ch
     color: #ffffff
     bg_color: transparent

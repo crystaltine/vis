@@ -110,7 +110,7 @@ class Element:
         return f"<Element:{self.__class__.__name__} {self.class_str=} {self.id=} {self.style=}>"
 
     @abstractmethod
-    def render(self, container_bounds: Boundary) -> None:
+    def render(self, container_bounds: Boundary = None) -> None:
         """ 
         Renders the element to its container at the specified position, 
         given the positions of the container**. Applies the most recently updated style. 
@@ -138,11 +138,13 @@ class Element:
         """
         ...
         
-    def get_true_container_edges(self, container_bounds: Boundary) -> Boundary:
+    def get_true_container_edges(self, container_bounds: Boundary | None) -> Boundary:
         """
         Handles all the dirty memorized container, absolute positioning, unprovided dimensions, etc. stuff,
         returns a Boundary containing the true container dimensions to use in rendering: 
         `Boundary(container_left, container_top, container_right, container_bottom)`.
+
+        If container bounds is none (in a rerender case) then attempts to use the last memorized container.
         
         If an element's positioning is absolute when this function is called,
         it will ignore the container dimensions and use the entire screen as the container.
