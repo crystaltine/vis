@@ -100,23 +100,23 @@ class Text(Element):
             # wrap text based on client width
             wrapped_text = [self.text[i*self.client_width:(i+1)*self.client_width] for i in range(len(self.text)//self.client_width+1)]
 
-        with Globals.__vis_document__.term.hidden_cursor():
+        #with Globals.__vis_document__.term.hidden_cursor():
 
-            text_chunk_index = 0 # which chunk of text to render on each line
-            for row in range(self.client_top, self.client_bottom):
-                text_chunk = wrapped_text[text_chunk_index] if text_chunk_index < len(wrapped_text) else ""
-                
-                # if the text chunk is not as long as the client width, then apply text_align
-                text_left_padding = 0 # 0 by default
-                if len(text_chunk) < self.client_width:
-                    text_left_padding = (
-                        (self.client_width - len(text_chunk))//2+1 if self.style.get("text_align") == "center"
-                        else self.client_width - len(text_chunk) if self.style.get("text_align") == "right"
-                        else 0
-                    )
-                
-                print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=self.style.get("bg_color"), style=style_string) + text_left_padding*" " + text_chunk, end="")
-                text_chunk_index += 1
+        text_chunk_index = 0 # which chunk of text to render on each line
+        for row in range(self.client_top, self.client_bottom):
+            text_chunk = wrapped_text[text_chunk_index] if text_chunk_index < len(wrapped_text) else ""
+            
+            # if the text chunk is not as long as the client width, then apply text_align
+            text_left_padding = 0 # 0 by default
+            if len(text_chunk) < self.client_width:
+                text_left_padding = (
+                    (self.client_width - len(text_chunk))//2+1 if self.style.get("text_align") == "center"
+                    else self.client_width - len(text_chunk) if self.style.get("text_align") == "right"
+                    else 0
+                )
+            
+            print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=self.style.get("bg_color"), style=style_string) + text_left_padding*" " + text_chunk, end="")
+            text_chunk_index += 1
 
     def _render_partial(self, container_bounds: Boundary, max_bounds: Boundary) -> None:
         container_bounds = self.get_true_container_edges(container_bounds)

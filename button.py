@@ -76,7 +76,7 @@ class Button(Element):
         Globals.__vis_document__.selectable_elements.add(self)
         Globals.__vis_document__.hoverable_elements.add(self)
     
-    def render(self, container_bounds: Boundary):
+    def render(self, container_bounds: Boundary = None):
 
         Logger.log(f"<BEGIN BUTTON render func>")
         container_bounds = self.get_true_container_edges(container_bounds)

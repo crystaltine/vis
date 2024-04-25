@@ -29,34 +29,8 @@ username_input: "Input" = document.get_element_by_id("username-input")
 password_input: "Input" = document.get_element_by_id("password-input")
 submit_button: "Button" = document.get_element_by_id("submit-button")
 
-def submit_handler():
-    
-    res = requests.post("localhost:5000", json={
-        "user": username_input.curr_text,
-        "password": password_input.curr_text,
-        "sys_uuid": uuid.getnode()
-    })
-    data = res.json()
-    Logger.log(f"response: {data}")
-
-submit_button.on_pressed = submit_handler
-
-document.mount()
-
-while 1:
-    sleep(1)
-
-quit()
-
-read_styles("message_layout_style.tss")
-read_vis("message_layout.vis")
-
-document = Globals.__vis_document__
-
-# dont care about resize for now, too complicated to optimize lol
-
-message_scrollbox: Scrollbox = document.get_element_by_id("messages_pane")
-message_input: Input = document.get_element_by_id("message_send_input")
+class test:
+    on_messages_screen = False
 
 def Message(content: str) -> Div:
     """
@@ -90,23 +64,57 @@ def ChatItem(name: str, color: str) -> Text:
         text=name,
     )
 
-def on_send_msg(content: str):
-    """
-    Creates a Message component, adds it to the chat history, and rerenders the chat history.
-    """
-    element = Message(content)
-    message_scrollbox.add_child(element)
-    message_scrollbox.scroll_to_bottom()
-    message_scrollbox.render()
+def submit_handler():
+    
+    res = requests.post("http://127.0.0.1:5000/api/login", json={
+        "user": username_input.curr_text,
+        "password": password_input.curr_text,
+        "sys_uuid": str(uuid.getnode())
+    })
 
-def on_enter(element: Input):
-    """
-    event handler for when the message input is submitted.
-    """
-    curr_text = element.curr_text
-    on_send_msg(curr_text)
-    element.clear()
+    data = res.json()
+    
+    if data['type'] == 'success':
+        test.on_messages_screen = True
 
-message_input.on_enter = on_enter
-
+submit_button.on_pressed = submit_handler
 document.mount()
+
+while True:
+    if test.on_messages_screen:
+
+        document.derender()
+
+        read_styles("message_layout_style.tss")
+        read_vis("message_layout.vis")
+
+        document = Globals.__vis_document__
+
+        message_scrollbox: Scrollbox = document.get_element_by_id("messages_pane")
+        message_input: Input = document.get_element_by_id("message_send_input")
+
+        def on_send_msg(content: str):
+            """
+            Creates a Message component, adds it to the chat history, and rerenders the chat history.
+            """
+            element = Message(content)
+            message_scrollbox.add_child(element)
+            message_scrollbox.scroll_to_bottom()
+            message_scrollbox.render()
+
+        def on_enter(element: Input):
+            """
+            event handler for when the message input is submitted.
+            """
+            curr_text = element.curr_text
+            on_send_msg(curr_text)
+            element.clear()
+
+        message_input.on_enter = on_enter
+        test.on_messages_screen = True
+
+        document.mount()
+        break
+
+document.listener_thread.join()
+

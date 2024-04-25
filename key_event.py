@@ -40,6 +40,7 @@ class KeyEvent:
         If the KeyEvent is just a character, this is probably a string of length 1 ("a", "G", "7", "*", etc).
         
         If special, then one of the following:
+        - at least a modifier key is held (shift, ctrl, alt, etc.)
         ```
         [
             'space', 'tab',
