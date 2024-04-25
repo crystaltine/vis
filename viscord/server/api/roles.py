@@ -1,54 +1,69 @@
 from db import cur
 from typing import Dict
 from uuid import uuid4
+from .flask_app import app
+from .helpers import *
+from flask import request, Response
 
 # API
-def get_chat_perms(user_id:str, server_id:str, chat_id:str) -> Dict:
+@app.route("/api/roles/get_chat_perms", methods=["POST"])
+def get_chat_perms() -> Dict:
     
     # Stuff for testing- ignore
 
     # user_id='b98757df-71aa-4615-8345-26c71cfbb304'
     # server_id='ad3f1cd8-ffcd-48ca-abc7-9409c17c9122'
     # chat_id='43eef70b-90bb-40c5-8ece-45abf6a55abb'
+
+    if not validate_fields(request.json, {"user_id": str, "server_id": str, "chat_id": str}):
+        return invalid_fields()
+    
+    user_id = request.json["user_id"]
+    server_id = request.json["server_id"]
+    chat_id = request.json["chat_id"]
     
     # Using the chat_id to pull the perm info from ChatInfo
+    try:
+        chat_query="""select read_perm_level, write_perm_level from "Discord"."ChatInfo" where chat_id = %s"""
+        cur.execute(chat_query, (chat_id,))
+        perms= cur.fetchall()[0]
+        minimum_reading_level, minimum_writing_level=perms[0], perms[1]
 
-    chat_query="""select read_perm_level, write_perm_level from "Discord"."ChatInfo" where chat_id = %s"""
-    cur.execute(chat_query, (chat_id,))
-    perms= cur.fetchall()[0]
-    minimum_reading_level, minimum_writing_level=perms[0], perms[1]
+        # Getting the user's roles from MemberInfo with the user_id and the server_id
 
-    # Getting the user's roles from MemberInfo with the user_id and the server_id
+        member_query="""select roles_list from "Discord"."MemberInfo" where user_id = %s and server_id= %s"""
+        cur.execute(member_query, (user_id, server_id))
+        roles_list= cur.fetchall()[0][0]
 
-    member_query="""select roles_list from "Discord"."MemberInfo" where user_id = %s and server_id= %s"""
-    cur.execute(member_query, (user_id, server_id))
-    roles_list= cur.fetchall()[0][0]
+        # Getting the highest perm level for all the user's roles
 
-    # Getting the highest perm level for all the user's roles
+        highest_perm_level=0
+        for role_id in roles_list:
+            perm_query="""select permissions from "Discord"."RolesInfo" where role_id = %s"""
+            cur.execute(perm_query, (role_id,))
+            perm_level=int(cur.fetchall()[0][0])
 
-    highest_perm_level=0
-    for role_id in roles_list:
-        perm_query="""select permissions from "Discord"."RolesInfo" where role_id = %s"""
-        cur.execute(perm_query, (role_id,))
-        perm_level=int(cur.fetchall()[0][0])
+            if perm_level>highest_perm_level:
+                highest_perm_level=perm_level
+        
+        # Checking to see if user's highest perm level >= the needed perm level to read/write
 
-        if perm_level>highest_perm_level:
-            highest_perm_level=perm_level
-    
-    # Checking to see if user's highest perm level >= the needed perm level to read/write
+        readable=False
+        writeable=False
+        if highest_perm_level>=minimum_reading_level:
+            readable=True
+        if highest_perm_level>=minimum_writing_level:
+            writeable=True
 
-    readable=False
-    writeable=False
-    if highest_perm_level>=minimum_reading_level:
-        readable=True
-    if highest_perm_level>=minimum_writing_level:
-        writeable=True
-
-    return {"readable":readable, "writeable":writeable}
+        data = {"readable":readable, "writeable":writeable}
+        return Response(json.dumps({"type": "success", "data": data}), status=200)
+    except Exception as e:
+        return return_error(e)
 
 # Given a user_id and a server_id, this function will return a dict containing bools for all the different permissions in the db based on their role
 # API
-def get_server_perms(user_id:str, server_id: str) -> Dict:
+@app.route("/api/roles/get_server_perms", methods=["POST"])
+def get_server_perms() -> Dict:
 
     # Stuff for testing- ignore
 
@@ -57,59 +72,93 @@ def get_server_perms(user_id:str, server_id: str) -> Dict:
 
     # Getting the user's roles from MemberInfo with the user_id and the server_id
 
-    member_query="""select roles_list from "Discord"."MemberInfo" where user_id = %s and server_id= %s"""
-    cur.execute(member_query, (user_id, server_id))
-    roles_list= cur.fetchall()[0][0]
+    if not validate_fields(request.json, {"user_id": str, "server_id": str}):
+        return invalid_fields()
+    
+    user_id = request.json["user_id"]
+    server_id = request.json["server_id"]
 
-    perms={"manage_server":False, "manage_chats":False, "manage_members":False, "manage_roles":False, "manage_voice":False,  
-           "manage_messages":False, "is_admin":False}
-    list_perms=list(perms.items())
+    try:
+        member_query="""select roles_list from "Discord"."MemberInfo" where user_id = %s and server_id= %s"""
+        cur.execute(member_query, (user_id, server_id))
+        roles_list= cur.fetchall()[0][0]
 
-    # Getting all the perms based on the list of roles and updating the dict (which combines all the perms of all the roles the user has)
+        perms={"manage_server":False, "manage_chats":False, "manage_members":False, "manage_roles":False, "manage_voice":False,  
+            "manage_messages":False, "is_admin":False}
+        list_perms=list(perms.items())
 
-    for role_id in roles_list:
-        perm_query="""select manage_server, manage_chats, manage_members, manage_roles, manage_voice, manage_messages, is_admin from "Discord"."RolesInfo" where role_id = %s"""
-        cur.execute(perm_query, (role_id,))
-        perm_arr=cur.fetchall()[0]
+        # Getting all the perms based on the list of roles and updating the dict (which combines all the perms of all the roles the user has)
+
+        for role_id in roles_list:
+            perm_query="""select manage_server, manage_chats, manage_members, manage_roles, manage_voice, manage_messages, is_admin from "Discord"."RolesInfo" where role_id = %s"""
+            cur.execute(perm_query, (role_id,))
+            perm_arr=cur.fetchall()[0]
+            
+            # Checking to see if a role has a permission that isn't already true in the dict
+
+            for i in range(0,len(perm_arr)):
+                if not perms[list_perms[i][0]] and perm_arr[i]:
+                    perms[list_perms[i][0]]=True
         
-        # Checking to see if a role has a permission that isn't already true in the dict
+        # If the user is an admin, all perms should be true
 
-        for i in range(0,len(perm_arr)):
-            if not perms[list_perms[i][0]] and perm_arr[i]:
-                perms[list_perms[i][0]]=True
-    
-    # If the user is an admin, all perms should be true
-
-    if perms["is_admin"]:
-        for key in perms:
-            perms[key]=True
-    
-    return perms
+        if perms["is_admin"]:
+            for key in perms:
+                perms[key]=True
+        
+        return Response(json.dumps({"type": "success", "data": perms}), status=200)
+    except Exception as e:
+        return return_error(e)
+        
 
 # API
-def handle_role_creation(server_id, role_name, role_color, role_symbol, priority, permissions, manage_server, manage_chats, manage_members, manage_roles, manage_voice, manage_messages, is_admin):
-    data_dict = {
-        "role_name": role_name,
-        "role_color": role_color,
-        "role_symbol": role_symbol,
-        "priority": priority,
-        "permissions": permissions,
-        "manage_server": manage_server,
-        "manage_chats": manage_chats,
-        "manage_members": manage_members,
-        "manage_roles": manage_roles,
-        "manage_voice": manage_voice,
-        "manage_messages": manage_messages,
-        "is_admin":is_admin
-    }
+@app.route("/api/roles/create_role", methods=["POST"])
+def handle_role_creation():
+    if not validate_fields(request.json, {"server_id": str, 
+                                          "role_name": str, 
+                                          "role_color": str, 
+                                          "role_symbol": str, 
+                                          "priority": int, 
+                                          "permissions": int, 
+                                          "manage_server": bool, 
+                                          "manage_chats": bool, 
+                                          "manage_members": bool, 
+                                          "manage_roles": bool, 
+                                          "manage_voice": bool, 
+                                          "manage_messages": bool, 
+                                          "is_admin": bool}):
+        return invalid_fields()
+    
+    data = request.json
+    if data["is_admin"]:
+        for key in data:
+            data[key] = True
 
-    # If is_admin is True, the user should have all the perms
+    copy = data["server_id"]
+    data = {k: v for k, v in data.items() if k != "server_id"}
 
-    if is_admin:
-        for key in data_dict:
-            data_dict[key]=True
+    # data_dict = {
+    #     "role_name": role_name,
+    #     "role_color": role_color,
+    #     "role_symbol": role_symbol,
+    #     "priority": priority,
+    #     "permissions": permissions,
+    #     "manage_server": manage_server,
+    #     "manage_chats": manage_chats,
+    #     "manage_members": manage_members,
+    #     "manage_roles": manage_roles,
+    #     "manage_voice": manage_voice,
+    #     "manage_messages": manage_messages,
+    #     "is_admin":is_admin
+    # }
 
-    add_role(server_id, data_dict)
+    # # If is_admin is True, the user should have all the perms
+
+    # if is_admin:
+    #     for key in data_dict:
+    #         data_dict[key]=True
+
+    add_role(copy, data)
 
 # Given a user_id, server_id, and dict containing information about a new role, this function will add the new role to the database
 
@@ -144,57 +193,79 @@ def add_role(server_id:str, role_info:Dict, user_id=None) -> None:
 
 
 # Given a role_id, remove all instances of that role from the server
-# API
-def remove_role(role_id:str, server_id:str) -> None:
+@app.route("/api/roles/remove_role", methods=["POST"])
+def remove_role() -> None:
+
+    if not validate_fields(request.json, {"role_id": str, "server_id": str}):
+        return invalid_fields()
+    
+    role_id = request.json["role_id"]
+    server_id = request.json["server_id"]
 
     # Remove the role from RolesInfo
 
-    query='''delete from "Discord"."RolesInfo" where role_id = %s '''
-    cur.execute(query, (role_id,))
+    try:
+        query='''delete from "Discord"."RolesInfo" where role_id = %s '''
+        cur.execute(query, (role_id,))
 
-    # Get a list of all the rows from MemberInfo containing the server_id
+        # Get a list of all the rows from MemberInfo containing the server_id
 
-    query='''select * from "Discord"."MemberInfo" where server_id=%s'''
-    cur.execute(query, (server_id,))
-    rows=cur.fetchall()
+        query='''select * from "Discord"."MemberInfo" where server_id=%s'''
+        cur.execute(query, (server_id,))
+        rows=cur.fetchall()
 
-    # Going through each row, removing the role from each user's role_list if it exists, and updating the roles_list in the table
+        # Going through each row, removing the role from each user's role_list if it exists, and updating the roles_list in the table
 
-    for row in rows:
-        roles=row[7]
-        user_id=row[1]
-        if role_id in roles:
-            roles.remove(role_id)
-        query='''update "Discord"."MemberInfo" set roles_list = %s where user_id = %s and server_id = %s'''
-        cur.execute(query, (roles, user_id, server_id))
+        for row in rows:
+            roles=row[7]
+            user_id=row[1]
+            if role_id in roles:
+                roles.remove(role_id)
+            query='''update "Discord"."MemberInfo" set roles_list = %s where user_id = %s and server_id = %s'''
+            cur.execute(query, (roles, user_id, server_id))
+        return return_success()
+    except Exception as e:
+        return return_error(e)
 
 # Given a role_id get a list of all the perms for that role
 # API
-def get_perms_from_role(role_id:str) -> Dict:
+
+@app.route("/api/roles/get_perms_from_role", methods=["POST"])
+def get_perms_from_role() -> Dict:
 
     # Pulling tuple by querying database
 
+    if not validate_fields(request.json, {"role_id": str}):
+        return invalid_fields()
+    
+    role_id = request.json["role_id"]
+
+
     query="""select manage_server, manage_chats, manage_members, manage_roles, manage_voice, manage_messages, is_admin from \
         "Discord"."RolesInfo" where role_id = %s"""
-    cur.execute(query, (role_id,))
-    rows=cur.fetchall()[0]
+    
+    try:
+        cur.execute(query, (role_id,))
+        rows=cur.fetchall()[0]
 
-    # Formatting perms into dict
+        # Formatting perms into dict
 
-    perm_dict = {
-        "manage_server": rows[0],
-        "manage_chats": rows[1],
-        "manage_members": rows[2],
-        "manage_roles": rows[2],
-        "manage_voice": rows[3],
-        "manage_messages": rows[4],
-        "is_admin":rows[5]
-    }
+        perm_dict = {
+            "manage_server": rows[0],
+            "manage_chats": rows[1],
+            "manage_members": rows[2],
+            "manage_roles": rows[2],
+            "manage_voice": rows[3],
+            "manage_messages": rows[4],
+            "is_admin":rows[5]
+        }
 
-    # If is_admin is True, then the user should have all the perms
+        # If is_admin is True, then the user should have all the perms
 
-    if rows[5]:
-        for key in perm_dict:
-            perm_dict[key]=True
+        if rows[5]:
+            for key in perm_dict:
+                perm_dict[key]=True
 
-    return perm_dict
+        return Response(json.dumps({"type": "success", "data": perm_dict}), status=200)
+    except Exception as e:
+        return return_error(e)

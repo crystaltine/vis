@@ -3,13 +3,14 @@ from .roles import get_server_perms
 from uuid import uuid4
 from flask import request, Response
 from flask_app import app
-from helpers import validate_fields
+from .helpers import *
 
 @app.route("/api/chats/create", methods=["POST"])
 def reorder_chats():
 
     if not validate_fields(request.json, {"server_id": str, "chat_id": str}):
-        return Response(status=400)
+        return invalid_fields()
+    
     server_id = request.json["server_id"]
     chat_id = request.json["chat_id"]
 
@@ -29,9 +30,9 @@ def reorder_chats():
                     break
                 cur_chat = records[x + 1][3]
                 cur.execute(send_query, ((x + 1), change_chat)) #else moves position of chat up by 1
-        return Response(status=200)
+        return return_success()
     except Exception as e:
-        return Response(status=400)
+        return return_error(e)
 
 @app.route("/api/chats/create", methods=["POST"])
 def handle_chat_creation():
@@ -54,7 +55,7 @@ def handle_chat_creation():
         bool
     """
     if not validate_fields(request.json, {"user_id": str, "server_id": str, "chat_name": str, "chat_type": str, "chat_topic": str, "chat_order": int, "read_perm_level": int, "write_perm_level": int, "is_dm": bool}):
-        return Response(status=400)
+        return invalid_fields()
     user_id = request.json["user_id"]
     server_id = request.json["server_id"]
     chat_name = request.json["chat_name"]
@@ -80,9 +81,9 @@ def handle_chat_creation():
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         '''
         cur.execute(send_query, (chat_id, server_id, chat_name, chat_type, chat_topic, chat_order, read_perm_level, write_perm_level, is_dm))
-        return Response(status=200)
+        return return_success()
     except Exception as e:
-        return Response(status=400)
+        return return_error(e)
         
 
 @app.route("/api/chats/update/name", methods=["POST"])
@@ -102,7 +103,7 @@ def handle_chat_name_update() -> bool:
         bool
     """
     if not validate_fields(request.json, {"user_id": str, "server_id": str, "chat_id": str, "new_chat_name": str}):
-        return Response(status=400)
+        return invalid_fields()
     user_id = request.json["user_id"]
     server_id = request.json["server_id"]
     chat_id = request.json["chat_id"]
@@ -113,7 +114,7 @@ def handle_chat_name_update() -> bool:
     perms = get_server_perms(user_id, server_id)
 
     if not perms["manage_chats"]:
-        return Response(status=403)
+        return missing_permissions()
     
     send_query = '''
         UPDATE "Discord"."ChatInfo"
@@ -122,9 +123,9 @@ def handle_chat_name_update() -> bool:
     '''    
     try:
         cur.execute(send_query, (new_chat_name, chat_id))
-        return Response(status=200)
+        return return_success()
     except Exception as e:
-        return Response(status=400)
+        return return_error(e)
 
 @app.route("/api/chats/update/topic", methods=["POST"])
 def handle_chat_topic_update() -> bool:
@@ -143,7 +144,7 @@ def handle_chat_topic_update() -> bool:
         bool
     """
     if not validate_fields(request.json, {"user_id": str, "server_id": str, "chat_id": str, "new_chat_topic": str}):
-        return Response(status=400)
+        return invalid_fields()
     user_id = request.json["user_id"]
     server_id = request.json["server_id"]
     chat_id = request.json["chat_id"]
@@ -152,7 +153,7 @@ def handle_chat_topic_update() -> bool:
     perms = get_server_perms(user_id, server_id)
 
     if not perms["manage_chats"]:
-        return Response(status=403)
+        return missing_permissions()
     
     send_query = '''
         UPDATE "Discord"."ChatInfo"
@@ -161,9 +162,9 @@ def handle_chat_topic_update() -> bool:
     '''    
     try:
         cur.execute(send_query, (new_chat_topic, chat_id))
-        return Response(status=200)
+        return return_success()
     except Exception as e:
-        return Response(status=400)
+        return return_error(e)
 
 @app.route("/api/chats/update/order", methods=["POST"])
 def handle_chat_order_update(user_id: str, server_id: str, chat_id: str, new_chat_order: int) -> bool:
@@ -182,7 +183,7 @@ def handle_chat_order_update(user_id: str, server_id: str, chat_id: str, new_cha
         bool
     """
     if not validate_fields(request.json, {"user_id": str, "server_id": str, "chat_id": str, "new_chat_order": int}):
-        return Response(status=400)
+        return invalid_fields()
     user_id = request.json["user_id"]
     server_id = request.json["server_id"]
     chat_id = request.json["chat_id"]
@@ -192,7 +193,7 @@ def handle_chat_order_update(user_id: str, server_id: str, chat_id: str, new_cha
     perms = get_server_perms(user_id, server_id)
 
     if not perms["manage_chats"]:
-        return Response(status=403)
+        return missing_permissions()
 
     send_query = '''
         UPDATE "Discord"."ChatInfo"
@@ -201,9 +202,9 @@ def handle_chat_order_update(user_id: str, server_id: str, chat_id: str, new_cha
     '''    
     try:
         cur.execute(send_query, (new_chat_order, chat_id))
-        return Response(status=200)
+        return return_success()
     except Exception as e:
-        return Response(status=400)
+        return return_error(e)
     
 @app.route("/api/chats/delete", methods=["POST"])
 def handle_chat_deletion():
@@ -221,7 +222,7 @@ def handle_chat_deletion():
         bool
     """
     if not validate_fields(request.json, {"user_id": str, "server_id": str, "chat_id": str}):
-        return Response(status=400)
+        return invalid_fields()
     user_id = request.json["user_id"]
     server_id = request.json["server_id"]
     chat_id = request.json["chat_id"]
@@ -229,7 +230,7 @@ def handle_chat_deletion():
     perms = get_server_perms(user_id, server_id)
 
     if not perms["manage_chats"]:
-        return Response(status=403)
+        return missing_permissions()
     
     send_query = '''
         DELETE FROM "Discord"."ChatInfo"
@@ -239,6 +240,6 @@ def handle_chat_deletion():
     
     try:
         cur.execute(send_query, (chat_id, server_id))
-        return Response(status=200)
+        return return_success()
     except Exception as e:
-        return Response(status=400)
+        return return_error(e)

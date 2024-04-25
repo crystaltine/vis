@@ -5,8 +5,13 @@ import datetime
 from .roles import get_server_perms, handle_role_creation
 from .members import handle_member_creation, handle_adding_member_roles
 from .chats import handle_chat_creation
+from .flask_app import app
+from .helpers import *
+from flask import request, Response
+import requests
 
-def handle_server_creation(user_id: str, server_name: str, server_icon: str, server_color: str) -> None:
+@app.route("/api/servers/create", methods=["POST"])
+def handle_server_creation() -> None:
     """
     Create a new server in the database along with necessary initial setup.
 
@@ -28,31 +33,47 @@ def handle_server_creation(user_id: str, server_name: str, server_icon: str, ser
     6. Adds the user creating the server as a member of the server.
     7. Assigns the "admin" and "everyone" roles to the user creating the server.
     """
+
+    if not validate_fields(request.json, {"user_id": str, "server_name": str, "server_icon": str, "server_color": str}):
+        return invalid_fields()
+    
+    user_id = request.json["user_id"]
+    server_name = request.json["server_name"]
+    server_icon = request.json["server_icon"]
+    server_color = request.json["server_color"]
+    if server_color[0] != "#" or len(server_color) != 7 or set(server_color[1:]).difference(set("0123456789abcdef")):
+        return invalid_fields()
+    
     
     server_id = str(uuid4())
     server_timestamp = str(datetime.datetime.now())
+    # TODO: make this entire try/except block not api
+    try:
+        send_query = '''
+            INSERT into "Discord"."ServerInfo" (server_id, server__name, color, server_icon, server_creation_timestamp) values (%s, %s, %s, %s, %s)
+        '''
 
-    send_query = '''
-        INSERT into "Discord"."ServerInfo" (server_id, server__name, color, server_icon, server_creation_timestamp) values (%s, %s, %s, %s, %s)
-    '''
+        cur.execute(send_query, (server_id, server_name, server_color, server_icon, server_timestamp))
 
-    cur.execute(send_query, (server_id, server_name, server_color, server_icon, server_timestamp))
+        # add the user creating the server to the server as a member
+        
+        handle_member_creation(user_id, server_id)
 
-    # add the user creating the server to the server as a member
-    handle_member_creation(user_id, server_id)
+        # create an "admin" role for the user creating the server 
+        handle_role_creation(server_id, "admin", "#FFD700", "🜲", 0, 0, True, True, True, True, True, True, True)
 
-     # create an "admin" role for the user creating the server 
-    handle_role_creation(server_id, "admin", "#FFD700", "🜲", 0, 0, True, True, True, True, True, True, True)
+        # create an "everyone" role for the server (will be assigned to all people in the server)
+        handle_role_creation(server_id, "everyone", "#FFFFFF", "🌍", 1, 0, False, False, False, False, False, False, False)
 
-    # create an "everyone" role for the server (will be assigned to all people in the server)
-    handle_role_creation(server_id, "everyone", "#FFFFFF", "🌍", 1, 0, False, False, False, False, False, False, False)
+        #assign the "admin" and "everyone" roles to the user creating the server
+        handle_adding_member_roles(user_id, server_id, "admin")
+        handle_adding_member_roles(user_id, server_id, "everyone")
 
-    #assign the "admin" and "everyone" roles to the user creating the server
-    handle_adding_member_roles(user_id, server_id, "admin")
-    handle_adding_member_roles(user_id, server_id, "everyone")
-
-    # create a general chat for the server
-    handle_chat_creation(user_id, server_id, "general", "text chat", "General chat for the server", 0, 0, 0, False)
+        # create a general chat for the server
+        handle_chat_creation(user_id, server_id, "general", "text chat", "General chat for the server", 0, 0, 0, False)
+        return return_success()
+    except Exception as e:
+        return return_error(e)
 
 
 def handle_server_name_update(user_id:str, server_id: str, new_server_name: str):

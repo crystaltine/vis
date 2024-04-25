@@ -88,7 +88,7 @@
 #     threading.Thread(target=handle_connection, args=(conn, addr)).start()
 
 from api.flask_app import app
-from api import login_flow
+from api import login_flow, chats, friends, invites, members, messages, roles
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
