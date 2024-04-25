@@ -9,7 +9,6 @@ class OBJECTS:
         "collide_effect": "crash-block",
         "requires_click": False, # if player needs to click to activate
         "multi_activate": False,
-        "temp_symbol": 'b'
     }
     spike = {
         "name": "spike",
@@ -19,7 +18,6 @@ class OBJECTS:
         "collide_effect": "crash-spike",
         "requires_click": False, # if player needs to click to activate
         "multi_activate": False,
-        "temp_symbol": 's'
     }
     yellow_orb = {
         "name": "yellow_orb",
