@@ -50,6 +50,7 @@ class Input(Element):
         text_align: Literal["left", "center", "right"]
         hoverable: bool
         selectable: bool
+        hide_input: bool | None
         
     SUPPORTS_CHILDREN = False
     DEFAULT_STYLE: "StyleProps" = {
@@ -77,6 +78,7 @@ class Input(Element):
         "text_align": "left",
         "hoverable": True,
         "selectable": True,
+        "hide_input": False,
     }
     
     def __init__(self, **attrs: Unpack["Attributes"]):
@@ -254,7 +256,10 @@ class Input(Element):
         # RENDERING TEXT #
         # ============== #
 
-        visible_text = self.curr_text[self.text_left_index:min(self.text_left_index+self.client_width, len(self.curr_text))]
+        visible_text = (
+            self.curr_text[self.text_left_index:min(self.text_left_index+self.client_width, len(self.curr_text))] if not self.style.get("hide_input")
+            else (min(self.text_left_index+self.client_width, len(self.curr_text))-self.text_left_index)*"*"
+        )
         text_to_render = ...
 
         if self.curr_text:

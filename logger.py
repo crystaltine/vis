@@ -1,4 +1,5 @@
 from time import time
+import os
 
 class Logger:
 
@@ -12,6 +13,11 @@ class Logger:
     def write(dont_clear_buffer: bool = False):
         
         if len(Logger.buffer) > 0:
+            
+            # create log dir if nonexistent, prevents error
+            if not os.path.exists(fp:=os.path.dirname(os.path.realpath(__file__))):
+                os.makedirs(fp+"/logs")
+
             with open(f"logs/{int(time())}.log", "w") as log_f:
                 log_f.writelines('\n'.join(Logger.buffer))
                 log_f.close()

@@ -187,7 +187,7 @@ class Text(Element):
                 text_left_padding = 0 # 0 by default
                 if len(text_chunk) < self.client_width:
                     text_left_padding = (
-                        (self.client_width - len(text_chunk))//2+1 if self.style.get("text_align") == "center"
+                        (self.client_width - len(text_chunk))//2 if self.style.get("text_align") == "center"
                         else self.client_width - len(text_chunk) if self.style.get("text_align") == "right"
                         else 0
                     )
@@ -198,5 +198,6 @@ class Text(Element):
                 if max_bounds.right < self.client_right: # cut off right side
                     text_to_render = text_to_render[:max_bounds.right-self.client_right]
 
+                
                 print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=self.style.get("bg_color"), style=style_string) + text_left_padding*" " + text_chunk, end="")
                 text_chunk_index += 1

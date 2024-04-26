@@ -19,10 +19,11 @@
 }
 
 .login_form_title {
-    left: 50%
+    left: 0%
+    width: 100%
     top: 0ch
     color: #ffffff
-    text_align: left
+    text_align: center
 }
 
 .username_input_label {
@@ -60,6 +61,7 @@
     selected_bg_color: #1a232d
     cursor_bg_color: white
     cursor_fg_color: black
+    hide_input: True
 }
 
 .submit_button {
@@ -74,8 +76,8 @@
     pressed_bg_color: #08549b
 }
 .submit_button_text {
-    left: 50%
-    text_align: left
+    left: 0%
+    width: 100%
     top: 0ch
     color: #ffffff
     bg_color: transparent
