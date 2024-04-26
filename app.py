@@ -1,7 +1,7 @@
 from interpreter import read_styles, read_vis
 from globalvars import Globals
 from logger import Logger
-
+from utils import cls
 from div import Div
 from text import Text
 from scrollbox import Scrollbox
@@ -13,10 +13,6 @@ import requests
 import socket
 import json
 import uuid
-
-# setup socket
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(("localhost", 5000))
 
 read_styles("login_style.tss")
 read_vis("login_layout.vis")
@@ -82,6 +78,15 @@ document.mount()
 
 while True:
     if test.on_messages_screen:
+
+        # setup socket
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect(("localhost", 5000))
+        except Exception as e:
+            cls()
+            print(f"\x1b[31mdiscoword :3 fatal: Failed to connect to server, \x1b[33m{e}\x1b[0m")
+            exit()
 
         document.derender()
 
