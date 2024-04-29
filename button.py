@@ -20,6 +20,7 @@ class Button(Element):
         style_str: str | None
         children: List[Element]
         on_pressed: Callable[[], Any]
+        container_bg: str
         #disabled: bool
     
     class StyleProps(Element.StyleProps):
@@ -68,7 +69,7 @@ class Button(Element):
         """ Event handler to run when the button is pressed (enter is pressed down while it is hovered). Modifiable. """
         
         self.children: List["Element"] = attrs.get("children", [])
-        self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else None
+        self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else fcode(background=attrs.get("container_bg"))
 
         # NEW: this is all handled within the document event handler as a special case.
         # register this element's event handler with the document's special handlers
@@ -100,7 +101,7 @@ class Button(Element):
             active_bg_fcode = fcode(background=bg_color_to_use)
             with Globals.__vis_document__.term.hidden_cursor():
                 for i in range(self.client_top, self.client_bottom):
-                    print(Globals.__vis_document__.term.move_xy(self.client_left, i) + active_bg_fcode + " " * self.client_width, end="")
+                    print(Globals.__vis_document__.term.move_xy(self.client_left, i) + active_bg_fcode + " " * self.client_width, end="\x1b[0m")
                         
         # render children
         for child in self.children:

@@ -24,6 +24,7 @@ container: "Div" = document.get_element_by_id("text_container")
 username_input: "Input" = document.get_element_by_id("username-input")
 password_input: "Input" = document.get_element_by_id("password-input")
 submit_button: "Button" = document.get_element_by_id("submit-button")
+error_message: "Text" = document.get_element_by_id("error_message")
 
 class test:
     on_messages_screen = False
@@ -60,6 +61,13 @@ def ChatItem(name: str, color: str) -> Text:
         text=name,
     )
 
+def submit_handler_wrapper():
+    try:
+        submit_handler()
+    except Exception as e:
+        error_message.text = "Couldn't connect to server!"
+        error_message.render()
+
 def submit_handler():
     
     res = requests.post("http://127.0.0.1:5000/api/login", json={
@@ -71,9 +79,9 @@ def submit_handler():
     data = res.json()
     
     if data['type'] == 'success':
-        test.on_messages_screen = True
+        test.on_messages_screen = True  
 
-submit_button.on_pressed = submit_handler
+submit_button.on_pressed = submit_handler_wrapper
 document.mount()
 
 while True:

@@ -86,7 +86,7 @@ def read_vis(relative_filepath: str) -> None:
     ```
     """
     Globals.__vis_document__ = Document()
-    current_element_path = [Globals.__vis_document__]
+    current_element_path: "List[Document | Element]" = [Globals.__vis_document__]
     
     """ A list of the elements we are currently nested inside. Always begins with document. """
 
@@ -125,7 +125,10 @@ def read_vis(relative_filepath: str) -> None:
             attrs[attr_name] = attr_params
             #print(f"^Setting attrs[{attr_name}] to {attr_params}")
 
-        element = create_element(tag_name, attrs)
+        if type(current_element_path[-1]) == Document:
+            element = create_element(tag_name, attrs | {"container_bg": "\x1b[0m"})
+        else:
+            element = create_element(tag_name, attrs | {"container_bg": current_element_path[-1].style.get("bg_color")})
         #print(f"\x1b[33mCreated element: {element}\x1b[0m")
         
         # add the element as a child of the current element                

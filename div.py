@@ -15,6 +15,7 @@ class Div(Element):
         class_str: str | None
         style_str: str | None
         children: List["Element"]
+        container_bg: str
     
     class StyleProps(Element.StyleProps):
         """ A schema of style options for divs. """
@@ -59,7 +60,7 @@ class Div(Element):
         super().__init__(**attrs) # should ignore any unknown attributes that are provided
         
         self.children: List["Element"] = attrs.get("children", [])
-        self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else None
+        self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else fcode(background=attrs.get("container_bg"))
         #Logger.log(f"{self}'s children on init: {self.children}")
     
     def render(self, container_bounds: Boundary = None):
@@ -79,7 +80,7 @@ class Div(Element):
         if self._bg_fcode:
             with Globals.__vis_document__.term.hidden_cursor():
                 for i in range(self.client_top, self.client_bottom):
-                    print(Globals.__vis_document__.term.move_xy(self.client_left, i) + self._bg_fcode + " " * self.client_width, end="")
+                    print(Globals.__vis_document__.term.move_xy(self.client_left, i) + self._bg_fcode + " " * self.client_width, end="\x1b[0m")
                     
         # render children
         for child in self.children:
@@ -122,7 +123,7 @@ class Div(Element):
                     #  |          |                        |             |
                     #  --------------------------------------------------- = client_width
                     #             -------------------------- = max_bounds.right - max_bounds.left
-                    print(Globals.__vis_document__.term.move_xy(max(self.client_left, max_bounds.left), i) + self._bg_fcode + " " * min(self.client_width, max_bounds.right - max_bounds.left), end="")
+                    print(Globals.__vis_document__.term.move_xy(max(self.client_left, max_bounds.left), i) + self._bg_fcode + " " * min(self.client_width, max_bounds.right - max_bounds.left), end="\x1b[0m")
                     
         # render children
         for child in self.children:

@@ -31,6 +31,9 @@ class Element:
     style: Dict[str, str]
     """ A dict of the currently active style options for the element, a combination of default, class, and explicit styles. 
     Should be up-to-date with any dynamic styling. """
+
+    container_bg: str
+    """ Stores the background color of the element's container. Used for elements with transparent backgrounds. """
     
     _class_str: str
     """ The class string that was last set on the element. Use `class_str` property instead of this. """
@@ -80,6 +83,7 @@ class Element:
     def __init__(self, **attrs: Unpack["Attributes"]) -> None:        
         self._class_str = attrs.get("class_str", "")
         self._style_str = attrs.get("style_str", "")
+        self.container_bg = attrs.get("container_bg", "")
         
         Logger.log(f"\x1b[32mElement init: _class_str is {self._class_str}, _style_str is {self._style_str}\x1b[0m")
         

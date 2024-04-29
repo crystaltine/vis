@@ -23,6 +23,7 @@ class Input(Element):
         placeholder: str | None
         max_len: int | None
         pattern: str | None
+        container_bg: str
 
     class StyleProps(Element.StyleProps):
         """ A schema of style options for input elements. """
@@ -298,5 +299,5 @@ class Input(Element):
         #Logger.log(f"Input renderer: final stripped text_to_render is {remove_ansi(text_to_render)}")
 
         with Globals.__vis_document__.term.hidden_cursor():
-            print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + text_to_render, end="")
-            print(Globals.__vis_document__.term.move_yx(0,0), end="")
+            print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + text_to_render, end="\x1b[0m")
+            print(Globals.__vis_document__.term.move_yx(0,0), end="\x1b[0m")

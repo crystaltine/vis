@@ -11,5 +11,7 @@
         <button id="submit-button" class_str="submit_button">
             <text id="submit-button-text" class_str="submit_button_text" text="Submit"></>
         </>
+
+        <text id="error_message" class_str="error_message" text=""></>
     </>
 </>
