@@ -9,6 +9,7 @@ from .flask_app import app
 from .helpers import *
 from flask import request, Response
 import requests
+from .server_config import URI
 
 @app.route("/api/servers/create", methods=["POST"])
 def handle_server_creation() -> None:
@@ -56,27 +57,113 @@ def handle_server_creation() -> None:
         cur.execute(send_query, (server_id, server_name, server_color, server_icon, server_timestamp))
 
         # add the user creating the server to the server as a member
+
+        data = {
+            "user_id": user_id,
+            "server_id": server_id
+        }
         
-        handle_member_creation(user_id, server_id)
+        #handle_member_creation(user_id, server_id)
+        resp = requests.post(URI + "/api/members/create", json=data)
+        if resp.status_code != 200:
+            return return_error("Failed to create member")
 
         # create an "admin" role for the user creating the server 
-        handle_role_creation(server_id, "admin", "#FFD700", "🜲", 0, 0, True, True, True, True, True, True, True)
+        data = {
+            "server_id": server_id,
+            "role_name": "admin",
+            "role_color": "#FFD700",
+            "role_icon": "🜲",
+            "priority": 0,
+            "permissions": 0,
+            "manage_server": True,
+            "manage_chats": True,
+            "manage_members": True,
+            "manage_roles": True,
+            "manage_voice": True,
+            "manage_messages": True,
+            "is_admin": True
+        }
+
+        #handle_role_creation(server_id, "admin", "#FFD700", "🜲", 0, 0, True, True, True, True, True, True, True)
+        resp = requests.post(URI + "/api/roles/create_role", json=data)
+        if resp.status_code != 200:
+            return return_error("Failed to create admin role")
+
+
+        data = {
+            "server_id": server_id,
+            "role_name": "everyone",
+            "role_color": "#FFFFFF",
+            "role_icon": "🌍",
+            "priority": 1,
+            "permissions": 0,
+            "manage_server": False,
+            "manage_chats": False,
+            "manage_members": False,
+            "manage_roles": False,
+            "manage_voice": False,
+            "manage_messages": False,
+            "is_admin": False
+        }
 
         # create an "everyone" role for the server (will be assigned to all people in the server)
-        handle_role_creation(server_id, "everyone", "#FFFFFF", "🌍", 1, 0, False, False, False, False, False, False, False)
+        #handle_role_creation(server_id, "everyone", "#FFFFFF", "🌍", 1, 0, False, False, False, False, False, False, False)
+
+        resp = requests.post(URI + "/api/roles/create_role", json=data)
+        if resp.status_code != 200:
+            return return_error("Failed to create admin role")
+
+        data = {
+            "user_id": user_id,
+            "server_id": server_id,
+            "role_id": "admin"
+        }
+
+        resp = requests.post(URI + "/api/members/add_role", json=data)
+        if resp.status_code != 200:
+            return return_error("Failed to add admin role to user")
+        
+        data = {
+            "user_id": user_id,
+            "server_id": server_id,
+            "role_id": "everyone"
+        }
+
+        resp = requests.post(URI + "/api/members/add_role", json=data)
+        if resp.status_code != 200:
+            return return_error("Failed to add everyone role to user")
 
         #assign the "admin" and "everyone" roles to the user creating the server
-        handle_adding_member_roles(user_id, server_id, "admin")
-        handle_adding_member_roles(user_id, server_id, "everyone")
+        # handle_adding_member_roles(user_id, server_id, "admin")
+        # handle_adding_member_roles(user_id, server_id, "everyone")
 
         # create a general chat for the server
-        handle_chat_creation(user_id, server_id, "general", "text chat", "General chat for the server", 0, 0, 0, False)
+        
+        data = {
+            "user_id": user_id,
+            "server_id": server_id,
+            "chat_name": "general",
+            "chat_type": "text chat",
+            "chat_topic": "General chat for the server",
+            "chat_order": 0,
+            "read_perm_level": 0,
+            "write_perm_level": 0,
+            "is_dm": False
+        }
+
+        resp = requests.post(URI + "/api/chats/create", json=data)
+        if resp.status_code != 200:
+            return return_error("Failed to create general chat")
+
+        # handle_chat_creation(user_id, server_id, "general", "text chat", "General chat for the server", 0, 0, 0, False)
         return return_success()
     except Exception as e:
         return return_error(e)
 
 
-def handle_server_name_update(user_id:str, server_id: str, new_server_name: str):
+@app.route("/api/servers/update_name", methods=["POST"])
+def handle_server_name_update():
     """
     Update the name of a server in the database given the server's id. It first checks whether
     the user making the request has the necessary permissions to manage the server. If the user does not have
@@ -91,20 +178,40 @@ def handle_server_name_update(user_id:str, server_id: str, new_server_name: str)
         None
     """
     
-    perms = get_server_perms(user_id, server_id)
+    if not validate_fields(request.json, {"user_id": str, "server_id": str, "new_server_name": str}):
+        return invalid_fields()
+    
+    user_id = request.json["user_id"]
+    server_id = request.json["server_id"]
+    new_server_name = request.json["new_server_name"]
+
+
+    
+    data = {
+        "user_id": user_id,
+        "server_id": server_id
+    }
+    resp = requests.post(URI + "/api/members/get_perms", json=data)
+    if resp.status_code != 200:
+        return return_error("Failed to get server permissions")
+    perms = resp.json()
 
     if not perms["manage_server"]:
-        print("You do not have permission to change the server name")
-        return
+        return missing_permissions()
 
     send_query = '''
         UPDATE "Discord"."ServerInfo"
         SET server__name = %s
         WHERE server_id = %s
     '''    
-    cur.execute(send_query, (new_server_name, server_id))
+    try:
+        cur.execute(send_query, (new_server_name, server_id))
+        return return_success()
+    except Exception as e:
+        return return_error(e)
 
-def handle_server_color_update(user_id: str, server_id: str, new_color_color: str) -> None:
+@app.route("/api/servers/update_color", methods=["POST"])
+def handle_server_color_update() -> None:
     """
     Update the color of a server in the database given the server's id. It first checks whether
     the user making the request has the necessary permissions to manage the server. If the user does not have
@@ -119,11 +226,26 @@ def handle_server_color_update(user_id: str, server_id: str, new_color_color: st
         None
     """
 
-    perms = get_server_perms(user_id, server_id)
+    if not validate_fields(request.json, {"user_id": str, "server_id": str, "new_color_color": str}):
+        return invalid_fields()
+    
+    user_id = request.json["user_id"]
+    server_id = request.json["server_id"]
+    new_color_color = request.json["new_color_color"]
+    if new_color_color[0] != "#" or len(new_color_color) != 7 or set(new_color_color[1:]).difference(set("0123456789abcdef")):
+        return invalid_fields()
+
+    data = {
+        "user_id": user_id,
+        "server_id": server_id
+    }
+    resp = requests.post(URI + "/api/members/get_perms", json=data)
+    if resp.status_code != 200:
+        return return_error("Failed to get server permissions")
+    perms = resp.json()
 
     if not perms["manage_server"]:
-        print("You do not have permission to change the server color")
-        return
+        return missing_permissions()
 
     send_query = '''
         UPDATE "Discord"."ServerInfo"
@@ -131,9 +253,14 @@ def handle_server_color_update(user_id: str, server_id: str, new_color_color: st
         WHERE server_id = %s
     '''    
 
-    cur.execute(send_query, (new_color_color, server_id))
+    try:
+        cur.execute(send_query, (new_color_color, server_id))
+        return return_success()
+    except Exception as e:
+        return return_error(e)
 
-def handle_server_icon_update(user_id: str, server_id: str, new_server_icon: str) -> None:
+@app.route("/api/servers/update_icon", methods=["POST"])
+def handle_server_icon_update() -> None:
     """
     Update the icon of a server in the database given the server's id. It first checks whether
     the user making the request has the necessary permissions to manage the server. If the user does not have
@@ -148,11 +275,24 @@ def handle_server_icon_update(user_id: str, server_id: str, new_server_icon: str
         None
     """
 
-    perms = get_server_perms(user_id, server_id)
+    if not validate_fields(request.json, {"user_id": str, "server_id": str, "new_server_icon": str}):
+        return invalid_fields()
+    
+    user_id = request.json["user_id"]
+    server_id = request.json["server_id"]
+    new_server_icon = request.json["new_server_icon"]
+
+    data = {
+        "user_id": user_id,
+        "server_id": server_id
+    }
+    resp = requests.post(URI + "/api/members/get_perms", json=data)
+    if resp.status_code != 200:
+        return return_error("Failed to get server permissions")
+    perms = resp.json()
 
     if not perms["manage_server"]:
-        print("You do not have permission to change the server color")
-        return
+        return missing_permissions()
 
     send_query = '''
         UPDATE "Discord"."ServerInfo"
@@ -160,27 +300,16 @@ def handle_server_icon_update(user_id: str, server_id: str, new_server_icon: str
         WHERE server_id = %s
     '''    
 
-    cur.execute(send_query, (new_server_icon, server_id))
+    try:
+        cur.execute(send_query, (new_server_icon, server_id))
+        return return_success()
+    except Exception as e:
+        return return_error(e)
 
 
 
-def handle_user_leaving_server(user_id: str, server_id: str) -> None:
-    """
-    Deletes the row from the 'MemberInfo' table to allow the user to leave the server.
 
-    Parameters:
-        user_id (str): The ID of the user leaving the server.
-        server_id (str): The ID of the server the user is leaving.
 
-    Returns:
-        None
-    """
-    send_query = '''
-        DELETE FROM "Discord"."MemberInfo"
-        WHERE user_id = %s AND server_id = %s
-    '''    
-
-    cur.execute(send_query, (user_id, server_id))
 
 def db_on_join_server(user_id: str, server_id: str):
     """

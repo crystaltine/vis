@@ -6,6 +6,7 @@ from .flask_app import app
 from .helpers import *
 from flask import request, Response
 import requests
+from .server_config import URI
 
 def handle_invite_creation(user_id, server_id, invite_code):
     """
@@ -162,9 +163,28 @@ def handle_user_joining_server():
         server_id =  handle_join_code_validation(invite_code)
 
         if server_id:
-            handle_member_creation(user_id, server_id) # TODO: make not api
+
+            data = {
+                "user_id": user_id,
+                "server_id": server_id
+            }
+
+            response = requests.post(URI + "/api/members/create", json={"data": data})
+            if response.status_code != 200:
+                return Response(json.dumps({"type": "failure", "message": "Failed to join server"}), status=400)
+            
+            data = {
+                "user_id": user_id,
+                "server_id": server_id,
+                "role_id": "everyone"
+            }
+
+            response = requests.post(URI + "/api/members/add_role", json={"data": data})
+            if response.status_code != 200:
+                return Response(json.dumps({"type": "failure", "message": "Joined server; failed to add base role"}), status=400)
+            return return_success()
+            
         else:
             return Response(json.dumps({"type": "incorrect", "message": "Invalid invite code"}), status=400)
-        return return_success()
     except Exception as e:
         return return_error(e)

@@ -3,7 +3,6 @@ from uuid import uuid4
 import datetime
 from typing import Literal, List
 from ._types import *
-from logger import Logger
 from .flask_app import app
 from .helpers import *
 from flask import request, Response
@@ -28,7 +27,6 @@ def pin_message() -> Literal['success', 'failure']:
         cur.execute(update_query, (message_id, chat_id))
         return return_success()
     except Exception as e:
-        Logger.err(f"couldn't pin message: {e}", 'pin_message')
         return return_error(e)
 
 @app.route("/api/messages/send", methods=["POST"])
@@ -72,7 +70,6 @@ def create_message() -> Literal['success', 'failure', 'incomplete-data']:
         cur.execute(send_query, (message_id, user_id, chat_id, server_id, replied_to_id, message_content, message_timestamp, pinged_user_ids))
         return return_success()
     except Exception as e:
-        Logger.err(f"couldn't put message in db: {e}", 'create_message')
         return return_error(e)
     
 @app.route("/api/messages/get_recent", methods=["POST"])

@@ -2,10 +2,10 @@ from .db import cur
 from .roles import get_server_perms
 from uuid import uuid4
 from flask import request, Response
-from flask_app import app
+from .flask_app import app
 from .helpers import *
 
-@app.route("/api/chats/create", methods=["POST"])
+@app.route("/api/chats/update", methods=["POST"])
 def reorder_chats():
 
     if not validate_fields(request.json, {"server_id": str, "chat_id": str}):
@@ -14,7 +14,6 @@ def reorder_chats():
     server_id = request.json["server_id"]
     chat_id = request.json["chat_id"]
 
-    # TODO - use chat_id instead of chat_name (since we can have duplicate names)
     # does this function move the specified chat to top? If so, rename the function
     try:
         send_query = """select * from "Discord"."ChatInfo" where server_id = %s"""
@@ -86,7 +85,7 @@ def handle_chat_creation():
         return return_error(e)
         
 
-@app.route("/api/chats/update/name", methods=["POST"])
+@app.route("/api/chats/update_name", methods=["POST"])
 def handle_chat_name_update() -> bool:
     """
     Update the name of a chat in the database given the chat's id. It first checks whether
@@ -127,7 +126,7 @@ def handle_chat_name_update() -> bool:
     except Exception as e:
         return return_error(e)
 
-@app.route("/api/chats/update/topic", methods=["POST"])
+@app.route("/api/chats/update_topic", methods=["POST"])
 def handle_chat_topic_update() -> bool:
     """
     Update the topic of a chat in the database given the chat's id. It first checks whether
@@ -166,7 +165,7 @@ def handle_chat_topic_update() -> bool:
     except Exception as e:
         return return_error(e)
 
-@app.route("/api/chats/update/order", methods=["POST"])
+@app.route("/api/chats/update_order", methods=["POST"])
 def handle_chat_order_update(user_id: str, server_id: str, chat_id: str, new_chat_order: int) -> bool:
     """
     Update the order of a chat in the database given the chat's id. It first checks whether

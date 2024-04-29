@@ -90,5 +90,18 @@
 from api.flask_app import app
 from api import login_flow, chats, friends, invites, members, messages, roles
 
+from api import db
+
+from api import server_config as sc
+from uuid import uuid4
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    #app.run(host=sc.HOST, port=sc.PORT)
+    #db.cur.execute("SELECT roles_list FROM \"Discord\".\"MemberInfo\"")
+    q = '''
+            INSERT into "Discord"."MemberInfo" (member_id, server_id, member_join_date) values (%s, %s, %s)
+        '''
+    
+    #db.cur.execute('INSERT into "Discord"."MemberInfo" (member_id, user_id, server_id, member_join_date) values (%s, %s, %s, %s)', (str(uuid4()), "b98757df-71aa-4615-8345-26c71cfbb304", 'ad3f1cd8-ffcd-48ca-abc7-9409c17c9122', '2021-09-01 00:00:00'))
+    db.cur.execute("Select roles_list from \"Discord\".\"MemberInfo\" where server_id = 'ad3f1cd8-ffcd-48ca-abc7-9409c17c9122' and user_id = 'b98757df-71aa-4615-8345-26c71cfbb304'")
+    print(db.cur.fetchall())

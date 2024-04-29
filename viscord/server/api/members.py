@@ -3,6 +3,7 @@ import datetime
 from .flask_app import app
 from .helpers import *
 from flask import request, Response
+from uuid import uuid4
 
 @app.route("/api/members/create", methods=["POST"])
 def handle_member_creation():
@@ -18,17 +19,17 @@ def handle_member_creation():
         member_join_date = str(datetime.datetime.now())
 
         send_query = '''
-            INSERT into "Discord"."MembersInfo" (member_id, server_id, member_join_date) values (%s, %s, %s)
+            INSERT into "Discord"."MemberInfo" (member_id, user_id, server_id, member_join_date) values (%s, %s, %s)
         '''
 
-        cur.execute(send_query, (user_id, server_id, member_join_date))
+        cur.execute(send_query, (uuid4(), user_id, server_id, member_join_date))
 
         return return_success()
     except Exception as e:
         return return_error(e)
     
 
-@app.route("/api/members/edit_roles", methods=["POST"])
+@app.route("/api/members/add_role", methods=["POST"])
 def handle_adding_member_roles():
     if not validate_fields(request.json, {"user_id": str, "server_id": str, "role_id": str}):
         return invalid_fields()
@@ -40,7 +41,7 @@ def handle_adding_member_roles():
     try:
         
         send_query = '''
-            SELECT COUNT(*) FROM "Discord"."MembersInfo" 
+            SELECT COUNT(*) FROM "Discord"rsInfo" 
             WHERE user_id = %s AND server_id = %s
         '''
 
@@ -60,7 +61,7 @@ def handle_adding_member_roles():
         new_roles_list = current_roles_list + role_id
 
         send_query = '''
-            UPDATE "Discord"."MembersInfo"
+            UPDATE "Discord"."MemberInfo"
             SET roles_list = %s
             WHERE user_id = %s AND server_id = %s
         '''
@@ -69,6 +70,53 @@ def handle_adding_member_roles():
         return return_success()
     except Exception as e:
         return return_error(e)
+
+@app.route("/api/members/remove_role", methods=["POST"])
+def handle_removing_member_roles():
+    if not validate_fields(request.json, {"user_id": str, "server_id": str, "role_id": str}):
+        return invalid_fields()
+    
+    user_id = request.json["user_id"]
+    server_id = request.json["server_id"]
+    role_id = request.json["role_id"]
+
+    try:
+        
+        send_query = '''
+            SELECT COUNT(*) FROM "Discord"."MemberInfo" 
+            WHERE user_id = %s AND server_id = %s
+        '''
+
+        cur.execute(send_query, (user_id, server_id))
+
+        if cur.fetchone()[0] == 0:
+            return return_error(f"Member {user_id} does not exist in server")
+
+        send_query = '''
+            SELECT roles_list FROM "Discord"."MembersRoles" 
+            WHERE user_id = %s AND server_id = %s
+        '''
+
+        cur.execute(send_query, (user_id, server_id))
+        current_roles_list = cur.fetchone()[0]
+
+        #new_roles_list = current_roles_list + role_id
+        if role_id not in current_roles_list:
+            return return_error(f"Role {role_id} not found in member's roles")
+        current_roles_list.remove(role_id)
+
+        send_query = '''
+            UPDATE "Discord"."MemberInfo"
+            SET roles_list = %s
+            WHERE user_id = %s AND server_id = %s
+        '''
+
+        cur.execute(send_query, (current_roles_list, user_id, server_id))
+        return return_success()
+    except Exception as e:
+        return return_error(e)
+
+
 
 @app.route("/api/members/update_nickname", methods=["POST"])
 def update_member_nickname() -> bool:
@@ -121,6 +169,35 @@ def update_nick_color() -> bool:
     try:
         send_query = """update "Discord"."MemberInfo" set nick_color = %s where server_id = %s and user_id = %s """
         cur.execute(send_query, (new_color, server_id, user_id))
+        return return_success()
+    except Exception as e:
+        return return_error(e)
+    
+@app.route("/api/members/leave_server", methods=["POST"])
+def handle_user_leaving_server() -> None:
+    """
+    Deletes the row from the 'MemberInfo' table to allow the user to leave the server.
+
+    Parameters:
+        user_id (str): The ID of the user leaving the server.
+        server_id (str): The ID of the server the user is leaving.
+
+    Returns:
+        None
+    """
+
+    if not validate_fields(request.json, {"user_id": str, "server_id": str}):
+        return invalid_fields()
+    
+    user_id = request.json["user_id"]
+    server_id = request.json["server_id"]
+
+    send_query = '''
+        DELETE FROM "Discord"."MemberInfo"
+        WHERE user_id = %s AND server_id = %s
+    '''    
+    try:
+        cur.execute(send_query, (user_id, server_id))
         return return_success()
     except Exception as e:
         return return_error(e)

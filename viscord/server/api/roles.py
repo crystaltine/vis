@@ -1,4 +1,4 @@
-from db import cur
+from .db import cur
 from typing import Dict
 from uuid import uuid4
 from .flask_app import app
