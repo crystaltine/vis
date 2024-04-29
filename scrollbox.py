@@ -20,6 +20,7 @@ class Scrollbox(Element):
         class_str: str | None
         style_str: str | None
         children: List["Element"]
+        container_bg: str
     
     class StyleProps(Element.StyleProps):
         """ A schema of style options for scrollboxes. """
@@ -50,7 +51,7 @@ class Scrollbox(Element):
         
         self.children: List["Element"] = attrs.get("children", [])
         
-        self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else None
+        self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else fcode(background=attrs.get("container_bg"))
         
         # TODO - create/register event handler for when this element is active: up and down arrows scroll.
     
@@ -91,7 +92,7 @@ class Scrollbox(Element):
         if self._bg_fcode:
             for i in range(self.client_top, self.client_bottom):
                 with Globals.__vis_document__.term.hidden_cursor():
-                    print(Globals.__vis_document__.term.move_xy(self.client_left, i) + self._bg_fcode + " " * self.client_width, end="")
+                    print(Globals.__vis_document__.term.move_xy(self.client_left, i) + self._bg_fcode + " " * self.client_width, end="\x1b[0m")
                     
         # scrollbox child rendering
         #Logger.log(f"\n<Scrollbox render func: child rendering:> (num children: {len(self.children)})")

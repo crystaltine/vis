@@ -15,6 +15,7 @@ class Text(Element):
         class_str: str | None
         style_str: str | None
         text: str
+        container_bg: str
     
     class StyleProps(Element.StyleProps):
         """
@@ -62,7 +63,8 @@ class Text(Element):
         """
         
         super().__init__(**attrs) # should ignore any unknown attributes that are provided
-        self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else ""
+        self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else fcode(background=attrs.get("container_bg"))
+        Logger.log(f"<text> init: containerbg={attrs.get('container_bg')}, {self.style.get('bg_color')=}, {self._bg_fcode=}")
         self.text = attrs.get("text", "")
 
     def render(self, container_bounds: Boundary = None):
@@ -115,7 +117,11 @@ class Text(Element):
                     else 0
                 )
             
-            print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=self.style.get("bg_color"), style=style_string) + text_left_padding*" " + text_chunk, end="")
+            Logger.log(f"<text> w/text={self.text}: align style is {self.style.get('text_align')} and text_left_padding is {text_left_padding}, {self.client_left=}")
+            text_bg = (self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else self.container_bg
+            Logger.log(f"<text> render(): text_bg={self.style.get('bg_color')} if it isnt transparent, else using {self.container_bg=}")
+
+            print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=text_bg, style=style_string) + text_left_padding*" " + text_chunk, end="\x1b[0m")
             text_chunk_index += 1
 
     def _render_partial(self, container_bounds: Boundary, max_bounds: Boundary) -> None:
@@ -162,7 +168,7 @@ class Text(Element):
                 #  |          |                        |             |
                 #  --------------------------------------------------- = client_width
                 #             -------------------------- = max_bounds.right - max_bounds.left
-                print(Globals.__vis_document__.term.move_xy(max(self.client_left, max_bounds.left), i) + self._bg_fcode + " " * min(self.client_width, max_bounds.right - max_bounds.left), end="")
+                print(Globals.__vis_document__.term.move_xy(max(self.client_left, max_bounds.left), i) + self._bg_fcode + " " * min(self.client_width, max_bounds.right - max_bounds.left), end="\x1b[0m")
 
         # if completely out of render, just skip all this goofy ah garbage
         if (
@@ -199,5 +205,5 @@ class Text(Element):
                     text_to_render = text_to_render[:max_bounds.right-self.client_right]
 
                 
-                print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=self.style.get("bg_color"), style=style_string) + text_left_padding*" " + text_chunk, end="")
+                print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=self.style.get("bg_color"), style=style_string) + text_left_padding*" " + text_chunk, end="\x1b[0m")
                 text_chunk_index += 1
