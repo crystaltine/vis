@@ -30,7 +30,7 @@ def handle_login():
     password = request.json["password"]
     sys_uuid = request.json["sys_uuid"]
 
-    send_query = """select * from "Discord"."UserInfo" where user_name = %s and user_password = %s"""
+    send_query = """select user_id from "Discord"."UserInfo" where user_name = %s and user_password = %s"""
     try:
         cur.execute(send_query, (user, password))
         records = cur.fetchall()
@@ -40,7 +40,7 @@ def handle_login():
             f = Fernet(key + str(sys_uuid).encode())
             cache = f.encrypt(token.encode("utf-8")).decode("utf-8")
 
-            d = {"type": "success", "token": token, "cache": cache}
+            d = {"type": "success", "token": token, "cache": cache, "user_id": records[0][0]}
             return Response(json.dumps(d), status=200)
         else:
             return Response(status=403)
