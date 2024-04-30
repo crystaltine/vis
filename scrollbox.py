@@ -145,7 +145,7 @@ class Scrollbox(Element):
         # get total height of all elements
         total_height = 0
         for child in self.children:
-            total_height += child.client_height or convert_to_chars(self.client_height, child.style.get("height"))
+            total_height += child.client_height or convert_to_chars(self.client_height, child.style.get("height")) or 0
         
         self.scroll_y = max(0, total_height - self.client_height)
 

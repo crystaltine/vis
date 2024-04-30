@@ -190,7 +190,7 @@ def convert_to_chars(container_dim: int, dimvalue: int | str | None) -> int | No
     else:
         raise ValueError(f"Invalid dimvalue: {dimvalue}. Must end in 'ch' or '%'.")    
 
-def evaluate_expression(container_dim: int, expr: str) -> int
+def evaluate_expression(container_dim: int, expr: str) -> int:
     # remove extra spaces
     expr = re.sub(' +', ' ', expr)
     tokens = expr.split(" ")

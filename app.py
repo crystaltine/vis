@@ -8,10 +8,8 @@ from scrollbox import Scrollbox
 from input import Input
 from button import Button
 
-from time import sleep
 import requests
 import socket
-import json
 import uuid
 
 read_styles("login_style.tss")
@@ -26,8 +24,14 @@ password_input: "Input" = document.get_element_by_id("password-input")
 submit_button: "Button" = document.get_element_by_id("submit-button")
 error_message: "Text" = document.get_element_by_id("error_message")
 
-class test:
+class mem:
     on_messages_screen = False
+    sock: socket.socket = None 
+
+    token: str = None
+    cache: str = None
+    user_id: str = None
+    username: str = None
 
 def Message(content: str) -> Div:
     """
@@ -65,7 +69,8 @@ def submit_handler_wrapper():
     try:
         submit_handler()
     except Exception as e:
-        error_message.text = "Couldn't connect to server!"
+        Logger.log(f"[submit handler wrapper] exception: {e}")
+        error_message.text = "Failed to log in (B)! Try again later."
         error_message.render()
 
 def submit_handler():
@@ -77,15 +82,46 @@ def submit_handler():
     })
 
     data = res.json()
+
+    mem.user_id = data['user_id']
+    mem.token = data['token']
+    mem.cache = data['cache']
+    mem.username = data['username']
     
+    Logger.log(f"[submit handler] response json['type']: {data.get('type')} <- exception incoming if none")
     if data['type'] == 'success':
-        test.on_messages_screen = True  
+        mem.on_messages_screen = True
+        init_messages_socket()
+
+    elif data['type'] == 'invalid':
+        error_message.text = "Incorrect credentials!"
+    else: 
+        error_message.text = "Failed to log in (A)! Try again later."
+    error_message.render()
+
+def init_messages_socket():
+    # set up message socket
+        mem.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        mem.sock.connect(("127.0.0.1", 5001))
+        # immediately send our token
+        mem.sock.send(mem.token)
+
+        def socket_listen_loop():
+            pass
+            # TODO
 
 submit_button.on_pressed = submit_handler_wrapper
 document.mount()
 
+def send_message(content: str):
+    mem.sock.send({
+        "token": mem.token,
+        "author": mem.username,
+        "content": content,
+    })
+
 while True:
-    if test.on_messages_screen:
+    if mem.on_messages_screen:
 
         # setup socket
         try:

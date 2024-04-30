@@ -208,4 +208,6 @@ class Text(Element):
                 print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=self.style.get("bg_color"), style=style_string) + text_left_padding*" " + text_chunk, end="\x1b[0m")
                 text_chunk_index += 1
 
-    def _determine_dimensions(partial_container_bounds: Boundary) -> Tuple[int, int]
+    def _determine_dimensions(partial_container_bounds: Boundary) -> Tuple[int, int]:
+        pass
+        # TODO
