@@ -25,41 +25,31 @@ s.bind(("0.0.0.0", 5001))
 print("Server up!")
 print("Running on " + str(s.getsockname()[0]) + ":" + str(s.getsockname()[1]))
 
-connections: Dict[Tuple[str, int], socket.socket] = {}
+connections: Dict[str, socket.socket] = {}
+""" map of `{token -> socket obj}` for all connected sockets """
 
+def handle_message(data: dict):
+    payload = json.dumps({
+        data["author"],
+        data['content'],
+    }).encode()
+    print(f"[handle message] content={data['content']} author={data['author']}")
 
-
-def handle_message(data, conn):
-    send = json.dumps(data).encode()
-    print("New message:", data["data"])
-    for addr2 in connections:
-        if addr2 != data["from"]:
+    for other in connections:
+        if other != data["token"]:
             try:
-                connections[addr2].sendall(send)
+                connections[other].sendall(payload)
             except:
-                print(f"Error sending to {addr2}, removing...")
-                del connections[addr2]
+                print(f"Error sending to socket with token={other}, removing...")
+                del connections[other]
 
-tokens = {}
-handlers = {
-    "msg": handle_message,
-#    "account_create": api.users.handle_account_creation,
-#    "username_check": api.users.handle_username_check,
-#    "login": api.login_flow.handle_login,
-#    "token_bypass": api.login_flow.handle_token_bypass,
-#    "pin_message": api.messages.pin_message_endpoint,
-#    "handle_user_name_update": api.users.update_username_endpoint,
-#    "handle_user_password_update": api.users.update_password_endpoint,
-#    "handle_user_color_update": api.users.update_color_endpoint,
-#    "handle_user_symbol_update": api.users.update_symbol_endpoint,
-#    "handle_reorder_chats": api.chats.handle_reorder_chats,
-#  
-#
-}
-
-def handle_connection(conn, addr):
+def handle_connection(conn: socket.socket, addr):
     print("New connection:", addr)
-    connections[addr] = conn
+    # expect them to immediately send their token
+    data = conn.recv(1024)
+    connections[data.decode()] = conn
+
+    # receive loop
     while True:
         try:
             data = conn.recv(1024)
@@ -70,13 +60,14 @@ def handle_connection(conn, addr):
                 print("Disconnect:", addr)
                 del connections[addr]
                 return
+
+            # data received - assume it's a sent message
+
             parsed = json.loads(data.decode())
-            for label in handlers:
-                if "type" in parsed and parsed["type"] == label:
-                    parsed["from"] = addr
-                    print("Endpoint " + label + " called by " )
-                    handlers[label](parsed, conn)
-                    break
+            
+            print(f"socket {addr=} received data: {parsed}")
+            handle_message(parsed)
+            break
 
 def socket_accept_thread():
     s.listen()
@@ -103,6 +94,8 @@ socket_thread = threading.Thread(target=socket_accept_thread)
 socket_thread.start()
 
 from api.flask_app import app
+
+# import so the modules are executed (defines endpoints for flask app)
 from api import login_flow, chats, friends, invites, members, messages, roles, servers, users
 from api import db
 
@@ -143,11 +136,10 @@ if __name__ == "__main__":
         cmd = input("> ")
         if cmd in ["exit", "quit", "stop"]:
             s.close()
-            print(f"1")
             socket_thread.join()
-            print(f"2")
-            http_process.terminate()
+            http_process.terminate()    
             http_process.join()
+            print(f"\x1b[34mGracefully exiting...\x1b[0m")
             exit(0)
         elif cmd == "help":
             print("\x1b[33mno!!")

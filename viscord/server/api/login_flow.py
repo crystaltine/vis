@@ -17,7 +17,6 @@ else:
 
 tokens = {}
 
-
 @app.route("/api/login", methods=["POST"])
 def handle_login():
 
