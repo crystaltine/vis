@@ -1,6 +1,6 @@
 from element import Element
 from utils import fcode, convert_to_chars
-from typing import Literal, Unpack
+from typing import Literal, Tuple, Unpack
 from globalvars import Globals
 from logger import Logger
 from boundary import Boundary
@@ -207,3 +207,5 @@ class Text(Element):
                 
                 print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=self.style.get("bg_color"), style=style_string) + text_left_padding*" " + text_chunk, end="\x1b[0m")
                 text_chunk_index += 1
+
+    def _determine_dimensions(partial_container_bounds: Boundary) -> Tuple[int, int]

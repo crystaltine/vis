@@ -65,7 +65,7 @@ class Scrollbox(Element):
 
         child_edges = [0]
         for child in self.children:
-            child_edges.append(child_edges[-1] + convert_to_chars(self.client_height, child.style.get("height")))
+            child_edges.append(child_edges[-1] + convert_to_chars(self.client_height, child.client_height or child.style.get("height")))
         
         # algorithm:
         # (child_edges is sorted)
