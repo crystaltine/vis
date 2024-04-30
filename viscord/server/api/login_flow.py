@@ -28,7 +28,7 @@ def handle_login():
     password = request.json["password"]
     sys_uuid = request.json["sys_uuid"]
 
-    send_query = """select user_id from "Discord"."UserInfo" where user_name = %s and user_password = %s"""
+    send_query = """select user_id, user_name from "Discord"."UserInfo" where user_name = %s and user_password = %s"""
     try:
         cur.execute(send_query, (user, password))
         records = cur.fetchall()
@@ -38,7 +38,7 @@ def handle_login():
             f = Fernet(key + str(sys_uuid).encode())
             cache = f.encrypt(token.encode("utf-8")).decode("utf-8")
 
-            d = {"type": "success", "token": token, "cache": cache, "user_id": records[0][0]}
+            d = {"type": "success", "token": token, "cache": cache, "user_id": records[0][0], "username": records[0][1]}
             return Response(json.dumps(d), status=200)
         else:
             d = {"type": "invalid", "message": "Invalid credentials"}
@@ -59,6 +59,14 @@ def handle_token_bypass():
     try:
         f = Fernet(key + str(sys_uuid).encode())
         token = f.decrypt(cache.encode("utf-8")).decode("utf-8")
-        return Response(json.dumps({"type": "success", "token": token}), status=200)
+
+        name = tokens[token]
+        query = """select user_id, user_name from "Discord"."UserInfo" where user_name = %s"""
+        cur.execute(query, (name,))
+        records = cur.fetchall()
+        if len(records) == 0:
+            return Response(json.dumps({"type": "invalid", "message": "Invalid token"}), status=403)
+        d = {"type": "success", "token": token, "user_id": records[0][0], "username": records[0][1]}
+        return Response(json.dumps(d), status=200)
     except Exception as e:
         return Response(json.dumps({"type": "error", "message": str(e)}), status=500)
