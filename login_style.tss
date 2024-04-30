@@ -86,8 +86,9 @@
 .error_message {
     left: 0
     width: 100%
-    top: 9ch
+    top: 8ch
     color: #df6549
     text_align: center
     bg_color: transparent
+    wrap: False
 }

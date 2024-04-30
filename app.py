@@ -8,27 +8,197 @@ from scrollbox import Scrollbox
 from input import Input
 from button import Button
 
-from time import sleep
 import requests
 import socket
-import json
 import uuid
 
+<<<<<<< HEAD
 def main():
     read_styles("login_style.tss")
     read_vis("login_layout.vis")
+||||||| parent of 732cb88 (setup message socket infrastructure)
+read_styles("login_style.tss")
+read_vis("login_layout.vis")
+
+document = Globals.__vis_document__
+
+container: "Div" = document.get_element_by_id("text_container")
+
+username_input: "Input" = document.get_element_by_id("username-input")
+password_input: "Input" = document.get_element_by_id("password-input")
+submit_button: "Button" = document.get_element_by_id("submit-button")
+error_message: "Text" = document.get_element_by_id("error_message")
+
+class test:
+    on_messages_screen = False
+
+def Message(content: str) -> Div:
+    """
+    Generic message component
+    """
+    return Div(
+        class_str="message-obj",
+        children=[
+            Text(
+                class_str="message-obj-author",
+                text="@a_random_user"
+            ),
+            Text(
+                class_str="message-obj-content",
+                text=content
+            ),
+        ]
+    )
+
+def ServerItem(name: str, color: str) -> Text:
+    return Text(
+        class_str="server-obj",
+        style=f"color: {color}",
+        text=name,
+    )
+
+def ChatItem(name: str, color: str) -> Text:
+    return Text(
+        class_str="server-obj",
+        style=f"color: {color}",
+        text=name,
+    )
+
+def submit_handler_wrapper():
+    try:
+        submit_handler()
+    except Exception as e:
+        error_message.text = "Couldn't connect to server!"
+        error_message.render()
+
+def submit_handler():
+=======
+read_styles("login_style.tss")
+read_vis("login_layout.vis")
+
+document = Globals.__vis_document__
+
+container: "Div" = document.get_element_by_id("text_container")
+
+username_input: "Input" = document.get_element_by_id("username-input")
+password_input: "Input" = document.get_element_by_id("password-input")
+submit_button: "Button" = document.get_element_by_id("submit-button")
+error_message: "Text" = document.get_element_by_id("error_message")
+
+class mem:
+    on_messages_screen = False
+    sock: socket.socket = None 
+
+    token: str = None
+    cache: str = None
+    user_id: str = None
+    username: str = None
+
+def Message(content: str) -> Div:
+    """
+    Generic message component
+    """
+    return Div(
+        class_str="message-obj",
+        children=[
+            Text(
+                class_str="message-obj-author",
+                text="@a_random_user"
+            ),
+            Text(
+                class_str="message-obj-content",
+                text=content
+            ),
+        ]
+    )
+
+def ServerItem(name: str, color: str) -> Text:
+    return Text(
+        class_str="server-obj",
+        style=f"color: {color}",
+        text=name,
+    )
+
+def ChatItem(name: str, color: str) -> Text:
+    return Text(
+        class_str="server-obj",
+        style=f"color: {color}",
+        text=name,
+    )
+
+def submit_handler_wrapper():
+    try:
+        submit_handler()
+    except Exception as e:
+        Logger.log(f"[submit handler wrapper] exception: {e}")
+        error_message.text = "Failed to log in (B)! Try again later."
+        error_message.render()
+
+def submit_handler():
+>>>>>>> 732cb88 (setup message socket infrastructure)
     
     document = Globals.__vis_document__
 
+<<<<<<< HEAD
     container: "Div" = document.get_element_by_id("text_container")
+||||||| parent of 732cb88 (setup message socket infrastructure)
+    data = res.json()
+    
+    if data['type'] == 'success':
+        test.on_messages_screen = True  
+=======
+    data = res.json()
+
+    mem.user_id = data['user_id']
+    mem.token = data['token']
+    mem.cache = data['cache']
+    mem.username = data['username']
+    
+    Logger.log(f"[submit handler] response json['type']: {data.get('type')} <- exception incoming if none")
+    if data['type'] == 'success':
+        mem.on_messages_screen = True
+        init_messages_socket()
+
+    elif data['type'] == 'invalid':
+        error_message.text = "Incorrect credentials!"
+    else: 
+        error_message.text = "Failed to log in (A)! Try again later."
+    error_message.render()
+
+def init_messages_socket():
+    # set up message socket
+        mem.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        mem.sock.connect(("127.0.0.1", 5001))
+        # immediately send our token
+        mem.sock.send(mem.token)
+
+        def socket_listen_loop():
+            pass
+            # TODO
+>>>>>>> 732cb88 (setup message socket infrastructure)
 
     username_input: "Input" = document.get_element_by_id("username-input")
     password_input: "Input" = document.get_element_by_id("password-input")
     submit_button: "Button" = document.get_element_by_id("submit-button")
     error_message: "Text" = document.get_element_by_id("error_message")
 
+<<<<<<< HEAD
     class test:
         on_messages_screen = False
+||||||| parent of 732cb88 (setup message socket infrastructure)
+while True:
+    if test.on_messages_screen:
+=======
+def send_message(content: str):
+    mem.sock.send({
+        "token": mem.token,
+        "author": mem.username,
+        "content": content,
+    })
+
+while True:
+    if mem.on_messages_screen:
+>>>>>>> 732cb88 (setup message socket infrastructure)
 
     def Message(content: str) -> Div:
         """
