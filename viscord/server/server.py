@@ -89,11 +89,33 @@
 
 from api.flask_app import app
 from api import login_flow, chats, friends, invites, members, messages, roles, servers, users
-
 from api import db
+
+from flask import request
+import requests
 
 from api import server_config as sc
 from uuid import uuid4
+
+@app.route("/")
+def index():
+    ...
+
+    ip = request.remote_addr
+    json_data = requests.get("http://ipapi.co/" + ip + "/json").json()
+    if "latitude" not in json_data or "longitude" not in json_data:
+        return "Error checking geolocation"
+    
+    SEA_LAT = 47.6061
+    SEA_LONG = 122.3328
+
+    if abs(json_data["latitude"] - SEA_LAT) > 1 or abs(json_data["longitude"] - SEA_LONG) > 1:
+        return f"<h1>Viscord</h1><br><p>This address is intended for the Viscord project.<br>Your IP address is <b>{request.remote_addr}</b><br>This service is only intended for users in or around Seattle, WA.</p>"
+    else:
+        return "<h1>Viscord</h1><br><p>Welcome to Viscord."
+
+
+
 
 if __name__ == "__main__":
     app.run(host=sc.HOST, port=sc.PORT)
