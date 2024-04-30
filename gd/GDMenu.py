@@ -1,5 +1,5 @@
 import blessed 
-
+import signal 
 Menuterm = blessed.Terminal()
 
 def draw_rect(width, height):
@@ -9,8 +9,11 @@ def draw_rect(width, height):
                 print(Menuterm.on_blue2(Menuterm.blue2(' ')), end='')
             else:
                 print(Menuterm.on_blue2(' '), end='')
-        print()
-    
+
+def menu_title(title:str): 
+    print(Menuterm.move_yx(1,54) + Menuterm.yellow_on_blue2(Menuterm.underline(Menuterm.bold(title)))) 
+    print(Menuterm.move_yx(Menuterm.height, Menuterm.width))
+
+
 draw_rect(Menuterm.width, Menuterm.height)
-
-
+menu_title("VEOMETRY DASH")
