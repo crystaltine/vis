@@ -132,7 +132,7 @@ def index():
     #     return "<h1>Viscord</h1><br><p>Welcome to Viscord."
 
 def apprun():
-    app.run(host=sc.HOST, port=sc.PORT, ssl_context=sc.SSL_CONTEXT)
+    app.run(host=sc.HOST, port=sc.HTTP_PORT, ssl_context=sc.SSL_CONTEXT)
 
 if __name__ == "__main__":
     http_process = Process(target=apprun)
