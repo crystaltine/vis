@@ -163,7 +163,12 @@ def convert_to_chars(container_dim: int, dimvalue: int | str | None) -> int | No
     Returns the actual value of the dimension (in characters) based on the container size,
     or `None` if the given value is None.
     
-    `dimvalue` must be a string ending in 'ch' or '%'.
+    `dimvalue` must be a string of the following formats:
+    - raw number, either as int or str (e.g. 123 or '123')
+    - number ending in 'ch' (e.g. '123ch')
+    - number ending in '%' (e.g. '12%')
+    - expression using the function 'calc()'. Inside the expression, use '+' or '-' 
+      between two of the above values (e.g. 50% + 5, 25% + 12ch)
     
     `container_dim`: the size of the container in the dimension we're calculating.
     
@@ -176,7 +181,7 @@ def convert_to_chars(container_dim: int, dimvalue: int | str | None) -> int | No
     if dimvalue is None: return None
     
     # if int, assume as raw character value
-    if isinstance(dimvalue, int): return dimvalue
+    if isinstance(dimvalue, int) or dimvalue.isnumeric(): return dimvalue
     
     if dimvalue[-2:] == 'ch':
         return int(dimvalue[:-2])
@@ -185,6 +190,15 @@ def convert_to_chars(container_dim: int, dimvalue: int | str | None) -> int | No
     else:
         raise ValueError(f"Invalid dimvalue: {dimvalue}. Must end in 'ch' or '%'.")    
 
+def evaluate_expression(container_dim: int, expr: str) -> int
+    # remove extra spaces
+    expr = re.sub(' +', ' ', expr)
+    tokens = expr.split(" ")
+    
+    # expect first token to be a value, not an operator
+    operator = lambda a,b:(a+b if tokens[1] == "+" else a-b)
+    return operator(convert_to_chars(container_dim, tokens[0]), convert_to_chars(container_dim, tokens[2]))
+    
 def parse_style_string(style_str: str) -> dict[str, str]:
     """
     Parses a style string into a `Dict` using `json.loads`.

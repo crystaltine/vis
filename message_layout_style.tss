@@ -142,7 +142,7 @@
 }
 
 .message-obj {
-    height: 3ch
+    height: None
     width: 100%
     bg_color: transparent
 }
@@ -155,6 +155,7 @@
 .message-obj-content {
     top: 1ch
     width: 100%
+    height: None
     color: #eeeeee
     bg_color: transparent
 }
