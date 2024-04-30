@@ -1,3 +1,4 @@
 HOST = "0.0.0.0"
-PORT = 5000
-URI = f"http://{HOST}:{PORT}"
+HTTP_PORT = 5000
+SOCKET_PORT = 5001
+URI = f"http://{HOST}:{HTTP_PORT}"

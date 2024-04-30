@@ -23,8 +23,6 @@ def handle_login():
 
     if not validate_fields(request.json, {"user": str, "password": str, "sys_uuid": str}): 
         return invalid_fields()
-    
-
 
     user = request.json["user"]
     password = request.json["password"]
