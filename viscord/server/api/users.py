@@ -90,17 +90,8 @@ def change_username() -> Literal["success", "failure", "unavailable"]:
     except Exception as e:
         return return_error(e)
 
-def handle_change_username(data, conn):
-    data = data["data"]
-    user_id = data["user_id"]
-    new_user_name = data["new_user_name"]
-
-    result = change_username(user_id, new_user_name)
-    if result == 'success': conn.sendall("True".encode("utf-8"))
-    elif result == 'unavailable': conn.sendall("unavailable".encode("utf-8"))
-    else: conn.sendall("False".encode("utf-8"))
-
-def change_password(user_id: str, new_password: str) -> Literal['success', 'failure']:
+@app.route("/api/users/change_password", methods=["POST"])
+def change_password() -> Literal['success', 'failure']:
     """
     Update the password of a user in the database given the user's id.
     NOTE: we are assuming the password already has necessary security measures applied
@@ -108,6 +99,13 @@ def change_password(user_id: str, new_password: str) -> Literal['success', 'fail
 
     Returns 'success'/'failure'
     """
+
+    if not validate_fields(request.json, {"user_id": str, "new_password": str}):
+        return invalid_fields()
+    
+    user_id = request.json["user_id"]
+    new_password = request.json["new_password"]
+
     send_query = '''
         UPDATE "Discord"."UserInfo"
         SET user_password = %s
@@ -115,21 +113,12 @@ def change_password(user_id: str, new_password: str) -> Literal['success', 'fail
     '''    
     try:
         cur.execute(send_query, (new_password, user_id))
-        return 'success'
+        return return_success()
     except Exception as e:
-        Logger.err(f"failed to change password: {e}", 'change_password')
-        return 'failure'
-
-def handle_change_password(data, conn):
-    data = data["data"]
-    user_id = data["user_id"]
-    new_password = data["new_password"]
+        return return_error(e)
     
-    result = change_password(user_id, new_password)
-    if result == 'success': conn.sendall("True".encode("utf-8"))
-    else: conn.sendall("False".encode("utf-8"))    
-
-def change_user_color(user_id: str, new_color: str) -> None:
+@app.route("/api/users/change_color", methods=["POST"])
+def change_user_color() -> None:
     """
     Update a user's name color in the db.
 
@@ -137,6 +126,15 @@ def change_user_color(user_id: str, new_color: str) -> None:
 
     Returns 'success'/'failure'
     """
+    if not validate_fields(request.json, {"user_id": str, "new_color": str}):
+        return invalid_fields()
+    
+    user_id = request.json["user_id"]
+    new_color = request.json["new_color"]
+
+    if not validate_color(new_color):
+        return invalid_fields()
+
     send_query = '''
         UPDATE "Discord"."UserInfo"
         SET user_color = %s
@@ -144,21 +142,12 @@ def change_user_color(user_id: str, new_color: str) -> None:
     '''    
     try:
         cur.execute(send_query, (new_color, user_id))
-        return 'success'
+        return return_success()
     except Exception as e:
-        Logger.err(f"failed to change user color: {e}", 'change_user_color')
-        return 'failure'
+        return return_error(e)
 
-def handle_change_user_color(data, conn):
-    data = data["data"]
-    user_id = data["user_id"]
-    new_user_color = data["new_user_color"]
-
-    result = change_user_color(user_id, new_user_color)
-    if result == 'success': conn.sendall("True".encode("utf-8"))
-    else: conn.sendall("False".encode("utf-8"))  
-
-def change_user_symbol(user_id: str, new_symbol: str) -> None:
+@app.route("/api/users/change_symbol", methods=["POST"])
+def change_user_symbol() -> None:
     """
     Update the symbol of a user in the database given the user's id.
 
@@ -167,6 +156,12 @@ def change_user_symbol(user_id: str, new_symbol: str) -> None:
     Returns 'success'/'failure'.
     """
 
+    if not validate_fields(request.json, {"user_id": str, "new_symbol": str}):
+        return invalid_fields()
+    
+    user_id = request.json["user_id"]
+    new_symbol = request.json["new_symbol"]
+
     send_query = '''
         UPDATE "Discord"."UserInfo"
         SET user_symbol = %s
@@ -174,16 +169,6 @@ def change_user_symbol(user_id: str, new_symbol: str) -> None:
     '''    
     try:
         cur.execute(send_query, (new_symbol, user_id))
-        return 'success'
+        return return_success()
     except Exception as e:
-        Logger.err(f"failed to change user symbol: {e}", 'change_user_symbol')
-        return 'failure'
-
-def update_symbol_endpoint(data, conn):
-    data = data["data"]
-    user_id = data["user_id"]
-    new_user_symbol = data["new_user_symbol"]
-
-    result = change_user_color(user_id, new_user_symbol)
-    if result == 'success': conn.sendall("True".encode("utf-8"))
-    else: conn.sendall("False".encode("utf-8"))  
+        return return_error(e)

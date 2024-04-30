@@ -163,7 +163,7 @@ def update_nick_color() -> bool:
     server_id = request.json["server_id"]
     new_color = request.json["new_color"]
 
-    if new_color[0] != "#" or len(new_color) != 7 or set(new_color[1:]).difference(set("0123456789abcdef")):
+    if not validate_color(new_color):
         return invalid_fields()
     
     try:

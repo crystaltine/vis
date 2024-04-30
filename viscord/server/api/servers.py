@@ -42,7 +42,7 @@ def handle_server_creation() -> None:
     server_name = request.json["server_name"]
     server_icon = request.json["server_icon"]
     server_color = request.json["server_color"]
-    if server_color[0] != "#" or len(server_color) != 7 or set(server_color[1:]).difference(set("0123456789abcdef")):
+    if not validate_color(server_color):
         return invalid_fields()
     
     
@@ -226,13 +226,13 @@ def handle_server_color_update() -> None:
         None
     """
 
-    if not validate_fields(request.json, {"user_id": str, "server_id": str, "new_color_color": str}):
+    if not validate_fields(request.json, {"user_id": str, "server_id": str, "new_color": str}):
         return invalid_fields()
     
     user_id = request.json["user_id"]
     server_id = request.json["server_id"]
-    new_color_color = request.json["new_color_color"]
-    if new_color_color[0] != "#" or len(new_color_color) != 7 or set(new_color_color[1:]).difference(set("0123456789abcdef")):
+    new_color = request.json["new_color"]
+    if not validate_color(new_color):
         return invalid_fields()
 
     data = {
@@ -254,7 +254,7 @@ def handle_server_color_update() -> None:
     '''    
 
     try:
-        cur.execute(send_query, (new_color_color, server_id))
+        cur.execute(send_query, (new_color, server_id))
         return return_success()
     except Exception as e:
         return return_error(e)
