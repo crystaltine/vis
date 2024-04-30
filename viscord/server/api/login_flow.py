@@ -43,7 +43,8 @@ def handle_login():
             d = {"type": "success", "token": token, "cache": cache, "user_id": records[0][0]}
             return Response(json.dumps(d), status=200)
         else:
-            return Response(status=403)
+            d = {"type": "invalid", "message": "Invalid credentials"}
+            return Response(json.dumps(d), status=403)
     except Exception as e:
         return Response(json.dumps({"type": "error", "message": str(e)}), status=500)
 
