@@ -41,7 +41,7 @@ def draw_square(width:int, height:int, x: int, y: int, color:str) -> None:
     for i in range(y, y+height):
         print(Menuterm.move_yx(i, x) + colors[color]+"█"*width + Menuterm.normal, end="")
 
-def draw_spike(height: int, x: int, y: int, color: str, rotation: str = 'clockwise'):
+def draw_spike_with_rotation(height: int, x: int, y: int, color: str, rotation: str = 'clockwise'):
     # Generating an ascii pyramid line by line
 
     if rotation == 'clockwise':
@@ -74,7 +74,7 @@ draw_square(4,2,21,25,'green')
 draw_square(10,2,15,29,'green')
 #draws the second square 
 draw_square(40,20,41,17,'green')
-draw_spike(15, 49, 20, 'black', 'clockwise')
+draw_spike_with_rotation(15, 49, 20, 'black', 'clockwise')
 #draws the third square 
 draw_square(30,15,87,20,'green')
 #puts the title on the menu screen 
