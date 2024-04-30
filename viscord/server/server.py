@@ -120,4 +120,4 @@ def index():
 
 
 if __name__ == "__main__":
-    app.run(host=sc.HOST, port=sc.PORT, ssl_context="adhoc")
+    app.run(host=sc.HOST, port=sc.PORT, ssl_context=sc.SSL_CONTEXT)
