@@ -183,6 +183,11 @@ def convert_to_chars(container_dim: int, dimvalue: int | str | None) -> int | No
     # if int, assume as raw character value
     if isinstance(dimvalue, int) or dimvalue.isnumeric(): return dimvalue
     
+    # check if str is calc expr
+    if dimvalue.startswith("calc("):
+        # take chars from idx 5->-2, inclusive
+        return evaluate_expression(dimvalue[5:-1])
+    
     if dimvalue[-2:] == 'ch':
         return int(dimvalue[:-2])
     elif dimvalue[-1] == '%':
@@ -190,7 +195,7 @@ def convert_to_chars(container_dim: int, dimvalue: int | str | None) -> int | No
     else:
         raise ValueError(f"Invalid dimvalue: {dimvalue}. Must end in 'ch' or '%'.")    
 
-def evaluate_expression(container_dim: int, expr: str) -> int
+def evaluate_expression(container_dim: int, expr: str) -> int:
     # remove extra spaces
     expr = re.sub(' +', ' ', expr)
     tokens = expr.split(" ")

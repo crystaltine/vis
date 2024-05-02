@@ -99,9 +99,9 @@ class Button(Element):
         )
         if bg_color_to_use != "transparent":   
             active_bg_fcode = fcode(background=bg_color_to_use)
-            with Globals.__vis_document__.term.hidden_cursor():
-                for i in range(self.client_top, self.client_bottom):
-                    print(Globals.__vis_document__.term.move_xy(self.client_left, i) + active_bg_fcode + " " * self.client_width, end="\x1b[0m")
+            #with Globals.__vis_document__.term.hidden_cursor():
+            for i in range(self.client_top, self.client_bottom):
+                print(Globals.__vis_document__.term.move_xy(self.client_left, i) + active_bg_fcode + " " * self.client_width, end="\x1b[0m")
                         
         # render children
         for child in self.children:

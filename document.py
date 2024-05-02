@@ -98,7 +98,6 @@ class Document:
         try:
             cls()
 
-            #with self.term.hidden_cursor():
             for child in self.children:
                 Logger.log(f"document.render: rendering child with client edges {self.client_left=} {self.client_top=} {self.client_right=} {self.client_bottom=}")
                 child.render(Boundary(self.client_left, self.client_top, self.client_right, self.client_bottom))
@@ -257,7 +256,7 @@ class Document:
             if self.active is None:
                 _builtin_keyup_handler(ev)
                 
-        return keyboard.Listener(on_press=on_press, on_release=on_release)
+        return keyboard.Listener(on_press=on_press, on_release=on_release, suppress=True)
     
     def quit_app(self, exit_msg = None):
         """

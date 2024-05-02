@@ -91,8 +91,8 @@ class Scrollbox(Element):
         # draw the rectangle IF it is not transparent.
         if self._bg_fcode:
             for i in range(self.client_top, self.client_bottom):
-                with Globals.__vis_document__.term.hidden_cursor():
-                    print(Globals.__vis_document__.term.move_xy(self.client_left, i) + self._bg_fcode + " " * self.client_width, end="\x1b[0m")
+                #with Globals.__vis_document__.term.hidden_cursor():
+                print(Globals.__vis_document__.term.move_xy(self.client_left, i) + self._bg_fcode + " " * self.client_width, end="\x1b[0m")
                     
         # scrollbox child rendering
         #Logger.log(f"\n<Scrollbox render func: child rendering:> (num children: {len(self.children)})")

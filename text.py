@@ -160,15 +160,15 @@ class Text(Element):
             # wrap text based on client width
             wrapped_text = [self.text[i*self.client_width:(i+1)*self.client_width] for i in range(len(self.text)//self.client_width+1)]
 
-        with Globals.__vis_document__.term.hidden_cursor():
-            for i in range(max(self.client_top, max_bounds.top), min(self.client_bottom, max_bounds.bottom)):
+        #with Globals.__vis_document__.term.hidden_cursor():
+        for i in range(max(self.client_top, max_bounds.top), min(self.client_bottom, max_bounds.bottom)):
             
                 # diagram:
                 #  cli_left   bounds_left              bounds_right  cli_right
                 #  |          |                        |             |
                 #  --------------------------------------------------- = client_width
                 #             -------------------------- = max_bounds.right - max_bounds.left
-                print(Globals.__vis_document__.term.move_xy(max(self.client_left, max_bounds.left), i) + self._bg_fcode + " " * min(self.client_width, max_bounds.right - max_bounds.left), end="\x1b[0m")
+            print(Globals.__vis_document__.term.move_xy(max(self.client_left, max_bounds.left), i) + self._bg_fcode + " " * min(self.client_width, max_bounds.right - max_bounds.left), end="\x1b[0m")
 
         # if completely out of render, just skip all this goofy ah garbage
         if (
@@ -208,4 +208,11 @@ class Text(Element):
                 print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=self.style.get("bg_color"), style=style_string) + text_left_padding*" " + text_chunk, end="\x1b[0m")
                 text_chunk_index += 1
 
-    def _determine_dimensions(partial_container_bounds: Boundary) -> Tuple[int, int]
+    def _determine_dimensions(partial_container_bounds: Boundary) -> Tuple[int, int]:
+        """
+        Given partial container dimensions (such as width=40px but height undefined),
+        calculates what this element's width and height would be, regardless of position.
+        
+        This function is mainly for dealing with the fact that text elements change in 
+        height based on length of text (if wrapping is on)
+        """
