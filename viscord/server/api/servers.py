@@ -58,16 +58,6 @@ def handle_server_creation() -> None:
 
         # add the user creating the server to the server as a member
 
-        data = {
-            "user_id": user_id,
-            "server_id": server_id
-        }
-        
-        #handle_member_creation(user_id, server_id)
-        resp = requests.post(URI + "/api/members/create", json=data)
-        if resp.status_code != 200:
-            return return_error("Failed to create member")
-
         # create an "admin" role for the user creating the server 
         data = {
             "server_id": server_id,
