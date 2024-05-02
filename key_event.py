@@ -87,7 +87,16 @@ class KeyEvent:
 
     def __str__(self) -> str:
         """ Returns a human readable string representation of the event. """
-        return f"KeyEvent('{self.key}',{self.state},special={self.is_special},canceled={self.canceled}"
+        cancel_string = '\x1b[31mcanceled\x1b[0m' if self.canceled else '\x1b[32mnot canceled\x1b[0m'
+        mods = []
+        mods.append('ctrl') if self.holding_ctrl else 0
+        mods.append('alt') if self.holding_alt else 0
+        mods.append('shift') if self.holding_shift else 0
+        mods.append('cmd') if self.holding_cmd else 0
+
+        return f"KeyEvent(\x1b[32m'{self.key}'\x1b[0m,\x1b[33m{self.state}\x1b[0m,special=\x1b[33m{self.is_special}\x1b[0m,{cancel_string},modifiers=\x1b[34m{mods}\x1b[0m)"
+
+
     
     @staticmethod
     def update_modifiers(key_event: "Key | KeyCode", state: Literal["keydown", "keyup"]) -> None:

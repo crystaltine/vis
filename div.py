@@ -115,15 +115,15 @@ class Div(Element):
         Logger.log(f"[div] PARTIALRENDER: max top={max_bounds.top} max bot={max_bounds.bottom}")
 
         if self._bg_fcode:
-            with Globals.__vis_document__.term.hidden_cursor():
-                Logger.log(f"[div] PARTIALRENDER: drawing bg from max({self.client_top}, {max_bounds.top}) TO (min({self.client_bottom}, {max_bounds.bottom}))")
-                for i in range(max(self.client_top, max_bounds.top), min(self.client_bottom+1, max_bounds.bottom)):
+            #with Globals.__vis_document__.term.hidden_cursor():
+            Logger.log(f"[div] PARTIALRENDER: drawing bg from max({self.client_top}, {max_bounds.top}) TO (min({self.client_bottom}, {max_bounds.bottom}))")
+            for i in range(max(self.client_top, max_bounds.top), min(self.client_bottom+1, max_bounds.bottom)):
                     # diagram:
                     #  cli_left   bounds_left              bounds_right  cli_right
                     #  |          |                        |             |
                     #  --------------------------------------------------- = client_width
                     #             -------------------------- = max_bounds.right - max_bounds.left
-                    print(Globals.__vis_document__.term.move_xy(max(self.client_left, max_bounds.left), i) + self._bg_fcode + " " * min(self.client_width, max_bounds.right - max_bounds.left), end="\x1b[0m")
+                print(Globals.__vis_document__.term.move_xy(max(self.client_left, max_bounds.left), i) + self._bg_fcode + " " * min(self.client_width, max_bounds.right - max_bounds.left), end="\x1b[0m")
                     
         # render children
         for child in self.children:

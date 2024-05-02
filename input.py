@@ -298,6 +298,6 @@ class Input(Element):
         text_to_render += regular_text_fcode + " "*(self.client_width - len_no_ansi(text_to_render))
         #Logger.log(f"Input renderer: final stripped text_to_render is {remove_ansi(text_to_render)}")
 
-        with Globals.__vis_document__.term.hidden_cursor():
-            print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + text_to_render, end="\x1b[0m")
-            print(Globals.__vis_document__.term.move_yx(0,0), end="\x1b[0m")
+        #with Globals.__vis_document__.term.hidden_cursor():
+        print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + text_to_render, end="\x1b[0m")
+        print(Globals.__vis_document__.term.move_yx(0,0), end="\x1b[0m")
