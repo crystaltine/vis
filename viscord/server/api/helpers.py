@@ -11,9 +11,9 @@ def validate_fields(data, name_type):
     return True
 
 def validate_color(color: str) -> bool:
-    if len(color) != 6:
+    if len(color) != 7: # must be #xxxxxx format
         return False
-    if not all([c in "1234567890abcdef" for c in color]):
+    if not all([c in "1234567890abcdef" for c in color.lower()[1:]]):
         return False
     return True
 
