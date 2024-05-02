@@ -1,6 +1,5 @@
 from uuid import uuid4
 from .db import cur
-from .members import handle_member_creation
 from .roles import get_server_perms
 from .flask_app import app
 from .helpers import *
