@@ -25,7 +25,7 @@ def create_user() -> Literal["success", "false", "username-unavailable"]:
     user_id = request.json["user_id"]
     username = request.json["username"]
     
-    password = hashlib.sha512(request.json["password"].encode()).hexdigest()
+    password = hashlib.sha256(request.json["password"].encode()).hexdigest()
     color = request.json["color"]
     symbol = request.json["symbol"]
 
