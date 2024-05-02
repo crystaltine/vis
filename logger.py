@@ -26,8 +26,8 @@ class Logger:
         #if less than 5, then just print from row0col0 to rowNcol0
         
         for i in range(min(len(Logger.onscreen_history), Logger.max_onscreen_len)):
-            with Globals.__vis_document__.term.hidden_cursor():
-                print(Globals.__vis_document__.term.move_xy(0, i) + f"[INFO] " + Logger.onscreen_history[-i-1], end="")
+            #with Globals.__vis_document__.term.hidden_cursor():
+            print(Globals.__vis_document__.term.move_xy(0, i) + f"[INFO] " + Logger.onscreen_history[-i-1])
         
         #with Globals.__vis_document__.term.hidden_cursor():
         #    print(Globals.__vis_document__.term.move_xy(0, 0) + msg, end="")

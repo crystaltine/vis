@@ -3,7 +3,7 @@ from utils import fcode, convert_to_chars, len_no_ansi, remove_ansi
 from typing import Literal, Unpack, Callable, TYPE_CHECKING
 from globalvars import Globals
 from boundary import Boundary
-import pyperclip
+from time import time
 from logger import Logger
 
 if TYPE_CHECKING:
@@ -235,6 +235,9 @@ class Input(Element):
         # TEXT STYLE CALCULATIONS #
         # ======================= #
 
+        #Logger.log(f"[t={time()}]: about to print some random stuff from input render()")
+        #print(f"{Globals.__vis_document__.term.move_xy(4, 4)}inside input render()")
+
         style_string = " ".join([
             "bold" if self.style.get("bold") else "",
             "italic" if self.style.get("italic") else "",
@@ -294,5 +297,5 @@ class Input(Element):
         text_to_render += regular_text_fcode + " "*(self.client_width - len_no_ansi(text_to_render))
         #Logger.log(f"Input renderer: final stripped text_to_render is {remove_ansi(text_to_render)}")
 
-        with Globals.__vis_document__.term.hidden_cursor():
-            print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + text_to_render, end="\x1b[0m")
+        #with Globals.__vis_document__.term.hidden_cursor():
+        print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + text_to_render + "\x1b[0m")

@@ -113,12 +113,16 @@ class Text(Element):
                     else self.client_width - len(text_chunk) if self.style.get("text_align") == "right"
                     else 0
                 )
+
+            #Logger.log(f"[t={time()}]: about to print some random stuff from text render()")
+            #print(f"{Globals.__vis_document__.term.move_xy(4, 4)}text render soon!!! text={self.text}")
             
-            Logger.log(f"<text> w/text={self.text}: align style is {self.style.get('text_align')} and text_left_padding is {text_left_padding}, {self.client_left=}")
-            with Globals.__vis_document__.term.hidden_cursor():
-                print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=curr_bg_color, style=style_string) + text_left_padding*" " + text_chunk, end="\x1b[0m")
-            Logger.log(f"[t={time()}] text with text={self.text} just got drawn")
-            
+            #Logger.log(f"<text> w/text={self.text}: align style is {self.style.get('text_align')} and text_left_padding is {text_left_padding}, {self.client_left=}")
+            #with Globals.__vis_document__.term.hidden_cursor():
+            print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=curr_bg_color, style=style_string) + text_left_padding*" " + text_chunk + "\x1b[0m")
+            #Logger.log(f"[t={time()}] text with text={self.text} just got drawn")
+            #Logger.log_on_screen(f"just wrote {self.text}")
+
             text_chunk_index += 1
 
     def _render_partial(self, container_bounds: Boundary, max_bounds: Boundary, container_bg: str = None) -> None:
@@ -190,8 +194,8 @@ class Text(Element):
             if max_bounds.right < self.client_right: # cut off right side
                 text_to_render = text_to_render[:max_bounds.right-self.client_right]
 
-            with Globals.__vis_document__.term.hidden_cursor():
-                print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=curr_bg_color, style=style_string) + text_left_padding*" " + text_chunk, end="\x1b[0m")
+            #with Globals.__vis_document__.term.hidden_cursor():
+            print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=curr_bg_color, style=style_string) + text_left_padding*" " + text_chunk + "\x1b[0m")
             text_chunk_index += 1
 
     def _determine_dimensions(partial_container_bounds: Boundary) -> Tuple[int, int]:

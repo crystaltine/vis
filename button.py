@@ -96,8 +96,8 @@ class Button(Element):
         if bg_color_to_use != "transparent":   
             active_bg_fcode = fcode(background=bg_color_to_use)
             for i in range(self.client_top, self.client_bottom):
-                with Globals.__vis_document__.term.hidden_cursor():
-                    print(Globals.__vis_document__.term.move_xy(self.client_left, i) + active_bg_fcode + " " * self.client_width, end="\x1b[0m")
+                #with Globals.__vis_document__.term.hidden_cursor():
+                print(Globals.__vis_document__.term.move_xy(self.client_left, i) + active_bg_fcode + " " * self.client_width + "\x1b[0m")
 
         Logger.log(f"button drawn, moving to children")
          

@@ -8,6 +8,7 @@ from boundary import Boundary
 import traceback
 from button import Button
 from os import _exit
+from time import time
 
 if TYPE_CHECKING:
     from blessed.keyboard import Keystroke
@@ -83,10 +84,10 @@ class Document:
         """
         Mounts the document, renders all children, begins the app loop.
         """
-        
-        Logger.log(f"doc mounting!!!!")
-        
-        cls()
+
+        #cls()
+        Logger.log(f"t={time()}: doc.mount is about to print HI call self.render")
+        print(f"HI")
         
         self.render()
 
@@ -98,7 +99,7 @@ class Document:
         Renders the document (no bg color yet lol) and all its children.
         """
         try:
-            cls()
+            #cls()
 
             for child in self.children:
                 Logger.log(f"document.render: rendering child with client edges {self.client_left=} {self.client_top=} {self.client_right=} {self.client_bottom=}")
