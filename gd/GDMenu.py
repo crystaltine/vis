@@ -1,79 +1,82 @@
 import blessed 
 from PIL import Image
-Menuterm = blessed.Terminal()
+from bottom_menu import colors, draw_square, draw_spike, draw_text
+import os
 
-colors={
-    'blue':Menuterm.blue,
-    'red':Menuterm.red,
-    'green':Menuterm.green4,
-    'purple':Menuterm.magenta2,
-    'pink':Menuterm.pink,
-    'yellow':Menuterm.gold,
-    'white':Menuterm.ghostwhite,
-    'turquoise':Menuterm.turquoise1,
-    'dark_yellow':Menuterm.gold3,
-    'dark_turquoise':Menuterm.turquoise4,
-    'dark_purple':Menuterm.darkmagenta,
-    'black':Menuterm.black, 
-    'sienna4':Menuterm.sienna4,
-    'gray' :Menuterm.gray52
-}
+terminal = blessed.Terminal()
 
-def draw_rect(width:int, height:int):
-    """
-    using the desginated width and height passed in as a parameter, 
-    a filled, blue rectangle will be drawn in the terminal 
-    """
-    for y in range(height):
-        for x in range(width):
-            if y == 0 or y == height - 1 or x == 0 or x == width - 1:
-                print(Menuterm.on_blue2(Menuterm.blue2(' ')), end='')
-            else:
-                print(Menuterm.on_blue2(' '), end='')
+def draw_gd_icon(width:int, height:int, x: int, y: int, main_color:str, secondary_color:str):
 
-def print_text(title:str, x:int, y:int): 
-    """
-    Allows user to create a title for their blue filled in rectangle 
-    """
-    print(Menuterm.move_yx(y,x) + Menuterm.yellow_on_blue2(Menuterm.underline(Menuterm.bold(title)))) 
-    print(Menuterm.move_yx(Menuterm.height, Menuterm.width))
+    # Drawing the main body
 
-def draw_square(width:int, height:int, x: int, y: int, color:str) -> None:
+    draw_square(int(width*1.12), int(height*1.16), int(x*0.88), int(y*0.96), 'light_'+main_color)
+    draw_square(width, height, x, y, main_color)
+    draw_square(int(width*1.06), int(height*0.08), int(x), int(y*1.92), 'dark_'+main_color)
+    draw_square(int(width*0.08), int(height), int(x+width), int(y), 'dark_'+main_color)
+    draw_square(int(width*0.08), int(height*0.08), int(x+width), int(y*0.96), 'mid_'+main_color)
+    draw_square(int(width*0.08), int(height*0.08), int(x*0.88), int(y*1.92), 'mid_'+main_color)
 
-    for i in range(y, y+height):
-        print(Menuterm.move_yx(i, x) + colors[color]+"█"*width + Menuterm.normal, end="")
+    # Drawing the eyes
 
-def draw_spike(height, x:int, y:int, color:str='white'):
+    draw_square(int(width*0.25), int(height*0.3), x+int(width*0.16), y+int(height*0.18), secondary_color)
+    draw_square(int(width*0.15), int(height*0.15), x+int(width*0.16), y+int(height*0.18), 'light_'+secondary_color)
 
-    # Generating an ascii pyramid line by line
 
-    for i in range(y, y+height):
-        spaces=""
-        for j in range(height-(i-y)):
-            spaces+=f"{Menuterm.on_green4} "
-        dots=""
-        for j in range(2*(i-y)+1):
-            dots+="█"
-        line=f"{colors[color]}"+spaces+ dots + spaces +  Menuterm.normal
 
-        print(Menuterm.move_yx(i, x) + line, end="")
+    draw_square(int(width*0.25), int(height*0.3), x+int(width*0.6)+1, y+int(height*0.18), secondary_color)
+    draw_square(int(width*0.15), int(height*0.15), x+int(width*0.6)+1, y+int(height*0.18), 'light_'+secondary_color)
 
-#creates the veometry dash menu# 
-draw_rect(Menuterm.width, Menuterm.height)
-#draws the first square + the character icon 
-draw_square(30,15,5,20,'green')
-draw_square(16,8,12,24, 'yellow')
-draw_square(4,2,15,25,'black')
-draw_square(4,2,21,25,'black')
-draw_square(10,2,15,29,'black')
-#draws the second square 
-draw_square(40,20,41,17,'green')
-draw_spike(15, 45, 20, 'white')
-#draws the third square 
-draw_square(30,15,87,20,'green')
-draw_square(5,10,99,24, 'sienna4')
-draw_square(15,3,94,22, 'gray')
-#puts the title on the menu screen 
-print_text("VEOMETRY DASH", 54,1)
+    # Drawing the mouth
 
+    draw_square(int(width*0.73), 2*int(height*0.18), x+int(width*0.16), y+int(height*0.66), secondary_color)
+    draw_square(int(width*0.63), 2*int(height*0.1), x+int(width*0.16), y+int(height*0.66), 'light_'+secondary_color)
+
+
+
+def draw_main_menu():
+
+    os.system('cls')
+
+    # Writing the Veometry Dash text to the screen
+
+    title='VEOMETRY DASH'
+    draw_text(title, int(terminal.width*0.45), int(terminal.height*0.1))
+
+    # Drawing the "Customize Icon" button to the screen
+        
+    draw_square(int(terminal.width*0.29), int(terminal.height*0.46), int(terminal.width*0.02), int(terminal.height*0.32), 'green')
+
+    # Drawing the GD icon on the button
+
+    draw_gd_icon(int(terminal.width*0.21), int(terminal.height*0.34), int(terminal.width*0.06), int(terminal.height*0.38), 'yellow', 'blue2')
+
+    # Drawing the "Play" button to the screen
+
+    draw_square(int(terminal.width*0.3), int(terminal.height*0.6), int(terminal.width*0.35), int(terminal.height*0.24), 'green')
+
+    # Drawing the play icon to the screen
+
+    draw_spike(int(terminal.width*0.05), int(terminal.width*0.43), int(terminal.height*0.35), 'cerulean', True)
+    
+    # Drawing the "Level Editor" button to the screen
+
+    draw_square(int(terminal.width*0.29), int(terminal.height*0.46), int(terminal.width*0.69), int(terminal.height*0.32), 'green')
+
+    while True:
+
+        # Yes, I know this part should probably be in a function but it's very late and I'll have to mess with numbers again- problem for future me
+
+        # Drawing the hammer icon onto the screen
+
+        draw_square(int(terminal.width*0.2), int(terminal.height*0.1), int(terminal.width*0.74), int(terminal.height*0.4), 'grey')
+        draw_square(int(terminal.width*0.16), int(terminal.height*0.04), int(terminal.width*0.76), int(terminal.height*0.38), 'grey')
+        draw_square(int(terminal.width*0.16), int(terminal.height*0.04), int(terminal.width*0.76), int(terminal.height*0.48), 'grey')
+        draw_square(int(terminal.width*0.12), int(terminal.height*0.04), int(terminal.width*0.78), int(terminal.height*0.36), 'grey')
+        draw_square(int(terminal.width*0.12), int(terminal.height*0.04), int(terminal.width*0.78), int(terminal.height*0.52), 'grey')
+        draw_square(int(terminal.width*0.04), int(terminal.height*0.2), int(terminal.width*0.82), int(terminal.height*0.54), 'brown')
+
+
+        
+
+draw_main_menu()
 

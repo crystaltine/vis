@@ -16,7 +16,17 @@ colors={
     'dark_yellow':terminal.gold3,
     'dark_turquoise':terminal.turquoise4,
     'dark_purple':terminal.darkmagenta,
-    'black':terminal.black
+    'black':terminal.black,
+    'orange':terminal.orange,
+    'dark_orange':terminal.darkorange1,
+    'blue2':terminal.dodgerblue3,
+    'light_blue2':terminal.dodgerblue,
+    'light_yellow':terminal.khaki1,
+    'mid_yellow':terminal.goldenrod1,
+    'cerulean':terminal.deepskyblue,
+    'grey':terminal.grey50,
+    'brown':terminal.tan4
+    
 }
 
 # Draws a square on the screen
@@ -28,20 +38,43 @@ def draw_square(width:int, height:int, x: int, y: int, color:str) -> None:
 
 # Draws a spike on the screen
 
-def draw_spike(height, x:int, y:int, color:str='white'):
+def draw_spike(height, x:int, y:int, color:str='white', orient_right=False):
 
     # Generating an ascii pyramid line by line
 
-    for i in range(y, y+height):
-        spaces=""
-        for j in range(height-(i-y)):
-            spaces+=f"{terminal.on_black} "
-        dots=""
-        for j in range(2*(i-y)+1):
-            dots+="█"
-        line=f"{colors[color]}"+spaces+ dots + spaces + terminal.normal
+    if not orient_right:
 
-        print(terminal.move_yx(i, x) + line, end="")
+        for i in range(y, y+height):
+            spaces=""
+            for j in range(height-(i-y)):
+                spaces+=f"{terminal.on_black} "
+            dots=""
+            for j in range(2*(i-y)+1):
+                dots+="█"
+            line=f"{colors[color]}"+spaces+ dots + spaces + terminal.normal
+
+            print(terminal.move_yx(i, x) + line, end="")
+    
+    else:
+
+        # If orient_right is True, the "height" will be considered the max base length, so we will draw a spike sideways
+
+        for i in range(1, height+1):
+            dots=f"{colors[color]}"
+            for k in range(int(height*0.4)):
+                
+                for j in range(i):
+                    dots+="█"
+            print(terminal.move_yx(y+i-1, x) + dots+terminal.normal, end="")
+        
+        for i in range(height-1, 0, -1):
+            dots=f"{colors[color]}"
+            for k in range(int(height*0.4)):
+                for j in range(i):
+                    dots+="█"
+            print(terminal.move_yx(y+height+(height-i-1), x) + dots, end="")
+
+        
 
 # Writes text on the screen, assuming the background color is blue
 
@@ -187,6 +220,6 @@ def draw_bottom_menu():
         delete_text='Delete Selected Object: [Backspace]'
         draw_text(delete_text, int(terminal.width*0.63), int(terminal.height*0.96))
         
-draw_bottom_menu()
+#draw_bottom_menu()
 
 
