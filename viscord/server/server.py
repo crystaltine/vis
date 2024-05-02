@@ -7,6 +7,21 @@ import api.users, api.login_flow, api.messages, api.chats
 import ipaddress
 from multiprocessing import Process
 
+from api.flask_app import app
+
+# import so the modules are executed (defines endpoints for flask app)
+from api import login_flow, chats, friends, invites, members, messages, roles, servers, users
+from api import db
+
+from flask import request
+import requests
+
+from api import server_config as sc
+from uuid import uuid4
+
+
+
+
 basepath = os.path.dirname(os.path.realpath(__file__))
 blacklist = []
 
@@ -20,7 +35,7 @@ with open(os.path.join(basepath, "blacklist.txt")) as f:
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-s.bind(("0.0.0.0", 5001))
+s.bind(("0.0.0.0", sc.SOCKET_PORT))
 
 print("Server up!")
 print("Running on " + str(s.getsockname()[0]) + ":" + str(s.getsockname()[1]))
@@ -109,17 +124,6 @@ def socket_accept_thread():
 socket_thread = threading.Thread(target=socket_accept_thread)
 socket_thread.start()
 
-from api.flask_app import app
-
-# import so the modules are executed (defines endpoints for flask app)
-from api import login_flow, chats, friends, invites, members, messages, roles, servers, users
-from api import db
-
-from flask import request
-import requests
-
-from api import server_config as sc
-from uuid import uuid4
 
 @app.route("/")
 def index():
