@@ -32,9 +32,6 @@ class Element:
     """ A dict of the currently active style options for the element, a combination of default, class, and explicit styles. 
     Should be up-to-date with any dynamic styling. """
 
-    container_bg: str
-    """ Stores the background color of the element's container. Used for elements with transparent backgrounds. """
-    
     _class_str: str
     """ The class string that was last set on the element. Use `class_str` property instead of this. """
     
@@ -58,6 +55,8 @@ class Element:
     0 is still the top edge of the screen. (notice the +1). is `None` if element hasn't been rendered yet. """
     
     last_remembered_container: Boundary
+    last_remembered_container_bg: str
+    """ The bg color of container that last called render() on this element at the time of the call. Used for lazy (no args) render() calls """
     
     # class_str, a property
     @property
@@ -83,9 +82,9 @@ class Element:
     def __init__(self, **attrs: Unpack["Attributes"]) -> None:        
         self._class_str = attrs.get("class_str", "")
         self._style_str = attrs.get("style_str", "")
-        self.container_bg = attrs.get("container_bg", "")
         
-        Logger.log(f"\x1b[32mElement init: _class_str is {self._class_str}, _style_str is {self._style_str}\x1b[0m")
+        self.last_remembered_container_bg = "transparent"
+        #Logger.log(f"\x1b[32mElement init: _class_str is {self._class_str}, _style_str is {self._style_str}\x1b[0m")
         
         self.id = attrs.get("id", None)
         
@@ -114,7 +113,7 @@ class Element:
         return f"<Element:{self.__class__.__name__} {self.class_str=} {self.id=} {self.style=}>"
 
     @abstractmethod
-    def render(self, container_bounds: Boundary = None) -> None:
+    def render(self, container_bounds: Boundary = None, container_bg: str = None) -> None:
         """ 
         Renders the element to its container at the specified position, 
         given the positions of the container**. Applies the most recently updated style. 
@@ -130,7 +129,7 @@ class Element:
         ...
         
     @abstractmethod
-    def _render_partial(self, container_bounds: Boundary, max_bounds: Boundary) -> None:
+    def _render_partial(self, container_bounds: Boundary, max_bounds: Boundary, container_bg: str = None) -> None:
         """
         Basically the same thing as render but capped at certain boundaries.
         Renders the element using the container, but maxes out at certain boundaries.
@@ -204,3 +203,21 @@ class Element:
         y = round((self.client_top + self.client_bottom)/2)
 
         return y,x if format == 'yx' else x,y
+
+    def getset_curr_bg_color(self, container_bg: str | None) -> str:
+        """
+        to be used inside an element's render() function.
+        pass in `container_bg` from the render() function's args. (None is ok)
+        
+        Returns the TRUE background color the element should have RIGHT NOW as a fcode-able string (hex code or rgb tuple)
+        
+        ALSO: saves `container_bg` as the last remembered container bg color on this element, if it is not None.
+        """        
+        
+        if container_bg is not None:
+            self.last_remembered_container_bg = container_bg
+        
+        explicit_bg_color = self.style.get("bg_color")
+        if explicit_bg_color != "transparent":
+            return explicit_bg_color
+        return container_bg or self.last_remembered_container_bg or "transparent"

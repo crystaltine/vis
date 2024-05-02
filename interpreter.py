@@ -125,10 +125,7 @@ def read_vis(relative_filepath: str) -> None:
             attrs[attr_name] = attr_params
             #print(f"^Setting attrs[{attr_name}] to {attr_params}")
 
-        if type(current_element_path[-1]) == Document:
-            element = create_element(tag_name, attrs | {"container_bg": "\x1b[0m"})
-        else:
-            element = create_element(tag_name, attrs | {"container_bg": current_element_path[-1].style.get("bg_color")})
+        element = create_element(tag_name, attrs)
         #print(f"\x1b[33mCreated element: {element}\x1b[0m")
         
         # add the element as a child of the current element                

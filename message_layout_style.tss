@@ -34,7 +34,7 @@
     top: 0%
     left: 0%
     height: 40%
-    bg_color: #f2a
+    bg_color: #242d3a
 }
 .server_text1 {
     top: 2ch
@@ -53,7 +53,7 @@
     top: 40%
     left: 0%
     height: 40%
-    bg_color: #191
+    bg_color: #242d3a
 }
 
 .channel_text1 {
@@ -142,20 +142,33 @@
 }
 
 .message-obj {
-    height: 3
+    height: 3ch
     width: 100%
-    bg_color: transparent
+    bg_color: #1c232e
+    padding_top: 1ch
+}
+.message-obj-redundant {
+    height: 1ch
+    width: 100%
+    bg_color: #1c232e
 }
 .message-obj-author {
     top: 0
     width: 100%
     color: #efc812
-    bg_color: transparent
+    bg_color: #1c232e
 }
 .message-obj-content {
     top: 1ch
     width: 100%
     height: None
     color: #eeeeee
-    bg_color: transparent
+    bg_color: #1c232e
+}
+.message-obj-content-redundant {
+    top: 0ch
+    width: 100%
+    height: None
+    color: #eeeeee
+    bg_color: #1c232e
 }

@@ -49,10 +49,7 @@ class Scrollbox(Element):
         self.scroll_y = 0
         """ Represents the number of characters scrolled from the top. 0 means we are at the top, 1 would mean we are scrolled down by 1 char, etc. """
         
-        self.children: List["Element"] = attrs.get("children", [])
-        
-        self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else fcode(background=attrs.get("container_bg"))
-        
+        self.children: List["Element"] = attrs.get("children", [])        
         # TODO - create/register event handler for when this element is active: up and down arrows scroll.
     
     def get_fully_rendered_child_range(self) -> Tuple[int, int]:
@@ -81,18 +78,19 @@ class Scrollbox(Element):
         
         return (a, b-1)
     
-    def render(self, container_bounds: Boundary = None):
+    def render(self, container_bounds: Boundary = None, container_bg: str = None):
 
         container_bounds = self.get_true_container_edges(container_bounds)
         Boundary.set_client_boundary(self, container_bounds)
+        curr_bg_color = self.getset_curr_bg_color(container_bg)
 
         if not self.style.get("visible"): return
         
         # draw the rectangle IF it is not transparent.
-        if self._bg_fcode:
+        if curr_bg_color != 'transparent':
             for i in range(self.client_top, self.client_bottom):
-                #with Globals.__vis_document__.term.hidden_cursor():
-                print(Globals.__vis_document__.term.move_xy(self.client_left, i) + self._bg_fcode + " " * self.client_width, end="\x1b[0m")
+                with Globals.__vis_document__.term.hidden_cursor():
+                    print(Globals.__vis_document__.term.move_xy(self.client_left, i) + fcode(background=curr_bg_color) + " " * self.client_width, end="\x1b[0m")
                     
         # scrollbox child rendering
         #Logger.log(f"\n<Scrollbox render func: child rendering:> (num children: {len(self.children)})")
@@ -114,15 +112,14 @@ class Scrollbox(Element):
 
         #Logger.log(f"[scrollbox] PRERENDER (invis children) looping range(0->{full_render_range[0]-1})")
         for i in range(full_render_range[0]-1):
-            old_content_boundary_top = content_boundary.top # test
-            self.children[i]._render_partial(deepcopy(content_boundary), deepcopy(limit_boundary))
+            self.children[i]._render_partial(deepcopy(content_boundary), deepcopy(limit_boundary), curr_bg_color)
             # THESE SHOULD NOT APPEAR, BUT IT WILL UPDATE THEIR CLIENT BOUNDARIES
             content_boundary.top = self.children[i].client_bottom
             #Logger.log(f"[scrollbox] PRERENDER: content_boundary.top {old_content_boundary_top}->{content_boundary.top}")
 
         # rendering the top child
         if first_partially_rendered is not None:
-            first_partially_rendered._render_partial(deepcopy(content_boundary), deepcopy(limit_boundary))
+            first_partially_rendered._render_partial(deepcopy(content_boundary), deepcopy(limit_boundary), curr_bg_color)
             content_boundary.top = first_partially_rendered.client_bottom
 
         #Logger.log(f"[scrollbox] AFTER FIRST {content_boundary.top=}")
@@ -135,7 +132,7 @@ class Scrollbox(Element):
 
         # render the last child visible
         if last_partially_rendered is not None:
-            last_partially_rendered._render_partial(deepcopy(content_boundary), deepcopy(limit_boundary))
+            last_partially_rendered._render_partial(deepcopy(content_boundary), deepcopy(limit_boundary), curr_bg_color)
             content_boundary.top = last_partially_rendered.client_bottom
         
         #Logger.log(f"[scrollbox] AFTER LAST {content_boundary.top=} (this is also client_bottom of last child)")
@@ -145,6 +142,7 @@ class Scrollbox(Element):
         # get total height of all elements
         total_height = 0
         for child in self.children:
+            Logger.log(f"[scrollbox scrolltobottom()]: child.client_height: {child.client_height}, convert_to_chars: {convert_to_chars(self.client_height, child.style.get('height'))}")
             total_height += child.client_height or convert_to_chars(self.client_height, child.style.get("height")) or 0
         
         self.scroll_y = max(0, total_height - self.client_height)

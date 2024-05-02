@@ -5,9 +5,6 @@ from globalvars import Globals
 from logger import Logger
 from boundary import Boundary
 
-if TYPE_CHECKING:
-    from key_event import KeyEvent
-
 class Button(Element):
     """
     Basically a div but is selectable, takes a "pressed" handler,
@@ -69,7 +66,6 @@ class Button(Element):
         """ Event handler to run when the button is pressed (enter is pressed down while it is hovered). Modifiable. """
         
         self.children: List["Element"] = attrs.get("children", [])
-        self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else fcode(background=attrs.get("container_bg"))
 
         # NEW: this is all handled within the document event handler as a special case.
         # register this element's event handler with the document's special handlers
@@ -77,9 +73,9 @@ class Button(Element):
         Globals.__vis_document__.selectable_elements.add(self)
         Globals.__vis_document__.hoverable_elements.add(self)
     
-    def render(self, container_bounds: Boundary = None):
+    def render(self, container_bounds: Boundary = None, container_bg: str = None):
 
-        Logger.log(f"<BEGIN BUTTON render func>")
+        #Logger.log(f"<BEGIN BUTTON render func>")
         container_bounds = self.get_true_container_edges(container_bounds)
         Boundary.set_client_boundary(self, container_bounds)
         
@@ -99,10 +95,12 @@ class Button(Element):
         )
         if bg_color_to_use != "transparent":   
             active_bg_fcode = fcode(background=bg_color_to_use)
-            #with Globals.__vis_document__.term.hidden_cursor():
             for i in range(self.client_top, self.client_bottom):
-                print(Globals.__vis_document__.term.move_xy(self.client_left, i) + active_bg_fcode + " " * self.client_width, end="\x1b[0m")
-                        
+                with Globals.__vis_document__.term.hidden_cursor():
+                    print(Globals.__vis_document__.term.move_xy(self.client_left, i) + active_bg_fcode + " " * self.client_width, end="\x1b[0m")
+
+        Logger.log(f"button drawn, moving to children")
+         
         # render children
         for child in self.children:
             
@@ -114,7 +112,7 @@ class Button(Element):
                 self.client_top + convert_to_chars(self.client_height, self.style.get("padding_top")) or general_padding_y,
                 self.client_right - convert_to_chars(self.client_width, self.style.get("padding_right")) or general_padding_x,
                 self.client_bottom - convert_to_chars(self.client_height, self.style.get("padding_bottom")) or general_padding_y
-            ))
+            ), container_bg=bg_color_to_use)
              
     def add_child(self, child: "Element", index: int = None):
         """

@@ -1,8 +1,8 @@
 from utils import parseattrs, cls, get_next_hoverable
 from blessed import Terminal
 from typing import List, Dict, Set, Any, TypedDict, Callable, Literal, TYPE_CHECKING
-from pynput import keyboard
-from key_event import KeyEvent
+from threading import Thread
+from key_event import KeyEvent2
 from logger import Logger
 from boundary import Boundary
 import traceback
@@ -10,6 +10,7 @@ from button import Button
 from os import _exit
 
 if TYPE_CHECKING:
+    from blessed.keyboard import Keystroke
     from element import Element
 
 class Document:
@@ -29,7 +30,7 @@ class Document:
         "bg_color": "#ffffff"
     }
     
-    def __init__(self, style: "StyleProps" = {}, children: List["Element"] = [], quit_keys: List[str] = ["esc"]):
+    def __init__(self, style: "StyleProps" = {}, children: List["Element"] = [], quit_keys: List[str] = ["q", "\x1b"]):
         """
         `style`: See `DocumentStyle`. If a value is not provided, it will be set to the default.
         `children`: A list of elements to be rendered in the document.
@@ -61,17 +62,15 @@ class Document:
         Also, unless we want to add a way for users to navigate the component tree
          while still having a selected element, this should equal `self.hoverable` if not None. """
         
-        self.keyup_listeners: Set[Callable[[KeyEvent], Any]] = set()
-        """ set of all KEYUP event callbacks. """
-        self.keydown_listeners: Set[Callable[[KeyEvent], Any]] = set()
+        self.key_listeners: Set[Callable[[KeyEvent2], Any]] = set()
         """ set of all KEYDOWN event callbacks. """
 
-        self.element_keyup_listeners: Dict["Element", Set[Callable[[KeyEvent], Any]]] = {}
-        """ KEYUP event handlers registered by elements such as Input and Button """
-        self.element_keydown_listeners: Dict["Element", Set[Callable[[KeyEvent], Any]]] = {}
+        self.element_key_listeners: Dict["Element", Set[Callable[[KeyEvent2], Any]]] = {}
         """ KEYDOWN event handlers registered by elements such as Input and Button """
 
         self.listener_thread = None
+        self.listener_kill_flag = False
+        """ tells the listener thread to stop listening, if true. """
 
         parseattrs(self, style, Document.DEFAULT_STYLE)
         
@@ -84,6 +83,9 @@ class Document:
         """
         Mounts the document, renders all children, begins the app loop.
         """
+        
+        Logger.log(f"doc mounting!!!!")
+        
         cls()
         
         self.render()
@@ -113,8 +115,7 @@ class Document:
         """
         cls()
         print(self.term.normal)
-        if self.listener_thread:
-            self.listener_thread.stop()
+        self.listener_kill_flag = True
             
     def add_child(self, child: "Element", index: int = None) -> None:
         """
@@ -134,18 +135,18 @@ class Document:
         """
         return self.id_map.get(id, None)
 
-    def _get_key_listener(self) -> keyboard.Listener:
+    def _get_key_listener(self) -> Thread:
         """
         Returns a `Listener` thread for key presses. Run .start() on the returned object to start listening.
         """
 
-        def _builtin_keydown_handler(ev: "KeyEvent"):
+        def _builtin_key_handler(ev: "KeyEvent2"):
             """
             General functions built-in to the document, 
             such as exiting the program when quit keys are pressed,
             or selecting elements when arrow keys or tab is pressed.
             
-            Does not deal with keydown listeners added through `document.add_event_listener`.
+            Does not deal with key listeners added through `document.add_event_listener`.
             
             These built-in handlers will NOT run if a currently selected element 
             also handles these keys.
@@ -154,9 +155,10 @@ class Document:
             try:
                 # exiting program
                 if ev.key in self.quit_keys: 
-                    self.quit_app("hit quit key")
+                    Logger.log(f"a quit key was pressed: {[ev.key]}")
+                    self.quit_app()
                 
-                elif ev.key == 'enter' and self.hovered and self.hovered.style.get("selectable"):
+                elif ev.name == 'KEY_ENTER' and self.hovered and self.hovered.style.get("selectable"):
                     if self.active is not None: 
                         self.active.render()
                     self.active = self.hovered
@@ -165,32 +167,15 @@ class Document:
             except:
                 Logger.log(f"ERROR in document._builtin_keydown_handler: {traceback.format_exc()}")
                 self.quit_app(f"ERROR in document._builtin_keydown_handler: {traceback.format_exc()}")
-        
-        def _builtin_keyup_handler(ev: "KeyEvent"):
-            """
-            General functions built-in to the document, 
-            such as exiting the program when quit keys are pressed,
-            or selecting elements when arrow keys or tab is pressed.
-            """
-            pass
-            try:
-                # run the currently selected listeners IF it exists
-                if (handlers := self.element_keyup_listeners.get(self.active)) is not None:
-                    [func(ev) for func in handlers]
-                    
-            except Exception as e:
-                Logger.log(f"ERROR in document._builtin_keyup_handler: {traceback.format_exc()}")
-                self.quit_app(f"ERROR in document._builtin_keyup_handler: {traceback.format_exc()}")
 
-        def on_press(key: keyboard.Key | keyboard.KeyCode):
-            
-            # creating keyevent obj
-            KeyEvent.update_modifiers(key, "keydown")
-            ev = KeyEvent.create_from(key)
+        def on_press(key: "Keystroke"):
+            # check if key came from the current window
+            ev = KeyEvent2.create_from(key)
+            #Logger.log_on_screen(f"on_press created {ev}")
             
             # tab and shift+tab are the master keys. If they are pressed, we always 
             # navigate around the component tree.
-            if ev.key == 'tab':
+            if ev.name == 'KEY_TAB':
                 # TODO - have to handle shift+tab
                 # technically we care if shift is being held.
                 # for now, just deselect currently active, and move hover
@@ -211,7 +196,7 @@ class Document:
                 
                 return # dont run the rest of the code
             
-            elif ev.key == 'enter':
+            elif ev.name == 'KEY_ENTER':
                 if isinstance(btn:=self.hovered, Button):
                     # select the button and run its on_pressed ONLY if it wasnt active before (no holding by default) <-TODO add opt to change this later?
                     if self.active is not btn:
@@ -221,42 +206,33 @@ class Document:
             
             #  always run selected element's keydown listeners, and any custom document-wide listeners\
             if self.active is not None:
-                if (handlers := self.element_keydown_listeners.get(self.active)) is not None:
+                if (handlers := self.element_key_listeners.get(self.active)) is not None:
                     [func(ev) for func in handlers]
 
             # run all defined keydown listeners, breaking if any of them cancel the event
-            for listener in self.keydown_listeners:
+            for listener in self.key_listeners:
                 if ev.canceled: return
                 listener(ev)
                 
             if self.active is None:
                 # only run builtin if we arent currently handling the key in the selected element
                 # this also doesnt work if some defined handler canceled the event
-                _builtin_keydown_handler(ev)
-
-        def on_release(key: keyboard.Key | keyboard.KeyCode):
-            
-            KeyEvent.update_modifiers(key, "keyup")
-            ev = KeyEvent.create_from(key)
-            
-            if isinstance(btn:=self.hovered, Button):
-                if ev.key == 'enter':
-                    # enter was released, deselect the button
-                    self.active = None
-                    btn.render()
-            
-            if self.active is not None:
-                if (handlers := self.element_keyup_listeners.get(self.active)) is not None:
-                    [func(ev) for func in handlers]
-            
-            for listener in self.keyup_listeners:
-                if ev.canceled: return
-                listener(ev)
-
-            if self.active is None:
-                _builtin_keyup_handler(ev)
+                _builtin_key_handler(ev)
+        
+        def listener_loop():
+            while True:
+                with self.term.cbreak():
+                    val = self.term.inkey(0.1)
+                    
+                    # if the listener thread is killed, or the document is stopped, break the loop
+                    if self.stopped or self.listener_kill_flag: break
+                    
+                    # otherwise just keep listening
+                    if not val: continue
+                    
+                    on_press(val)
                 
-        return keyboard.Listener(on_press=on_press, on_release=on_release, suppress=True)
+        return Thread(target=listener_loop)
     
     def quit_app(self, exit_msg = None):
         """
@@ -266,33 +242,31 @@ class Document:
         self.stopped = True
         cls()
         print(self.term.normal)
+        
         Logger.write()
+        
         if exit_msg:
             print(exit_msg)
         _exit(0)
     
-    def add_event_listener(self, event: Literal["keydown", "keyup"], callback: Callable[[KeyEvent], None]):
+    def add_event_listener(self, callback: Callable[[KeyEvent2], None]):
         """
-        Adds a document-wide event listener for either keydown or keyup. 
-        Can have multiple listeners for the same key event.
+        Adds a document-wide event listener for keypresses. Multiple listeners are supported.
         """
         
-        listener_bank = self.keydown_listeners if event == "keydown" else self.keyup_listeners
-        listener_bank.add(callback)
+        self.key_listeners.add(callback)
         
-    def remove_event_listener(self, event: Literal["keydown", "keyup"], callback: Callable):
+    def remove_event_listener(self, callback: Callable):
         """
         Removes an event listener for a specific key event. 
         Must pass the exact same function that was added, meaning references must be the same.
         
         Raises a KeyError if the callback is not found.
         """
-        listener_bank = self.keydown_listeners if event == "keydown" else self.keyup_listeners
-        listener_bank.remove(callback)
+        self.key_listeners.remove(callback)
         
-    def remove_all_event_listeners(self, event: Literal["keydown", "keyup"]):
+    def remove_all_event_listeners(self):
         """
         Removes all event listeners for a specific key event.
         """
-        listener_bank = self.keydown_listeners if event == "keydown" else self.keyup_listeners
-        listener_bank.clear()
+        self.key_listeners.clear()

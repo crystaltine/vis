@@ -7,7 +7,7 @@ from logger import Logger
 
 if TYPE_CHECKING:
     from element import Element
-    from key_event import KeyEvent
+    from key_event import KeyEvent2
 
 STYLE_CODES = {
     'bold': '\033[1m',
@@ -247,7 +247,7 @@ def calculate_style(style_str: str, class_str: str, default_style: dict) -> dict
     #print(f"\x1b[34mCalc_style: {style_str=}, {class_str=}, {default_style=}\x1b[0m")
     return default_style | parse_class_string(class_str) | parse_style_string(style_str)
 
-def get_next_hoverable(hoverable_elements: Set["Element"], currently_hovered: "Element | None", key_ev: "KeyEvent") -> "Element":
+def get_next_hoverable(hoverable_elements: Set["Element"], currently_hovered: "Element | None", key_ev: "KeyEvent2") -> "Element":
     """
     Given a set of hoverable elements, the currently hovered element, and a key, returns the next element to hover.
     
@@ -259,15 +259,15 @@ def get_next_hoverable(hoverable_elements: Set["Element"], currently_hovered: "E
     
     # special case: tab and shift-tab:
     # list-ize the set, then just move to the next
-    if key_ev.key == 'tab':
+    if key_ev.name == 'KEY_TAB':
         ordered_hoverable_elements = list(hoverable_elements)
-        Logger.log(f"[Get Next Hoverable]: {ordered_hoverable_elements=}")
+        # Logger.log(f"[Get Next Hoverable]: {ordered_hoverable_elements=}")
         curr_index = ordered_hoverable_elements.index(currently_hovered) if currently_hovered is not None else -1
-        next_index = (curr_index + (1 if key_ev.holding_shift else -1)) % len(ordered_hoverable_elements)
+        next_index = (curr_index + 1) % len(ordered_hoverable_elements)
             
         return ordered_hoverable_elements[next_index]
     
-    elif key_ev.key in ['up', 'down', 'left', 'right', 'tab']:
+    elif key_ev.name in ['KEY_UP', 'KEY_DOWN', 'KEY_LEFT', 'KEY_RIGHT', 'KEY_TAB']:
         # return random element in hoverable_elements. This is a placeholder. Then, add it back
         # TODO
 

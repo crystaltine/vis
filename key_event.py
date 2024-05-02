@@ -1,5 +1,6 @@
 from typing import Literal
 from pynput.keyboard import Key, KeyCode
+from blessed.keyboard import Keystroke
 
 SpecialKey = Literal[
     'space', 'tab',
@@ -22,6 +23,9 @@ SpecialKey = Literal[
 ]
 
 class KeyEvent:
+    """
+    Represents a keyboard event detected through `pynput`.
+    """
     
     holding_shift = False
     """ True if any shift key is currently being held. 
@@ -141,4 +145,72 @@ class KeyEvent:
         ev.alt = KeyEvent.holding_alt
         ev.shift = KeyEvent.holding_shift
         ev.cmd = KeyEvent.holding_cmd
+        return ev
+    
+class KeyEvent2:
+    """
+    Represents a keyboard event detected through `blessed.keyboard`. Similar to `KeyEvent`
+    but this one can only see keydowns and can't tell you if any of the special keys are being held (sad)
+    
+    However special keys like `ctrl+[key]` will still be marked as `is_special`, but theyll look something like `\\x08`
+    """
+
+    """ Represents a keyboard event that should be used as params in event handlers. """
+    def __init__(self, key: str, name: str | None, is_special: bool):
+        self.key: str = key
+        """
+        If the KeyEvent is just a character, this is probably a string of length 1 ("a", "G", "7", "*", etc).
+        
+        If special, then this will be something like
+        `\\x08` (`ctrl+h`)
+        `\\x1b` (`esc`)
+        """
+        
+        self.name = name
+        """
+        Only isn't None for a few special keys.        
+        See the full list at https://blessed.readthedocs.io/en/latest/keyboard.html#keycodes
+        
+        Some important/common ones:
+        - 'KEY_F1' all the way to 'KEY_F12' (even until F23 on some keyboards)
+        - 'KEY_BACKSPACE', 'KEY_DELETE', 'KEY_INSERT'
+        - 'KEY_ENTER'
+        - 'KEY_ESCAPE'
+        - 'KEY_TAB', 'KEY_BTAB' (shift+tab)
+        - 'KEY_DOWN' (all arrow keys: LEFT, RIGHT, UP, DOWN)
+        """
+        
+        self.is_special = is_special
+        """ A key is special if it is not alphanumeric, a symbol, or a space. """
+        
+        self.canceled = False
+        
+    def cancel(self) -> None:
+        """
+        Stop the propogation of the event. This is only reliable
+        if being called inside an element's event handlers, since document
+        event handlers are "unordered" sets.
+
+        Note that the selected element's event handlers are run before
+        the document's handlers.
+        """
+        self.canceled = True
+
+    def __str__(self) -> str:
+        """ Returns a human readable string representation of the event. """
+        cancel_string = '\x1b[31mcanceled\x1b[0m' if self.canceled else '\x1b[32mnot canceled\x1b[0m'
+
+        return f"KeyEvent2(\x1b[32mkey={self.key} specialname={self.name}\x1b[0m,special=\x1b[33m{self.is_special}\x1b[0m,{cancel_string})"
+    
+    @staticmethod 
+    def create_from(key_event: "Keystroke") -> "KeyEvent2":
+        """
+        Creates a KeyEvent from a blessed KeyStroke object.
+        """
+        ev = ...
+        if key_event.is_sequence: # special key
+            ev = KeyEvent2(str(key_event), key_event.name, True)
+        else: # regular key
+            ev = KeyEvent2(str(key_event), None, False)
+            
         return ev
