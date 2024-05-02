@@ -7,6 +7,7 @@ from .helpers import *
 from flask import request, Response
 import requests
 from .server_config import URI
+import datetime
 
 def handle_invite_creation(user_id, server_id, invite_code):
     """
@@ -170,15 +171,14 @@ def handle_user_joining_server():
 
         if server_id:
 
-            data = {
-                "user_id": user_id,
-                "server_id": server_id
-            }
+            member_join_date = str(datetime.datetime.now())
 
-            response = requests.post(URI + "/api/members/create", json={"data": data})
-            if response.status_code != 200:
-                return Response(json.dumps({"type": "failure", "message": "Failed to join server"}), status=400)
-            
+            send_query = '''
+                INSERT into "Discord"."MemberInfo" (member_id, user_id, server_id, member_join_date) values (%s, %s, %s)
+            '''
+
+            cur.execute(send_query, (uuid4(), user_id, server_id, member_join_date))
+
             data = {
                 "user_id": user_id,
                 "server_id": server_id,

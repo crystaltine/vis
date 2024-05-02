@@ -4,32 +4,6 @@ from .flask_app import app
 from .helpers import *
 from flask import request, Response
 from uuid import uuid4
-
-@app.route("/api/members/create", methods=["POST"])
-def handle_member_creation():
-    
-    if not validate_fields(request.json, {"user_token": str, "server_id": str}):
-        return invalid_fields()
-    
-    user_token = request.json["user_token"]
-    if not is_valid_token(user_token):
-        return forbidden()
-    user_id = get_user_id(user_token)
-    server_id = request.json["server_id"]
-
-    try:
-
-        member_join_date = str(datetime.datetime.now())
-
-        send_query = '''
-            INSERT into "Discord"."MemberInfo" (member_id, user_id, server_id, member_join_date) values (%s, %s, %s)
-        '''
-
-        cur.execute(send_query, (uuid4(), user_id, server_id, member_join_date))
-
-        return return_success()
-    except Exception as e:
-        return return_error(e)
     
 
 @app.route("/api/members/add_role", methods=["POST"])

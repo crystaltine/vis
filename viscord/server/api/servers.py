@@ -158,6 +158,11 @@ def handle_server_creation() -> None:
         resp = requests.post(URI + "/api/chats/create", json=data)
         if resp.status_code != 200:
             return return_error("Failed to create general chat")
+        
+        data = {
+            "type": "success",
+            "server_id": server_id
+        }
 
         # handle_chat_creation(user_id, server_id, "general", "text chat", "General chat for the server", 0, 0, 0, False)
         return return_success()
