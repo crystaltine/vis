@@ -48,7 +48,7 @@ def create_message() -> Literal['success', 'failure', 'incomplete-data']:
     #         print(f"\x1b[31m[create_message]: message data field not provided: {required_field}\x1b[0m")
     #         return 'incomplete_data'
 
-    if not validate_fields(request.json, {"user_id": str, "server_id": str, "chat_id": str, "message_content": str, "pinged_user_ids": list}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str, "chat_id": str, "message_content": str, "pinged_user_ids": list}):
         return invalid_fields()
     
     message_data = request.json

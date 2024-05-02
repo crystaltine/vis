@@ -53,9 +53,12 @@ def handle_chat_creation():
     Returns:
         bool
     """
-    if not validate_fields(request.json, {"user_id": str, "server_id": str, "chat_name": str, "chat_type": str, "chat_topic": str, "chat_order": int, "read_perm_level": int, "write_perm_level": int, "is_dm": bool}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str, "chat_name": str, "chat_type": str, "chat_topic": str, "chat_order": int, "read_perm_level": int, "write_perm_level": int, "is_dm": bool}):
         return invalid_fields()
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
     chat_name = request.json["chat_name"]
     chat_type = request.json["chat_type"]
@@ -101,9 +104,12 @@ def handle_chat_name_update() -> bool:
     Returns:
         bool
     """
-    if not validate_fields(request.json, {"user_id": str, "server_id": str, "chat_id": str, "new_chat_name": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str, "chat_id": str, "new_chat_name": str}):
         return invalid_fields()
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
     chat_id = request.json["chat_id"]
     new_chat_name = request.json["new_chat_name"]
@@ -142,9 +148,12 @@ def handle_chat_topic_update() -> bool:
     Returns:
         bool
     """
-    if not validate_fields(request.json, {"user_id": str, "server_id": str, "chat_id": str, "new_chat_topic": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str, "chat_id": str, "new_chat_topic": str}):
         return invalid_fields()
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
     chat_id = request.json["chat_id"]
     new_chat_topic = request.json["new_chat_topic"]
@@ -181,9 +190,12 @@ def handle_chat_order_update(user_id: str, server_id: str, chat_id: str, new_cha
     Returns:
         bool
     """
-    if not validate_fields(request.json, {"user_id": str, "server_id": str, "chat_id": str, "new_chat_order": int}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str, "chat_id": str, "new_chat_order": int}):
         return invalid_fields()
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
     chat_id = request.json["chat_id"]
     new_chat_order = request.json["new_chat_order"]
@@ -220,9 +232,12 @@ def handle_chat_deletion():
     Returns:
         bool
     """
-    if not validate_fields(request.json, {"user_id": str, "server_id": str, "chat_id": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str, "chat_id": str}):
         return invalid_fields()
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
     chat_id = request.json["chat_id"]
 

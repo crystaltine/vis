@@ -15,10 +15,13 @@ def get_chat_perms() -> Dict:
     # server_id='ad3f1cd8-ffcd-48ca-abc7-9409c17c9122'
     # chat_id='43eef70b-90bb-40c5-8ece-45abf6a55abb'
 
-    if not validate_fields(request.json, {"user_id": str, "server_id": str, "chat_id": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str, "chat_id": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
     chat_id = request.json["chat_id"]
     
@@ -72,10 +75,13 @@ def get_server_perms() -> Dict:
 
     # Getting the user's roles from MemberInfo with the user_id and the server_id
 
-    if not validate_fields(request.json, {"user_id": str, "server_id": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
 
     try:

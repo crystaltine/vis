@@ -1,5 +1,6 @@
 import datetime
 from .db import cur
+from .login_flow import tokens
 from typing import Literal
 from uuid import uuid4
 from json import dumps
@@ -19,10 +20,13 @@ def create_user() -> Literal["success", "false", "username-unavailable"]:
     Returns 'username-unavailable' if username is already taken.
     """
     
-    if not validate_fields(request.json, {"user_id": str, "username": str, "password": str, "color": str, "symbol": str}):
+    if not validate_fields(request.json, {"user_token": str, "username": str, "password": str, "color": str, "symbol": str}):
         return invalid_fields()
 
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     username = request.json["username"]
     
     password = hashlib.sha256(request.json["password"].encode()).hexdigest()
@@ -74,10 +78,13 @@ def change_username() -> Literal["success", "failure", "unavailable"]:
     Returns 'unavailable' if the name is already taken.
     """
     
-    if not validate_fields(request.json, {"user_id": str, "new_username": str}):
+    if not validate_fields(request.json, {"user_token": str, "new_username": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     new_username = request.json["new_username"]
 
     resp = requests.post(URI + "/api/users/check_username", json={"username": request.json["new_username"]})
@@ -106,10 +113,13 @@ def change_password() -> Literal['success', 'failure']:
     Returns 'success'/'failure'
     """
 
-    if not validate_fields(request.json, {"user_id": str, "new_password": str}):
+    if not validate_fields(request.json, {"user_token": str, "new_password": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     new_password = request.json["new_password"]
 
     send_query = '''
@@ -132,10 +142,13 @@ def change_user_color() -> None:
 
     Returns 'success'/'failure'
     """
-    if not validate_fields(request.json, {"user_id": str, "new_color": str}):
+    if not validate_fields(request.json, {"user_token": str, "new_color": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     new_color = request.json["new_color"]
 
     if not validate_color(new_color):
@@ -162,10 +175,13 @@ def change_user_symbol() -> None:
     Returns 'success'/'failure'.
     """
 
-    if not validate_fields(request.json, {"user_id": str, "new_symbol": str}):
+    if not validate_fields(request.json, {"user_token": str, "new_symbol": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     new_symbol = request.json["new_symbol"]
 
     send_query = '''

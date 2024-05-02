@@ -21,7 +21,7 @@ def handle_invite_creation(user_id, server_id, invite_code):
             None
     """
 
-    if not validate_fields(request.json, {"user_id": str, "server_id": str, "invite_code": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str, "invite_code": str}):
         return invalid_fields()
 
     try:
@@ -105,10 +105,13 @@ def handle_server_invite_request() -> str:
 
     # check if user is allowed to create this invite
 
-    if not validate_fields(request.json, {"user_id": str, "server_id": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
 
     perms = get_server_perms(user_id, server_id)
@@ -153,10 +156,13 @@ def handle_user_joining_server():
             None
     """
     
-    if not validate_fields(request.json, {"user_id": str, "invite_code": str}):
+    if not validate_fields(request.json, {"user_token": str, "invite_code": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     invite_code = request.json["invite_code"]
 
     try:

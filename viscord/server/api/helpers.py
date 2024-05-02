@@ -1,5 +1,6 @@
 import json
 from flask import Response
+from .login_flow import tokens
 
 def validate_fields(data, name_type):
     for name, type_ in name_type.items():
@@ -35,4 +36,15 @@ def return_success():
 def missing_permissions():
     return Response(
         json.dumps({"type": "incorrect", "message": "You do not have permission to perform this action"}),
+        status=403)
+
+def is_valid_token(token: str) -> bool:
+    return token in tokens
+
+def get_user_id(token: str) -> str:
+    return tokens[token]
+
+def forbidden():
+    return Response(
+        json.dumps({"type": "incorrect", "message": "Invalid token"}),
         status=403)

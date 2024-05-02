@@ -35,10 +35,13 @@ def handle_server_creation() -> None:
     7. Assigns the "admin" and "everyone" roles to the user creating the server.
     """
 
-    if not validate_fields(request.json, {"user_id": str, "server_name": str, "server_icon": str, "server_color": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_name": str, "server_icon": str, "server_color": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_name = request.json["server_name"]
     server_icon = request.json["server_icon"]
     server_color = request.json["server_color"]
@@ -178,10 +181,13 @@ def handle_server_name_update():
         None
     """
     
-    if not validate_fields(request.json, {"user_id": str, "server_id": str, "new_server_name": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str, "new_server_name": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
     new_server_name = request.json["new_server_name"]
 
@@ -226,10 +232,13 @@ def handle_server_color_update() -> None:
         None
     """
 
-    if not validate_fields(request.json, {"user_id": str, "server_id": str, "new_color": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str, "new_color": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
     new_color = request.json["new_color"]
     if not validate_color(new_color):
@@ -275,10 +284,13 @@ def handle_server_icon_update() -> None:
         None
     """
 
-    if not validate_fields(request.json, {"user_id": str, "server_id": str, "new_server_icon": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str, "new_server_icon": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
     new_server_icon = request.json["new_server_icon"]
 

@@ -8,10 +8,13 @@ from uuid import uuid4
 @app.route("/api/members/create", methods=["POST"])
 def handle_member_creation():
     
-    if not validate_fields(request.json, {"user_id": str, "server_id": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
 
     try:
@@ -31,10 +34,13 @@ def handle_member_creation():
 
 @app.route("/api/members/add_role", methods=["POST"])
 def handle_adding_member_roles():
-    if not validate_fields(request.json, {"user_id": str, "server_id": str, "role_id": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str, "role_id": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
     role_id = request.json["role_id"]
 
@@ -73,10 +79,13 @@ def handle_adding_member_roles():
 
 @app.route("/api/members/remove_role", methods=["POST"])
 def handle_removing_member_roles():
-    if not validate_fields(request.json, {"user_id": str, "server_id": str, "role_id": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str, "role_id": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
     role_id = request.json["role_id"]
 
@@ -127,10 +136,13 @@ def update_member_nickname() -> bool:
     the members table 
     """
 
-    if not validate_fields(request.json, {"user_id": str, "server_id": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
     if "new_nickname" in request.json:
         new_nickname = request.json["new_nickname"]
@@ -156,10 +168,13 @@ def update_nick_color() -> bool:
     inserted into the database, but this should be interpreted as something like white by the client.
     """
 
-    if not validate_fields(request.json, {"user_id": str, "server_id": str, "new_color": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str, "new_color": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
     new_color = request.json["new_color"]
 
@@ -186,10 +201,13 @@ def handle_user_leaving_server() -> None:
         None
     """
 
-    if not validate_fields(request.json, {"user_id": str, "server_id": str}):
+    if not validate_fields(request.json, {"user_token": str, "server_id": str}):
         return invalid_fields()
     
-    user_id = request.json["user_id"]
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
 
     send_query = '''
