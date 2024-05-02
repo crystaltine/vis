@@ -1,7 +1,7 @@
 from interpreter import read_styles, read_vis
 from globalvars import Globals
 from logger import Logger
-from utils import cls
+from utils import cls, hide_cursor, show_cursor
 from div import Div
 from text import Text
 from scrollbox import Scrollbox
@@ -13,6 +13,13 @@ import requests
 import socket
 import uuid
 <<<<<<< HEAD
+<<<<<<< HEAD
+||||||| parent of 66d64a6 (fix hiding cursor, create pixel font)
+import json
+=======
+import json
+from cursor import hide
+>>>>>>> 66d64a6 (fix hiding cursor, create pixel font)
 
 <<<<<<< HEAD
 def main():
@@ -650,6 +657,8 @@ def main():
 >>>>>>> f9e4bbf ([major] finish integration with local server)
 
 if __name__ == "__main__":
+
+    hide()
     
     read_styles("login_style.tss")
     read_vis("login_layout.vis")
@@ -657,6 +666,7 @@ if __name__ == "__main__":
     with Globals.__vis_document__.term.cbreak():
         try:
             main()
+            show_cursor()
         except Exception as e:
             Logger.log(f"EXCEPTION IN MAIN: {e}")
             Logger.write()
