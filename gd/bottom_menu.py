@@ -2,7 +2,6 @@ from blessed import Terminal
 import os
 
 terminal = Terminal()
-terminal.bg
 
 colors={
     'blue':terminal.blue,
@@ -25,6 +24,7 @@ colors={
     'mid_yellow':terminal.goldenrod1,
     'cerulean':terminal.deepskyblue,
     'grey':terminal.grey50,
+    'grey49':terminal.grey49,
     'brown':terminal.tan4
     
 }
@@ -38,24 +38,9 @@ def draw_square(width:int, height:int, x: int, y: int, color:str) -> None:
 
 # Draws a spike on the screen
 
-def draw_spike(height, x:int, y:int, color:str='white', orient_right=False):
+def draw_spike(height, x:int, y:int, color:str='white', orient_right=False, orient_left=False):
 
-    # Generating an ascii pyramid line by line
-
-    if not orient_right:
-
-        for i in range(y, y+height):
-            spaces=""
-            for j in range(height-(i-y)):
-                spaces+=f"{terminal.on_black} "
-            dots=""
-            for j in range(2*(i-y)+1):
-                dots+="█"
-            line=f"{colors[color]}"+spaces+ dots + spaces + terminal.normal
-
-            print(terminal.move_yx(i, x) + line, end="")
-    
-    else:
+    if orient_right:
 
         # If orient_right is True, the "height" will be considered the max base length, so we will draw a spike sideways
 
@@ -73,18 +58,62 @@ def draw_spike(height, x:int, y:int, color:str='white', orient_right=False):
                 for j in range(i):
                     dots+="█"
             print(terminal.move_yx(y+height+(height-i-1), x) + dots+terminal.normal, end="")
+
+    elif orient_left:
+
+        # If orient_left is True, the "height" will be considered the max base length, so we will draw a spike sideways
+
+        for i in range(1, height+1):
+            line=f"{terminal.on_black}"
+            for k in range(int(height*0.4)):
+                
+                for j in range(height-i):
+                    line+=" "
+                for j in range(i):
+                    line+=f"{colors[color]}"+"█"
+            print(terminal.move_yx(y+i-1, x) + line+terminal.normal, end="")
+        
+        for i in range(height-1, 0, -1):
+            line=f"{terminal.on_black}"
+            for k in range(int(height*0.4)):
+                for j in range(height-i):
+                    line+=" "
+                
+                for j in range(i):
+                    line+=f"{colors[color]}"+"█"
+            print(terminal.move_yx(y+height+(height-i-1), x) + line+terminal.normal, end="")
+    
+    else:
+        # Generating an ascii pyramid line by line
+
+        if not orient_right:
+
+            for i in range(y, y+height):
+                spaces=""
+                for j in range(height-(i-y)):
+                    spaces+=f"{terminal.on_black} "
+                dots=""
+                for j in range(2*(i-y)+1):
+                    dots+="█"
+                line=f"{colors[color]}"+spaces+ dots + spaces + terminal.normal
+
+                print(terminal.move_yx(i, x) + line, end="")
+    
+    
     
         
 
 # Writes text on the screen, assuming the background color is blue
 
-def draw_text(text:str, x:int, y:int, bold=False, underline=False):
+def draw_text(text:str, x:int, y:int, bold=False, underline=False, text_highlight_color='black'):
     line=terminal.move_xy(x, y)
     if bold:
         line+=terminal.bold
     if underline:
         line+=terminal.underline
-    line+=terminal.on_black(text)       
+    
+    on_color=getattr(terminal, 'on_'+text_highlight_color)
+    line+=on_color(text)       
     print(line)
 
 # Draws an orb on the screen - either blue (string "turquoise" since the blue color is being used for something else), purple, or yellow
