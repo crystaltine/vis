@@ -5,7 +5,7 @@ HTTP_PORT = 5000
 SOCKET_PORT = 5001
 URI = f"http://{HOST}:{HTTP_PORT}"
 
-SSL_CONTEXT = "adhoc"
+SSL_CONTEXT = None
 
 if len(sys.argv) == 3:
     # SSL_CERT = os.environ["SSL_CERT"]
