@@ -30,24 +30,41 @@ connections: Dict[str, socket.socket] = {}
 
 def handle_message(data: dict):
     payload = json.dumps({
-        data["author"],
-        data['content'],
+        "author": data["author"],
+        "content": data['content'],
     }).encode()
     print(f"[handle message] content={data['content']} author={data['author']}")
-
+    print(f"^ sending to {len(connections)} sockets (incl. author)")
+    
+    marked_for_removal = [] # sockets that were found to be dc'ed
+    # we have to remove them all last cuz dict size cant change during iteration
+    
     for other in connections:
-        if other != data["token"]:
-            try:
-                connections[other].sendall(payload)
-            except:
-                print(f"Error sending to socket with token={other}, removing...")
-                del connections[other]
+        # if other != data["token"]:
+        
+        # ^^^ crystaltine -> trigtbh: im still sending the message to the author just for consistency;
+        # the author's client will wait for the server's confirmation that the message was indeed sent;
+        # it shouldnt render on the authors side until the server confirms it was sent to all other clients asw
+        try:
+            connections[other].sendall(payload)
+        except:
+            print(f"\x1b[31mError sending to socket with token={other}, marking as removed...\x1b[0m")
+            marked_for_removal.append(other)
+            
+    for token in marked_for_removal:
+        del connections[token]
 
 def handle_connection(conn: socket.socket, addr):
-    print("New connection:", addr)
+    print(f"\x1b[33mHandling connection {addr=}\x1b[0m")
     # expect them to immediately send their token
-    data = conn.recv(1024)
-    connections[data.decode()] = conn
+    try:
+        data = conn.recv(1024)
+        token = data.decode()
+    except:
+        print(f"\x1b[31mjust kidding ({addr} disconnected during init handshake)\x1b[0m")
+        
+    print(f"\x1b[32msocket {addr=} {token=} completed init handshake (connected!)\x1b[0m")
+    connections[token] = conn
 
     # receive loop
     while True:
@@ -57,7 +74,7 @@ def handle_connection(conn: socket.socket, addr):
             pass
         else:
             if not data:
-                print("Disconnect:", addr)
+                print(f"\x1b[31msocket {token=} {addr=} disconnected\x1b[0m")
                 del connections[addr]
                 return
 
@@ -65,7 +82,7 @@ def handle_connection(conn: socket.socket, addr):
 
             parsed = json.loads(data.decode())
             
-            print(f"socket {addr=} received data: {parsed}")
+            print(f"socket \x1b[33m{addr=} {token=}\x1b[0m received data (assuming it's a message): \x1b[33m{parsed}\x1b[0m")
             handle_message(parsed)
             break
 
@@ -74,20 +91,19 @@ def socket_accept_thread():
 
     while True: 
         try:
-            print(f"bef accept")
             conn, addr = s.accept()
-            print(f"aft accept")
         except OSError as err:
             # connection probably closed
             break
 
-        # check blacklist
-        for net in blacklist:
-            if (isinstance(net, ipaddress.ip_address) and ipaddress.ip_address(addr[0]) == net) or (isinstance(net, ipaddress.ip_network) and ipaddress.ip_address(addr[0]) in net):
-                print("Blocked connection from " + addr[0])
-                conn.close()
-                continue
-
+        # check blacklist (doesnt work for now)
+        #for net in blacklist:
+        #    if (isinstance(net, ipaddress.ip_address) and ipaddress.ip_address(addr[0]) == net) or (isinstance(net, ipaddress.ip_network) and ipaddress.ip_address(addr[0]) in net):
+        #        print("Blocked connection from " + addr[0])
+        #        conn.close()
+        #        continue
+        
+        print(f"new socket connection from {addr}! starting thread...")
         threading.Thread(target=handle_connection, args=(conn, addr)).start()
     
 socket_thread = threading.Thread(target=socket_accept_thread)
@@ -125,7 +141,7 @@ def index():
     #     return "<h1>Viscord</h1><br><p>Welcome to Viscord."
 
 def apprun():
-    app.run(host=sc.HOST, port=sc.HTTP_PORT, ssl_context=sc.SSL_CONTEXT)
+    app.run(host=sc.HOST, port=sc.HTTP_PORT)
 
 if __name__ == "__main__":
     http_process = Process(target=apprun)
