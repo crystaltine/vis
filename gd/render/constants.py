@@ -30,7 +30,14 @@ class CameraUtils:
         """
 
         return term.height // CameraUtils.GRID_PX_Y
+    
+    def center_screen_coordinates(term: blessed.Terminal) -> list:
+        """
+        Returns the coordinates of the center of the screen in BLOCKS.
+        """
 
+        return [term.width//(CameraUtils.GRID_PX_X*2), term.height//(CameraUtils.GRID_PX_Y*2)]
+    
     def grid_to_terminal_pos(gridx: float, gridy: float) -> tuple:
         """
         Converts a camera grid position (block) to the TOP LEFT CORNER of

@@ -90,7 +90,7 @@ h = term.height
 [item.render(w,h) for item in main]
 
 with term.hidden_cursor():
-    for i in range(100):
+    for i in range(1000):
         w = term.width 
         h = term.height
 
@@ -98,7 +98,7 @@ with term.hidden_cursor():
         # print(term.clear + term.home)
         term.clear()
 
-        # [item.render(w,h) for item in main]
+        #[item.render(w,h) for item in main]
         
         draw_obj(17, 16-i, "block")
         draw_obj(17, 20-i, "spike")

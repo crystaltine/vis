@@ -41,6 +41,14 @@ class TEXTURES:
         f'{fcode(background="fff")} {fcode(background=BLUE_ORB_COLOR_1)}  {fcode(background="fff")} ',
         f'{fcode(background="fff")} {fcode(background=BLUE_ORB_COLOR_2)}  {fcode(background="fff")} ',
     ]
-    
+
+    raw_spike = [
+        " /\\ ",
+        "/__\\"
+    ]
+
     def get(texture_name: str):
         return getattr(TEXTURES, texture_name)
+    
+    def get_raw_obj_text(texture_name: str):
+        return getattr(TEXTURES, "raw_" + texture_name)
