@@ -216,3 +216,4 @@ class Text(Element):
         This function is mainly for dealing with the fact that text elements change in 
         height based on length of text (if wrapping is on)
         """
+        pass
