@@ -9,7 +9,7 @@ terminal = blessed.Terminal()
 
 main_current_index=1
 level_select_index=0
-current_page='VEOMETRY DASH'
+current_page='main'
 
 def draw_menu_bg():
     """ This is a very crude function im writing at 5am ill make it better later """
@@ -32,9 +32,14 @@ def main():
     with terminal.hidden_cursor():
 
         while True:
-                
-            draw_text(current_page, int((terminal.width-len(current_page))*0.5), int(terminal.height*0.1))
+            if current_page=='main':
+
+                draw_text('', int((terminal.width-len(current_page))*0.5), int(terminal.height*0.1))
             
+            else:
+
+                draw_text(current_page, int((terminal.width-len(current_page))*0.5), int(terminal.height*0.1))
+
             with terminal.cbreak():
                 
 
@@ -45,7 +50,7 @@ def main():
                 if val == "q":
                     break
 
-                if current_page=='VEOMETRY DASH':
+                if current_page=='main':
                     handle_main_page(val)
                 
                 elif current_page=='LEVEL SELECTOR':
@@ -136,6 +141,8 @@ def handle_level_select_page(val):
     # Change level_select_index if arrow keys pressed
 
     global level_select_index
+    global current_page
+
     changed=False
     if val.name=='KEY_LEFT':
         
@@ -154,6 +161,7 @@ def handle_level_select_page(val):
     # Running test gd file if space is selected
 
     if val==' ':
+        current_page='Game Mode'
         os.system('python ' + levels[level_select_index]['file'])
 
     # If a button has been pressed, reset the level to black, and regenerate the new level onto the screen
