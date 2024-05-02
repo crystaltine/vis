@@ -84,7 +84,7 @@ def handle_connection(conn: socket.socket, addr):
             
             print(f"socket \x1b[33m{addr=} {token=}\x1b[0m received data (assuming it's a message): \x1b[33m{parsed}\x1b[0m")
             handle_message(parsed)
-            break
+            
 
 def socket_accept_thread():
     s.listen()
@@ -157,7 +157,16 @@ if __name__ == "__main__":
             http_process.join()
             print(f"\x1b[34mGracefully exiting...\x1b[0m")
             exit(0)
+        elif cmd == 'listsockets':
+            print(connections)
+        elif cmd == 'pingsockets':
+            # check if the sockets are still alive
+            for token, conn in connections.items():
+                if conn.fileno() == -1:
+                    print(f"\x1b[31msocket {token}: disconnected (fileno={conn.fileno()})\x1b[0m")
+                else:
+                    print(f"\x1b[32msocket {token}: connected (fileno={conn.fileno()})\x1b[0m")
         elif cmd == "help":
-            print("\x1b[33mno!!")
+            print("available commands: \n- exit|quit|stop\n- listsockets, \n- pingsockets")
         else:
             print("\x1b[0mUnknown command. Type 'help' for a list of commands.")
