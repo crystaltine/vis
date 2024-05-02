@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from flask import request, Response
 from .flask_app import app
-from .helpers import *
+
 import json
 
 import hashlib
@@ -18,6 +18,8 @@ else:
     key = key.encode()
 
 tokens = {}
+
+from .helpers import *
 
 @app.route("/api/login", methods=["POST"])
 def handle_login():
