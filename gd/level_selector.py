@@ -8,13 +8,13 @@ levels=[{'level_name':'TEST LEVEL 1',
          'level_description':'This is a random test level for demo purposes',
          'color1':'blue',
          'color2':'grey49',
-         'file': 'run_gd.py'}, 
+         'path': 'test.level'}, 
         
         {'level_name':'TEST LEVEL 2',
          'level_description':'This is a random test level for demo purposes version 2',
          'color1':'red',
          'color2':'grey49',
-         'file':''}
+         'path':'test2.level'}
     ]
     
 
