@@ -105,7 +105,7 @@ def handle_server_creation() -> None:
             return return_error("Failed to create admin role")
 
         data = {
-            "user_id": user_id,
+            "user_token": user_token,
             "server_id": server_id,
             "role_id": "admin"
         }
@@ -115,7 +115,7 @@ def handle_server_creation() -> None:
             return return_error("Failed to add admin role to user")
         
         data = {
-            "user_id": user_id,
+            "user_token": user_token,
             "server_id": server_id,
             "role_id": "everyone"
         }
@@ -131,7 +131,7 @@ def handle_server_creation() -> None:
         # create a general chat for the server
         
         data = {
-            "user_id": user_id,
+            "user_token": user_token,
             "server_id": server_id,
             "chat_name": "general",
             "chat_type": "text chat",
@@ -186,7 +186,7 @@ def handle_server_name_update():
 
     
     data = {
-        "user_id": user_id,
+        "user_token": user_token,
         "server_id": server_id
     }
     resp = requests.post(URI + "/api/members/get_perms", json=data)
@@ -237,7 +237,7 @@ def handle_server_color_update() -> None:
         return invalid_fields()
 
     data = {
-        "user_id": user_id,
+        "user_token": user_token,
         "server_id": server_id
     }
     resp = requests.post(URI + "/api/members/get_perms", json=data)
@@ -287,7 +287,7 @@ def handle_server_icon_update() -> None:
     new_server_icon = request.json["new_server_icon"]
 
     data = {
-        "user_id": user_id,
+        "user_token": user_token,
         "server_id": server_id
     }
     resp = requests.post(URI + "/api/members/get_perms", json=data)

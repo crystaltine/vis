@@ -176,7 +176,7 @@ def handle_user_joining_server():
             cur.execute(send_query, (uuid4(), user_id, server_id, member_join_date))
 
             data = {
-                "user_id": user_id,
+                "user_token": user_token,
                 "server_id": server_id,
                 "role_id": "everyone"
             }
