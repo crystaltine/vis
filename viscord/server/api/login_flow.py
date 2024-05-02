@@ -17,7 +17,20 @@ if not key:
 else:
     key = key.encode()
 
-tokens = {}
+class TokenCache:
+    def __init__(self):
+        self.tokens = {}
+
+    def __contains__(self, token):
+        return token in self.tokens
+    
+    def get_id(self, token):
+        return self.tokens[token]
+    
+    def add_token(self, token, name, _id):
+        self.tokens[token] = (name, _id)
+
+tokens = TokenCache()
 
 from .helpers import *
 
@@ -38,7 +51,7 @@ def handle_login():
         records = cur.fetchall()
         if len(records) > 0:
             token = str(uuid4())
-            tokens[token] = user
+            tokens.add_token(token, user, records[0][0])
             f = Fernet(key + str(sys_uuid).encode())
             cache = f.encrypt(token.encode("utf-8")).decode("utf-8")
 
@@ -64,7 +77,7 @@ def handle_token_bypass():
         f = Fernet(key + str(sys_uuid).encode())
         token = f.decrypt(cache.encode("utf-8")).decode("utf-8")
 
-        name = tokens[token]
+        name, _id = tokens.get_id(token)
         query = """select user_id, user_name from "Discord"."UserInfo" where user_name = %s"""
         cur.execute(query, (name,))
         records = cur.fetchall()
