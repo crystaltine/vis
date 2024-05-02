@@ -72,8 +72,8 @@ def draw_spike(height, x:int, y:int, color:str='white', orient_right=False):
             for k in range(int(height*0.4)):
                 for j in range(i):
                     dots+="█"
-            print(terminal.move_yx(y+height+(height-i-1), x) + dots, end="")
-
+            print(terminal.move_yx(y+height+(height-i-1), x) + dots+terminal.normal, end="")
+    
         
 
 # Writes text on the screen, assuming the background color is blue
@@ -220,6 +220,6 @@ def draw_bottom_menu():
         delete_text='Delete Selected Object: [Backspace]'
         draw_text(delete_text, int(terminal.width*0.63), int(terminal.height*0.96))
         
-#draw_bottom_menu()
+
 
 
