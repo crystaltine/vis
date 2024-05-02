@@ -6,7 +6,6 @@ import os
 terminal = blessed.Terminal()
 os.system('cls')
 
-
 def draw_gd_icon(width:int, height:int, x: int, y: int, main_color:str, secondary_color:str):
 
     # Drawing the main body
