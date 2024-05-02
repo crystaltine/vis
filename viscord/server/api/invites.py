@@ -21,9 +21,6 @@ def handle_invite_creation(user_id, server_id, invite_code):
             None
     """
 
-    if not validate_fields(request.json, {"user_token": str, "server_id": str, "invite_code": str}):
-        return invalid_fields()
-
     try:
 
         invite_id = str(uuid4())
