@@ -29,8 +29,12 @@ def create_user() -> Literal["success", "false", "username-unavailable"]:
     color = request.json["color"]
     symbol = request.json["symbol"]
 
-    if not username_available(username):
-        return return_error(f"Username {username} is already taken")
+
+    resp = requests.post(URI + "/api/users/check_username", json={"username": username})
+    if resp.status_code != 200:
+        return return_error("Failed to check username availability")
+    if not resp.json()["available"]:
+        return return_error(f"Username is already taken")
 
     send_query='''
     insert into "Discord"."UserInfo" 
