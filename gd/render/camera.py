@@ -223,7 +223,66 @@ class Camera:
             
         # draw the player
         self.draw_player(player_pos[0], player_pos[1])
-    
+
+    def level_editor_render(self, cursor_pos: tuple, screen_pos: tuple, cur_cursor_obj):
+
+        self.left = screen_pos[1] - CameraUtils.CAMERA_LEFT_OFFSET
+
+        all_strips = []
+
+        cursor_texture = fcode(background="#68FF06")
+
+        cur_y = 0
+
+        for row in self.leveldata[-self.ground:]:
+            cur_x = 1
+
+            render_strip_1 = fcode(background=TEXTURES.BG_COLOR) # start as the bg format code
+            render_strip_2 = fcode(background=TEXTURES.BG_COLOR) # start as the bg format code
+            
+            if (floor(self.left)) >= len(row):
+                continue # row is all behind us
+
+            partial_render_offset = round(4 * closest_quarter(self.left))
+            
+            empty_block = " "*(4-partial_render_offset)
+            render_strip_1 += empty_block
+            render_strip_2 += empty_block
+            
+            for obj in row[floor(self.left)+1 : min(len(row), floor(self.left + CameraUtils.screen_width_blocks(self.term)))]:
+                if cursor_pos[1] in {cur_y+1, cur_y-1, cur_y}:
+                    if cursor_pos[0] in {cur_x+1, cur_x-1, cur_x}:
+                        render_strips = self.draw_cursor((cur_x, cur_y), cursor_pos, cursor_texture, [render_strip_1, render_strip_2], obj, cur_cursor_obj)
+                        render_strip_1 = render_strips[0]
+                        render_strip_2 = render_strips[1]
+                        cur_x += 1
+                        continue
+                if obj.data is None:
+                    empty_block = " "*CameraUtils.GRID_PX_X
+                    render_strip_1 += empty_block + fcode(background=TEXTURES.BG_COLOR)
+                    render_strip_2 += empty_block + fcode(background=TEXTURES.BG_COLOR)
+
+                else: 
+                    render_strip_1 += TEXTURES.get(obj.data["name"])[1] + fcode(background=TEXTURES.BG_COLOR)
+                    render_strip_2 += TEXTURES.get(obj.data["name"])[0] + fcode(background=TEXTURES.BG_COLOR)
+                cur_x += 1
+            
+            render_strip_1 += " "*max(0, self.term.width-len_no_ansi(render_strip_1))
+            render_strip_2 += " "*max(0, self.term.width-len_no_ansi(render_strip_2))
+
+            all_strips.append(render_strip_2)
+            all_strips.append(render_strip_1)
+            cur_y += 1
+
+        for i in range(self.ground*CameraUtils.GRID_PX_Y - len(all_strips)):
+            print(self.term.move_yx(i, 0) + fcode(background=TEXTURES.BG_COLOR) + " "*self.term.width)
+
+        row_in_terminal = (self.ground)*CameraUtils.GRID_PX_Y - len(all_strips)
+        for i in range(len(all_strips)):
+
+            print(self.term.move_yx(row_in_terminal, 0) + all_strips[i])
+            row_in_terminal += 1
+            
     def draw_player(self, player_x: float, player_y: float):
         """
         Draws the player at the specified position.
@@ -238,3 +297,100 @@ class Camera:
         
         for i in range(len(TEXTURES.PLAYER_ICON)):
             print(self.term.move_yx(player_topmost_y+i, camera_offset_chars) + TEXTURES.PLAYER_ICON[i])
+
+    def draw_cursor(self, cur_pos: tuple, cursor_pos: tuple, cursor_texture, render_strips: list, obj, cur_cursor_obj):
+        if obj.data is not None and (obj.data["name"].find("orb") != -1 or obj.data["name"].find("block") != -1):
+            render_strips[1] += TEXTURES.get(obj.data["name"])[0] + fcode(background=TEXTURES.BG_COLOR)
+            render_strips[0] += TEXTURES.get(obj.data["name"])[1] + fcode(background=TEXTURES.BG_COLOR)
+            return render_strips
+        if cur_pos[1] == cursor_pos[1]:
+            layer = (True, True)
+        elif cur_pos[1]-1 == cursor_pos[1]:
+            layer = (False, True)
+        elif cur_pos[1]+1 == cursor_pos[1]:
+            layer = (True, False)
+        if cur_pos[0] == cursor_pos[0]:
+            if layer == (True, True) and cur_cursor_obj != None:
+                if cur_cursor_obj.data["name"].find("orb") != -1 or cur_cursor_obj.data["name"].find("block") != -1:
+                    render_strips[1] += TEXTURES.get(cur_cursor_obj.data["name"])[0] + fcode(background=TEXTURES.BG_COLOR)
+                    render_strips[0] += TEXTURES.get(cur_cursor_obj.data["name"])[1] + fcode(background=TEXTURES.BG_COLOR)
+                else:
+                    render_strips = self.draw_center(render_strips, cursor_texture, layer, cur_cursor_obj)
+            else:
+                render_strips = self.draw_center(render_strips, cursor_texture, layer, obj)
+        elif cur_pos[0]-1 == cursor_pos[0]:
+            render_strips = self.draw_r_edge(render_strips, cursor_texture, layer, obj)
+        elif cur_pos[0]+1 == cursor_pos[0]:
+            render_strips = self.draw_l_edge(render_strips, cursor_texture, layer, obj)
+        return render_strips
+
+    def draw_center(self, render_strips, cursor_texture, layer, obj):
+        empty_block = " "*CameraUtils.GRID_PX_X
+        if obj.data is None:
+            if layer[1]:
+                render_strips[1] += cursor_texture + empty_block
+            else:
+                render_strips[1] += empty_block
+            if layer[0]:
+                render_strips[0] += cursor_texture + empty_block
+            else:
+                render_strips[0] += empty_block
+        else:
+            if layer[1]:
+                render_strips[1] += cursor_texture + TEXTURES.get_raw_obj_text(obj.data["name"])[0]
+            else:
+                render_strips[1] += TEXTURES.get_raw_obj_text(obj.data["name"])[0]
+            if layer[0]:
+                render_strips[0] += cursor_texture + TEXTURES.get_raw_obj_text(obj.data["name"])[1]
+            else:
+                render_strips[0] += TEXTURES.get_raw_obj_text(obj.data["name"])[1]
+        return render_strips
+    
+    def draw_l_edge(self, render_strips, cursor_texture, layer, obj):
+        empty_block = " "*(CameraUtils.GRID_PX_X//2)
+        if obj.data is None:
+            if layer[1]:
+                render_strips[1] += empty_block + cursor_texture + empty_block
+            else:
+                render_strips[1] += empty_block + fcode(background=TEXTURES.BG_COLOR) + empty_block
+            if layer[0]:
+                render_strips[0] += empty_block + cursor_texture + empty_block
+            else:
+                render_strips[0] += empty_block + fcode(background=TEXTURES.BG_COLOR) + empty_block
+        else:
+            top = TEXTURES.get_raw_obj_text(obj.data["name"])[1]
+            bottom = TEXTURES.get_raw_obj_text(obj.data["name"])[0]
+            if layer[1]:
+                render_strips[1] += bottom[len(bottom) - 4:len(bottom) - 2] + cursor_texture + bottom[len(bottom) - 2:]
+            else:
+                render_strips[1] += bottom
+            if layer[0]:
+                render_strips[0] += top[len(top) - 4:len(top) - 2] + cursor_texture + top[len(top) - 2:]
+            else:
+                render_strips[0] += top
+        return render_strips
+    
+    def draw_r_edge(self, render_strips, cursor_texture,layer, obj):
+        empty_block = " "*(CameraUtils.GRID_PX_X//2)
+        if obj.data is None:
+            if layer[1]:
+                render_strips[1] += cursor_texture + empty_block + fcode(background=TEXTURES.BG_COLOR) + empty_block
+            else:
+                render_strips[1] += empty_block + fcode(background=TEXTURES.BG_COLOR) + empty_block
+            if layer[0]:
+                render_strips[0] += cursor_texture + empty_block + fcode(background=TEXTURES.BG_COLOR) + empty_block
+            else:
+                render_strips[0] += empty_block + fcode(background=TEXTURES.BG_COLOR) + empty_block
+        else:
+            top = TEXTURES.get_raw_obj_text(obj.data["name"])[1]
+            bottom = TEXTURES.get_raw_obj_text(obj.data["name"])[0]
+            if layer[1]:
+                render_strips[1] += cursor_texture + bottom[len(bottom) - 4:len(bottom) - 2] + fcode(background=TEXTURES.BG_COLOR) + bottom[len(bottom) - 2:]
+            else:
+                render_strips[1] += bottom
+            if layer[0]:
+                render_strips[0] += cursor_texture + top[len(top) - 4:len(top) - 2] + fcode(background=TEXTURES.BG_COLOR) + top[len(top) - 2:]
+            else:
+                render_strips[0] += top
+        return render_strips
+    
