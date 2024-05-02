@@ -4,6 +4,7 @@ from typing import Literal, Tuple, Unpack
 from globalvars import Globals
 from logger import Logger
 from boundary import Boundary
+from time import time
 
 class Text(Element):
     """
@@ -15,7 +16,6 @@ class Text(Element):
         class_str: str | None
         style_str: str | None
         text: str
-        container_bg: str
     
     class StyleProps(Element.StyleProps):
         """
@@ -63,13 +63,12 @@ class Text(Element):
         """
         
         super().__init__(**attrs) # should ignore any unknown attributes that are provided
-        self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else fcode(background=attrs.get("container_bg"))
-        Logger.log(f"<text> init: containerbg={attrs.get('container_bg')}, {self.style.get('bg_color')=}, {self._bg_fcode=}")
         self.text = attrs.get("text", "")
 
-    def render(self, container_bounds: Boundary = None):
+    def render(self, container_bounds: Boundary = None, container_bg: str = None) -> None:
 
         container_bounds = self.get_true_container_edges(container_bounds)
+        curr_bg_color = self.getset_curr_bg_color(container_bg)
 
         # calculate width-related attributes 
         container_width = container_bounds.right - container_bounds.left
@@ -102,8 +101,6 @@ class Text(Element):
             # wrap text based on client width
             wrapped_text = [self.text[i*self.client_width:(i+1)*self.client_width] for i in range(len(self.text)//self.client_width+1)]
 
-        #with Globals.__vis_document__.term.hidden_cursor():
-
         text_chunk_index = 0 # which chunk of text to render on each line
         for row in range(self.client_top, self.client_bottom):
             text_chunk = wrapped_text[text_chunk_index] if text_chunk_index < len(wrapped_text) else ""
@@ -118,14 +115,15 @@ class Text(Element):
                 )
             
             Logger.log(f"<text> w/text={self.text}: align style is {self.style.get('text_align')} and text_left_padding is {text_left_padding}, {self.client_left=}")
-            text_bg = (self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else self.container_bg
-            Logger.log(f"<text> render(): text_bg={self.style.get('bg_color')} if it isnt transparent, else using {self.container_bg=}")
-
-            print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=text_bg, style=style_string) + text_left_padding*" " + text_chunk, end="\x1b[0m")
+            with Globals.__vis_document__.term.hidden_cursor():
+                print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=curr_bg_color, style=style_string) + text_left_padding*" " + text_chunk, end="\x1b[0m")
+            Logger.log(f"[t={time()}] text with text={self.text} just got drawn")
+            
             text_chunk_index += 1
 
-    def _render_partial(self, container_bounds: Boundary, max_bounds: Boundary) -> None:
+    def _render_partial(self, container_bounds: Boundary, max_bounds: Boundary, container_bg: str = None) -> None:
         container_bounds = self.get_true_container_edges(container_bounds)
+        curr_bg_color = self.getset_curr_bg_color(container_bg)
 
         # calculate width-related attributes 
         container_width = container_bounds.right - container_bounds.left
@@ -145,7 +143,7 @@ class Text(Element):
             self.client_height = convert_to_chars(container_bounds.bottom-container_bounds.top, self.style.get("height"))
         self.client_bottom = self.client_top + self.client_height
 
-        Logger.log(f"[text] PARTIALRENDER: max t,b=({max_bounds.top},{max_bounds.bottom}) cli t,b=({self.client_top},{self.client_bottom})")
+        # Logger.log(f"[text] PARTIALRENDER: max t,b=({max_bounds.top},{max_bounds.bottom}) cli t,b=({self.client_top},{self.client_bottom})")
 
         if not self.style.get("visible"): return
             
@@ -160,16 +158,6 @@ class Text(Element):
             # wrap text based on client width
             wrapped_text = [self.text[i*self.client_width:(i+1)*self.client_width] for i in range(len(self.text)//self.client_width+1)]
 
-        #with Globals.__vis_document__.term.hidden_cursor():
-        for i in range(max(self.client_top, max_bounds.top), min(self.client_bottom, max_bounds.bottom)):
-            
-                # diagram:
-                #  cli_left   bounds_left              bounds_right  cli_right
-                #  |          |                        |             |
-                #  --------------------------------------------------- = client_width
-                #             -------------------------- = max_bounds.right - max_bounds.left
-            print(Globals.__vis_document__.term.move_xy(max(self.client_left, max_bounds.left), i) + self._bg_fcode + " " * min(self.client_width, max_bounds.right - max_bounds.left), end="\x1b[0m")
-
         # if completely out of render, just skip all this goofy ah garbage
         if (
             max_bounds.left >= self.client_right or
@@ -178,35 +166,33 @@ class Text(Element):
             max_bounds.bottom < self.client_top
         ): return
 
-        with Globals.__vis_document__.term.hidden_cursor():
-
-            text_chunk_index = 0 # which chunk of text to render on each line
-            for row in range(self.client_top, self.client_bottom+1):
-                
-                if max_bounds.bottom < row < max_bounds.top:
-                    text_chunk_index += 1
-                    continue
-
-                text_chunk = wrapped_text[text_chunk_index] if text_chunk_index < len(wrapped_text) else ""
-                
-                # if the text chunk is not as long as the client width, then apply text_align
-                text_left_padding = 0 # 0 by default
-                if len(text_chunk) < self.client_width:
-                    text_left_padding = (
-                        (self.client_width - len(text_chunk))//2 if self.style.get("text_align") == "center"
-                        else self.client_width - len(text_chunk) if self.style.get("text_align") == "right"
-                        else 0
-                    )
-                
-                text_to_render = text_left_padding*" " + text_chunk
-                if max_bounds.left > self.client_left: # cut off left side
-                    text_to_render = text_to_render[max_bounds.left-self.client_left:]
-                if max_bounds.right < self.client_right: # cut off right side
-                    text_to_render = text_to_render[:max_bounds.right-self.client_right]
-
-                
-                print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=self.style.get("bg_color"), style=style_string) + text_left_padding*" " + text_chunk, end="\x1b[0m")
+        text_chunk_index = 0 # which chunk of text to render on each line
+        for row in range(self.client_top, self.client_bottom+1):
+            
+            if max_bounds.bottom < row < max_bounds.top:
                 text_chunk_index += 1
+                continue
+
+            text_chunk = wrapped_text[text_chunk_index] if text_chunk_index < len(wrapped_text) else ""
+            
+            # if the text chunk is not as long as the client width, then apply text_align
+            text_left_padding = 0 # 0 by default
+            if len(text_chunk) < self.client_width:
+                text_left_padding = (
+                    (self.client_width - len(text_chunk))//2 if self.style.get("text_align") == "center"
+                    else self.client_width - len(text_chunk) if self.style.get("text_align") == "right"
+                    else 0
+                )
+            
+            text_to_render = text_left_padding*" " + text_chunk
+            if max_bounds.left > self.client_left: # cut off left side
+                text_to_render = text_to_render[max_bounds.left-self.client_left:]
+            if max_bounds.right < self.client_right: # cut off right side
+                text_to_render = text_to_render[:max_bounds.right-self.client_right]
+
+            with Globals.__vis_document__.term.hidden_cursor():
+                print(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=curr_bg_color, style=style_string) + text_left_padding*" " + text_chunk, end="\x1b[0m")
+            text_chunk_index += 1
 
     def _determine_dimensions(partial_container_bounds: Boundary) -> Tuple[int, int]:
         """

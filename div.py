@@ -4,6 +4,7 @@ from typing import List, Unpack
 from globalvars import Globals
 from logger import Logger
 from boundary import Boundary
+from time import time
 
 class Div(Element):
     """
@@ -15,7 +16,6 @@ class Div(Element):
         class_str: str | None
         style_str: str | None
         children: List["Element"]
-        container_bg: str
     
     class StyleProps(Element.StyleProps):
         """ A schema of style options for divs. """
@@ -60,16 +60,15 @@ class Div(Element):
         super().__init__(**attrs) # should ignore any unknown attributes that are provided
         
         self.children: List["Element"] = attrs.get("children", [])
-        self._bg_fcode = fcode(background=self.style.get("bg_color")) if self.style.get("bg_color") != "transparent" else fcode(background=attrs.get("container_bg"))
         #Logger.log(f"{self}'s children on init: {self.children}")
     
-    def render(self, container_bounds: Boundary = None):
+    def render(self, container_bounds: Boundary = None, container_bg: str = None):
 
         #Logger.log(f"<BEGIN DIV render func>")
         #Logger.log(f"Div render params: {container_bounds.left=} {container_bounds.top=} {container_bounds.right=} {container_bounds.bottom=}")
         container_bounds = self.get_true_container_edges(container_bounds)
-        
         Boundary.set_client_boundary(self, container_bounds)
+        curr_bg_color = self.getset_curr_bg_color(container_bg)
         
         #Logger.log(f"Div (id={self.id}) given top: {self.style.get('top')}, bottom: {self.style.get('bottom')}, height: {self.style.get('height')}, calced client_top={self.client_top}, client_bottom={self.client_bottom}, client_height={self.client_height}")
         #Logger.log(f"^ {container_bounds.top=}, {container_bounds.bottom=}, {container_height=}")
@@ -77,11 +76,13 @@ class Div(Element):
         if not self.style.get("visible"): return
         
         # draw the rectangle IF it is not transparent.
-        if self._bg_fcode:
-            with Globals.__vis_document__.term.hidden_cursor():
-                for i in range(self.client_top, self.client_bottom):
-                    print(Globals.__vis_document__.term.move_xy(self.client_left, i) + self._bg_fcode + " " * self.client_width, end="\x1b[0m")
-                    
+        if curr_bg_color != 'transparent':
+            for i in range(self.client_top, self.client_bottom):
+                with Globals.__vis_document__.term.hidden_cursor():
+                    print(Globals.__vis_document__.term.move_xy(self.client_left, i) + fcode(background=curr_bg_color) + " " * self.client_width, end="\x1b[0m")
+        
+        # Logger.log(f"[t={time()}] div drawn, moving to children")
+        
         # render children
         for child in self.children:
             
@@ -95,12 +96,13 @@ class Div(Element):
                 self.client_top + convert_to_chars(self.client_height, self.style.get("padding_top")) or general_padding_y,
                 self.client_right - convert_to_chars(self.client_width, self.style.get("padding_right")) or general_padding_x,
                 self.client_bottom - convert_to_chars(self.client_height, self.style.get("padding_bottom")) or general_padding_y
-            ))
+            ), container_bg=curr_bg_color)
             
-    def _render_partial(self, container_bounds: Boundary, max_bounds: Boundary) -> None:
+    def _render_partial(self, container_bounds: Boundary, max_bounds: Boundary, container_bg: str = None) -> None:
         # first do the same stuff as render
         container_bounds = self.get_true_container_edges(container_bounds)
         Boundary.set_client_boundary(self, container_bounds)
+        curr_bg_color = self.getset_curr_bg_color(container_bg)
         
         if not self.style.get("visible"): return
         
@@ -112,19 +114,19 @@ class Div(Element):
             max_bounds.bottom < self.client_top
         ): return
 
-        Logger.log(f"[div] PARTIALRENDER: max top={max_bounds.top} max bot={max_bounds.bottom}")
+        #Logger.log(f"[div] PARTIALRENDER: max top={max_bounds.top} max bot={max_bounds.bottom}")
 
-        if self._bg_fcode:
-            #with Globals.__vis_document__.term.hidden_cursor():
-            Logger.log(f"[div] PARTIALRENDER: drawing bg from max({self.client_top}, {max_bounds.top}) TO (min({self.client_bottom}, {max_bounds.bottom}))")
+        if curr_bg_color != 'transparent':
+            #Logger.log(f"[div] PARTIALRENDER: drawing bg from max({self.client_top}, {max_bounds.top}) TO (min({self.client_bottom}, {max_bounds.bottom}))")
             for i in range(max(self.client_top, max_bounds.top), min(self.client_bottom+1, max_bounds.bottom)):
-                    # diagram:
-                    #  cli_left   bounds_left              bounds_right  cli_right
-                    #  |          |                        |             |
-                    #  --------------------------------------------------- = client_width
-                    #             -------------------------- = max_bounds.right - max_bounds.left
-                print(Globals.__vis_document__.term.move_xy(max(self.client_left, max_bounds.left), i) + self._bg_fcode + " " * min(self.client_width, max_bounds.right - max_bounds.left), end="\x1b[0m")
-                    
+                # diagram:
+                #  cli_left   bounds_left              bounds_right  cli_right
+                #  |          |                        |             |
+                #  --------------------------------------------------- = client_width
+                #             -------------------------- = max_bounds.right - max_bounds.left
+                with Globals.__vis_document__.term.hidden_cursor():
+                    print(Globals.__vis_document__.term.move_xy(max(self.client_left, max_bounds.left), i) + fcode(background=curr_bg_color) + " " * min(self.client_width, max_bounds.right - max_bounds.left), end="\x1b[0m")
+                
         # render children
         for child in self.children:
             
@@ -138,7 +140,7 @@ class Div(Element):
                 self.client_top + convert_to_chars(self.client_height, self.style.get("padding_top")) or general_padding_y,
                 self.client_right - convert_to_chars(self.client_width, self.style.get("padding_right")) or general_padding_x,
                 self.client_bottom - convert_to_chars(self.client_height, self.style.get("padding_bottom")) or general_padding_y
-            ), max_bounds)
+            ), max_bounds, container_bg=curr_bg_color)
              
     def add_child(self, child: "Element", index: int = None):
         """

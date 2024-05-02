@@ -7,7 +7,7 @@ import pyperclip
 from logger import Logger
 
 if TYPE_CHECKING:
-    from key_event import KeyEvent
+    from key_event import KeyEvent2
     
 class Input(Element):
     """
@@ -112,7 +112,7 @@ class Input(Element):
         # assert that not both left and right are None
         assert not (self.style.get("left") is None and self.style.get("right") is None), "[Text]: At least one of left or right must not be None."
 
-        def _event_handler(e: "KeyEvent"):
+        def _event_handler(e: "KeyEvent2"):
             """ 
             Should only run when the element is selected.
             Internal event handler for document keydown events (for typing inside the element) 
@@ -120,37 +120,33 @@ class Input(Element):
 
             # else, handle key.
             if not e.is_special:
-
-                if e.key == 'v' and e.holding_ctrl:
-                    self.curr_text += pyperclip.paste()
-                else:
-                    self._insert_char(e.key)
+                self._insert_char(e.key)
 
             else:
-                if e.key == 'backspace':
+                if e.name == 'KEY_BACKSPACE':
                     self._backspace()
 
-                elif e.key == 'delete':
+                elif e.name == 'KEY_DELETE':
                     self._delete()
 
-                elif e.key == "insert":
+                elif e.name == "KEY_INSERT":
                     self.insert_mode = not self.insert_mode
 
-                elif e.key == 'left':
+                elif e.name == 'KEY_LEFT':
                     self._move_left()
                 
-                elif e.key == 'right':
+                elif e.name == 'KEY_RIGHT':
                     self._move_right()
 
-                elif e.key == 'enter':
+                elif e.name == 'KEY_ENTER':
                     self.on_enter(self)
 
-                elif e.key == 'esc':
+                elif e.name == 'KEY_ESCAPE':
                     self.curr_text = ""
                     # return or something/deselect (same as enter) (TODO)
 
-                elif e.key == 'tab':
-                    # deselect BUT go to next element (TODO)
+                elif e.name == 'KEY_TAB':
+                    # deselect BUT go to next element (handled by document FOR NOW) (TODO?)
                     pass
 
                 #Logger.log(f"Input: special key {e.key}: curr_text is now {self.curr_text}, curs_pos is {self.cursor_pos}")
@@ -158,7 +154,7 @@ class Input(Element):
             self.render()
 
         # register this element's event handler with the document's special handlers
-        Globals.__vis_document__.element_keydown_listeners[self] = set([_event_handler])
+        Globals.__vis_document__.element_key_listeners[self] = set([_event_handler])
         if self.style.get("selectable"): Globals.__vis_document__.selectable_elements.add(self)
         if self.style.get("hoverable"): Globals.__vis_document__.hoverable_elements.add(self)
 
@@ -227,7 +223,7 @@ class Input(Element):
         self.cursor_pos = 0
         self.render()
 
-    def render(self, container_bounds: Boundary = None):
+    def render(self, container_bounds: Boundary = None, container_bg: str = None):
 
         ##Logger.log(f"<BEGIN INPUT render func>: this element is hovered: {Globals.is_hovered(self)}, this element is active: {Globals.is_active(self)}")
         container_bounds = self.get_true_container_edges(container_bounds)
@@ -298,6 +294,5 @@ class Input(Element):
         text_to_render += regular_text_fcode + " "*(self.client_width - len_no_ansi(text_to_render))
         #Logger.log(f"Input renderer: final stripped text_to_render is {remove_ansi(text_to_render)}")
 
-        #with Globals.__vis_document__.term.hidden_cursor():
-        print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + text_to_render, end="\x1b[0m")
-        print(Globals.__vis_document__.term.move_yx(0,0), end="\x1b[0m")
+        with Globals.__vis_document__.term.hidden_cursor():
+            print(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + text_to_render, end="\x1b[0m")
