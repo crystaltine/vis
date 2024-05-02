@@ -9,6 +9,7 @@ from .flask_app import app
 from flask import request, Response
 import requests
 from .server_config import URI
+import hashlib
 
 @app.route("/api/users/create", methods=["POST"])
 def create_user() -> Literal["success", "false", "username-unavailable"]:
@@ -23,7 +24,8 @@ def create_user() -> Literal["success", "false", "username-unavailable"]:
 
     user_id = request.json["user_id"]
     username = request.json["username"]
-    password = request.json["password"]
+    
+    password = hashlib.sha512(request.json["password"].encode()).hexdigest()
     color = request.json["color"]
     symbol = request.json["symbol"]
 

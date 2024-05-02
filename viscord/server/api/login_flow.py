@@ -8,6 +8,8 @@ from .flask_app import app
 from .helpers import *
 import json
 
+import hashlib
+
 key = os.getenv("VISCORD_KEY")
 if not key:
     key = Fernet.generate_key()
@@ -24,7 +26,8 @@ def handle_login():
         return invalid_fields()
 
     user = request.json["user"]
-    password = request.json["password"]
+
+    password = hashlib.sha256(request.json["password"].encode()).hexdigest()
     sys_uuid = request.json["sys_uuid"]
 
     send_query = """select user_id, user_name from "Discord"."UserInfo" where user_name = %s and user_password = %s"""
