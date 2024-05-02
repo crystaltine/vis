@@ -7,7 +7,7 @@ URI = f"http://{HOST}:{HTTP_PORT}"
 
 SSL_CONTEXT = None
 
-if len(sys.argv) == 3:
+if len(sys.argv) == 3: # assumes it's running on trigtbh.dev - don't mess around with this pleaseeee
     # SSL_CERT = os.environ["SSL_CERT"]
     # SSL_KEY = os.environ["SSL_KEY"]
 
@@ -16,4 +16,4 @@ if len(sys.argv) == 3:
 
 
     SSL_CONTEXT = (SSL_CERT, SSL_KEY)
-    URI = f"https://{HOST}:{HTTP_PORT}"
+    URI = f"https://trigtbh.dev:{HTTP_PORT}"
