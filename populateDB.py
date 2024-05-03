@@ -113,8 +113,8 @@ def populate_server_info() -> None:
     color1 = "#ffffff"
     server_icon1 = random.choice("☀☁★☾♥♠♦♣♫☘☉☠")
     timestamp = str(datetime.datetime.now())
-    send_query='''insert into "Discord"."ServerInfo" (server_id, server__name, color, server_icon, server_creation_timestamp) values (%s, %s, %s, %s, %s)'''
-    cur.execute(send_query, (server_id1, server_name1, color1, server_icon1, timestamp))
+    send_query='''insert into "Discord"."ServerInfo" (server_id, server__name, server_owner, color, server_icon, server_creation_timestamp) values (%s, %s, %s, %s, %s, %s)'''
+    cur.execute(send_query, (server_id1, server_name1, uuid1, color1, server_icon1, timestamp))
 
     # Adding in second server
 
@@ -122,8 +122,8 @@ def populate_server_info() -> None:
     color2 = "#ffffff"
     server_icon2 = random.choice("☀☁★☾♥♠♦♣♫☘☉☠")
     timestamp = str(datetime.datetime.now())
-    send_query='''insert into "Discord"."ServerInfo" (server_id, server__name, color, server_icon, server_creation_timestamp) values (%s, %s, %s, %s, %s)'''
-    cur.execute(send_query, (server_id2, server_name2, color2, server_icon2, timestamp))
+    send_query='''insert into "Discord"."ServerInfo" (server_id, server__name, server_owner, color, server_icon, server_creation_timestamp) values (%s, %s, %s, %s, %s, %s)'''
+    cur.execute(send_query, (server_id2, server_name2, uuid1, color2, server_icon2, timestamp))
 
 
 # This populates the ChatInfo table
