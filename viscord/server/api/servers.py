@@ -51,10 +51,10 @@ def handle_server_creation() -> None:
     # TODO: make this entire try/except block not api
     try:
         send_query = '''
-            INSERT into "Discord"."ServerInfo" (server_id, server__name, color, server_icon, server_creation_timestamp) values (%s, %s, %s, %s, %s)
+            INSERT into "Discord"."ServerInfo" (server_id, server__name, color, server_icon, server_creation_timestamp, server_owner) values (%s, %s, %s, %s, %s, %s)
         '''
 
-        cur.execute(send_query, (server_id, server_name, server_color, server_icon, server_timestamp))
+        cur.execute(send_query, (server_id, server_name, server_color, server_icon, server_timestamp, user_id))
 
         # add the user creating the server to the server as a member
 
@@ -108,9 +108,9 @@ def handle_server_creation() -> None:
             return return_error("Failed to create admin role")
 
         data = {
-            "user_token": user_token,
-            "server_id": server_id,
-            "role_id": admin_role_id
+            "user_token": str(user_token),
+            "server_id": str(server_id),
+            "role_id": str(admin_role_id)
         }
 
         resp = requests.post(URI + "/api/members/add_role", json=data)
@@ -118,9 +118,9 @@ def handle_server_creation() -> None:
             return return_error("Failed to add admin role to user")
         
         data = {
-            "user_token": user_token,
-            "server_id": server_id,
-            "role_id": "everyone"
+            "user_token": str(user_token),
+            "server_id": str(server_id),
+            "role_id": str(server_id) + "_" + "everyone"
         }
 
         resp = requests.post(URI + "/api/members/add_role", json=data)
