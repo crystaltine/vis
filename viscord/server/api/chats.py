@@ -76,10 +76,10 @@ def handle_chat_creation():
         resp = requests.post(URI + "/api/roles/get_server_perms", json=data)
         if resp.status_code != 200:
             return return_error("Failed to retrieve role permissions")
-        perms = resp.json() # NOTE this doesn't work for dms, those will be for sprint 3
+        perms = resp.json()["data"] # NOTE this doesn't work for dms, those will be for sprint 3
 
         if not perms["manage_chats"]:
-            return False
+            return missing_permissions()
 
         chat_id = str(uuid4())
 
