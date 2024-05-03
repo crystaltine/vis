@@ -14,6 +14,8 @@ create table "Discord"."UserInfo"(
 create table "Discord"."ServerInfo" (
 	server_id varchar(512) primary key not null,
 	server__name varchar(512) not null,
+	server_owner varchar(512) not null,
+	constraint server_info_user_id foreign key(server_owner) references "Discord"."UserInfo"(user_id),
 	color varchar(512) not null,
 	server_icon varchar(512) not null,
 	server_creation_timestamp timestamp not null
