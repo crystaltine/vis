@@ -137,7 +137,7 @@ def handle_role_creation():
     
     data = request.json
     if data["is_admin"]:
-        for key in data:
+        for key in ["manage_server", "manage_chats", "manage_members", "manage_roles", "manage_voice", "manage_messages"]:
             data[key] = True
 
     copy = data["server_id"]
