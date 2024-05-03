@@ -84,7 +84,8 @@ def get_server_perms() -> Dict:
     try:
         member_query="""select roles_list from "Discord"."MemberInfo" where user_id = %s and server_id= %s"""
         cur.execute(member_query, (user_id, server_id))
-        roles_list= cur.fetchall()[0][0]
+        roles_list = cur.fetchall()
+        roles_list = roles_list[0][0]
 
         perms={"manage_server":False, "manage_chats":False, "manage_members":False, "manage_roles":False, "manage_voice":False,  
             "manage_messages":False, "is_admin":False}
