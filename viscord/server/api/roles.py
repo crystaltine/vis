@@ -75,13 +75,10 @@ def get_server_perms() -> Dict:
 
     # Getting the user's roles from MemberInfo with the user_id and the server_id
 
-    if not validate_fields(request.json, {"user_token": str, "server_id": str}):
+    if not validate_fields(request.json, {"user_id": str, "server_id": str}):
         return invalid_fields()
     
-    user_token = request.json["user_token"]
-    if not is_valid_token(user_token):
-        return forbidden()
-    user_id = get_user_id(user_token)
+    user_id = request.json["user_id"]
     server_id = request.json["server_id"]
 
     try:

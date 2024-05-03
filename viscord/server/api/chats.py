@@ -4,6 +4,8 @@ from uuid import uuid4
 from flask import request, Response
 from .flask_app import app
 from .helpers import *
+import requests
+from .server_config import URI
 
 @app.route("/api/chats/update", methods=["POST"])
 def reorder_chats():
@@ -70,7 +72,11 @@ def handle_chat_creation():
 
     
     try:
-        perms = get_server_perms(user_id, server_id) # NOTE this doesn't work for dms, those will be for sprint 3
+        data = {"user_id": user_id, "server_id": server_id}
+        resp = requests.post(URI + "/api/roles/get_server_perms", json=data)
+        if resp.status_code != 200:
+            return return_error("Failed to retrieve role permissions")
+        perms = resp.json() # NOTE this doesn't work for dms, those will be for sprint 3
 
         if not perms["manage_chats"]:
             return False
@@ -116,7 +122,11 @@ def handle_chat_name_update() -> bool:
 
 
     
-    perms = get_server_perms(user_id, server_id)
+    data = {"user_id": user_id, "server_id": server_id}
+    resp = requests.post(URI + "/api/roles/get_server_perms", json=data)
+    if resp.status_code != 200:
+        return return_error("Failed to retrieve role permissions")
+    perms = resp.json()
 
     if not perms["manage_chats"]:
         return missing_permissions()
@@ -158,7 +168,11 @@ def handle_chat_topic_update() -> bool:
     chat_id = request.json["chat_id"]
     new_chat_topic = request.json["new_chat_topic"]
 
-    perms = get_server_perms(user_id, server_id)
+    data = {"user_id": user_id, "server_id": server_id}
+    resp = requests.post(URI + "/api/roles/get_server_perms", json=data)
+    if resp.status_code != 200:
+        return return_error("Failed to retrieve role permissions")
+    perms = resp.json()
 
     if not perms["manage_chats"]:
         return missing_permissions()
@@ -175,7 +189,7 @@ def handle_chat_topic_update() -> bool:
         return return_error(e)
 
 @app.route("/api/chats/update_order", methods=["POST"])
-def handle_chat_order_update(user_id: str, server_id: str, chat_id: str, new_chat_order: int) -> bool:
+def handle_chat_order_update() -> bool:
     """
     Update the order of a chat in the database given the chat's id. It first checks whether
     the user making the request has the necessary permissions to manage the chat. If the user does not have
@@ -201,7 +215,11 @@ def handle_chat_order_update(user_id: str, server_id: str, chat_id: str, new_cha
     new_chat_order = request.json["new_chat_order"]
 
 
-    perms = get_server_perms(user_id, server_id)
+    data = {"user_id": user_id, "server_id": server_id}
+    resp = requests.post(URI + "/api/roles/get_server_perms", json=data)
+    if resp.status_code != 200:
+        return return_error("Failed to retrieve role permissions")
+    perms = resp.json()
 
     if not perms["manage_chats"]:
         return missing_permissions()
@@ -241,7 +259,11 @@ def handle_chat_deletion():
     server_id = request.json["server_id"]
     chat_id = request.json["chat_id"]
 
-    perms = get_server_perms(user_id, server_id)
+    data = {"user_id": user_id, "server_id": server_id}
+    resp = requests.post(URI + "/api/roles/get_server_perms", json=data)
+    if resp.status_code != 200:
+        return return_error("Failed to retrieve role permissions")
+    perms = resp.json()
 
     if not perms["manage_chats"]:
         return missing_permissions()

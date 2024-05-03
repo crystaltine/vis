@@ -111,7 +111,11 @@ def handle_server_invite_request() -> str:
     user_id = get_user_id(user_token)
     server_id = request.json["server_id"]
 
-    perms = get_server_perms(user_id, server_id)
+    data = {"user_id": user_id, "server_id": server_id}
+    resp = requests.post(URI + "/api/roles/get_server_perms", json=data)
+    if resp.status_code != 200:
+        return return_error("Failed to retrieve role permissions")
+    perms = resp.json()
 
     if perms['manage_server'] == False:
         return missing_permissions()
