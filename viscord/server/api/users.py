@@ -20,13 +20,10 @@ def create_user() -> Literal["success", "false", "username-unavailable"]:
     Returns 'username-unavailable' if username is already taken.
     """
     
-    if not validate_fields(request.json, {"user_token": str, "username": str, "password": str, "color": str, "symbol": str}):
+    if not validate_fields(request.json, {"username": str, "password": str, "color": str, "symbol": str}):
         return invalid_fields()
 
-    user_token = request.json["user_token"]
-    if not is_valid_token(user_token):
-        return forbidden()
-    user_id = get_user_id(user_token)
+    user_id = str(uuid4())
     username = request.json["username"]
     
     password = hashlib.sha256(request.json["password"].encode()).hexdigest()
