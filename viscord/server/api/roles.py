@@ -163,8 +163,11 @@ def handle_role_creation():
     # if is_admin:
     #     for key in data_dict:
     #         data_dict[key]=True
-
-    add_role(copy, data)
+    try:
+        add_role(copy, data)
+        return return_success()
+    except Exception as e:
+        return return_error(e)
 
 # Given a user_id, server_id, and dict containing information about a new role, this function will add the new role to the database
 
