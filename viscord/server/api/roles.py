@@ -204,8 +204,8 @@ def add_role(server_id:str, role_info:Dict, user_id=None) -> None:
 
         query='''update "Discord"."MemberInfo" set roles_list = %s where user_id = %s and server_id = %s'''
         cur.execute(query, (roles_list, user_id, server_id))
-        print(role_id)
-        return role_id
+
+    return role_id
 
 
 # Given a role_id, remove all instances of that role from the server
