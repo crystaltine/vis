@@ -37,8 +37,10 @@ def handle_adding_member_roles():
 
         cur.execute(send_query, (user_id, server_id))
         current_roles_list = cur.fetchone()[0]
+        if current_roles_list is None:
+            current_roles_list = []
 
-        new_roles_list = current_roles_list + role_id
+        new_roles_list = current_roles_list + [role_id]
 
         send_query = '''
             UPDATE "Discord"."MemberInfo"
