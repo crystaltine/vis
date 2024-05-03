@@ -87,7 +87,7 @@ def handle_server_creation() -> None:
             return return_error("Failed to create admin role")
         
         admin_role_id = resp.json()["role_id"]
-
+        print(admin_role_id)
 
         data = {
             "server_id": server_id,
