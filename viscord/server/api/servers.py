@@ -79,6 +79,8 @@ def handle_server_creation() -> None:
         resp = requests.post(URI + "/api/roles/create_role", json=data)
         if resp.status_code != 200:
             return return_error("Failed to create admin role")
+        
+        admin_role_id = resp.json()["role_id"]
 
 
         data = {
@@ -94,7 +96,8 @@ def handle_server_creation() -> None:
             "manage_roles": False,
             "manage_voice": False,
             "manage_messages": False,
-            "is_admin": False
+            "is_admin": False,
+            "id_override": "everyone"
         }
 
         # create an "everyone" role for the server (will be assigned to all people in the server)
@@ -107,7 +110,7 @@ def handle_server_creation() -> None:
         data = {
             "user_token": user_token,
             "server_id": server_id,
-            "role_id": "admin"
+            "role_id": admin_role_id
         }
 
         resp = requests.post(URI + "/api/members/add_role", json=data)

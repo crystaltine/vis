@@ -164,8 +164,12 @@ def handle_role_creation():
     #     for key in data_dict:
     #         data_dict[key]=True
     try:
-        add_role(copy, data)
-        return return_success()
+        id_ = add_role(copy, data)
+        ret = {
+            "type": "success",
+            "role_id": id_
+        }
+        return Response(json.dumps(ret), status=200)
     except Exception as e:
         return return_error(e)
 
@@ -174,6 +178,9 @@ def handle_role_creation():
 def add_role(server_id:str, role_info:Dict, user_id=None) -> None:
     
     role_id=str(uuid4())
+
+    if "id_override" in role_info:
+        role_id = role_info["id_override"]
 
     send_query='''insert into "Discord"."RolesInfo" (role_id, server_id, role_name, role_color, role_symbol, priority, permissions, manage_server, manage_chats, \
        manage_members, manage_roles, manage_voice, manage_messages, is_admin) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
@@ -199,6 +206,7 @@ def add_role(server_id:str, role_info:Dict, user_id=None) -> None:
 
         query='''update "Discord"."MemberInfo" set roles_list = %s where user_id = %s and server_id = %s'''
         cur.execute(query, (roles_list, user_id, server_id))
+        return role_id
 
 
 # Given a role_id, remove all instances of that role from the server
