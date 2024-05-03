@@ -58,6 +58,12 @@ def handle_server_creation() -> None:
 
         # add the user creating the server to the server as a member
 
+        send_query = """insert into "Discord"."MemberInfo" (member_id, user_id, server_id, member_join_date) values (%s, %s, %s, %s)"""
+        member_timestamp = str(datetime.datetime.now()) #timestamp
+        member_id = str(uuid4()) #unique member id
+        cur.execute(send_query, (member_id, user_id, server_id, member_timestamp))
+        
+
         # create an "admin" role for the user creating the server 
         data = {
             "server_id": server_id,

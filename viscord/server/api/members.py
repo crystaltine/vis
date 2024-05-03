@@ -21,7 +21,7 @@ def handle_adding_member_roles():
     try:
         
         send_query = '''
-            SELECT COUNT(*) FROM "Discord"rsInfo" 
+            SELECT COUNT(*) FROM "Discord"."MemberInfo" 
             WHERE user_id = %s AND server_id = %s
         '''
 
@@ -31,7 +31,7 @@ def handle_adding_member_roles():
             return return_error(f"Member {user_id} does not exist in server")
 
         send_query = '''
-            SELECT roles_list FROM "Discord"."MembersRoles" 
+            SELECT roles_list FROM "Discord"."MemberInfo" 
             WHERE user_id = %s AND server_id = %s
         '''
 
