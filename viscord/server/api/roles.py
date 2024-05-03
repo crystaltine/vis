@@ -180,7 +180,7 @@ def add_role(server_id:str, role_info:Dict, user_id=None) -> None:
     role_id=str(uuid4())
 
     if "id_override" in role_info:
-        role_id = role_info["server_id"] + "_" + role_info["id_override"]
+        role_id = server_id + "_" + role_info["id_override"]
 
     send_query='''insert into "Discord"."RolesInfo" (role_id, server_id, role_name, role_color, role_symbol, priority, permissions, manage_server, manage_chats, \
        manage_members, manage_roles, manage_voice, manage_messages, is_admin) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''

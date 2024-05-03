@@ -24,6 +24,7 @@ def invalid_fields():
         status=400)
 
 def return_error(e):
+    print("Request error: " + str(e))
     return Response(
         json.dumps({"type": "error", "message": str(e)}),
         status=500)
