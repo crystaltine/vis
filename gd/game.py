@@ -8,6 +8,7 @@ from threading import Thread
 from math import floor, ceil
 from logger import Logger
 from typing import List, TYPE_CHECKING
+from multiprocessing import process
 
 if TYPE_CHECKING:
     from engine.objects import LevelObject
@@ -102,7 +103,8 @@ class Game:
                 val = ''
                 while val.lower() not in CONSTANTS.ALL_KEYS:
                     val = self.camera.term.inkey(0.01)
-                    if not self.running: return
+                    if not self.running:
+                        return
 
                 if val in CONSTANTS.QUIT_KEYS:
                     self.running = False
@@ -174,6 +176,9 @@ class Game:
             self.player.yvel = CONSTANTS.BLUE_ORB_STARTING_VELOCITY * -self.player.sign_of_gravity()
 
     def crash(self):
+        #self.running=True
+        # self.player=Player()
+        # self.start_level()
         self.running = False
 
     def generate_collisions(self) -> List[Collision]:

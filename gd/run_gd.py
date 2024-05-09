@@ -6,9 +6,10 @@ from game import Game
 from temp_parser import parse_level
 from time import sleep
 
-def main():
+def run_level(path:str):
 
-    leveldata = parse_level("test2.level")
+    #leveldata = parse_level("test2.level")
+    leveldata = parse_level(path)
     
     for row in leveldata:
         Logger.log(f"Level row types: {[type(row_obj) for row_obj in row]}")
@@ -17,10 +18,10 @@ def main():
     
     game.start_level()
 
-if __name__ == "__main__":
-    main()
-    Logger.write()
-    print("\x1b[0m")
-    cls()
-    sleep(0.1)
-    print("Info: Exited game")
+# if __name__ == "__main__":
+#     main()
+#     Logger.write()
+#     print("\x1b[0m")
+#     cls()
+#     sleep(0.1)
+#     print("Info: Exited game")
