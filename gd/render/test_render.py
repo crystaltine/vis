@@ -2,7 +2,7 @@ import blessed
 import os
 import curses
 from time import sleep
-from utils import fcode
+from draw_utils import fcode
 term = blessed.Terminal()
 
 BLOCK_ELEMENT = "█"

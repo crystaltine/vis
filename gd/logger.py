@@ -21,7 +21,10 @@ class Logger:
             with open(f"logs/{int(time())}.log", "w") as log_f:
                 log_f.writelines('\n'.join(Logger.buffer))
                 log_f.close()
-                print(f"Logged {Logger._count} messages to logs/{int(time())}.log.")
+                print(f"\x1b[0mLogged {Logger._count} messages to logs/{int(time())}.log.")
 
                 if not dont_clear_buffer:
                     Logger.buffer.clear()
+        
+        else:
+            print(f"\x1b[0mLogger buffer is empty, did not write to file.")
