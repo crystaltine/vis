@@ -1,7 +1,7 @@
 from PIL import Image
 
 # Load the image
-image = Image.open('gd/menu_images/play_button.jpeg')
+image = Image.open('gd/assets/play_button.jpeg')
 
 # Resize the image to a smaller size for better ASCII representation
 width, height = image.size

@@ -1,51 +1,35 @@
 from blessed import Terminal
 import os
+from draw_utils import fcode
+from typing import Literal
 
 terminal = Terminal()
 
-colors={
-    'blue':terminal.blue,
-    'red':terminal.red,
-    'green':terminal.green,
-    'purple':terminal.magenta2,
-    'pink':terminal.pink,
-    'yellow':terminal.gold,
-    'white':terminal.ghostwhite,
-    'turquoise':terminal.turquoise1,
-    'dark_yellow':terminal.gold3,
-    'dark_turquoise':terminal.turquoise4,
-    'dark_purple':terminal.darkmagenta,
-    'black':terminal.black,
-    'orange':terminal.orange,
-    'dark_orange':terminal.darkorange1,
-    'blue2':terminal.dodgerblue3,
-    'light_blue2':terminal.dodgerblue,
-    'light_yellow':terminal.khaki1,
-    'mid_yellow':terminal.goldenrod1,
-    'cerulean':terminal.deepskyblue,
-    'grey':terminal.grey50,
-    'grey49':terminal.grey49,
-    'brown':terminal.tan4
+def draw_square(width: int, height: int, x: int, y: int, color: str | tuple) -> None:
+    """
+    Draws a rectangle on the screen (an isoceles triangle pointing upwards or sideways)
     
-}
-
-# Draws a square on the screen
-
-def draw_square(width:int, height:int, x: int, y: int, color:str) -> None:
-
+    Pass in `color` as a hex code, a tuple of rgb values, or a predefined color name (see `fcode` method)
+    """
+    
     for i in range(y, y+height):
-        print(terminal.move_yx(i, x) + colors[color]+"█"*width + terminal.normal, end="")
+        print(terminal.move_yx(i, x) + fcode(color)+"█"*width + terminal.normal, end="")
 
-# Draws a spike on the screen
-
-def draw_spike(height, x:int, y:int, color:str='white', orient_right=False, orient_left=False):
-
-    if orient_right:
+def draw_spike(height, x: int, y: int, color: str, orientation: Literal["right", "left", "up"] = "up") -> None:
+    """
+    Draws a spike on the screen (an isoceles triangle pointing upwards or sideways)
+    
+    Pass in `color` as a hex code, a tuple of rgb values, or a predefined color name (see `fcode` method)
+    """
+    
+    assert orientation in ['right', 'left', 'up'], "[draw_spike]: Invalid orientation. Must be 'right', 'left', or 'up'"
+    
+    if orientation == 'right':
 
         # If orient_right is True, the "height" will be considered the max base length, so we will draw a spike sideways
 
         for i in range(1, height+1):
-            dots=f"{colors[color]}"
+            dots=fcode(color)
             for k in range(int(height*0.4)):
                 
                 for j in range(i):
@@ -53,13 +37,13 @@ def draw_spike(height, x:int, y:int, color:str='white', orient_right=False, orie
             print(terminal.move_yx(y+i-1, x) + dots+terminal.normal, end="")
         
         for i in range(height-1, 0, -1):
-            dots=f"{colors[color]}"
+            dots=f"{fcode(color)}"
             for k in range(int(height*0.4)):
                 for j in range(i):
                     dots+="█"
             print(terminal.move_yx(y+height+(height-i-1), x) + dots+terminal.normal, end="")
 
-    elif orient_left:
+    elif orientation == 'left':
 
         # If orient_left is True, the "height" will be considered the max base length, so we will draw a spike sideways
 
@@ -70,7 +54,7 @@ def draw_spike(height, x:int, y:int, color:str='white', orient_right=False, orie
                 for j in range(height-i):
                     line+=" "
                 for j in range(i):
-                    line+=f"{colors[color]}"+"█"
+                    line+=f"{fcode(color)}█"
             print(terminal.move_yx(y+i-1, x) + line+terminal.normal, end="")
         
         for i in range(height-1, 0, -1):
@@ -80,31 +64,23 @@ def draw_spike(height, x:int, y:int, color:str='white', orient_right=False, orie
                     line+=" "
                 
                 for j in range(i):
-                    line+=f"{colors[color]}"+"█"
+                    line+=f"{fcode(color)}█"
             print(terminal.move_yx(y+height+(height-i-1), x) + line+terminal.normal, end="")
     
     else:
         # Generating an ascii pyramid line by line
+        for i in range(y, y+height):
+            spaces=""
+            for j in range(height-(i-y)):
+                spaces+=f"{terminal.on_black} "
+            dots=""
+            for j in range(2*(i-y)+1):
+                dots+="█"
+            line=f"{fcode(color)}"+spaces+ dots + spaces + terminal.normal
 
-        if not orient_right:
-
-            for i in range(y, y+height):
-                spaces=""
-                for j in range(height-(i-y)):
-                    spaces+=f"{terminal.on_black} "
-                dots=""
-                for j in range(2*(i-y)+1):
-                    dots+="█"
-                line=f"{colors[color]}"+spaces+ dots + spaces + terminal.normal
-
-                print(terminal.move_yx(i, x) + line, end="")
+            print(terminal.move_yx(i, x) + line, end="")
     
-    
-    
-        
-
 # Writes text on the screen, assuming the background color is blue
-
 def draw_text(text:str, x:int, y:int, bold=False, underline=False, text_highlight_color='black'):
     line=terminal.move_xy(x, y)
     if bold:
@@ -116,16 +92,17 @@ def draw_text(text:str, x:int, y:int, bold=False, underline=False, text_highligh
     line+=on_color(text)       
     print(line)
 
-# Draws an orb on the screen - either blue (string "turquoise" since the blue color is being used for something else), purple, or yellow
-
 def draw_orb(width:int, height:int, x:int, y:int, type:str) -> None:
+    """
+    Draws an orb on the screen - either:
+    blue (string "turquoise" since the blue color is being used for something else), purple, or yellow
+    """
     alt_color='dark_'+type
     draw_square(width, height, x, y, 'white')
     draw_square(int(width/2), int(height/2), x+int(width/4)+1, y, type)
     draw_square(int(width/2), int(height/2), x+int(width/4)+1, y+int(height/2), alt_color)
 
 # Main function to generate the bottom menu
-
 def draw_bottom_menu():
     
    # This clears the screen
@@ -249,6 +226,3 @@ def draw_bottom_menu():
         delete_text='Delete Selected Object: [Backspace]'
         draw_text(delete_text, int(terminal.width*0.63), int(terminal.height*0.96))
         
-
-
-

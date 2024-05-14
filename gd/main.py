@@ -15,7 +15,7 @@ current_page_index=0
 
 def draw_menu_bg():
     """ This is a very crude function im writing at 5am ill make it better later """
-    draw('menu_images/menu_bg_1.png', (0, 0), (terminal.width, terminal.height*2), 'scale')
+    draw('assets/menu_bg_1.png', (0, 0), (terminal.width, terminal.height*2), 'scale')
 
 def draw_menu_title():
     """ Attempts to draw the GEOMETRY DASH title in the center-top of the screen. it's 141 pixels wide, so requires fullscreen.
@@ -23,7 +23,7 @@ def draw_menu_title():
     """
     left_pos = int(terminal.width/2) - 70
     top_pos = 2 # arbitrary value
-    draw('menu_images/menu_title_1_editable.png', (left_pos, top_pos), (None, None), 'crop')
+    draw('assets/menu_title_1_editable.png', (left_pos, top_pos), (None, None), 'crop')
 
 def main():
 

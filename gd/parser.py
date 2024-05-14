@@ -1,4 +1,4 @@
-from xml.etree.ElementTree import tostring
+
 from engine.objects import OBJECTS, LevelObject
 from typing import List
 
@@ -63,8 +63,6 @@ def parse_level(filename: str) -> list:
     
     return leveldata
 
-
-
 def test_parse_level(filename): 
 
     for i in range(0, len(parse_level(filename)), 1): 
@@ -76,11 +74,5 @@ def test_parse_level(filename):
             else: 
                  print(parse_level(filename)[i][j].data["name"])
                  print('\n')
-
-
 #test_parse_level("test2.level")
 #test_parse_level("test.level")
-
-
-
-    

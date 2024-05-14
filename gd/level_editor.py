@@ -3,7 +3,7 @@ import blessed
 from render.constants import CameraUtils
 from threading import Thread
 from render.utils import fcode
-from temp_parser import parse_level
+from gd.parser import parse_level
 from engine.objects import OBJECTS, LevelObject
 
 CURSOR_MOVEMENT_CHANGE = {"KEY_UP":[0, -1], "KEY_LEFT":[-1, 0], "KEY_DOWN":[0, 1], "KEY_RIGHT" :[1, 0]} #up:259 left:260 down:258 right:261
