@@ -22,7 +22,7 @@ def draw_menu_title():
     Who knows what horrors will happen if the term isn't that wide...
     """
     left_pos = int(terminal.width/2) - 70
-    top_pos = 2 # arbitrary value
+    top_pos = 4 # arbitrary value
     draw('assets/menu_title_1_editable.png', (left_pos, top_pos), (None, None), 'crop')
 
 def main():

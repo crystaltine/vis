@@ -1,6 +1,8 @@
 import blessed 
 from PIL import Image
 from bottom_menu import colors, draw_square, draw_spike, draw_text
+from img2term.main import draw
+from draw_utils import Position
 import os
 
 terminal = blessed.Terminal()
@@ -101,3 +103,5 @@ def draw_button2(outline=False):
     draw_square(int(terminal.width*0.04), int(terminal.height*0.2), int(terminal.width*0.82), int(terminal.height*0.54), 'brown')
 
 
+def draw_icon_selector_button(outline: bool = False):
+    
