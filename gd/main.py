@@ -1,7 +1,7 @@
 import blessed
-from draw_utils import Position
+from draw_utils import Position, draw_rect
 import traceback
-from GDMenu import draw_main_menu_buttons, draw_square
+from GDMenu import draw_main_menu_buttons
 from level_selector import *
 import os 
 from img2term.main import draw
@@ -89,8 +89,8 @@ def init_main_page():
     draw_main_menu_buttons(1)
 
 def init_level_selector():
-
-    draw_square(terminal.width, terminal.height, 0, 0, 'black')
+    # draw fullscreen bg
+    draw_rect("#000000", Position.Relative(0, 0, 0, 0))
 
     selector_text='Select a level by navigating with the arrow keys and hitting enter once you have chosen a level'
     draw_text(selector_text, int(terminal.width*0.23), int(terminal.height*0.2))

@@ -1,11 +1,9 @@
-import blessed 
-from bottom_menu import draw_square, draw_spike
-from bottom_menu import draw_square, draw_spike
+from GD import GD
+from draw_utils import draw_rect, Position, convert_to_chars
 from img2term.main import draw
 from draw_utils import Position
 import os
 
-terminal = blessed.Terminal()
 os.system('cls')
 
 def draw_main_menu_buttons(outlined_idx: int = 1) -> None:

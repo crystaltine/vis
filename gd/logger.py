@@ -18,7 +18,7 @@ class Logger:
             if not os.path.exists((fp:=os.path.dirname(os.path.realpath(__file__)))+"/logs"):
                 os.makedirs(fp+"/logs")
 
-            with open(f"logs/{int(time())}.log", "w", encoding='utf8') as log_f:
+            with open(f"logs/{int(time())}.log", "w", encoding='utf-8') as log_f:
                 log_f.writelines('\n'.join(Logger.buffer))
                 log_f.close()
                 print(f"\x1b[0mLogged {Logger._count} messages to logs/{int(time())}.log.")
