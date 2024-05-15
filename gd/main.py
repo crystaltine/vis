@@ -167,7 +167,7 @@ def handle_level_select_page(val):
     if val.name=='KEY_ENTER':
         current_page_index=2
         
-        run_level(levels[level_select_index]['path'])
+    run_level(levels[level_select_index]['path'])
 
     # If a button has been pressed, reset the level, and regenerate the new level onto the screen
 
