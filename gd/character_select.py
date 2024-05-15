@@ -3,7 +3,7 @@ from GD import GD
 from logger import Logger
 from img2term.main import draw
 import traceback
-from icons import draw_cube_icon, COLORS_1, COLORS_2
+from icons import draw_cube_icon, draw_colorized_cube_icon, COLORS
 
 class CharacterSelect:
     """
@@ -12,9 +12,9 @@ class CharacterSelect:
     
     CUBE_ICON_SIZE = (4, 8) # rows, cols in each icon
     
-    selected_cube = 0
-    selected_primary_color = 0
-    selected_secondary_color = 4
+    selected_cube = 5
+    selected_primary_color = 10
+    selected_secondary_color = 2
     
     def render():
         """
@@ -67,33 +67,56 @@ class CharacterSelect:
         # draw 3 rows
         for row in range(3):
             for col in range(10):
+                # if selected, draw the icon green
+                if row*10+col == CharacterSelect.selected_cube:
+                    draw_colorized_cube_icon(row*10+col, Position.Relative(left=f"calc(58% - {37-col*10}ch)", top=f"calc(45% - {7-row*5}ch)"), p_color="#186d00", s_color="#8fff89")
+                    continue
                 draw_cube_icon(row*10+col, Position.Relative(left=f"calc(58% - {37-col*10}ch)", top=f"calc(45% - {7-row*5}ch)"))
 
     def _draw_color_list():
         """
-        Draws the (hardcoded) 32 colors available for selection. 10ch x 5ch, 16 per row, 2px gap between squares.
+        Draws the (hardcoded) 16 colors available for selection. 10ch x 5ch, 16 per row, 2px gap between squares.
+        The row is drawn twice because we have to allow them to pick both a primary and secondary color.
         """
         # NOTE: for these numbers, see assets/character_select/character_select_screen_calcs.png
         
-        # the first color in COLORS_2 should be rendered at bottom=(30% - (0.09*term.width))/2, left=8.5%
+        # the first color in COLORS should be rendered at bottom=(30% - (0.09*term.width))/2, left=8.5%
         # b = 15% - (0.09*term.width/2)ch
         # from then on, each next color square is 5% to the right (13.5%, then 18.5%, etc.)
-        # COLORS_1 is the exact same but bottom=(20% - (0.09*term.width))/2 + 5%
-        Logger.log(f"color rects have height of {convert_to_chars(GD.term.width, '4%')}")
+        # the other row of colors is the exact same but bottom=(20% - (0.09*term.width))/2 + 5%
+        
+        # pre-calculate the gap between the squares. there are 15 squares, target gap=1% + square width (4%)
+        square_width = convert_to_chars(GD.term.width, "4%")
+        intersquare_gap = max(int(convert_to_chars(GD.term.width, "1%")), 1) # minimum of 1ch. Also try to make it integer
+        gap = square_width + intersquare_gap # how much to move right after each square
+        
+        # total width taken up by squares and gaps
+        total_width = 16*square_width + 15*intersquare_gap
+        
+        # calc margin on left side
+        left_margin = (GD.term.width - total_width) // 2
+        
+        # vertical gap: gap / 2 (divide by 2 cuz characters are taller than they are wide), then round
         for i in range(16):
-            draw_rect(COLORS_2[i], Position.Relative(left=f"{8.5+5*i}%", bottom=f"calc(15% - {round(0.045*GD.term.width/2)}ch)"), width="4%", height=convert_to_chars(GD.term.width, "2%"))
-            draw_rect(COLORS_1[i], Position.Relative(left=f"{8.5+5*i}%", bottom=f"calc(15% + {round(0.005*GD.term.width/2)}ch)"), width="4%", height=convert_to_chars(GD.term.width, "2%"))
+            draw_rect(COLORS[i], Position.Relative(left=left_margin + i*gap, bottom=f"calc(15% - {round(0.045*GD.term.width/2)}ch)"), width=square_width, height=square_width/2)
+            draw_rect(COLORS[i], Position.Relative(left=left_margin + i*gap, bottom=f"calc(15% - {round(0.045*GD.term.width/2 - gap/2)}ch)"), width=square_width, height=square_width/2)
 
     def _draw_currently_selected_cube():
         """ Draws an enlarged rendering of the currently selected cube icon """
         # TODO - currently does not tint the icon - it stays black and white
         
         # NOTE: for these numbers, see assets/character_select/character_select_screen_calcs.png
-        draw_cube_icon(CharacterSelect.selected_cube, Position.Relative(left="calc(42% - 57ch)", top="calc(45% - 4ch)"), scale=4)
+        draw_colorized_cube_icon(
+            CharacterSelect.selected_cube, 
+            Position.Relative(left="calc(42% - 57ch)", top="calc(45% - 4ch)"), 
+            p_color=COLORS[CharacterSelect.selected_primary_color],
+            s_color=COLORS[CharacterSelect.selected_secondary_color],
+            scale=4)
 
 # testing
 try:
-    CharacterSelect.render()
+    with GD.term.hidden_cursor():
+        CharacterSelect.render()
 except Exception as e:
     Logger.log(f"Error in CharacterSelect.render(): {e}")
     Logger.log(f"Traceback: {traceback.format_exc()}")

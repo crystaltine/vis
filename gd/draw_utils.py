@@ -246,7 +246,10 @@ def convert_to_chars(container_dim: int, dimvalue: int | str | None) -> int | No
     if dimvalue is None: return None
     
     # if int, assume as raw character value
-    if isinstance(dimvalue, int) or dimvalue.isnumeric(): return int(dimvalue)
+    if isinstance(dimvalue, int) or (isinstance(dimvalue, str) and dimvalue.isnumeric()): return int(dimvalue)
+    
+    # if float, round to int
+    if isinstance(dimvalue, float): return round(dimvalue)
     
     # check if str is calc expr
     if dimvalue.startswith("calc("):
@@ -254,9 +257,9 @@ def convert_to_chars(container_dim: int, dimvalue: int | str | None) -> int | No
         return evaluate_expression(container_dim, dimvalue[5:-1])
     
     if dimvalue[-2:] in ('px', 'ch'):
-        return int(dimvalue[:-2])
+        return int(float(dimvalue[:-2]))
     elif dimvalue[-1] == '%':
-        return round(container_dim * float(dimvalue[:-1]) / 100)
+        return round(container_dim * int(float(dimvalue[:-1])) / 100)
     else:
         raise ValueError(f"Invalid dimvalue: {dimvalue}. Must end in 'ch' or '%'.")    
 
@@ -280,17 +283,30 @@ def evaluate_expression(container_dim: int, expr: str) -> int:
     operator = lambda a,b:(a+b if tokens[1] == "+" else a-b)
     return operator(convert_to_chars(container_dim, tokens[0]), convert_to_chars(container_dim, tokens[2]))
 
-def draw_rect(color: str | tuple, position: Position.Relative, width: int | str | None = None, height: int | str | None = None) -> None:
+def draw_rect(
+    color: str | tuple, 
+    position: Position.Relative, 
+    width: int | str | None = None, 
+    height: int | str | None = None,
+    outline_color: str | tuple | None = None) -> None:
     """
     Draws a rectangle given the position and dimensions.
     
     `color` - hex code, rgb tuple, or predefined color name (see `fcode` method)
 
+    ### Positioning
+    
     Important: If two controlling values are provided in `position`, such as `top` and `bottom`, the `height` parameter will be ignored.
     Basically, height and width params are only used if `position` only specifies one of the two dimensions, such as if `bottom` is None.
     
     If none of a dimension's controlling values are provided (`top` and `bottom` must not both be None, for example), an error will be thrown.
+    
+    ### Outlines
+    If `outline_color` is provided (not None), then 1 half-character (1 pixel, equivalent to 1 monospace char width and 1/2 monospace char height)
+    will be drawn around the rectangle. THIS DOES NOT EXPAND THE RECTANGLE - 
     """
+    
+    # TODO - implement outlining
     
     # convert width and height to characters if they are not already
     #Logger.log(f"draw_rect: width, height: {width}, {height}")
@@ -318,7 +334,7 @@ def draw_rect(color: str | tuple, position: Position.Relative, width: int | str 
     
     #Logger.log(f"drawing rect from row,col= {true_top}, {true_left} to {true_top+true_height}, {true_left+true_width}")
     #Logger.log(f"abs_pos: {abs_pos}")
-    #Logger.log(f"position: {position}")
+    Logger.log(f"draw_rect position: {position}")
     #Logger.log(f"true_width, true_height: {true_width}, {true_height}")
     #Logger.log(f"conv_width, conv_height: {conv_width}, {conv_height}, width, height: {width}, {height}")
     #Logger.log(f"color: {color}\n")
@@ -327,3 +343,42 @@ def draw_rect(color: str | tuple, position: Position.Relative, width: int | str 
     with GD.term.hidden_cursor():
         for i in range(true_top, true_top + true_height):
             print2(GD.term.move_yx(i, true_left) + fcode(color) + "█"*true_width)
+
+def colorize_pixel(grayscale_value: int, primary_color: str | tuple, secondary_color: str | tuple) -> tuple:
+    """
+    Applies color to a grayscale pixel based on the primary and secondary colors. Primary color attempts to replace dark
+    pixels, secondary color replaces light pixels. A basic gradient is used to combine the two colors for gray-ish pixels.
+    
+    Grayscale value should be an int between 0 and 255, the value for all RGB channels in the pixel. This function assumes
+    that the pixel is actually gray.
+    
+    Blending function used: weighted average
+    
+    Outputs a tuple of RGB values for the colorized pixel.
+    """
+    
+    secondary_weight = grayscale_value / 255
+    primary_weight = 1 - secondary_weight
+    
+    # blend the two colors
+    r = int(primary_color[0]*primary_weight + secondary_color[0]*secondary_weight)
+    g = int(primary_color[1]*primary_weight + secondary_color[1]*secondary_weight)
+    b = int(primary_color[2]*primary_weight + secondary_color[2]*secondary_weight)
+    
+    Logger.log(f"colorized pixel: value={grayscale_value}, primary={primary_color}, secondary={secondary_color}, result={r,g,b}")
+    return (r, g, b)
+
+def hex_to_rgb(hex_color: str) -> tuple:
+    """
+    Converts a hex color to an RGB tuple. Hex color should be in the format "#RRGGBB" or "RRGGBB".
+    """
+    if len(hex_color) == 7:
+        hex_color = hex_color[1:]
+        
+    return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+
+def rgb_to_hex(rgb_color: tuple) -> str:
+    """
+    Converts an RGB tuple to a hex color. Output is in the format "#RRGGBB".
+    """
+    return f"#{''.join(f'{c:02x}' for c in rgb_color)}"
