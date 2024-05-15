@@ -4,7 +4,7 @@ from img2term.main import draw
 from draw_utils import Position
 import os
 
-os.system('cls')
+os.system('clear')
 
 def draw_main_menu_buttons(outlined_idx: int = 1) -> None:
     """
