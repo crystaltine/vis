@@ -273,10 +273,13 @@ def evaluate_expression(container_dim: int, expr: str) -> int:
     tokens = expr.split(" ")
     
     #Logger.log(f"eval expr: tokens is {tokens} (expr was {expr})")
+    #Logger.log(f"eval expr: tokens is {tokens} (expr was {expr})")
     
     if len(tokens) < 3 or len(tokens) % 2 == 0:
         raise ValueError(f"Invalid calc() expression: {expr}. Must have at least n>=2 operands and n-1 operators.")
     
+    #Logger.log(f"a,b are gonna be {convert_to_chars(container_dim, tokens[0])}, {convert_to_chars(container_dim, tokens[2])}")
+    #Logger.log(f"type of a,b: {type(convert_to_chars(container_dim, tokens[0]))}, {type(convert_to_chars(container_dim, tokens[2]))}")
     #Logger.log(f"a,b are gonna be {convert_to_chars(container_dim, tokens[0])}, {convert_to_chars(container_dim, tokens[2])}")
     #Logger.log(f"type of a,b: {type(convert_to_chars(container_dim, tokens[0]))}, {type(convert_to_chars(container_dim, tokens[2]))}")
     # expect first token to be a value, not an operator
@@ -313,6 +316,10 @@ def draw_rect(
     conv_width = convert_to_chars(GD.term.width, width) if width is not None else GD.term.width
     conv_height = convert_to_chars(GD.term.height, height) if height is not None else GD.term.height
     #Logger.log(f"^^ converted width, height: {conv_width}, {conv_height}")
+    #Logger.log(f"draw_rect: width, height: {width}, {height}")
+    conv_width = convert_to_chars(GD.term.width, width) if width is not None else GD.term.width
+    conv_height = convert_to_chars(GD.term.height, height) if height is not None else GD.term.height
+    #Logger.log(f"^^ converted width, height: {conv_width}, {conv_height}")
     
     abs_pos = position.get_absolute(GD.term.width, GD.term.height)
     
@@ -324,6 +331,7 @@ def draw_rect(
         raise ValueError("At least one of left or right must be specified in position.")
     
     # find true top and left values
+    #Logger.log(f"conv_height, conv_width: {conv_height}, {conv_width}")
     #Logger.log(f"conv_height, conv_width: {conv_height}, {conv_width}")
     true_top = abs_pos.top if abs_pos.top is not None else GD.term.height - abs_pos.bottom - conv_height
     true_left = abs_pos.left if abs_pos.left is not None else GD.term.width - abs_pos.right - conv_width

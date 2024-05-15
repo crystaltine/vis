@@ -1,5 +1,7 @@
 from draw_utils import draw_rect, cls, Position, convert_to_chars
 from GD import GD
+from draw_utils import draw_rect, cls, Position, convert_to_chars
+from GD import GD
 from logger import Logger
 from img2term.main import draw
 import traceback

@@ -1,5 +1,6 @@
 import blessed 
 from bottom_menu import draw_square, draw_spike
+from bottom_menu import draw_square, draw_spike
 from img2term.main import draw
 from draw_utils import Position
 import os
