@@ -3,7 +3,7 @@ from PIL import Image
 from draw_utils import Position
 
 COLORS_1 = [
-    '#18e700', '#29ff87', '#4dffc0', '#4dfdff', '#ffffff', '#a7a7a7', '#4e4e4e', '#000000',
+    '#18e700', '#4dffc0', '#4dfdff', '#ffffff', '#a7a7a7', '#4e4e4e', '#000000',
     '#010078', '#0015e5', '#1a66ff', '#07a4ff', '#460075', '#5d0b00', '#545d00', '#004902'
 ]
 COLORS_2 = [
@@ -12,7 +12,7 @@ COLORS_2 = [
 ]
 
 
-def draw_cube_icon(icon_index: int, topleft_pos: Position.Relative, scale: int = 2) -> None:
+def draw_cube_icon(icon_index: int, pos: Position.Relative, scale: int = 2) -> None:
     """
     Draws an icon at the specified position. For now these icons are 4ch wide x 2ch tall (4x4 pixels)
     Index corresponds to its order on the icon spritesheet. For example, the leftmost is 0, then 1, etc.
@@ -34,4 +34,4 @@ def draw_cube_icon(icon_index: int, topleft_pos: Position.Relative, scale: int =
     # expand pixels to scale
     pixels = [[px for px in row for _ in range(scale)] for row in pixels for _ in range(scale)]
         
-    draw_from_pixel_array(pixels, topleft_pos)
+    draw_from_pixel_array(pixels, pos)

@@ -246,7 +246,7 @@ def convert_to_chars(container_dim: int, dimvalue: int | str | None) -> int | No
     if dimvalue is None: return None
     
     # if int, assume as raw character value
-    if isinstance(dimvalue, int) or dimvalue.isnumeric(): return dimvalue
+    if isinstance(dimvalue, int) or dimvalue.isnumeric(): return int(dimvalue)
     
     # check if str is calc expr
     if dimvalue.startswith("calc("):
@@ -256,7 +256,7 @@ def convert_to_chars(container_dim: int, dimvalue: int | str | None) -> int | No
     if dimvalue[-2:] in ('px', 'ch'):
         return int(dimvalue[:-2])
     elif dimvalue[-1] == '%':
-        return round(container_dim * int(dimvalue[:-1]) / 100)
+        return round(container_dim * float(dimvalue[:-1]) / 100)
     else:
         raise ValueError(f"Invalid dimvalue: {dimvalue}. Must end in 'ch' or '%'.")    
 
@@ -269,13 +269,13 @@ def evaluate_expression(container_dim: int, expr: str) -> int:
     expr = re.sub(' +', ' ', expr)
     tokens = expr.split(" ")
     
-    Logger.log(f"eval expr: tokens is {tokens} (expr was {expr})")
+    #Logger.log(f"eval expr: tokens is {tokens} (expr was {expr})")
     
     if len(tokens) < 3 or len(tokens) % 2 == 0:
         raise ValueError(f"Invalid calc() expression: {expr}. Must have at least n>=2 operands and n-1 operators.")
     
-    Logger.log(f"a,b are gonna be {convert_to_chars(container_dim, tokens[0])}, {convert_to_chars(container_dim, tokens[2])}")
-    Logger.log(f"tokens[0] is {tokens[0]}, tokens[2] is {tokens[2]}\n")
+    #Logger.log(f"a,b are gonna be {convert_to_chars(container_dim, tokens[0])}, {convert_to_chars(container_dim, tokens[2])}")
+    #Logger.log(f"type of a,b: {type(convert_to_chars(container_dim, tokens[0]))}, {type(convert_to_chars(container_dim, tokens[2]))}")
     # expect first token to be a value, not an operator
     operator = lambda a,b:(a+b if tokens[1] == "+" else a-b)
     return operator(convert_to_chars(container_dim, tokens[0]), convert_to_chars(container_dim, tokens[2]))
@@ -293,8 +293,10 @@ def draw_rect(color: str | tuple, position: Position.Relative, width: int | str 
     """
     
     # convert width and height to characters if they are not already
-    conv_width = convert_to_chars(GD.term.width, width if width is not None else GD.term.width)
-    conv_height = convert_to_chars(GD.term.height, height if height is not None else GD.term.height)
+    #Logger.log(f"draw_rect: width, height: {width}, {height}")
+    conv_width = convert_to_chars(GD.term.width, width) if width is not None else GD.term.width
+    conv_height = convert_to_chars(GD.term.height, height) if height is not None else GD.term.height
+    #Logger.log(f"^^ converted width, height: {conv_width}, {conv_height}")
     
     abs_pos = position.get_absolute(GD.term.width, GD.term.height)
     
@@ -306,7 +308,7 @@ def draw_rect(color: str | tuple, position: Position.Relative, width: int | str 
         raise ValueError("At least one of left or right must be specified in position.")
     
     # find true top and left values
-    Logger.log(f"conv_height, conv_width: {conv_height}, {conv_width}")
+    #Logger.log(f"conv_height, conv_width: {conv_height}, {conv_width}")
     true_top = abs_pos.top if abs_pos.top is not None else GD.term.height - abs_pos.bottom - conv_height
     true_left = abs_pos.left if abs_pos.left is not None else GD.term.width - abs_pos.right - conv_width
     

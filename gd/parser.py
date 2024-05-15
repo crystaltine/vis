@@ -72,7 +72,7 @@ def test_parse_level(filename):
                 print("None")
                 print('\n')
             else: 
-                 print(parse_level(filename)[i][j].data["name"])
-                 print('\n')
+                print(parse_level(filename)[i][j].data["name"])
+                print('\n')
 #test_parse_level("test2.level")
 #test_parse_level("test.level")

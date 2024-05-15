@@ -1,6 +1,6 @@
 from blessed import Terminal
 import os
-from draw_utils import fcode
+from draw_utils import fcode, print2
 from typing import Literal
 
 terminal = Terminal()
@@ -13,7 +13,7 @@ def draw_square(width: int, height: int, x: int, y: int, color: str | tuple) -> 
     """
     
     for i in range(y, y+height):
-        print(terminal.move_yx(i, x) + fcode(color)+"█"*width + terminal.normal, end="")
+        print2(terminal.move_yx(i, x) + fcode(color)+"█"*width + terminal.normal)
 
 def draw_spike(height, x: int, y: int, color: str, orientation: Literal["right", "left", "up"] = "up") -> None:
     """
@@ -34,14 +34,14 @@ def draw_spike(height, x: int, y: int, color: str, orientation: Literal["right",
                 
                 for j in range(i):
                     dots+="█"
-            print(terminal.move_yx(y+i-1, x) + dots+terminal.normal, end="")
+            print2(terminal.move_yx(y+i-1, x) + dots+terminal.normal)
         
         for i in range(height-1, 0, -1):
             dots=f"{fcode(color)}"
             for k in range(int(height*0.4)):
                 for j in range(i):
                     dots+="█"
-            print(terminal.move_yx(y+height+(height-i-1), x) + dots+terminal.normal, end="")
+            print2(terminal.move_yx(y+height+(height-i-1), x) + dots+terminal.normal)
 
     elif orientation == 'left':
 
@@ -55,7 +55,7 @@ def draw_spike(height, x: int, y: int, color: str, orientation: Literal["right",
                     line+=" "
                 for j in range(i):
                     line+=f"{fcode(color)}█"
-            print(terminal.move_yx(y+i-1, x) + line+terminal.normal, end="")
+            print2(terminal.move_yx(y+i-1, x) + line+terminal.normal)
         
         for i in range(height-1, 0, -1):
             line=f"{terminal.on_black}"
@@ -65,7 +65,7 @@ def draw_spike(height, x: int, y: int, color: str, orientation: Literal["right",
                 
                 for j in range(i):
                     line+=f"{fcode(color)}█"
-            print(terminal.move_yx(y+height+(height-i-1), x) + line+terminal.normal, end="")
+            print2(terminal.move_yx(y+height+(height-i-1), x) + line+terminal.normal)
     
     else:
         # Generating an ascii pyramid line by line
@@ -78,7 +78,7 @@ def draw_spike(height, x: int, y: int, color: str, orientation: Literal["right",
                 dots+="█"
             line=f"{fcode(color)}"+spaces+ dots + spaces + terminal.normal
 
-            print(terminal.move_yx(i, x) + line, end="")
+            print2(terminal.move_yx(i, x) + line)
     
 # Writes text on the screen, assuming the background color is blue
 def draw_text(text:str, x:int, y:int, bold=False, underline=False, text_highlight_color='black'):
@@ -90,7 +90,7 @@ def draw_text(text:str, x:int, y:int, bold=False, underline=False, text_highligh
     
     on_color=getattr(terminal, 'on_'+text_highlight_color)
     line+=on_color(text)       
-    print(line)
+    print2(line)
 
 def draw_orb(width:int, height:int, x:int, y:int, type:str) -> None:
     """
