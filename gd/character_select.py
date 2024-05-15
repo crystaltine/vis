@@ -1,4 +1,5 @@
-from draw_utils import draw_rect, cls, Position
+from draw_utils import draw_rect, cls, Position, convert_to_chars
+from GD import GD
 from logger import Logger
 from img2term.main import draw
 import traceback
@@ -37,7 +38,7 @@ class CharacterSelect:
         draw_rect("#e8e8e8", Position.Relative(left=0, right=0, top=0), height="20%")
         
         # IMPORTANT - this image is 100ch x 6ch.
-        draw("assets/character_select/character_select_title.png", topleft_pos=Position.Relative(top="calc(10% - 3ch)", left="calc(50% - 50ch)"))
+        draw("assets/character_select/character_select_title.png", pos=Position.Relative(top="calc(10% - 3ch)", left="calc(50% - 50ch)"))
         
     def _draw_color_selector():
         """ Helper func for drawing the color selector at bottom of screen """
@@ -74,12 +75,14 @@ class CharacterSelect:
         """
         # NOTE: for these numbers, see assets/character_select/character_select_screen_calcs.png
         
-        # the first color in COLORS_2 should be rendered at bottom=4, left=50%-95
-        # from then on, each next color square is 12ch to the right (left=50%-95+12*index)
-        # COLORS_1 is the exact same but bottom=10ch
+        # the first color in COLORS_2 should be rendered at bottom=(30% - (0.09*term.width))/2, left=8.5%
+        # b = 15% - (0.09*term.width/2)ch
+        # from then on, each next color square is 5% to the right (13.5%, then 18.5%, etc.)
+        # COLORS_1 is the exact same but bottom=(20% - (0.09*term.width))/2 + 5%
+        Logger.log(f"color rects have height of {convert_to_chars(GD.term.width, '4%')}")
         for i in range(16):
-            draw_rect(COLORS_2[i], Position.Relative(left=f"calc(50% - {95-12*i}ch)", bottom="calc(15% - 6ch)"), width=10, height=5)
-            draw_rect(COLORS_1[i], Position.Relative(left=f"calc(50% - {95-12*i}ch)", bottom="calc(15% + 0ch)"), width=10, height=5)
+            draw_rect(COLORS_2[i], Position.Relative(left=f"{8.5+5*i}%", bottom=f"calc(15% - {round(0.045*GD.term.width/2)}ch)"), width="4%", height=convert_to_chars(GD.term.width, "2%"))
+            draw_rect(COLORS_1[i], Position.Relative(left=f"{8.5+5*i}%", bottom=f"calc(15% + {round(0.005*GD.term.width/2)}ch)"), width="4%", height=convert_to_chars(GD.term.width, "2%"))
 
     def _draw_currently_selected_cube():
         """ Draws an enlarged rendering of the currently selected cube icon """

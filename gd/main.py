@@ -1,10 +1,12 @@
 import blessed
-import GDMenu
-from GDMenu import draw_button0, draw_button1, draw_button2, draw_text, draw_square
+from draw_utils import Position
+import traceback
+from GDMenu import draw_main_menu_buttons, draw_square
 from level_selector import *
 import os 
 from img2term.main import draw
 from run_gd import run_level
+from logger import Logger
 
 terminal = blessed.Terminal()
 
@@ -15,15 +17,18 @@ current_page_index=0
 
 def draw_menu_bg():
     """ This is a very crude function im writing at 5am ill make it better later """
-    draw('assets/menu_bg_1.png', (0, 0), (terminal.width, terminal.height*2), 'scale')
+    draw('assets/menu_bg_1.png', Position.Relative(top=0, left=0), (terminal.width, terminal.height*2), 'scale')
 
 def draw_menu_title():
     """ Attempts to draw the GEOMETRY DASH title in the center-top of the screen. it's 141 pixels wide, so requires fullscreen.
     Who knows what horrors will happen if the term isn't that wide...
     """
-    left_pos = int(terminal.width/2) - 70
+    
+    # important: title img is 141ch x 7ch
+    
+    left_pos = "calc(50% - 70)"
     top_pos = 4 # arbitrary value
-    draw('assets/menu_title_1_editable.png', (left_pos, top_pos), (None, None), 'crop')
+    draw('assets/menu_title_1_editable.png', Position.Relative(left=left_pos, top=top_pos), (None, None), 'crop')
 
 def main():
 
@@ -80,11 +85,8 @@ def init_main_page():
     draw_menu_bg()
     draw_menu_title()
 
-    # Drawing 3 buttons onto screen with middle button selected by default
-
-    draw_button0()
-    draw_button1(True)
-    draw_button2()
+    # draw all three buttons, select middle one by default
+    draw_main_menu_buttons(1)
 
 def init_level_selector():
 
@@ -108,12 +110,12 @@ def handle_main_page(val):
     global current_page_index
 
     changed=False
-    old_index=0
+    #old_index=0
 
     # Arrow keys to select a different button
     
     if val.name=='KEY_LEFT':
-        old_index=main_current_index
+        #old_index=main_current_index
         changed=True
         
         main_current_index-=1
@@ -122,31 +124,20 @@ def handle_main_page(val):
             main_current_index=2
         
     if val.name=='KEY_RIGHT':
-        old_index=main_current_index
+        #old_index=main_current_index
         changed=True
         main_current_index+=1
         if main_current_index>2:
             main_current_index=0
 
     # Opening the level selector if space is selected
-
     if val.name=='KEY_ENTER' and main_current_index==1:
-        
         current_page_index=1
-
         init_level_selector()
        
     # If a button has been pressed, we rerender the new button and the previous button to get rid of/add in the white outline
-
     if changed:
-        
-        # Rerendering the new buttons
-
-        deselect_prev_button = getattr(GDMenu, 'draw_button'+str(old_index))
-        deselect_prev_button()
-
-        select_new_button = getattr(GDMenu, 'draw_button'+str(main_current_index))
-        select_new_button(True)
+        draw_main_menu_buttons(main_current_index)
 
 
 def handle_level_select_page(val):
@@ -187,4 +178,14 @@ def handle_level_select_page(val):
         draw_level(level_info['level_name'], level_info['level_description'], int(terminal.width*0.8), int(terminal.height*0.6), 
                    int(terminal.width*0.1), int(terminal.height*0.3), level_info['color1'], level_info['color2'])
 
-main()
+if __name__ == "__main__":
+    # testing
+    try:
+        main()
+    except Exception as e:
+        Logger.log(f"Error in CharacterSelect.render(): {e}")
+        Logger.log(f"Traceback: {traceback.format_exc()}")
+        print(f"\x1b[31m{traceback.format_exc()}\x1b[0m")
+        
+    Logger.write()
+        
