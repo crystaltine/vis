@@ -1,7 +1,5 @@
-from GD import GD
 from draw_utils import draw_rect, Position, convert_to_chars
 from img2term.main import draw
-from draw_utils import Position
 import os
 
 os.system('clear')
