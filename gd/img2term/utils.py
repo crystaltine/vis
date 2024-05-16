@@ -152,4 +152,4 @@ def cls() -> None:
 
     @TODO - uh i forgot how to check for OS names, idk if cls works everywhere. works on ps win11 tho.
     """
-    os.system('cls')
+    os.system('clear')
