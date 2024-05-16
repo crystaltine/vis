@@ -2,7 +2,6 @@ import blessed
 terminal = blessed.Terminal()
 from img2term.main import draw 
 from draw_utils import Position
-from GDMenu import _draw_start_button
 import os
 
 os.system('clear')
@@ -15,12 +14,15 @@ def draw_menu_title():
     top_pos = 4 
     draw('assets/level_menu_title_2.jpeg', Position.Relative(left=left_pos, top=top_pos), (None, None), 'crop')
 
+def draw_publish_button(): 
+    draw(f"assets/publish_button.png", pos=Position.Relative(right="calc(30% - 23ch)", bottom="calc(50% - 13ch)"))
+
 class Level_Editor_Menu: 
     def create_menu(): 
           
           draw_menu_background()
           draw_menu_title()
-          _draw_start_button() 
+          draw_publish_button() 
 
 
           with terminal.hidden_cursor():
