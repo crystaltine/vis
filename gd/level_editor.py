@@ -17,11 +17,13 @@ class LevelEditor:
     def __init__(self):
         #self.level = [[]]
         self.level = parse_level("test2.level")
+        self.level_old = parse_level("test2.level")
         self.term = blessed.Terminal()
         self.screen_pos = [0, 10]
         self.cursor_pos = CameraUtils.center_screen_coordinates(self.term)
         self.camera = Camera(self.level)
         self.cur_cursor_obj = None
+        self.del_list = []
 
     def movecamera(self, movement :str, cur: bool):
         if cur:
@@ -38,6 +40,28 @@ class LevelEditor:
     def render(self):
         self.camera.level_editor_render(self.cursor_pos, self.screen_pos, self.cur_cursor_obj)
 
+    def place_object(self):
+        if self.cur_cursor_obj is not None:
+            x, y = self.cursor_pos
+            grid_x, grid_y = x + self.screen_pos[0], y + self.screen_pos[1] - 10 #something something +10 y offset from earlier i think
+            if 0 <= grid_y < len(self.level) and 0 <= grid_x < len(self.level[grid_y]):
+                self.level[grid_y][grid_x] = LevelObject(self.cur_cursor_obj.data, grid_x, grid_y)
+                self.load_level_changes()  # Update camera's leveldata
+                self.render()
+                if self.level == self.level_old:
+                    input()
+   
+    def delete_object(self):
+        x, y = self.cursor_pos
+        screen_x, screen_y = self.screen_pos
+        grid_x = x + screen_x
+        grid_y = y + screen_y - 10 #something something +10 y offset from earlier i think
+        if 0 <= grid_y < len(self.level) and 0 <= grid_x < len(self.level[grid_y]):
+            self.del_list.append(self.level[grid_y][grid_x].data)
+            self.level[grid_y][grid_x] = LevelObject(None, grid_x, grid_y)
+            self.load_level_changes()  # Update camera's leveldata
+            self.render()
+   
     def load_level_changes(self):
         self.camera.leveldata = self.level
 
@@ -51,7 +75,14 @@ class LevelEditor:
                 if CURSOR_MOVEMENT_CHANGE.get(val.name) == None and SCREEN_MOVEMENT_CHANGE.get(val) == None and CHANGE_OBJ.get(val) == None:
                     if val == "q":
                         print("bye")
+                        print(self.del_list)
                         break
+                    elif val == "p":
+                        self.place_object()
+                        
+                    elif val == "r":
+                        self.delete_object()
+                        
                 else:
                     if CURSOR_MOVEMENT_CHANGE.get(val.name) != None:
                         self.movecamera(val.name, True)
@@ -59,4 +90,5 @@ class LevelEditor:
                         self.update_cursor_obj(val)
                     else:
                         self.movecamera(val, False)
-                    self.render()
+                self.render()
+                    
