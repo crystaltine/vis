@@ -1,0 +1,9 @@
+.body {
+    bg_color: #298359
+}
+
+.test {
+    color: #000000
+    top: 5ch
+    left: 10ch
+}

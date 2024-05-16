@@ -1,5 +1,5 @@
 from element import Element
-from utils import fcode, convert_to_chars
+from utils import fcode, convert_to_chars, print2
 from typing import List, Unpack
 from globalvars import Globals
 from logger import Logger
@@ -82,7 +82,7 @@ class Div(Element):
         if curr_bg_color != 'transparent':
             for i in range(self.client_top, self.client_bottom):
                 #with Globals.__vis_document__.term.hidden_cursor():
-                print(Globals.__vis_document__.term.move_xy(self.client_left, i) + fcode(background=curr_bg_color) + " " * self.client_width + "\x1b[0m")
+                print2(Globals.__vis_document__.term.move_xy(self.client_left, i) + fcode(background=curr_bg_color) + " " * self.client_width + "\x1b[0m")
         
         # Logger.log(f"[t={time()}] div drawn, moving to children")
         
@@ -128,7 +128,7 @@ class Div(Element):
                 #  --------------------------------------------------- = client_width
                 #             -------------------------- = max_bounds.right - max_bounds.left
                 #with Globals.__vis_document__.term.hidden_cursor():
-                print(Globals.__vis_document__.term.move_xy(max(self.client_left, max_bounds.left), i) + fcode(background=curr_bg_color) + " " * min(self.client_width, max_bounds.right - max_bounds.left) + "\x1b[0m")
+                print2(Globals.__vis_document__.term.move_xy(max(self.client_left, max_bounds.left), i) + fcode(background=curr_bg_color) + " " * min(self.client_width, max_bounds.right - max_bounds.left))
                 
         # render children
         for child in self.children:

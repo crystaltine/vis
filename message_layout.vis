@@ -11,7 +11,7 @@
                 <text class_str="channel_text" text="Channels"></>
             </>
             <div id="user_info" class_str="user_info">
-                <text class_str="username_text" text="[*] crystaltine"></>
+                <text id="username_text" class_str="username_text" text="[*] crystaltine"></>
                 <text class_str="user_status" text="# online, visible"></>
             </>
         </>
