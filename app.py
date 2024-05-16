@@ -85,15 +85,18 @@ def main():
             text=name,
         )
 
-    def submit_handler_wrapper():
+    def submit_login_request_wrapper():
         try:
-            submit_handler()
+            submit_login_request()
         except Exception as e:
             Logger.log(f"[submit handler wrapper] exception: {e}")
             error_message.text = "Failed to log in (B)! Try again later."
             error_message.render()
 
-    def submit_handler():
+    def submit_login_request():
+        """
+        Submits login request
+        """
         res = requests.post("http://127.0.0.1:5000/api/login", json={
             "user": username_input.curr_text,
             "password": password_input.curr_text,
@@ -177,7 +180,7 @@ def main():
         }).encode())
         Logger.log(f"sent message, {content=}")
 
-    submit_button.on_pressed = submit_handler_wrapper
+    submit_button.on_pressed = submit_login_request_wrapper
     document.mount()
 
     while True:
@@ -201,6 +204,8 @@ def main():
 
             message_scrollbox: Scrollbox = document.get_element_by_id("messages_pane")
             message_input: Input = document.get_element_by_id("message_send_input")
+            username_text: "Text" = document.get_element_by_id("username_text")
+            username_text.text = mem.username
 
             def on_enter(element: Input):
                 """

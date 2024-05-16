@@ -281,6 +281,14 @@ def get_next_hoverable(hoverable_elements: Set["Element"], currently_hovered: "E
         raise ValueError(f"Invalid key event for selecting elements: {key_ev.key}.")
     # note: all this stuff will be removed when the algorithm for selecting is actually implemented.
 
+def print2(*args, **kwargs) -> None:
+    """
+    Wrapper for builtin print that always has end="\\r\\x1b[0m"
+    
+    uhh, i guess you could supply the end kwarg if you want to change it.
+    """
+    print(*args, **kwargs, end='\r\x1b[0m')
+
 def len_no_ansi(string: str) -> str:
     """
     @see - https://github.com/chalk/ansi-regex/blob/0755e661553387cfebcb62378181e9f55b2567ff/index.js

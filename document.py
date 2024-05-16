@@ -86,8 +86,8 @@ class Document:
         """
 
         #cls()
-        Logger.log(f"t={time()}: doc.mount is about to print HI call self.render")
-        print(f"HI")
+        #Logger.log(f"t={time()}: doc.mount is about to print HI call self.render")
+        #print(f"HI")
         
         self.render()
 
@@ -223,7 +223,7 @@ class Document:
         def listener_loop():
             while True:
                 with self.term.cbreak():
-                    val = self.term.inkey(0.1)
+                    val = self.term.inkey()
                     
                     # if the listener thread is killed, or the document is stopped, break the loop
                     if self.stopped or self.listener_kill_flag: break
