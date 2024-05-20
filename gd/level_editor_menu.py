@@ -7,7 +7,7 @@ import os
 os.system('clear')
 
 def draw_menu_background(): 
-    draw('assets/level_editor_menu.png', Position.Relative(top=0, left=0), (terminal.width, terminal.height*2), 'scale')
+    draw('assets/level_editor_menu/level_editor_menu.png', Position.Relative(top=0, left=0), (terminal.width, terminal.height*2), 'scale')
 
 def draw_menu_title(): 
     left_pos = "calc(50% - 70)"
@@ -15,13 +15,13 @@ def draw_menu_title():
     draw('assets/level_editor_menu/level_menu_title_2.jpeg', Position.Relative(left=left_pos, top=top_pos), (None, None), 'crop')
 
 def draw_publish_button(): 
-    draw(f"assets/level_editor_menu/publish_button_main.png", pos=Position.Relative(right="calc(30% - 23ch)", bottom="calc(50% - 13ch)"))
+    draw(f"assets/level_editor_menu/publish_button_main.png", pos=Position.Relative(left="calc(30% - 23ch)", bottom="calc(50% - 13ch)"))
 
 def draw_create_button(): 
-      draw(f"assets/main_menu/create_button.png", pos=Position.Relative(left="calc(50% - 18ch)", bottom="calc(50% - 15ch)"))
+    draw(f"assets/main_menu/create_button.png", pos=Position.Relative(left="calc(50% - 15ch)", bottom="calc(50% - 13ch)"))
 
 def draw_search_button(): 
-    return None
+    draw(f"assets/level_editor_menu/search_button.png", pos=Position.Relative(right="calc(30% - 23ch)", bottom="calc(50% - 13ch)"))
 
 def draw_my_levels_button(): 
     return None 
