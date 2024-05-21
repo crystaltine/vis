@@ -87,7 +87,7 @@ def init_main_page():
 
     # draw all three buttons, select middle one by default
     draw_main_menu_buttons(1)
-
+ 
 def init_level_selector():
     # draw fullscreen bg
     draw_rect("#000000", Position.Relative(0, 0, 0, 0))
