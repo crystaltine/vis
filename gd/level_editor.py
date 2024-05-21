@@ -5,12 +5,13 @@ from render.camera import Camera
 from render.constants import CameraUtils
 from render.utils import fcode
 from parser import parse_level
+from logger import Logger
 from run_gd import run_level
 from engine.objects import OBJECTS, LevelObject
 import time
 
 CURSOR_MOVEMENT_CHANGE = {"KEY_UP":[0, -1], "KEY_LEFT":[-1, 0], "KEY_DOWN":[0, 1], "KEY_RIGHT" :[1, 0]}
-SCREEN_MOVEMENT_CHANGE = {"a":[0, -4], "d":[0, 4]}
+SCREEN_MOVEMENT_CHANGE = {"a":[-4, 0], "d":[4, 0]}
 CHANGE_OBJ = {"1": LevelObject(OBJECTS.spike, 0, 0), "2": LevelObject(OBJECTS.block, 0, 0), "3": LevelObject(OBJECTS.yellow_orb, 0, 0)}
 OBJECT = ["block", "spike", "yellow_orb", "blue_orb", "purple_orb", "yellow_grav_portal", "blue_grav_portal"]
 CURSOR_COLOR = "#68FF06"
@@ -42,7 +43,8 @@ class LevelEditor:
             self.cursor_pos[0] += CURSOR_MOVEMENT_CHANGE[movement][0]
             self.cursor_pos[1] += CURSOR_MOVEMENT_CHANGE[movement][1]
         else:
-            self.screen_pos[1] += SCREEN_MOVEMENT_CHANGE[movement][1]
+            self.cursor_pos[0] -= SCREEN_MOVEMENT_CHANGE[movement][0]
+            self.screen_pos[0] += SCREEN_MOVEMENT_CHANGE[movement][0]
 
     def update_cursor_obj(self, obj):
         if obj not in CHANGE_OBJ:
@@ -53,15 +55,18 @@ class LevelEditor:
         self.camera.level_editor_render(self.cursor_pos, self.screen_pos, self.cur_cursor_obj)
 
     def place_object(self):
+        Logger.log(f"place_obj, {self.cur_cursor_obj=}")
         if self.cur_cursor_obj is not None:
             x, y = self.cursor_pos
-            grid_x, grid_y = x + self.screen_pos[0], y + self.screen_pos[1] - 10
+            grid_x, grid_y = x + self.screen_pos[0] - CameraUtils.CAMERA_LEFT_OFFSET, y + self.screen_pos[1] - 10
+            Logger.log(f"^ {self.cursor_pos=}, gridx/gridy:{grid_x}/{grid_y} len(level)={len(self.level)}")
             if 0 <= grid_y < len(self.level) and 0 <= grid_x < len(self.level[grid_y]):
                 # Store current state for undo
                 self.undo_stack.append(deepcopy(self.level))
-                self.level[grid_y][grid_x] = LevelObject(self.cur_cursor_obj.data, grid_x, grid_y)
+                self.level[grid_y][grid_x] = (a:=LevelObject(self.cur_cursor_obj.data, grid_x, grid_y))
                 self.load_level_changes()  # Update camera's leveldata
                 self.render()
+                Logger.log(f"placing obj: {a}, ")
    
 
     def delete_object(self):
@@ -145,8 +150,8 @@ class LevelEditor:
                 val = self.term.inkey(timeout=None)
                 if CURSOR_MOVEMENT_CHANGE.get(val.name) == None and SCREEN_MOVEMENT_CHANGE.get(val) == None and CHANGE_OBJ.get(val) == None:
                     if val == "q":
-                        print("bye")
-                        print(self.del_list)
+                        Logger.write()
+                        print(f"del list: {self.del_list}")
                         break
                     elif val == "p":
                         self.place_object()
