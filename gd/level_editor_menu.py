@@ -14,30 +14,58 @@ def draw_menu_title():
     top_pos = 4 
     draw('assets/level_editor_menu/level_menu_title_2.jpeg', Position.Relative(left=left_pos, top=top_pos), (None, None), 'crop')
 
-def draw_publish_button(): 
-    draw(f"assets/level_editor_menu/publish_button_main.png", pos=Position.Relative(left="calc(30% - 23ch)", bottom="calc(50% - 13ch)"))
+def draw_publish_button(outline:bool): 
+    draw(f"assets/level_editor_menu/publish_button_main{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(30% - 45ch)", bottom="calc(50% - 13ch)"))
 
-def draw_create_button(): 
-    draw(f"assets/main_menu/create_button.png", pos=Position.Relative(left="calc(50% - 15ch)", bottom="calc(50% - 13ch)"))
+def draw_create_button(outline:bool): 
+    draw(f"assets/main_menu/create_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(50% - 44ch)", bottom="calc(50% - 13ch)"))
 
-def draw_search_button(): 
-    draw(f"assets/level_editor_menu/search_button.png", pos=Position.Relative(right="calc(30% - 23ch)", bottom="calc(50% - 13ch)"))
+def draw_search_button(outline:bool): 
+    draw(f"assets/level_editor_menu/search_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(30% - 45ch)", bottom="calc(50% - 13ch)"))
 
-def draw_my_levels_button(): 
-    return None 
+def draw_my_levels_button(outline:bool): 
+    draw(f"assets/level_editor_menu/my_levels_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(30% - 45ch)", bottom="calc(50% - 13ch)"))  #need to edit positioning and create the button
 
-def draw_all_buttons(): 
-    draw_publish_button()
-    draw_create_button()
-    draw_search_button()
-    draw_my_levels_button() 
+def _draw_start_button(outline:bool): 
+     draw(f"assets/level_editor_menu/start_button_smaller{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(50% - 18ch)", bottom="calc(50% - 13ch)"))
 
+def draw_all_buttons(number): 
+    if number == 1: 
+        draw_publish_button(True)
+        draw_create_button(False)
+        draw_search_button(False)
+        draw_my_levels_button(False) 
+        _draw_start_button(False)
+    elif number == 2: 
+        draw_create_button(True)
+        draw_publish_button(False)
+        draw_search_button(False)
+        draw_my_levels_button(False) 
+        _draw_start_button(False)
+    elif number == 3: 
+        draw_search_button(True)
+        draw_publish_button(False)
+        draw_create_button(False)
+        draw_my_levels_button(False) 
+        _draw_start_button(False)
+    elif number == 4: 
+        draw_my_levels_button(True) 
+        draw_search_button(False)
+        draw_publish_button(False)
+        draw_create_button(False)
+        _draw_start_button(False)
+    elif number == 5: 
+        _draw_start_button(True)
+        draw_my_levels_button(False) 
+        draw_search_button(False)
+        draw_publish_button(False)
+        draw_create_button(False)
 class Level_Editor_Menu: 
     def create_menu(): 
           
           draw_menu_background()
           draw_menu_title()
-          draw_all_buttons()
+          draw_all_buttons(1) 
 
           with terminal.hidden_cursor():
 
@@ -45,7 +73,7 @@ class Level_Editor_Menu:
                 with terminal.cbreak():
                     val = terminal.inkey(timeout=1)
                     if val == "q":
-                        os.system('cls')
+                        os.system('clear')
                         break        
 #function calls 
     create_menu()
