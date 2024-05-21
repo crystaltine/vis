@@ -226,7 +226,7 @@ class Camera:
 
     def level_editor_render(self, cursor_pos: tuple, screen_pos: tuple, cur_cursor_obj):
 
-        self.left = screen_pos[1] - CameraUtils.CAMERA_LEFT_OFFSET
+        self.left = screen_pos[0] - CameraUtils.CAMERA_LEFT_OFFSET
 
         all_strips = []
 

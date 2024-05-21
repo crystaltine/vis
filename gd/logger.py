@@ -6,9 +6,30 @@ class Logger:
     buffer = []
     _count = 0
 
+    onscreen_history = []
+    max_onscreen_len = 5
+
     def log(msg: str):
         Logger.buffer.append(msg)
         Logger._count += 1
+    
+    def log_on_screen(term, msg: str):
+        """
+        Actually prints a message to the terminal - always prints at top left corner.
+        """
+        
+        Logger.onscreen_history.append(msg)
+        
+        # always render newest messages at the bottom.
+        # 5th most recent message starts from row0col0, 4th most starts from row1col0, etc.
+        #if less than 5, then just print from row0col0 to rowNcol0
+        
+        for i in range(min(len(Logger.onscreen_history), Logger.max_onscreen_len)):
+            #with Globals.__vis_document__.term.hidden_cursor():
+            print(term.move_xy(0, i) + f"[INFO] " + Logger.onscreen_history[-i-1])
+        
+        #with Globals.__vis_document__.term.hidden_cursor():
+        #    print(Globals.__vis_document__.term.move_xy(0, 0) + msg, end="")
 
     def write(dont_clear_buffer: bool = False):
         
