@@ -22,7 +22,7 @@ class LevelEditor:
         self.level = parse_level("test2.level")
         self.level_name = "" # We should use this later to specify name for saving and loading menu ui instead of manually specifying a name in backend
         self.term = blessed.Terminal()
-        self.screen_pos = [0, 10]
+        self.screen_pos = [0, 0]
         self.cursor_pos = CameraUtils.center_screen_coordinates(self.term)
         self.camera = Camera(self.level)
         self.cur_cursor_obj = None
@@ -58,7 +58,7 @@ class LevelEditor:
         Logger.log(f"place_obj, {self.cur_cursor_obj=}")
         if self.cur_cursor_obj is not None:
             x, y = self.cursor_pos
-            grid_x, grid_y = x + self.screen_pos[0] - CameraUtils.CAMERA_LEFT_OFFSET, y + self.screen_pos[1] - 10
+            grid_x, grid_y = x + self.screen_pos[0] - CameraUtils.CAMERA_LEFT_OFFSET, y + self.screen_pos[1]
             Logger.log(f"^ {self.cursor_pos=}, gridx/gridy:{grid_x}/{grid_y} len(level)={len(self.level)}")
             if 0 <= grid_y < len(self.level) and 0 <= grid_x < len(self.level[grid_y]):
                 # Store current state for undo
