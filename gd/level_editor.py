@@ -1,13 +1,14 @@
-from render.camera import Camera
 import blessed
-from render.constants import CameraUtils
 from threading import Thread
+from copy import deepcopy
+from render.camera import Camera
+from render.constants import CameraUtils
 from render.utils import fcode
 from parser import parse_level
 from run_gd import run_level
 from engine.objects import OBJECTS, LevelObject
 
-CURSOR_MOVEMENT_CHANGE = {"KEY_UP":[0, -1], "KEY_LEFT":[-1, 0], "KEY_DOWN":[0, 1], "KEY_RIGHT" :[1, 0]} #up:259 left:260 down:258 right:261
+CURSOR_MOVEMENT_CHANGE = {"KEY_UP":[0, -1], "KEY_LEFT":[-1, 0], "KEY_DOWN":[0, 1], "KEY_RIGHT" :[1, 0]}
 SCREEN_MOVEMENT_CHANGE = {"a":[0, -4], "d":[0, 4]}
 CHANGE_OBJ = {"1": LevelObject(OBJECTS.spike, 0, 0), "2": LevelObject(OBJECTS.block, 0, 0), "3": LevelObject(OBJECTS.yellow_orb, 0, 0)}
 OBJECT = ["block", "spike", "yellow_orb", "blue_orb", "purple_orb", "yellow_grav_portal", "blue_grav_portal"]
@@ -16,7 +17,6 @@ CURSOR_COLOR = "#68FF06"
 class LevelEditor:
 
     def __init__(self):
-        #self.level = [[]]
         self.level = parse_level("test2.level")
         self.level_old = parse_level("test2.level")
         self.term = blessed.Terminal()
@@ -25,8 +25,9 @@ class LevelEditor:
         self.camera = Camera(self.level)
         self.cur_cursor_obj = None
         self.del_list = []
+        self.undo_stack = []  # Stack to store previous states for undo
 
-    def movecamera(self, movement :str, cur: bool):
+    def movecamera(self, movement: str, cur: bool):
         if cur:
             self.cursor_pos[0] += CURSOR_MOVEMENT_CHANGE[movement][0]
             self.cursor_pos[1] += CURSOR_MOVEMENT_CHANGE[movement][1]
@@ -44,25 +45,49 @@ class LevelEditor:
     def place_object(self):
         if self.cur_cursor_obj is not None:
             x, y = self.cursor_pos
-            grid_x, grid_y = x + self.screen_pos[0], y + self.screen_pos[1] - 10 #something something +10 y offset from earlier i think
+            grid_x, grid_y = x + self.screen_pos[0], y + self.screen_pos[1] - 10
             if 0 <= grid_y < len(self.level) and 0 <= grid_x < len(self.level[grid_y]):
+                # Store current state for undo
+                self.undo_stack.append(deepcopy(self.level))
                 self.level[grid_y][grid_x] = LevelObject(self.cur_cursor_obj.data, grid_x, grid_y)
                 self.load_level_changes()  # Update camera's leveldata
                 self.render()
-                if self.level == self.level_old:
-                    input()
    
+
     def delete_object(self):
         x, y = self.cursor_pos
         screen_x, screen_y = self.screen_pos
         grid_x = x + screen_x
-        grid_y = y + screen_y - 10 #something something +10 y offset from earlier i think
+        grid_y = y + screen_y - 10
         if 0 <= grid_y < len(self.level) and 0 <= grid_x < len(self.level[grid_y]):
+            # Store current state for undo
+            self.undo_stack.append(deepcopy(self.level))
             self.del_list.append(self.level[grid_y][grid_x].data)
             self.level[grid_y][grid_x] = LevelObject(None, grid_x, grid_y)
             self.load_level_changes()  # Update camera's leveldata
             self.render()
-   
+
+    def load_level(self, filename: str):
+        # Loads level (input broken)
+        self.level = parse_level("levels/" + filename)
+        self.level_old = deepcopy(self.level)
+        self.load_level_changes()
+        self.render()
+
+    def all_clear(self):
+        # Clear level data
+        self.undo_stack.append(deepcopy(self.level))
+        self.level = parse_level("basic.level")
+        self.load_level_changes()
+        self.render()
+
+    def undo(self):
+        if self.undo_stack:
+            # Pop previous state from undo stack and restore it
+            self.level = self.undo_stack.pop()
+            self.load_level_changes()
+            self.render()
+
     def load_level_changes(self):
         self.camera.leveldata = self.level
 
@@ -84,7 +109,7 @@ class LevelEditor:
         print(f"Level saved as {filename}")
 
     def run_game(self):
-            run_level(self.level)  # Call run_level on the current level
+        run_level(self.level)  # Call run_level on the current level
 
     def start_editor(self):
         self.camera.render_init()
@@ -108,7 +133,17 @@ class LevelEditor:
                         self.run_game()
 
                     elif val == "s":
-                        self.save_level("temp.txt")
+                        self.save_level("levels/temp.level")
+
+                    elif val == ".":
+                        filename = input("Enter filename to load: ")
+                        self.load_level(filename)
+
+                    elif val == "c":
+                        self.all_clear()
+
+                    elif val == "u":
+                        self.undo()
                         
                 else:
                     if CURSOR_MOVEMENT_CHANGE.get(val.name) != None:
@@ -118,4 +153,3 @@ class LevelEditor:
                     else:
                         self.movecamera(val, False)
                 self.render()
-                    
