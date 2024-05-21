@@ -4,6 +4,7 @@ from render.constants import CameraUtils
 from threading import Thread
 from render.utils import fcode
 from parser import parse_level
+from run_gd import run_level
 from engine.objects import OBJECTS, LevelObject
 
 CURSOR_MOVEMENT_CHANGE = {"KEY_UP":[0, -1], "KEY_LEFT":[-1, 0], "KEY_DOWN":[0, 1], "KEY_RIGHT" :[1, 0]} #up:259 left:260 down:258 right:261
@@ -65,6 +66,26 @@ class LevelEditor:
     def load_level_changes(self):
         self.camera.leveldata = self.level
 
+    def save_level(self, filename: str):
+        symbol_map = {
+            "block": 'x',
+            "spike": '^',
+            "yellow_orb": 'y'
+        }
+        with open(filename, 'w') as f:
+            for row in self.level:
+                line = ''
+                for item in row:
+                    if item.data is None:
+                        line += ' '  # Assuming empty spaces are represented by a space character
+                    else:
+                        line += symbol_map.get(item.data["name"], '?')  # Use '?' as a default for unknown objects
+                f.write(line + '\n')
+        print(f"Level saved as {filename}")
+
+    def run_game(self):
+            run_level(self.level)  # Call run_level on the current level
+
     def start_editor(self):
         self.camera.render_init()
         self.render()
@@ -82,6 +103,12 @@ class LevelEditor:
                         
                     elif val == "r":
                         self.delete_object()
+
+                    elif val == "/":
+                        self.run_game()
+
+                    elif val == "s":
+                        self.save_level("temp.txt")
                         
                 else:
                     if CURSOR_MOVEMENT_CHANGE.get(val.name) != None:

@@ -10,11 +10,11 @@ def run_level(path: str):
     """
     `path: str` - the path to the level file to be run. (e.g. "levels/level1.txt")
     """
-
-    leveldata = parse_level(path)
-    
-    for row in leveldata:
-        Logger.log(f"Level row types: {[type(row_obj) for row_obj in row]}")
+    leveldata = path
+    if isinstance(leveldata,str):
+        leveldata = parse_level(leveldata)
+        for row in leveldata:
+            Logger.log(f"Level row types: {[type(row_obj) for row_obj in row]}")
 
     game = Game(leveldata)
     
