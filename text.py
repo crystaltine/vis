@@ -31,6 +31,7 @@ class Text(Element):
         italic: bool
         underline: bool
         left: int | None
+        center: int | None
         top: int | None
         width: int | None
         height: int | None
@@ -47,8 +48,9 @@ class Text(Element):
         "italic": False,
         "underline": False,
         "left": 0,
+        "center": None, # overrides left if not None
         "top": 0,
-        "width": "100%",
+        "width": "100%", # must not be None
         "height": None, # auto based on text length
         "wrap": True,
         "text_align": "left",
@@ -72,7 +74,12 @@ class Text(Element):
 
         # calculate width-related attributes 
         container_width = container_bounds.right - container_bounds.left
+        
+        # to handle center: pretend left = center, and subtract half of width from it later
         true_l = convert_to_chars(container_width, self.style.get("left"))
+        if self.style.get("center") is not None: # this overrides left as well
+            true_l = convert_to_chars(container_width, self.style.get("center")) - convert_to_chars(container_width, self.style.get("width"))//2
+        
         true_w = convert_to_chars(container_width, self.style.get("width"))
         self.client_left = container_bounds.left + true_l
         self.client_right = container_bounds.left + true_l + true_w       
@@ -100,6 +107,7 @@ class Text(Element):
         if self.style.get("wrap") == True:
             # wrap text based on client width
             wrapped_text = [self.text[i*self.client_width:(i+1)*self.client_width] for i in range(len(self.text)//self.client_width+1)]
+
 
         text_chunk_index = 0 # which chunk of text to render on each line
         for row in range(self.client_top, self.client_bottom):
@@ -132,6 +140,8 @@ class Text(Element):
         # calculate width-related attributes 
         container_width = container_bounds.right - container_bounds.left
         true_l = convert_to_chars(container_width, self.style.get("left"))
+        if self.style.get("center") is not None: # this overrides left as well
+            true_l = convert_to_chars(container_width, self.style.get("center")) - convert_to_chars(container_width, self.style.get("width"))//2
         true_w = convert_to_chars(container_width, self.style.get("width"))
         self.client_left = container_bounds.left + true_l
         self.client_right = container_bounds.left + true_l + true_w       
