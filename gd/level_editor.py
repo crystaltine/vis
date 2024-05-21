@@ -1,5 +1,5 @@
 import blessed
-from threading import Thread
+from threading import Thread, Timer
 from copy import deepcopy
 from render.camera import Camera
 from render.constants import CameraUtils
@@ -7,6 +7,7 @@ from render.utils import fcode
 from parser import parse_level
 from run_gd import run_level
 from engine.objects import OBJECTS, LevelObject
+import time
 
 CURSOR_MOVEMENT_CHANGE = {"KEY_UP":[0, -1], "KEY_LEFT":[-1, 0], "KEY_DOWN":[0, 1], "KEY_RIGHT" :[1, 0]}
 SCREEN_MOVEMENT_CHANGE = {"a":[0, -4], "d":[0, 4]}
@@ -18,14 +19,23 @@ class LevelEditor:
 
     def __init__(self):
         self.level = parse_level("test2.level")
-        self.level_old = parse_level("test2.level")
+        self.level_name = "" # We should use this later to specify name for saving and loading menu ui instead of manually specifying a name in backend
         self.term = blessed.Terminal()
         self.screen_pos = [0, 10]
         self.cursor_pos = CameraUtils.center_screen_coordinates(self.term)
         self.camera = Camera(self.level)
         self.cur_cursor_obj = None
         self.del_list = []
-        self.undo_stack = []  # Stack to store previous states for undo
+        self.undo_stack = []
+        self.autosave_interval = 300  # Autosave interval in seconds (5 minutes)
+        self.autosave_thread = Thread(target=self.autosave_loop)
+        self.autosave_thread.daemon = True
+        self.autosave_thread.start()
+    
+    def autosave_loop(self):
+        while True:
+            time.sleep(self.autosave_interval)
+            self.save_level("levels/basic.auto")
 
     def movecamera(self, movement: str, cur: bool):
         if cur:
