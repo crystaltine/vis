@@ -118,6 +118,21 @@ class LevelEditor:
                 f.write(line + '\n')
         print(f"Level saved as {filename}")
 
+    def increase_height(self):
+        self.undo_stack.append(deepcopy(self.level))
+        width = len(self.level[0]) if self.level else 10
+        new_row = [LevelObject(None, x, len(self.level)) for x in range(width)]
+        self.level.insert(0,new_row)
+        self.load_level_changes()
+        self.render()
+
+    def decrease_height(self):
+        self.undo_stack.append(deepcopy(self.level))
+        if self.level:
+            self.level.pop(0)
+            self.load_level_changes()
+            self.render()
+
     def run_game(self):
         run_level(self.level)  # Call run_level on the current level
 
@@ -154,6 +169,11 @@ class LevelEditor:
 
                     elif val == "u":
                         self.undo()
+
+                    elif val == "+":
+                        self.increase_height()
+                    elif val == "-":
+                        self.decrease_height()
                         
                 else:
                     if CURSOR_MOVEMENT_CHANGE.get(val.name) != None:
