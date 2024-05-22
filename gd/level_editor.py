@@ -12,7 +12,7 @@ import time
 
 CURSOR_MOVEMENT_CHANGE = {"KEY_UP":[0, -1], "KEY_LEFT":[-1, 0], "KEY_DOWN":[0, 1], "KEY_RIGHT" :[1, 0]}
 SCREEN_MOVEMENT_CHANGE = {"a":[-4, 0], "d":[4, 0]}
-CHANGE_OBJ = {"1": LevelObject(OBJECTS.spike, 0, 0), "2": LevelObject(OBJECTS.block, 0, 0), "3": LevelObject(OBJECTS.yellow_orb, 0, 0)}
+CHANGE_OBJ = {"1": LevelObject(OBJECTS.spike, 0, 0), "2": LevelObject(OBJECTS.block, 0, 0), "3": LevelObject(OBJECTS.yellow_orb, 0, 0), "4": LevelObject(OBJECTS.blue_orb, 0, 0), "5": LevelObject(OBJECTS.purple_orb, 0, 0)}
 OBJECT = ["block", "spike", "yellow_orb", "blue_orb", "purple_orb", "yellow_grav_portal", "blue_grav_portal"]
 CURSOR_COLOR = "#68FF06"
 
@@ -71,9 +71,8 @@ class LevelEditor:
 
     def delete_object(self):
         x, y = self.cursor_pos
-        screen_x, screen_y = self.screen_pos
-        grid_x = x + screen_x
-        grid_y = y + screen_y - 10
+        grid_x, grid_y = x + self.screen_pos[0] - CameraUtils.CAMERA_LEFT_OFFSET, y + self.screen_pos[1]
+        Logger.log(f"^ {self.cursor_pos=}, gridx/gridy:{grid_x}/{grid_y} len(level)={len(self.level)}")
         if 0 <= grid_y < len(self.level) and 0 <= grid_x < len(self.level[grid_y]):
             # Store current state for undo
             self.undo_stack.append(deepcopy(self.level))
@@ -110,7 +109,9 @@ class LevelEditor:
         symbol_map = {
             "block": 'x',
             "spike": '^',
-            "yellow_orb": 'y'
+            "yellow_orb": 'y',
+            "blue_orb": 'b',
+            "purple_orb": 'p'
         }
         with open(filename, 'w') as f:
             for row in self.level:
@@ -137,6 +138,21 @@ class LevelEditor:
             self.level.pop(0)
             self.load_level_changes()
             self.render()
+
+    def increase_length(self):
+        self.undo_stack.append(deepcopy(self.level))
+        for row in self.level:
+            row.append(LevelObject(None, len(row), self.level.index(row)))
+        self.load_level_changes()
+        self.render()
+
+    def decrease_length(self):
+        self.undo_stack.append(deepcopy(self.level))
+        for row in self.level:
+            if row:
+                row.pop()
+        self.load_level_changes()
+        self.render()
 
     def run_game(self):
         run_level(self.level)  # Call run_level on the current level
@@ -177,8 +193,15 @@ class LevelEditor:
 
                     elif val == "+":
                         self.increase_height()
+
                     elif val == "-":
                         self.decrease_height()
+
+                    elif val == ">":
+                        self.increase_length()
+                    elif val == "<":
+                        self.decrease_length()
+
                         
                 else:
                     if CURSOR_MOVEMENT_CHANGE.get(val.name) != None:
