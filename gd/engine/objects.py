@@ -1,8 +1,8 @@
 from copy import deepcopy
 
 class OBJECTS:
-    block = {
-        "name": "block",
+    block0 = {
+        "name": "block0",
         "hitbox_xrange": [0, 1],
         "hitbox_yrange": [0, 1],
         "hitbox_type": "solid", # die when crash into side or bottom,
@@ -50,7 +50,7 @@ class OBJECTS:
         "temp_symbol": 'p'
     }
     yellow_grav_portal = {
-        "name": "yellow_grav_portal",
+        "name": "normal_grav_portal",
         "hitbox_xrange": [0.1, 0.9],
         "hitbox_yrange": [-1.4, 1.4],
         "hitbox_type": "any-touch", # phase through,
@@ -59,7 +59,7 @@ class OBJECTS:
         "temp_symbol": 'yg'
     }
     blue_grav_portal = {
-        "name": "blue_grav_portal",
+        "name": "reverse_grav_portal",
         "hitbox_xrange": [0.1, 0.9],
         "hitbox_yrange": [-1.4, 1.4],
         "hitbox_type": "any-touch", # phase through,
