@@ -4,7 +4,7 @@ from typing import List
 
 SUPPORTED_CHARS = {
     " ": None,
-    "x": OBJECTS.block,
+    "x": OBJECTS.block0,
     "^": OBJECTS.spike,
     "y": OBJECTS.yellow_orb,
     "p": OBJECTS.purple_orb,

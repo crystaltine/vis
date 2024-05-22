@@ -11,7 +11,7 @@ class OBJECTS(Enum):
 
 TEXT_TO_OBJECT = {
     " ": None,
-    "x": OBJECTS.block,
+    "x": OBJECTS.block0,
     "^": OBJECTS.spike,
     "y": OBJECTS.yellow_orb,
     "p": OBJECTS.purple_orb,
@@ -20,7 +20,7 @@ TEXT_TO_OBJECT = {
 
 OBJECT_TO_TEXT = {
     None: " ",
-    OBJECTS.block: "x",
+    OBJECTS.block0: "x",
     OBJECTS.spike: "^",
     OBJECTS.yellow_orb: "y",
     OBJECTS.purple_orb: "p",

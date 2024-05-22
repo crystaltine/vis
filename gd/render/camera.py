@@ -5,7 +5,7 @@ from render.utils import fcode, closest_quarter, len_no_ansi
 from render.rect import PxRect
 from logger import Logger
 from math import floor, ceil
-from render.TEXTURES import TEXTURES
+from render.texture_manager import TextureManager
 
 if TYPE_CHECKING:
     from engine.objects import LevelObject
@@ -39,7 +39,7 @@ class Camera:
             y > CameraUtils.screen_height_blocks(self.term)):
             return
 
-        obj_texture = TEXTURES.get(obj_name)
+        obj_texture = TextureManager.get(obj_name)()
         
         terminal_pos = CameraUtils.grid_to_terminal_pos(x, y)
         
@@ -47,7 +47,7 @@ class Camera:
 
             # a clever way to not have to rerender the entire bg every time.
             # we cover up the entire texture after done
-            refresh_optimization = fcode(background=TEXTURES.BG_COLOR) + " "*len(obj_texture[i])
+            refresh_optimization = fcode(background=TextureManager.bg_color) + " "*len(obj_texture[i])
             print(self.term.move_yx(round(terminal_pos[1]+i), round(terminal_pos[0])) + obj_texture[i] + refresh_optimization)
 
     def render_init(self):
@@ -61,8 +61,8 @@ class Camera:
         ground_char_idx = self.ground*CameraUtils.GRID_PX_Y
         
         stuff = [
-            PxRect(0, 0, self.term.width, ground_char_idx, self.term, TEXTURES.BG_COLOR), # bg
-            PxRect(0, ground_char_idx, self.term.width, self.term.height, self.term, TEXTURES.GROUND_COLOR), # ground
+            PxRect(0, 0, self.term.width, ground_char_idx, self.term, TextureManager.bg_color), # bg
+            PxRect(0, ground_char_idx, self.term.width, self.term.height, self.term, TextureManager.ground_color), # ground
         ]
         [item.render() for item in stuff]
 
@@ -138,8 +138,8 @@ class Camera:
         all_strips = []
 
         for row in self.leveldata[-self.ground:]:
-            render_strip_1 = fcode(background=TEXTURES.BG_COLOR) # start as the bg format code
-            render_strip_2 = fcode(background=TEXTURES.BG_COLOR) # start as the bg format code
+            render_strip_1 = fcode(background=TextureManager.bg_color) # start as the bg format code
+            render_strip_2 = fcode(background=TextureManager.bg_color) # start as the bg format code
             
             if (floor(self.left)) >= len(row):
                 continue # row is all behind us
@@ -167,8 +167,8 @@ class Camera:
             render_strip_2 += empty_block
 
             #else: 
-            #    render_strip_1 += TEXTURES.get(first_obj["name"])[0][partial_render_offset:]
-            #    render_strip_2 += TEXTURES.get(first_obj["name"])[1][partial_render_offset:]
+            #    render_strip_1 += TextureManager.get(first_obj["name"])[0][partial_render_offset:]
+            #    render_strip_2 += TextureManager.get(first_obj["name"])[1][partial_render_offset:]
                 
             #Logger.log(f"[rendering leftmost obj]: self.left is {self.left}, partial_render_offset is {partial_render_offset}, idx is {floor(self.left)}")
 
@@ -186,8 +186,8 @@ class Camera:
                 else: 
                     # TODO - (see docstring), this only works with 2-char tall textures
                     # we end off each texture with bg color so whitespace is not visible
-                    render_strip_1 += TEXTURES.get(obj.data["name"])[1] + fcode(background=TEXTURES.BG_COLOR)
-                    render_strip_2 += TEXTURES.get(obj.data["name"])[0] + fcode(background=TEXTURES.BG_COLOR)
+                    render_strip_1 += TextureManager.get(obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
+                    render_strip_2 += TextureManager.get(obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
             
             # @old (NVM IM BACK)-
             # make sure all strips are the char length of the terminal.
@@ -208,7 +208,7 @@ class Camera:
         # draw every row starting from 0 to ground * block height
         # i know drawing the air is useless, but we need to cover up the player trail
         for i in range(self.ground*CameraUtils.GRID_PX_Y - len(all_strips)):
-            print(self.term.move_yx(i, 0) + fcode(background=TEXTURES.BG_COLOR) + " "*self.term.width)
+            print(self.term.move_yx(i, 0) + fcode(background=TextureManager.bg_color) + " "*self.term.width)
         
         # we keep track of this cuz we might skip an index, so it wont be matched
         row_in_terminal = (self.ground)*CameraUtils.GRID_PX_Y - len(all_strips)
@@ -237,8 +237,8 @@ class Camera:
         for row in self.leveldata[-self.ground:]:
             cur_x = 1
 
-            render_strip_1 = fcode(background=TEXTURES.BG_COLOR) # start as the bg format code
-            render_strip_2 = fcode(background=TEXTURES.BG_COLOR) # start as the bg format code
+            render_strip_1 = fcode(background=TextureManager.bg_color) # start as the bg format code
+            render_strip_2 = fcode(background=TextureManager.bg_color) # start as the bg format code
             
             if (floor(self.left)) >= len(row):
                 continue # row is all behind us
@@ -259,12 +259,12 @@ class Camera:
                         continue
                 if obj.data is None:
                     empty_block = " "*CameraUtils.GRID_PX_X
-                    render_strip_1 += empty_block + fcode(background=TEXTURES.BG_COLOR)
-                    render_strip_2 += empty_block + fcode(background=TEXTURES.BG_COLOR)
+                    render_strip_1 += empty_block + fcode(background=TextureManager.bg_color)
+                    render_strip_2 += empty_block + fcode(background=TextureManager.bg_color)
 
                 else: 
-                    render_strip_1 += TEXTURES.get(obj.data["name"])[1] + fcode(background=TEXTURES.BG_COLOR)
-                    render_strip_2 += TEXTURES.get(obj.data["name"])[0] + fcode(background=TEXTURES.BG_COLOR)
+                    render_strip_1 += TextureManager.get(obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
+                    render_strip_2 += TextureManager.get(obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
                 cur_x += 1
             
             render_strip_1 += " "*max(0, self.term.width-len_no_ansi(render_strip_1))
@@ -275,7 +275,7 @@ class Camera:
             cur_y += 1
 
         for i in range(self.ground*CameraUtils.GRID_PX_Y - len(all_strips)):
-            print(self.term.move_yx(i, 0) + fcode(background=TEXTURES.BG_COLOR) + " "*self.term.width)
+            print(self.term.move_yx(i, 0) + fcode(background=TextureManager.bg_color) + " "*self.term.width)
 
         row_in_terminal = (self.ground)*CameraUtils.GRID_PX_Y - len(all_strips)
         for i in range(len(all_strips)):
@@ -295,13 +295,13 @@ class Camera:
         # camera has a bit of left padding
         camera_offset_chars = CameraUtils.GRID_PX_X * CameraUtils.CAMERA_LEFT_OFFSET
         
-        for i in range(len(TEXTURES.PLAYER_ICON)):
-            print(self.term.move_yx(player_topmost_y+i, camera_offset_chars) + TEXTURES.PLAYER_ICON[i])
+        for i in range(len(TextureManager.PLAYER_ICON)):
+            print(self.term.move_yx(player_topmost_y+i, camera_offset_chars) + TextureManager.PLAYER_ICON[i])
 
     def draw_cursor(self, cur_pos: tuple, cursor_pos: tuple, cursor_texture, render_strips: list, obj, cur_cursor_obj):
         if obj.data is not None and (obj.data["name"].find("orb") != -1 or obj.data["name"].find("block") != -1):
-            render_strips[1] += TEXTURES.get(obj.data["name"])[0] + fcode(background=TEXTURES.BG_COLOR)
-            render_strips[0] += TEXTURES.get(obj.data["name"])[1] + fcode(background=TEXTURES.BG_COLOR)
+            render_strips[1] += TextureManager.get(obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
+            render_strips[0] += TextureManager.get(obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
             return render_strips
         if cur_pos[1] == cursor_pos[1]:
             layer = (True, True)
@@ -312,8 +312,8 @@ class Camera:
         if cur_pos[0] == cursor_pos[0]:
             if layer == (True, True) and cur_cursor_obj != None:
                 if cur_cursor_obj.data["name"].find("orb") != -1 or cur_cursor_obj.data["name"].find("block") != -1:
-                    render_strips[1] += TEXTURES.get(cur_cursor_obj.data["name"])[0] + fcode(background=TEXTURES.BG_COLOR)
-                    render_strips[0] += TEXTURES.get(cur_cursor_obj.data["name"])[1] + fcode(background=TEXTURES.BG_COLOR)
+                    render_strips[1] += TextureManager.get(cur_cursor_obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
+                    render_strips[0] += TextureManager.get(cur_cursor_obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
                 else:
                     render_strips = self.draw_center(render_strips, cursor_texture, layer, cur_cursor_obj)
             else:
@@ -337,13 +337,13 @@ class Camera:
                 render_strips[0] += empty_block
         else:
             if layer[1]:
-                render_strips[1] += cursor_texture + TEXTURES.get_raw_obj_text(obj.data["name"])[0]
+                render_strips[1] += cursor_texture + TextureManager.get_raw_obj_text(obj.data["name"])[0]
             else:
-                render_strips[1] += TEXTURES.get_raw_obj_text(obj.data["name"])[0]
+                render_strips[1] += TextureManager.get_raw_obj_text(obj.data["name"])[0]
             if layer[0]:
-                render_strips[0] += cursor_texture + TEXTURES.get_raw_obj_text(obj.data["name"])[1]
+                render_strips[0] += cursor_texture + TextureManager.get_raw_obj_text(obj.data["name"])[1]
             else:
-                render_strips[0] += TEXTURES.get_raw_obj_text(obj.data["name"])[1]
+                render_strips[0] += TextureManager.get_raw_obj_text(obj.data["name"])[1]
         return render_strips
     
     def draw_l_edge(self, render_strips, cursor_texture, layer, obj):
@@ -352,14 +352,14 @@ class Camera:
             if layer[1]:
                 render_strips[1] += empty_block + cursor_texture + empty_block
             else:
-                render_strips[1] += empty_block + fcode(background=TEXTURES.BG_COLOR) + empty_block
+                render_strips[1] += empty_block + fcode(background=TextureManager.bg_color) + empty_block
             if layer[0]:
                 render_strips[0] += empty_block + cursor_texture + empty_block
             else:
-                render_strips[0] += empty_block + fcode(background=TEXTURES.BG_COLOR) + empty_block
+                render_strips[0] += empty_block + fcode(background=TextureManager.bg_color) + empty_block
         else:
-            top = TEXTURES.get_raw_obj_text(obj.data["name"])[1]
-            bottom = TEXTURES.get_raw_obj_text(obj.data["name"])[0]
+            top = TextureManager.get_raw_obj_text(obj.data["name"])[1]
+            bottom = TextureManager.get_raw_obj_text(obj.data["name"])[0]
             if layer[1]:
                 render_strips[1] += bottom[len(bottom) - 4:len(bottom) - 2] + cursor_texture + bottom[len(bottom) - 2:]
             else:
@@ -374,22 +374,22 @@ class Camera:
         empty_block = " "*(CameraUtils.GRID_PX_X//2)
         if obj.data is None:
             if layer[1]:
-                render_strips[1] += cursor_texture + empty_block + fcode(background=TEXTURES.BG_COLOR) + empty_block
+                render_strips[1] += cursor_texture + empty_block + fcode(background=TextureManager.bg_color) + empty_block
             else:
-                render_strips[1] += empty_block + fcode(background=TEXTURES.BG_COLOR) + empty_block
+                render_strips[1] += empty_block + fcode(background=TextureManager.bg_color) + empty_block
             if layer[0]:
-                render_strips[0] += cursor_texture + empty_block + fcode(background=TEXTURES.BG_COLOR) + empty_block
+                render_strips[0] += cursor_texture + empty_block + fcode(background=TextureManager.bg_color) + empty_block
             else:
-                render_strips[0] += empty_block + fcode(background=TEXTURES.BG_COLOR) + empty_block
+                render_strips[0] += empty_block + fcode(background=TextureManager.bg_color) + empty_block
         else:
-            top = TEXTURES.get_raw_obj_text(obj.data["name"])[1]
-            bottom = TEXTURES.get_raw_obj_text(obj.data["name"])[0]
+            top = TextureManager.get_raw_obj_text(obj.data["name"])[1]
+            bottom = TextureManager.get_raw_obj_text(obj.data["name"])[0]
             if layer[1]:
-                render_strips[1] += cursor_texture + bottom[len(bottom) - 4:len(bottom) - 2] + fcode(background=TEXTURES.BG_COLOR) + bottom[len(bottom) - 2:]
+                render_strips[1] += cursor_texture + bottom[len(bottom) - 4:len(bottom) - 2] + fcode(background=TextureManager.bg_color) + bottom[len(bottom) - 2:]
             else:
                 render_strips[1] += bottom
             if layer[0]:
-                render_strips[0] += cursor_texture + top[len(top) - 4:len(top) - 2] + fcode(background=TEXTURES.BG_COLOR) + top[len(top) - 2:]
+                render_strips[0] += cursor_texture + top[len(top) - 4:len(top) - 2] + fcode(background=TextureManager.bg_color) + top[len(top) - 2:]
             else:
                 render_strips[0] += top
         return render_strips

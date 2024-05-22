@@ -12,7 +12,7 @@ import time
 
 CURSOR_MOVEMENT_CHANGE = {"KEY_UP":[0, -1], "KEY_LEFT":[-1, 0], "KEY_DOWN":[0, 1], "KEY_RIGHT" :[1, 0]}
 SCREEN_MOVEMENT_CHANGE = {"a":[-4, 0], "d":[4, 0]}
-CHANGE_OBJ = {"1": LevelObject(OBJECTS.spike, 0, 0), "2": LevelObject(OBJECTS.block, 0, 0), "3": LevelObject(OBJECTS.yellow_orb, 0, 0), "4": LevelObject(OBJECTS.blue_orb, 0, 0), "5": LevelObject(OBJECTS.purple_orb, 0, 0)}
+CHANGE_OBJ = {"1": LevelObject(OBJECTS.spike, 0, 0), "2": LevelObject(OBJECTS.block0, 0, 0), "3": LevelObject(OBJECTS.yellow_orb, 0, 0), "4": LevelObject(OBJECTS.blue_orb, 0, 0), "5": LevelObject(OBJECTS.purple_orb, 0, 0)}
 OBJECT = ["block", "spike", "yellow_orb", "blue_orb", "purple_orb", "yellow_grav_portal", "blue_grav_portal"]
 CURSOR_COLOR = "#68FF06"
 
