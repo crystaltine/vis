@@ -100,11 +100,11 @@ class Document:
         """
         try:
             #cls()
-
-            for child in self.children:
-                Logger.log(f"document.render: rendering child with client edges {self.client_left=} {self.client_top=} {self.client_right=} {self.client_bottom=}")
-                child.render(Boundary(self.client_left, self.client_top, self.client_right, self.client_bottom))
-                    
+            with self.term.hidden_cursor():
+                for child in self.children:
+                    Logger.log(f"document.render: rendering child with client edges {self.client_left=} {self.client_top=} {self.client_right=} {self.client_bottom=}")
+                    child.render(Boundary(self.client_left, self.client_top, self.client_right, self.client_bottom))
+                        
         except Exception as e:
             Logger.log(f"ERROR in document.render: {traceback.format_exc()}")
             self.quit_app(f"ERROR in document.render: {traceback.format_exc()}")
@@ -162,7 +162,9 @@ class Document:
                 elif ev.name == 'KEY_ENTER' and self.hovered and self.hovered.style.get("selectable"):
                     if self.active is not None: 
                         self.active.render()
-                    self.active = self.hovered
+                    self.active.on_deselect() if hasattr(self.active, 'on_deselect') else None # first, deselect the currently active element
+                    self.active = self.hovered # then, set active to new hovered element
+                    self.active.on_select() if hasattr(self.active, 'on_select') else None
                     self.active.render()
             
             except:
@@ -170,6 +172,7 @@ class Document:
                 self.quit_app(f"ERROR in document._builtin_keydown_handler: {traceback.format_exc()}")
 
         def on_press(key: "Keystroke"):
+            Logger.log(f"on_press now running with key name,key={key.name},{key}")
             # check if key came from the current window
             ev = KeyEvent2.create_from(key)
             #Logger.log_on_screen(f"on_press created {ev}")
@@ -183,14 +186,17 @@ class Document:
                 # to a random element in the document.
                 
                 temp = self.active
+                temp.on_deselect() if hasattr(temp, 'on_deselect') else None
                 self.active = None # move to next element, so get rid of active
                 if temp is not None:
                     temp.render() # rerender to get rid of the active state (such as different bg)
                 
                 # set hovered to the new hovered element
                 # as a precondition, hovered should have been self.active. We dont need to rerender it to get rid of the hover state.
-                temp = self.hovered                
+                temp = self.hovered  
+                temp.on_dehover() if hasattr(temp, 'on_dehover') else None              
                 self.hovered = get_next_hoverable(self.hoverable_elements, self.hovered, ev)
+                self.hovered.on_hover() if hasattr(self.hovered, 'on_hover') else None
                 self.hovered.render()
                 if temp is not None:
                     temp.render()
@@ -201,6 +207,8 @@ class Document:
                 if isinstance(btn:=self.hovered, Button):
                     # select the button and run its on_pressed ONLY if it wasnt active before (no holding by default) <-TODO add opt to change this later?
                     if self.active is not btn:
+                        if self.active is not None:
+                            self.active.on_deselect() if hasattr(self.active, 'on_deselect') else None
                         self.active = btn
                         btn.render()
                         btn.on_pressed()
@@ -221,17 +229,22 @@ class Document:
                 _builtin_key_handler(ev)
         
         def listener_loop():
-            while True:
-                with self.term.cbreak():
-                    val = self.term.inkey()
-                    
-                    # if the listener thread is killed, or the document is stopped, break the loop
-                    if self.stopped or self.listener_kill_flag: break
-                    
-                    # otherwise just keep listening
-                    if not val: continue
-                    
-                    on_press(val)
+            try:
+                while True:
+                    with self.term.cbreak():
+                        val = self.term.inkey(0.01)
+                        Logger.log(f"document.listener_loop: got key {val}")
+                        
+                        # if the listener thread is killed, or the document is stopped, break the loop
+                        if self.stopped or self.listener_kill_flag: break
+                        
+                        # otherwise just keep listening
+                        if not val: continue
+                        
+                        on_press(val)
+            except:
+                Logger.log(f"ERROR in document.listener_loop: {traceback.format_exc()}")
+                self.quit_app(f"\x1b[33mERROR in Document Event Listener: \x1b[31m{traceback.format_exc()}\x1b[0m")
                 
         return Thread(target=listener_loop)
     

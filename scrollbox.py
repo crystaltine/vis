@@ -73,13 +73,15 @@ class Scrollbox(Element):
         # fully rendered children from a -> b-2
         # bottom partially visible child is b-1
         
-        a = indexof_first_larger_than(child_edges, self.scroll_y)
-        b = indexof_first_larger_than(child_edges, self.scroll_y + self.client_height)
+        a = indexof_first_larger_than(child_edges, self.scroll_y, allow_equal_to=True)
+        b = indexof_first_larger_than(child_edges, self.scroll_y + self.client_height, allow_equal_to=True)
         
+        Logger.log(f"[scrollbox/get_fully_rendered_child_range] a={a}, b={b}")
+        Logger.log(f"child_edges was {child_edges}, scrolly was {self.scroll_y}, client_height was {self.client_height}")
         return (a, b-1)
     
     def render(self, container_bounds: Boundary = None, container_bg: str = None):
-
+        
         container_bounds = self.get_true_container_edges(container_bounds)
         Boundary.set_client_boundary(self, container_bounds)
         curr_bg_color = self.getset_curr_bg_color(container_bg)
@@ -118,6 +120,7 @@ class Scrollbox(Element):
             #Logger.log(f"[scrollbox] PRERENDER: content_boundary.top {old_content_boundary_top}->{content_boundary.top}")
 
         # rendering the top child
+        Logger.log(f"[scrollbox]: first partially rendered exists: {first_partially_rendered is not None}")
         if first_partially_rendered is not None:
             first_partially_rendered._render_partial(deepcopy(content_boundary), deepcopy(limit_boundary), curr_bg_color)
             content_boundary.top = first_partially_rendered.client_bottom
@@ -175,6 +178,7 @@ class Scrollbox(Element):
         
         If `index` is None, it will be added to the end of the list of children.
         """
+        Logger.log(f"scrollbox: adding child {child} at index {index}")
         if index is None:
             self.children.append(child)
         else:

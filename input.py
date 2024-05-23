@@ -19,7 +19,13 @@ class Input(Element):
         id: str | None
         class_str: str | None
         style_str: str | None
+        on_change: Callable[[], None]
+        on_hover: Callable[[], None]
+        on_dehover: Callable[[], None]
+        on_select: Callable[[], None]
+        on_deselect: Callable[[], None]
         on_enter: Callable[["Input"], None]
+        default_text: str | None
         placeholder: str | None
         max_len: int | None
         pattern: str | None
@@ -88,17 +94,27 @@ class Input(Element):
         - id: str | None
         - class_str: str | None
         - style_str: str | None
+        - on_change: Callable[[], None]
+        - on_hover: Callable[[], None]
+        - on_dehover: Callable[[], None]
+        - on_select: Callable[[], None]
+        - on_deselect: Callable[[], None]
         - on_enter: Callable[[Input], None] (passes in pointer to this input object)
+        - default_text: str | None
         - placeholder: str | None
         - max_len: int | None
         - pattern: str | None
         """
         
+        Logger.log(f"Created input element with attrs: {attrs}")
+        
         super().__init__(**attrs)
+        
+        self.on_change = attrs.get("on_change", lambda: None)
 
         self.placeholder = attrs.get("placeholder", "")
         self.max_len = attrs.get("max_len", None)
-        self.curr_text: str = ""
+        self.curr_text: str = attrs.get("default_text", "")
         self.cursor_pos = 0
         self.on_enter = attrs.get("on_enter", lambda x: None)
         """ Callback for when user presses enter and this element is selected. """
@@ -120,13 +136,16 @@ class Input(Element):
 
             # else, handle key.
             if not e.is_special:
+                self.on_change()
                 self._insert_char(e.key)
 
             else:
                 if e.name == 'KEY_BACKSPACE':
+                    self.on_change()
                     self._backspace()
 
                 elif e.name == 'KEY_DELETE':
+                    self.on_change()
                     self._delete()
 
                 elif e.name == "KEY_INSERT":
@@ -225,7 +244,8 @@ class Input(Element):
 
     def render(self, container_bounds: Boundary = None, container_bg: str = None):
 
-        ##Logger.log(f"<BEGIN INPUT render func>: this element is hovered: {Globals.is_hovered(self)}, this element is active: {Globals.is_active(self)}")
+        #Logger.log(f"<BEGIN INPUT render func>: this element is hovered: {Globals.is_hovered(self)}, this element is active: {Globals.is_active(self)}")
+        Logger.log(f"[input/render]: container_bounds={container_bounds}")
         container_bounds = self.get_true_container_edges(container_bounds)
         Boundary.set_client_boundary(self, container_bounds)
         

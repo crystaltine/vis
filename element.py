@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Tuple, Dict, Literal, TypedDict, TYPE_CHECKING, Unpack
+from typing import Tuple, Dict, Literal, TypedDict, TYPE_CHECKING, Unpack, Callable
 from utils import parse_class_string, parse_style_string, calculate_style
 from globalvars import Globals
 from logger import Logger
@@ -54,6 +54,16 @@ class Element:
     """ 1 + the absolute y-position of the bottom of the element on the screen. 
     0 is still the top edge of the screen. (notice the +1). is `None` if element hasn't been rendered yet. """
     
+    on_hover: Callable[[], None]
+    """ A function that is called when the element is hovered over. """
+    on_dehover: Callable[[], None]
+    """ A function that is called when the element is de-hovered. """
+    
+    on_select: Callable[[], None]
+    """ A function that is called when the element is selected. """
+    on_deselect: Callable[[], None]
+    """ A function that is called when the element is de-selected. """
+    
     last_remembered_container: Boundary
     last_remembered_container_bg: str
     """ The bg color of container that last called render() on this element at the time of the call. Used for lazy (no args) render() calls """
@@ -82,6 +92,11 @@ class Element:
     def __init__(self, **attrs: Unpack["Attributes"]) -> None:        
         self._class_str = attrs.get("class_str", "")
         self._style_str = attrs.get("style_str", "")
+        
+        self.on_hover = attrs.get("on_hover", lambda:...)
+        self.on_dehover = attrs.get("on_dehover", lambda:...)
+        self.on_select = attrs.get("on_select", lambda:...)
+        self.on_deselect = attrs.get("on_deselect", lambda:...)
         
         self.last_remembered_container_bg = "transparent"
         #Logger.log(f"\x1b[32mElement init: _class_str is {self._class_str}, _style_str is {self._style_str}\x1b[0m")
@@ -174,16 +189,14 @@ class Element:
                 container_bounds.right if container_bounds.right is not None else self.last_remembered_container.right,
                 container_bounds.bottom if container_bounds.bottom is not None else self.last_remembered_container.bottom
             )
-        else:
-            pass
-
         
         container_left = self.last_remembered_container.left if self.style.get("position") == "relative" else 0
         container_top = self.last_remembered_container.top if self.style.get("position") == "relative" else 0
         container_right = self.last_remembered_container.right if self.style.get("position") == "relative" else Globals.__vis_document__.term.width
         container_bottom = self.last_remembered_container.bottom if self.style.get("position") == "relative" else Globals.__vis_document__.term.height
         
-        # Logger.log(f"Element's get_true_container_edges: \n^^^ MEMORIZED:{self.last_remembered_container=}")
+        #Logger.log(f"Element (type={type(self)}) get_true_container_edges: \n^^^ MEMORIZED:{self.last_remembered_container=}")
+        #Logger.log(f"container_bounds passed into func: {container_bounds=}")
         
         return Boundary(container_left, container_top, container_right, container_bottom)
 
