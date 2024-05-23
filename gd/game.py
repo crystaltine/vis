@@ -9,6 +9,7 @@ from math import floor, ceil
 from logger import Logger
 from typing import List, TYPE_CHECKING
 from multiprocessing import process
+from copy import deepcopy
 
 if TYPE_CHECKING:
     from engine.objects import LevelObject
@@ -26,6 +27,8 @@ class Game:
         """
 
         self.leveldata = leveldata
+
+        self.attempt_number = 1 # starts at 1
 
         self.player = Player()
         self.camera = Camera(self.leveldata)
@@ -50,7 +53,7 @@ class Game:
 
                     self.camera.render(self.player.pos)
                     
-                    Logger.log(f"Just rendered frame with player@{[f'{num:2f}' for num in self.player.pos]}. It has been {((curr_frame-last_frame)/1e9):2f}s since last f.")
+                    #Logger.log(f"Just rendered frame with player@{[f'{num:2f}' for num in self.player.pos]}. It has been {((curr_frame-last_frame)/1e9):2f}s since last f.")
                     last_frame = curr_frame
                     sleep(1/CameraUtils.RENDER_FRAMERATE)
 
@@ -88,6 +91,7 @@ class Game:
                     # even if the physics fps is like 389429 it still speeds things up a lot
                     # to have this sleep here. DONT ASK ME WHY IDK EITHER
                     sleep(1/CONSTANTS.PHYSICS_FRAMERATE)
+
             except Exception as e:
                 Logger.log(f"[][[][][][][][][][[]] Physics thread crashed: {e}")
                 self.running = False
@@ -175,11 +179,26 @@ class Game:
             # change velocity to a modest amount, in the sign of the NEW direction of gravity
             self.player.yvel = CONSTANTS.BLUE_ORB_STARTING_VELOCITY * -self.player.sign_of_gravity()
 
-    def crash(self):
+    def crash(self, restart: bool = True):
         #self.running=True
         # self.player=Player()
-        # self.start_level()
-        self.running = False
+        #self.start_level()
+        #self.running = False
+        #print(f"HIIHIHIHHIH Crashed!!!!!!")
+        if not restart:
+            self.running = False
+            return
+
+        sleep(1)
+
+        # otherwise, restart the level by setting pos back to beginning 
+        # also, NOTE: reset song if that is implemented
+        self.player.pos = deepcopy(self.player.ORIGINAL_START_POS)
+        #print(f"crash(): setting player pos back to {self.player.ORIGINAL_START_POS}")
+
+        self.player.curr_collisions = []
+
+        self.attempt_number += 1
 
     def generate_collisions(self) -> List[Collision]:
         """

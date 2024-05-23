@@ -166,8 +166,9 @@ def handle_level_select_page(val):
 
     if val.name=='KEY_ENTER':
         current_page_index=2
-        
-    run_level(levels[level_select_index]['path'])
+    
+        #Logger.log(f"calling run level (from main), val.name was {val.name}")
+        run_level(levels[level_select_index]['path'])
 
     # If a button has been pressed, reset the level, and regenerate the new level onto the screen
 
@@ -188,7 +189,7 @@ if __name__ == "__main__":
         main()
 
     except Exception as e:
-        Logger.log(f"Error in CharacterSelect.render(): {e}")
+        Logger.log(f"Error in main.py: {e}")
         Logger.log(f"Traceback: {traceback.format_exc()}")
         print(f"\x1b[31m{traceback.format_exc()}\x1b[0m")
         

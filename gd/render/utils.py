@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Tuple
 import re
 import os
 
@@ -65,6 +65,27 @@ def fcode(fg: Union[str, tuple] = None, bg: Union[str, tuple] = None) -> str:
     return format_str
 fc = fcode
 """ Alias for `fcode` method. """
+
+def fcode_opt(fg: Tuple[int, int, int] = None, bg: Tuple[int, int, int] = None) -> str:
+    '''
+    Optimized version of `fcode` (see docs for that) - BUT:
+    - only accepts 3-tuples for colors
+    - no letter styling (bold, italic, etc.)
+    - no predefined color names
+    Mainly used for drawing block elements (pixels) in the terminal.
+    '''
+    
+    format_str = ''
+    
+    if fg is not None:
+        format_str += '\033[38;2;{};{};{}m'.format(*fg)
+    if bg is not None:
+        format_str += '\033[48;2;{};{};{}m'.format(*bg)
+        
+    return format_str
+
+fco = fcode_opt
+""" Alias for `fcode_opt` method """
 
 def mix_colors(color1: Union[str, tuple], color2: Union[str, tuple], amount: float) -> str:
     """

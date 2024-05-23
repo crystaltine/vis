@@ -23,6 +23,7 @@ class Player:
         which will spawn a cube at [0,0] with regular speed and gravity.
         """
         self.speed = SPEEDS.decode(start_settings.get("speed")) or SPEEDS.normal
+        self.ORIGINAL_START_POS = start_settings.get("pos") or [10, 0] # used for resetting
         self.pos = start_settings.get("pos") or [10, 0]
         """ [x, y], where x is horiz (progress). BOTTOM LEFT of player. """
 
@@ -48,8 +49,8 @@ class Player:
         If this is the first tick, then timedelta should be 0 (i think).
         """
         
-        Logger.log(f"Tick: td={timedelta}, pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}, jump_req={self._jump_requested}, mid_jump={self.mid_jump}, grav_dir={self.gravity}")
-        Logger.log(f"^^^: collisions: {[(collision.obj.data['name'], collision.vert_coord, collision.vert_side) for collision in self.curr_collisions]}")
+        #Logger.log(f"Tick: td={timedelta}, pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}, jump_req={self._jump_requested}, mid_jump={self.mid_jump}, grav_dir={self.gravity}")
+        #Logger.log(f"^^^: collisions: {[(collision.obj.data['name'], collision.vert_coord, collision.vert_side) for collision in self.curr_collisions]}")
         
         # always move right no matter what
         self.pos[0] += self.speed * CONSTANTS.BLOCKS_PER_SECOND * timedelta
@@ -58,7 +59,7 @@ class Player:
         
         # if y < 0, then we just hit ground and should just set y=0, yvel=0, mid_jump=False
         if self.pos[1] <= 0 and self.yvel <= 0: # if we are going up, we shouldnt hit the ground
-            Logger.log(f"Hit ground. setting y-pos to 0 and mid_jump to False")
+            #Logger.log(f"Hit ground. setting y-pos to 0 and mid_jump to False")
             self.pos[1] = 0
             self.yvel = 0
             self.mid_jump = False            
@@ -69,7 +70,7 @@ class Player:
                 self.pos[1] = max([collision.vert_coord for collision in self.curr_collisions if collision.vert_side == "top"])
                 self.yvel = 0
                 
-                Logger.log(f"reg gravity: setting y-pos to {self.pos[1]:.2f} and mid_jump to False")
+                #Logger.log(f"reg gravity: setting y-pos to {self.pos[1]:.2f} and mid_jump to False")
                 self.mid_jump = False
         
         # if gravity is - (up) and we have a "bottom" collision, adjust the y position to be on top of the block
@@ -79,12 +80,12 @@ class Player:
                 self.pos[1] = min([collision.vert_coord for collision in self.curr_collisions if collision.vert_side == "bottom"])-CONSTANTS.PLAYER_HITBOX_Y
                 self.yvel = 0
                 
-                Logger.log(f"rev gravity: setting y-pos to {self.pos[1]:.2f} and mid_jump to False")
+                #Logger.log(f"rev gravity: setting y-pos to {self.pos[1]:.2f} and mid_jump to False")
                 self.mid_jump = False
         
         # otherwise are in mid-air and should apply gravity
         else:
-            Logger.log(f"seems like we are in the air, mid_jump -> true after this.")
+            #Logger.log(f"seems like we are in the air, mid_jump -> true after this.")
             self.mid_jump = True
             self.yvel -= self.gravity * timedelta
             self.yvel = max(min(self.yvel, CONSTANTS.TERMINAL_VEL), -CONSTANTS.TERMINAL_VEL) # clamp yvel to terminal velocity
@@ -94,7 +95,7 @@ class Player:
             self._jump()
             self._jump_requested = False
         
-        Logger.log(f"End of tick: updating pos[1] to {self.pos[1]:.4f} since yvel={self.yvel:.4f} and timedelta={timedelta:.4f}")
+        #Logger.log(f"End of tick: updating pos[1] to {self.pos[1]:.4f} since yvel={self.yvel:.4f} and timedelta={timedelta:.4f}")
         self.pos[1] += self.yvel * timedelta
         
     def jump(self):
@@ -102,7 +103,7 @@ class Player:
         Requests a jump for the next physics tick.
         """
         if self.mid_jump: 
-            Logger.log(f"XXXXXXXX player tried to jump but cant. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}")
+            #Logger.log(f"XXXXXXXX player tried to jump but cant. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}")
             return
         
         #Logger.log(f"XXXXXXXX player jumped. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}, walking_on={self._walking_on:.2f}, names of colliding objs: {[collision.obj.data['name'] for collision in self.curr_collisions]}")

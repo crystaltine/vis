@@ -1,6 +1,7 @@
 from render.utils import fc, mix_colors
 from typing import List, Literal, TypedDict
 from PIL import Image
+from camera_frame import Pixel
 import numpy as np
 
 # IMPORTANT TODO - textures should be able to change color and stuff. also, player icon can change.
@@ -97,6 +98,63 @@ class TextureManager:
                 
                 top_px_midtone = mix_colors(transparency_color, mix_colors(edge_color, bg_color, top_px_gray), top_px_alpha)
                 bottom_px_midtone = mix_colors(transparency_color, mix_colors(edge_color, bg_color, bottom_px_gray), bottom_px_alpha)
+                
+                final_row.append(f"\x1b[0m{fc(fg=top_px_midtone, bg=bottom_px_midtone)}▀")
+                
+            final_chars.append(final_row)
+        
+        final_chars = np.array(final_chars)
+        
+        # apply any changes
+        rotation_values = {"up": 0, "right": 3, "down": 2, "left": 1}
+        final_chars = np.rot90(final_chars, rotation_values[rotation])
+        
+        if reflections == "vert":
+            final_chars = np.flipud(final_chars)
+        elif reflections == "horiz":
+            final_chars = np.fliplr(final_chars)
+        elif reflections == "both":
+            final_chars = np.flipud(np.fliplr(final_chars))
+            
+        return ["".join(row) for row in final_chars]
+
+    def build_grayscale_texture_to_pixels(
+        filepath: str,
+        edge_color: str | tuple = "#ffffff",
+        bg_color: str | tuple = "#000000",
+        scale: int = 1,
+        rotation: Literal["up", "right", "down", "left"] = "up",
+        reflections: Literal["none", "vert", "horiz", "both"] = "none"
+        ) -> List[List[Pixel]]:
+        """
+        Internal function for "compiling" a texture from a grayscale image. (applies colors, scale, rotation, reflections)
+        Turns the png file to a 2d list of `Pixel` objects (see ./camera_frame.py)
+        """
+        
+        im = Image.open(filepath)
+        
+        # apply scaling if necessary
+        if scale != 1:
+            if not isinstance(scale, int): raise ValueError("[render texture grayscale]: scale must be an integer")
+            im = im.resize((im.width * scale, im.height * scale))
+
+        pixels = np.array(im, dtype=np.uint8)
+
+        for row in pixels:
+            for px_data in pixels:
+                
+                # px_data should be a 4-long ndarray of the rgba values
+
+                # find the grayscale values of the pixel (average of rgb).
+                # with the grayscale % (0-100) where 0 is black and 100 is white,
+                # use a color mix between the edge color and bg color
+                # 0 is edge color, 100 is bg color
+                
+                gray = sum(px_data[0:3]) / 3 / 255
+                alpha = px_data[3] / 255
+                
+                # TODO - return tuple instad of hex
+                colored = mix_colors(edge_color, bg_color, gray)
                 
                 final_row.append(f"\x1b[0m{fc(fg=top_px_midtone, bg=bottom_px_midtone)}▀")
                 
@@ -232,5 +290,11 @@ class TextureManager:
         """
         Indices - determines which edges are filled in. (for connected texture support)
         e.g. 0 is all edges filled, 1 is 3 edges filled, etc.
+
+        Indices go from 0 to 10. See ../assets/textures/texture_map for the block textures.
+        Index starts at 0 for the highest block texture, then goes down and to the right.
         """
         return TextureManager.build_grayscale_texture(f"textures/block0_{index}.png", **options)
+    premade_textures.update(premade_block0_types := {
+        f"block0_{i}": TextureManager.block0(i) for i in range(11)
+    })
