@@ -16,6 +16,10 @@ class Button(Element):
         class_str: str | None
         style_str: str | None
         children: List[Element]
+        on_hover: Callable[[], None]
+        on_dehover: Callable[[], None]
+        on_select: Callable[[], None]
+        on_deselect: Callable[[], None]
         on_pressed: Callable[[], Any]
         container_bg: str
         #disabled: bool

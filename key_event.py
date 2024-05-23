@@ -161,9 +161,15 @@ class KeyEvent2:
         """
         If the KeyEvent is just a character, this is probably a string of length 1 ("a", "G", "7", "*", etc).
         
-        If special, then this will be something like
-        `\\x08` (`ctrl+h`)
-        `\\x1b` (`esc`)
+        If special, add the letter's number (a=1,b=2, etc.) IN HEX to `\\x` to get the string representation.
+        Some examples:
+        - `\\x01` (`ctrl+a`) (a=1)
+        - `\\x02` (`ctrl+b`) (b=2)
+        - `\\x03` (`ctrl+c`) (c=3)
+        - `\\x08` (`ctrl+h`) (h=8)
+        - `\\x13` (`ctrl+s`) (s=19, but hex=13)
+        - `\\x1b` (`esc`) (special)
+        - (ctrl+v will actually submit the clipboard text, but it should be `\\x16`)
         """
         
         self.name = name

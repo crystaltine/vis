@@ -32,8 +32,9 @@ class Text(Element):
         underline: bool
         left: int | None
         center: int | None
+        right: int | None
         top: int | None
-        width: int | None
+        width: int | str | None
         height: int | None
         wrap: bool
         text_align: Literal["left", "center", "right"]
@@ -47,12 +48,13 @@ class Text(Element):
         "bold": False,
         "italic": False,
         "underline": False,
-        "left": 0,
-        "center": None, # overrides left if not None
+        "left": 0, # overrides right if not None
+        "center": None, # overrides left and right if not None
+        "right": None,
         "top": 0,
-        "width": "100%", # must not be None
+        "width": "auto", # can only be None (auto) if wrap is False, else required
         "height": None, # auto based on text length
-        "wrap": True,
+        "wrap": False,
         "text_align": "left",
     }
     
@@ -68,22 +70,28 @@ class Text(Element):
         self.text = attrs.get("text", "")
 
     def render(self, container_bounds: Boundary = None, container_bg: str = None) -> None:
-
+        
         container_bounds = self.get_true_container_edges(container_bounds)
+        container_width = container_bounds.right - container_bounds.left
         curr_bg_color = self.getset_curr_bg_color(container_bg)
 
-        # calculate width-related attributes 
-        container_width = container_bounds.right - container_bounds.left
-        
+        _w = self.style.get("width") # convenience 
+        self.client_width = convert_to_chars(container_width, _w) if _w not in [None, 'auto'] else None
+        if not self.style.get("wrap") and (_w is None or _w == 'auto'): # if no wrap and width is set to auto, then can auto-calc width based
+            self.client_width = len(self.text)
+            
+        if self.client_width is None:
+            Logger.log(f"Text element: incorrectly defined width (must be set if wrap is True) - style.width:{self.style.get('width')}, wrap:{self.style.get('wrap')}")
+            raise ValueError("Text element: incorrectly defined width (must be set if wrap is True)")
+
         # to handle center: pretend left = center, and subtract half of width from it later
-        true_l = convert_to_chars(container_width, self.style.get("left"))
+        true_l = convert_to_chars(container_width, self.style.get("left")) if self.style.get("left") is not None else \
+            container_width - convert_to_chars(container_width, self.style.get("right")) - self.client_width
         if self.style.get("center") is not None: # this overrides left as well
-            true_l = convert_to_chars(container_width, self.style.get("center")) - convert_to_chars(container_width, self.style.get("width"))//2
+            true_l = convert_to_chars(container_width, self.style.get("center")) - self.client_width//2
         
-        true_w = convert_to_chars(container_width, self.style.get("width"))
         self.client_left = container_bounds.left + true_l
-        self.client_right = container_bounds.left + true_l + true_w       
-        self.client_width = self.client_right - self.client_left 
+        self.client_right = container_bounds.left + true_l + self.client_width       
         
         # if height is none, then dynamically calculate based on how 
         # many lines of text there are.
@@ -135,17 +143,30 @@ class Text(Element):
 
     def _render_partial(self, container_bounds: Boundary, max_bounds: Boundary, container_bg: str = None) -> None:
         container_bounds = self.get_true_container_edges(container_bounds)
+        container_width = container_bounds.right - container_bounds.left
         curr_bg_color = self.getset_curr_bg_color(container_bg)
+        
+        _w = self.style.get("width") # convenience 
+        self.client_width = convert_to_chars(container_width, _w) if _w not in [None, 'auto'] else None
+        if not self.style.get("wrap") and (_w is None or _w == 'auto'): # if no wrap and width is set to auto, then can auto-calc width based
+            self.client_width = len(self.text)
+            
+        if self.client_width is None:
+            Logger.log(f"Text element: incorrectly defined width (must be set if wrap is True) - style.width:{self.style.get('width')}, wrap:{self.style.get('wrap')}")
+            raise ValueError("Text element: incorrectly defined width (must be set if wrap is True)")
 
         # calculate width-related attributes 
         container_width = container_bounds.right - container_bounds.left
         true_l = convert_to_chars(container_width, self.style.get("left"))
+        
+        # to handle center: pretend left = center, and subtract half of width from it later
+        true_l = convert_to_chars(container_width, self.style.get("left")) if self.style.get("left") is not None else \
+            container_width - convert_to_chars(container_width, self.style.get("right")) - self.client_width
         if self.style.get("center") is not None: # this overrides left as well
-            true_l = convert_to_chars(container_width, self.style.get("center")) - convert_to_chars(container_width, self.style.get("width"))//2
-        true_w = convert_to_chars(container_width, self.style.get("width"))
+            true_l = convert_to_chars(container_width, self.style.get("center")) - self.client_width//2
+            
         self.client_left = container_bounds.left + true_l
-        self.client_right = container_bounds.left + true_l + true_w       
-        self.client_width = self.client_right - self.client_left 
+        self.client_right = container_bounds.left + true_l + self.client_width       
         
         # if height is none, then dynamically calculate based on how 
         # many lines of text there are.

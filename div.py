@@ -92,6 +92,7 @@ class Div(Element):
             if self is child: continue # ??? - for some reason using this func adds a self pointer to its own children. try fixing later
             
             # Logger.log(f"Div rendering children: cli_left, cli_top, cli_right, cli_bottom: {self.client_left=} {self.client_top=} {self.client_right=} {self.client_bottom=}")
+            Logger.log(f"div with id={self.id} rendering child {type(child)} with id={child.id}")
             
             general_padding_x, general_padding_y = (convert_to_chars(self.client_width, self.style.get("padding")), convert_to_chars(self.client_height, self.style.get("padding"))) if self.style.get("padding") is not None else 0
             child.render(Boundary(

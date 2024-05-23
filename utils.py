@@ -187,7 +187,7 @@ def convert_to_chars(container_dim: int, dimvalue: int | str | None) -> int | No
     # check if str is calc expr
     if dimvalue.startswith("calc("):
         # take chars from idx 5->-2, inclusive
-        return evaluate_expression(dimvalue[5:-1])
+        return evaluate_expression(container_dim, dimvalue[5:-1])
     
     if dimvalue[-2:] == 'ch':
         return int(dimvalue[:-2])
@@ -305,7 +305,7 @@ def remove_ansi(string: str) -> str:
     return re.sub(
         r'[\u001B\u009B][\[\]()#;?]*((([a-zA-Z\d]*(;[-a-zA-Z\d\/#&.:=?%@~_]*)*)?\u0007)|((\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-ntqry=><~]))', '', string)
 
-def indexof_first_larger_than(nums: list, target: int | float) -> int:
+def indexof_first_larger_than(nums: list, target: int | float, allow_equal_to: bool = False) -> int:
     """
     IMPORTANT: uses binary search, so nums should be sorted in ascending order.
     
@@ -318,7 +318,7 @@ def indexof_first_larger_than(nums: list, target: int | float) -> int:
     while left < right:
         mid = (left + right) // 2
         
-        if nums[mid] <= target:
+        if nums[mid] < target or (not allow_equal_to and nums[mid] == target):
             left = mid + 1
         else:
             right = mid
