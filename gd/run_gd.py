@@ -13,8 +13,8 @@ def run_level(path: str):
     leveldata = path
     if isinstance(leveldata,str):
         leveldata = parse_level(leveldata)
-        for row in leveldata:
-            Logger.log(f"Level row types: {[type(row_obj) for row_obj in row]}")
+        #for row in leveldata:
+            #Logger.log(f"Level row types: {[type(row_obj) for row_obj in row]}")
 
     game = Game(leveldata)
     
