@@ -361,7 +361,50 @@ def handle_server_icon_update() -> None:
         return return_error(e)
 
 
+@app.route("/api/servers/get_chats", methods=["POST"])
+def get_server_chats() -> Response:
+    """
+    Get all chats for a server given the server's id.
 
+    Parameters:
+        server_id (str): The id of the server whose chats are to be retrieved.
+
+    Returns:
+        Response: A response containing the server's chats.
+    """
+
+    if not validate_fields(request.json, {"server_id": str}):
+        return invalid_fields()
+    
+    server_id = request.json["server_id"]
+
+    send_query = '''
+        SELECT chat_id, chat_name, chat_type, chat_topic, chat_order, read_perm_level, write_perm_level, is_dm
+        FROM "Discord"."ChatInfo"
+        WHERE server_id = %s
+    '''
+
+    try:
+        cur.execute(send_query, (server_id,))
+        chats = cur.fetchall()
+        resp = []
+        for chat in chats:
+            resp.append({
+                "chat_id": chat[0],
+                "chat_name": chat[1],
+                "chat_type": chat[2],
+                "chat_topic": chat[3],
+                "chat_order": chat[4],
+                "read_perm_level": chat[5],
+                "write_perm_level": chat[6],
+                "is_dm": chat[7]
+            })
+        return Response(json.dumps({
+            "type": "success",
+            "data": resp
+        }, default=str), status=200)
+    except Exception as e:
+        return return_error(e)
 
 
 
