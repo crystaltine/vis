@@ -198,7 +198,7 @@ def handle_user_leaving_server() -> None:
     except Exception as e:
         return return_error(e)
     
-@app.route("/api/members/all_servers")
+@app.route("/api/members/all_servers", methods=["POST"])
 def get_all_servers() -> Response:
     """
     @backend: server -> database
