@@ -1,5 +1,5 @@
 class CONSTANTS:
-    BLOCKS_PER_SECOND = 9
+    BLOCKS_PER_SECOND = 5
     GRAVITY = 40
     TERMINAL_VEL = 20
 
@@ -15,7 +15,7 @@ class CONSTANTS:
 
     SOLID_SURFACE_LENIENCY = 0.2
     
-    PHYSICS_FRAMERATE = 240
+    PHYSICS_FRAMERATE = 60
     
     QUIT_KEYS = ['q', 'ctrl+c']
     JUMP_KEYS = [' ', 'up', 'w']

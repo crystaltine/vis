@@ -316,10 +316,6 @@ def draw_rect(
     conv_width = convert_to_chars(GD.term.width, width) if width is not None else GD.term.width
     conv_height = convert_to_chars(GD.term.height, height) if height is not None else GD.term.height
     #Logger.log(f"^^ converted width, height: {conv_width}, {conv_height}")
-    #Logger.log(f"draw_rect: width, height: {width}, {height}")
-    conv_width = convert_to_chars(GD.term.width, width) if width is not None else GD.term.width
-    conv_height = convert_to_chars(GD.term.height, height) if height is not None else GD.term.height
-    #Logger.log(f"^^ converted width, height: {conv_width}, {conv_height}")
     
     abs_pos = position.get_absolute(GD.term.width, GD.term.height)
     
@@ -342,7 +338,7 @@ def draw_rect(
     
     #Logger.log(f"drawing rect from row,col= {true_top}, {true_left} to {true_top+true_height}, {true_left+true_width}")
     #Logger.log(f"abs_pos: {abs_pos}")
-    Logger.log(f"draw_rect position: {position}")
+    #Logger.log(f"draw_rect position: {position}")
     #Logger.log(f"true_width, true_height: {true_width}, {true_height}")
     #Logger.log(f"conv_width, conv_height: {conv_width}, {conv_height}, width, height: {width}, {height}")
     #Logger.log(f"color: {color}\n")

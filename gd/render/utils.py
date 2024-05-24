@@ -1,5 +1,7 @@
 from typing import Union, Tuple
+from logger import Logger
 import re
+import numpy as np
 import os
 
 def fcode(fg: Union[str, tuple] = None, bg: Union[str, tuple] = None) -> str:
@@ -84,9 +86,6 @@ def fcode_opt(fg: Tuple[int, int, int] = None, bg: Tuple[int, int, int] = None) 
         
     return format_str
 
-fco = fcode_opt
-""" Alias for `fcode_opt` method """
-
 def mix_colors(color1: Union[str, tuple], color2: Union[str, tuple], amount: float) -> str:
     """
     Mixes colors, with amount being a float from 0 to 1: 0 is closest to color1, 1 is closest to color2.
@@ -108,6 +107,71 @@ def mix_colors(color1: Union[str, tuple], color2: Union[str, tuple], amount: flo
     
     # convert rgb to hex
     return '#' + ''.join(hex(i)[2:].zfill(2) for i in mixed)    
+
+def mix_colors_opt(color1: tuple, color2: tuple, amount: float) -> tuple:
+    """
+    ### Important: does not handle alpha values, that should be passed in as "amount".
+    
+    Optimized ver of mix_colors (rgb (no alpha) tuple only), with amount being a float from 0 to 1: 0 is closest to color1, 1 is closest to color2.
+    Returns a rgb tuple (no alpha)
+    
+    Input format: 3-tuple of rgb values, 0-255.
+    """
+        
+    # mix colors
+    return tuple(int(color1[i] + (color2[i] - color1[i]) * amount) for i in range(3))
+
+def combine_alpha(dest_alpha: int, new_alpha: int) -> int:
+    """
+    dest_alpha: alpha of the pixel being drawn on
+    new_alpha: alpha of the color being applied to that pixel
+    """
+    
+    return int(dest_alpha + new_alpha * (1 - dest_alpha / 255))
+
+def blend_pixels(dest: tuple | np.ndarray, new: tuple | np.ndarray) -> tuple | np.ndarray:
+    """
+    Function to truly blend pixels, including their alpha values.
+    Inputs: 2 4-tuples of RGBA, returns a 4-tuple of RGBA.
+    dest is the color that was already there, new is the color being applied. 
+    """
+    
+    #Logger.log(f"attempting to blend {dest} with new={new}")
+    if new[3] == 0:
+        return dest # if new is transparent, don't blend at all (also fixes divide by zero error later on)
+
+    dest_rgb = dest[:3]
+    dest_alpha = dest[3]
+    
+    new_rgb = new[:3]
+    new_alpha = new[3]
+    
+    # calculate the new alpha
+    alpha = combine_alpha(dest_alpha, new_alpha)
+    
+    # calculate the new rgb
+    rgb = tuple(int((new_rgb[i]*new_alpha + dest_rgb[i]*dest_alpha*(1 - new_alpha/255)) / alpha) for i in range(3))
+    
+    return rgb + (alpha,)
+
+def blend_multiple_pixels(dstacked_pixels: np.ndarray) -> tuple | np.ndarray:
+    """
+    Blends multiple pixels together. 
+    Pixels should be in order of how they should be blended.
+    """
+    
+    Logger.log(f"blend_multiple_pixels: dstacked_pxs shape is {dstacked_pixels.shape}")
+    num_pixels = dstacked_pixels.shape[0] // 4
+    Logger.log(f"blending {num_pixels} pixels")
+    Logger.log(f"pixels: {dstacked_pixels}")
+    
+
+    blended = blend_pixels(dstacked_pixels[:4], dstacked_pixels[4:8])
+    
+    for i in range(2, num_pixels):
+        blended = blend_pixels(blended, dstacked_pixels[i*4:i*4+4])
+        
+    return blended
 
 def cls():
     """
@@ -166,3 +230,70 @@ def nearest_quarter(x: float) -> float:
     - `-1.12` -> `-1.0`
     """
     return round(x * 4) / 4
+
+def first_diff_color(arr1: np.ndarray, arr2: np.ndarray) -> int | None:
+    """
+    Returns the index of the first different color in the two arrays. If exactly the same, returns None.
+    Both arrays must be 2d numpy arrays, with the 2d axis being 4 long (r,g,b,a)
+    
+    For example:
+    
+    `first_diff_color([[1, 2], [3, 6], [4, 200]], [[1, 2], [3, 9], [4, 202]]) -> 1`
+    (both i=2 and i=3 are different, but returns 1 since the second pixel is the first different one)
+    """
+    differences = np.any(arr1 != arr2, axis=1)
+    #Logger.log(f"first diff: arr1 first 10 elements: {arr1[:10]}, arr2 first 10 elements: {arr2[:10]}" )
+    first_diff = np.argmax(differences)
+    
+    # if flat index is 0, investigate: it could be that all are the same, or that the first element is actually different
+    if first_diff == 0 and not differences[0]:
+        return None
+    
+    return first_diff
+
+def last_diff_color(arr1: np.ndarray, arr2: np.ndarray) -> int | None:
+    """
+    Returns the index of the last different color in the two arrays. If exactly the same, returns None.
+    Both arrays must be 2d numpy arrays, with the 2d axis being 4 long (r,g,b,a)
+    
+    For example:
+    
+    `last_diff_color([[1, 2], [3, 6], [4, 200]], [[1, 9], [3, 9], [4, 200]]) -> 1`
+    (both i=0 and i=1 are different, but returns 1 since the second pixel is the last different one)
+    """
+    differences = np.any(arr1 != arr2, axis=1)
+    last_diff = len(differences) - np.argmax(differences[::-1]) - 1
+    
+    # if flat index is last, investigate: it could be that all are the same, or that the first element is actually different
+    if last_diff == len(differences) - 1 and not differences[-1]:
+        return None
+    
+    return last_diff
+
+def lesser(a: int | None, b: int | None) -> int | None:
+    """
+    Takes two numbers that are either None or an int.
+    
+    If both are not None, then returns the lesser of the two
+    If one of them is None, returns the one that isn't None
+    If both are None, returns None
+    """
+    if a is None:
+        return b
+    if b is None:
+        return a
+    return min(a, b)
+
+def greater(a: int | None, b: int | None) -> int | None:
+    """
+    Takes two numbers that are either None or an int.
+    
+    If both are not None, then returns the greater of the two
+    If one of them is None, returns the one that isn't None
+    If both are None, returns None
+    """
+    if a is None:
+        return b
+    if b is None:
+        return a
+    return max(a, b)
