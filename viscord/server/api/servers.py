@@ -268,6 +268,43 @@ def handle_server_color_update() -> None:
         return return_success()
     except Exception as e:
         return return_error(e)
+    
+@app.route("/api/servers/server_info", methods=["POST"])
+def get_server_info() -> Response:
+    """
+    Get information about a server given the server's id.
+
+    Parameters:
+        server_id (str): The id of the server whose information is to be retrieved.
+
+    Returns:
+        Response: A response containing the server's name, icon, color, and creation timestamp.
+    """
+
+    if not validate_fields(request.json, {"server_id": str}):
+        return invalid_fields()
+    
+    server_id = request.json["server_id"]
+
+    send_query = '''
+        SELECT server_name, server_icon, color, server_creation_timestamp
+        FROM "Discord"."ServerInfo"
+        WHERE server_id = %s
+    '''
+
+    try:
+        cur.execute(send_query, (server_id,))
+        server_info = cur.fetchone()
+        if server_info is None:
+            return return_error("Server not found")
+        return Response(json.dumps({
+            "server_name": server_info[0],
+            "server_icon": server_info[1],
+            "color": server_info[2],
+            "server_creation_timestamp": server_info[3]
+        }), status=200)
+    except Exception as e:
+        return return_error(e)
 
 @app.route("/api/servers/update_icon", methods=["POST"])
 def handle_server_icon_update() -> None:
