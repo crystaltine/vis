@@ -197,3 +197,33 @@ def handle_user_leaving_server() -> None:
         return return_success()
     except Exception as e:
         return return_error(e)
+    
+@app.route("/api/members/all_servers")
+def get_all_servers() -> Response:
+    """
+    @backend: server -> database
+    
+    Gets all the servers a user is in.
+    """
+
+    if not validate_fields(request.json, {"user_token": str}):
+        return invalid_fields()
+    
+    user_token = request.json["user_token"]
+    if not is_valid_token(user_token):
+        return forbidden()
+    user_id = get_user_id(user_token)
+
+    send_query = '''
+        SELECT server_id FROM "Discord"."MemberInfo"
+        WHERE user_id = %s
+    '''
+    try:
+        cur.execute(send_query, (user_id,))
+        resp = {
+            "type": "success",
+            "data": cur.fetchall()
+        }
+        return Response(json.dumps(resp, default=str), mimetype="application/json")
+    except Exception as e:
+        return return_error(e)
