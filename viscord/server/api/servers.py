@@ -301,7 +301,7 @@ def get_server_info() -> Response:
             "server_name": server_info[0],
             "server_icon": server_info[1],
             "color": server_info[2],
-            "server_creation_timestamp": server_info[3]
+            "server_creation_timestamp": str(server_info[3])
         }), status=200)
     except Exception as e:
         return return_error(e)
