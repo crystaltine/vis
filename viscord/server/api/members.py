@@ -219,10 +219,13 @@ def get_all_servers() -> Response:
         WHERE user_id = %s
     '''
     try:
+        servers = []
         cur.execute(send_query, (user_id,))
+        for item in cur.fetchall():
+            servers.append(item[0])
         resp = {
             "type": "success",
-            "data": cur.fetchall()
+            "data": servers
         }
         return Response(json.dumps(resp, default=str), mimetype="application/json")
     except Exception as e:
