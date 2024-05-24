@@ -3,7 +3,7 @@ from render.utils import cls
 from engine.objects import OBJECTS
 from logger import Logger
 from game import Game
-from parser import parse_level
+from parse_level import parse_level
 from time import sleep
 
 def run_level(path: str):

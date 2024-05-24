@@ -5,6 +5,7 @@ from img2term.utils import fcode_opt
 from typing import List, Tuple, Literal
 from draw_utils import Position, print2
 from logger import Logger
+import numpy as np
 
 PIXEL = "▀" # top half is bg, bottom half is fg
 
@@ -45,7 +46,7 @@ def draw(
     else:
         raise ValueError("[img2term] invalid arg in draw(): overflow_behavior must be 'crop' or 'scale'")
 
-    pixels = numpy.array(im, dtype=numpy.uint8)
+    pixels = np.array(im, dtype=np.int32)
     
     final_chars: List[List[str]] = []
     for i in range(0, len(pixels)-1, 2): # TODO - last row of odd height images is not being processed
@@ -61,7 +62,7 @@ def draw(
             
         final_chars.append(final_row)
     
-    final_chars = numpy.array(final_chars)
+    final_chars = np.array(final_chars)
     
     # draw image at specified pos
     abs_pos = pos.get_absolute(GD.term.width, GD.term.height)
@@ -79,7 +80,7 @@ def draw(
         print2(GD.term.move_xy(true_left, true_top+row) + ''.join(final_chars[row]))
 
 def draw_from_pixel_array(
-    _pixels: numpy.ndarray | List[List[List[int]]],
+    _pixels: np.ndarray | List[List[List[int]]],
     pos: Position.Relative = Position.Relative(left=0, top=0)) -> None:
     """
     Draws an image from a numpy array of pixels.
@@ -91,7 +92,7 @@ def draw_from_pixel_array(
     
     # if pixels is a list of lists, convert it to a numpy array
     if type(_pixels) == list:
-        pixels = numpy.array(_pixels)
+        pixels = np.array(_pixels)
     
     final_chars: List[List[str]] = []
     for i in range(0, len(pixels)-1, 2): # TODO - last row of odd height images is not being processed
@@ -107,7 +108,7 @@ def draw_from_pixel_array(
             
         final_chars.append(final_row)
     
-    final_chars = numpy.array(final_chars)
+    final_chars = np.array(final_chars)
     
     # draw image at specified pos
     abs_pos = pos.get_absolute(GD.term.width, GD.term.height)

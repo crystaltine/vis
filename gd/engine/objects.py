@@ -2,7 +2,7 @@ from copy import deepcopy
 
 class OBJECTS:
     block0 = {
-        "name": "block0",
+        "name": "block0_0",
         "hitbox_xrange": [0, 1],
         "hitbox_yrange": [0, 1],
         "hitbox_type": "solid", # die when crash into side or bottom,

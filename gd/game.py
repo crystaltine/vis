@@ -8,7 +8,7 @@ from threading import Thread
 from math import floor, ceil
 from logger import Logger
 from typing import List, TYPE_CHECKING
-from multiprocessing import process
+import traceback
 from copy import deepcopy
 
 if TYPE_CHECKING:
@@ -46,19 +46,24 @@ class Game:
         # Initialize camera rendering
         self.camera.render_init()
         def render_thread():
-            with self.camera.term.hidden_cursor():
+            try:
                 last_frame = time_ns()
                 while True:
                     curr_frame = time_ns()
 
+                    Logger.log(f"Rendering frame with player@{[f'{num:2f}' for num in self.player.pos]}. It has been {((curr_frame-last_frame)/1e9):2f}s since last f.")
                     self.camera.render(self.player.pos)
+                    Logger.log(f"done rendering frame!")
                     
                     #Logger.log(f"Just rendered frame with player@{[f'{num:2f}' for num in self.player.pos]}. It has been {((curr_frame-last_frame)/1e9):2f}s since last f.")
                     last_frame = curr_frame
                     sleep(1/CameraUtils.RENDER_FRAMERATE)
 
                     if not self.running:
-                        break            
+                        break     
+            except Exception as e:
+                Logger.log(f"Error in render thread: {traceback.format_exc()}")
+                self.running = False       
 
         def physics_thread():
             
@@ -85,7 +90,8 @@ class Game:
                     
                     # if player's y-pos exceeds camera's ground offset (hit top of screen), crash
                     if self.player.pos[1] >= self.camera.ground:
-                        self.crash()
+                        Logger.log(f"self.player.pos[1]: {self.player.pos[1]} >= self.camera.ground: {self.camera.ground}. Crashing. (currently ignored)")
+                        #self.crash()
                     
                     # DO NOT REMOVE. removing this slows down the renderer by A LOT
                     # even if the physics fps is like 389429 it still speeds things up a lot
@@ -93,7 +99,7 @@ class Game:
                     sleep(1/CONSTANTS.PHYSICS_FRAMERATE)
 
             except Exception as e:
-                Logger.log(f"[][[][][][][][][][[]] Physics thread crashed: {e}")
+                Logger.log(f"Error in physics thread: {traceback.format_exc()}")
                 self.running = False
         
         self.last_tick = time_ns()
@@ -148,11 +154,13 @@ class Game:
         # if gravity is negative(up), but we are moving down, "top" crashes. (we jumped into a block.)
         if collision.vert_side is not None:
             if collision.vert_side == "bottom" and self.player.sign_of_gravity() == 1 and self.player.yvel > 0:
-                Logger.log("Crashed into top of block.")
-                self.crash()
+                0
+                #Logger.log("Crashed into top of block. (ignoring for now)")
+                #self.crash()
             elif collision.vert_side == "top" and self.player.sign_of_gravity() == -1 and self.player.yvel < 0:
-                Logger.log("Crashed into bottom of block.")
-                self.crash()
+                0
+                #Logger.log("Crashed into bottom of block. (ignoring for now)")
+                #self.crash()
             return # don't run other effects if we are gliding
         
         elif collision.obj.data["collide_effect"] == 'neg-gravity':
@@ -160,11 +168,13 @@ class Game:
         elif collision.obj.data["collide_effect"]  == 'pos-gravity':
             self.player.gravity = CONSTANTS.GRAVITY
         elif collision.obj.data["collide_effect"]  == 'crash-block':
-            Logger.log("Crashed into block.")
-            self.crash()
+            0
+            #Logger.log("Crashed into block (ignoring for now)")
+            #self.crash()
         elif collision.obj.data["collide_effect"]  == 'crash-spike':
-            Logger.log("Crashed into spike.")
-            self.crash()
+            0
+            #Logger.log("Crashed into spike. (ignoring for now)")
+            #self.crash()
         elif collision.obj.data["collide_effect"]  == 'yellow-orb':
             Logger.log("Hit yellow orb.")
             self.player.activate_jump_orb(CONSTANTS.PLAYER_JUMP_STRENGTH)
@@ -189,7 +199,7 @@ class Game:
             self.running = False
             return
 
-        sleep(1)
+        #sleep(1)
 
         # otherwise, restart the level by setting pos back to beginning 
         # also, NOTE: reset song if that is implemented

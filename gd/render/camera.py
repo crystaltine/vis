@@ -1,11 +1,14 @@
 import blessed
-from typing import TYPE_CHECKING, List, Dict
+from typing import TYPE_CHECKING, List
 from render.constants import CameraUtils
 from render.utils import fcode, closest_quarter, len_no_ansi
 from render.rect import PxRect
 from logger import Logger
+from time import time_ns
 from math import floor, ceil
+import traceback
 from render.texture_manager import TextureManager
+from render.camera_frame import CameraFrame
 
 if TYPE_CHECKING:
     from engine.objects import LevelObject
@@ -14,8 +17,9 @@ class Camera:
 
     def __init__(self, leveldata: List[List['LevelObject']]):
         self.term = blessed.Terminal()
-        self.left = 0 # start at 0. player starts at 10 (we get a nice padding)
-        self.ground = ((CameraUtils.DEFAULT_GROUND_TOP_PERCENT * self.term.height) // 100) // CameraUtils.GRID_PX_Y
+        self.curr_frame: CameraFrame = None
+        self.left: float = 0 # start at 0. player starts at 10 (we get a nice padding)
+        self.ground = ((CameraUtils.DEFAULT_GROUND_TOP_PERCENT * self.term.height) // 100) // CameraUtils.GRID_CELL_HEIGHT
         """ Measured in blocks from the top of the screen. """
         self.leveldata = leveldata
 
@@ -23,7 +27,7 @@ class Camera:
         """
         Draws a texture at the specified GRID POSITION on the screen.
 
-        Grid pixel dimensions are defined by `CameraUtils.GRID_PX_X` and `CameraUtils.GRID_PX_Y`.
+        Grid pixel dimensions are defined by `CameraUtils.GRID_CELL_WIDTH` and `CameraUtils.GRID_CELL_HEIGHT`.
         (0, 0) is the top left of the CAMERA, for this function.
         (1, 0) would be one block to the right of that (0, 0) 
 
@@ -50,7 +54,7 @@ class Camera:
             refresh_optimization = fcode(background=TextureManager.bg_color) + " "*len(obj_texture[i])
             print(self.term.move_yx(round(terminal_pos[1]+i), round(terminal_pos[0])) + obj_texture[i] + refresh_optimization)
 
-    def render_init(self):
+    def render_init_old(self):
         """
         Call this once. Draws the background and the floor, 
         which don't need to be updated every frame.
@@ -58,7 +62,7 @@ class Camera:
         
         self.term.clear()
 
-        ground_char_idx = self.ground*CameraUtils.GRID_PX_Y
+        ground_char_idx = self.ground*CameraUtils.GRID_CELL_HEIGHT
         
         stuff = [
             PxRect(0, 0, self.term.width, ground_char_idx, self.term, TextureManager.bg_color), # bg
@@ -66,7 +70,18 @@ class Camera:
         ]
         [item.render() for item in stuff]
 
-    def render(self, player_pos: tuple):
+    def render_init(self) -> None:
+        """
+        New rendering algorithm that uses CameraFrames instead of just characters.
+        Initializes the frame with the background and floor.
+        """
+        self.curr_frame = CameraFrame(self.term)
+        bg_frame = self.curr_frame.add_empty_layer("background")
+        bg_frame.fill(TextureManager.bg_color)
+        Logger.log("[Camera/render_init] Filled background layer with bg color, rendering!")
+        self.curr_frame.render_raw()
+
+    def render_old(self, player_pos: tuple):
         """
         Renders a frame onto the screen.
 
@@ -179,7 +194,7 @@ class Camera:
             for obj in row[floor(self.left)+1 : min(len(row), floor(self.left + CameraUtils.screen_width_blocks(self.term)))]:
                 if obj.data is None:
                     # 4 spaces to both strips(empty)
-                    empty_block = " "*CameraUtils.GRID_PX_X
+                    empty_block = " "*CameraUtils.GRID_CELL_WIDTH
                     render_strip_1 += empty_block
                     render_strip_2 += empty_block
 
@@ -198,8 +213,8 @@ class Camera:
             
             # @new- (EXILED) only add a block's worth at the end. NOTE: this will break at low fps.
             # ^ however, this does save a lot of printing.
-            # render_strip_1 += " "*CameraUtils.GRID_PX_X
-            # render_strip_2 += " "*CameraUtils.GRID_PX_X
+            # render_strip_1 += " "*CameraUtils.GRID_CELL_WIDTH
+            # render_strip_2 += " "*CameraUtils.GRID_CELL_WIDTH
 
             # add to strips
             all_strips.append(render_strip_2)
@@ -207,11 +222,11 @@ class Camera:
         
         # draw every row starting from 0 to ground * block height
         # i know drawing the air is useless, but we need to cover up the player trail
-        for i in range(self.ground*CameraUtils.GRID_PX_Y - len(all_strips)):
+        for i in range(self.ground*CameraUtils.GRID_CELL_HEIGHT - len(all_strips)):
             print(self.term.move_yx(i, 0) + fcode(background=TextureManager.bg_color) + " "*self.term.width)
         
         # we keep track of this cuz we might skip an index, so it wont be matched
-        row_in_terminal = (self.ground)*CameraUtils.GRID_PX_Y - len(all_strips)
+        row_in_terminal = (self.ground)*CameraUtils.GRID_CELL_HEIGHT - len(all_strips)
         for i in range(len(all_strips)):
             # TODO - removed for now since just testing
             # if first strip and ground is odd, and strips reach all the way to the top, skip
@@ -223,6 +238,75 @@ class Camera:
             
         # draw the player
         self.draw_player(player_pos[0], player_pos[1])
+
+    def render(self, player_pos: tuple) -> None:
+        """
+        New rendering algorithm that uses CameraFrames instead of just characters.
+        Prints all the stuff to the screen at the end.
+        
+        For optimization, we build a new frame, and compare it with the old frame. Only redraw the differences.
+        """
+        Logger.log(f"[Camera/render] Rendering frame at player pos {player_pos}")
+        new_frame = CameraFrame(self.term)
+        #Logger.log(f"test")
+        bg_layer = new_frame.add_empty_layer("background")
+        bg_layer.fill(TextureManager.bg_color)
+        render_layer = new_frame.add_empty_layer("objects")
+        #Logger.log(f"test2")
+        # TODO - use multiple layers for transparent objects????
+        
+        # move camera to player
+        self.left = player_pos[0] - CameraUtils.CAMERA_LEFT_OFFSET
+        
+        camera_right = self.left + CameraUtils.screen_width_blocks(self.term)
+
+        for row in self.leveldata[-self.ground:]:
+            #Logger.log(f"in a row with len {len(row)}")
+            if (floor(self.left)) >= len(row):
+                #Logger.log(f"floor({self.left=}) >= ({len(row)=}), so skipping.")
+                continue # row is all behind us
+            
+            # TODO - add negative cam support or add an assert
+            
+            # we dont need to care about partial rendering anymore!! since the new rendering
+            # system auto-clips the frame to the screen size.
+            
+            # horizontal range of grid cells that are in the camera range. Includes
+            # any partially visible cells on the left and right side.
+            visible_range = (floor(self.left), min(len(row), ceil(camera_right))) # last index is exclusive
+            #Logger.log(f"visible_range is {visible_range}")
+
+            # add textures of all the objects in the row to the frame
+            temp_i = 0
+            for obj in row[visible_range[0]:visible_range[1]]:
+                #Logger.log(f"temp_i is {temp_i}, timens is {time_ns()}")
+                temp_i += 1
+                if obj.data is not None:
+                    #Logger.log(f"obj is not none!!!")
+                    #Logger.log(f"obj x: {obj.x}, obj y: {obj.y}, self.left: {self.left}")
+                    xpos_on_screen = round((obj.x - self.left) * CameraUtils.GRID_CELL_WIDTH)
+                    ypos_on_screen = round((self.ground - obj.y - 1) * CameraUtils.GRID_CELL_HEIGHT)
+                    #Logger.log(f"before adding pixels: time is {time_ns()},  obj data name is {obj.data['name']}")
+                    try:
+                        #Logger.log(f"adding pixels topleft: xpos,ypos={xpos_on_screen},{ypos_on_screen}, texture={obj.data['name']}")
+                        render_layer.add_pixels_topleft(xpos_on_screen, ypos_on_screen, TextureManager.premade_textures.get(obj.data["name"]))
+                    except Exception as e:
+                        Logger.log(f"error: {traceback.format_exc()}")
+                    #Logger.log(f"after adding pixels: time is {time_ns()}")
+            #Logger.log(f"1")
+
+        # draw the player onto the frame
+        player_layer = new_frame.add_empty_layer("player")
+        player_xpos_on_screen = round((player_pos[0] - self.left) * CameraUtils.GRID_CELL_WIDTH)
+        player_ypos_on_screen = round((self.ground - player_pos[1] - 1) * CameraUtils.GRID_CELL_HEIGHT)
+        #Logger.log(f"2")
+        player_layer.add_pixels_topleft(player_xpos_on_screen, player_ypos_on_screen, TextureManager.curr_player_icon)
+        
+        # render the new frame
+        Logger.log(f"[Camera/render] calling render func on new frame")
+        new_frame.render(self.curr_frame)
+        #new_frame.render_raw()
+        self.curr_frame = new_frame
 
     def level_editor_render(self, cursor_pos: tuple, screen_pos: tuple, cur_cursor_obj):
 
@@ -258,7 +342,7 @@ class Camera:
                         cur_x += 1
                         continue
                 if obj.data is None:
-                    empty_block = " "*CameraUtils.GRID_PX_X
+                    empty_block = " "*CameraUtils.GRID_CELL_WIDTH
                     render_strip_1 += empty_block + fcode(background=TextureManager.bg_color)
                     render_strip_2 += empty_block + fcode(background=TextureManager.bg_color)
 
@@ -274,15 +358,16 @@ class Camera:
             all_strips.append(render_strip_1)
             cur_y += 1
 
-        for i in range(self.ground*CameraUtils.GRID_PX_Y - len(all_strips)):
+        for i in range(self.ground*CameraUtils.GRID_CELL_HEIGHT - len(all_strips)):
             print(self.term.move_yx(i, 0) + fcode(background=TextureManager.bg_color) + " "*self.term.width)
 
-        row_in_terminal = (self.ground)*CameraUtils.GRID_PX_Y - len(all_strips)
+        row_in_terminal = (self.ground)*CameraUtils.GRID_CELL_HEIGHT - len(all_strips)
         for i in range(len(all_strips)):
 
             print(self.term.move_yx(row_in_terminal, 0) + all_strips[i])
             row_in_terminal += 1
-            
+    
+    # unused for now - player texture will be added on in render()  
     def draw_player(self, player_x: float, player_y: float):
         """
         Draws the player at the specified position.
@@ -290,10 +375,10 @@ class Camera:
         """
         
         # offset to ground level
-        player_topmost_y = round((self.ground-player_y-1) * CameraUtils.GRID_PX_Y)
+        player_topmost_y = round((self.ground-player_y-1) * CameraUtils.GRID_CELL_HEIGHT)
         
         # camera has a bit of left padding
-        camera_offset_chars = CameraUtils.GRID_PX_X * CameraUtils.CAMERA_LEFT_OFFSET
+        camera_offset_chars = CameraUtils.GRID_CELL_WIDTH * CameraUtils.CAMERA_LEFT_OFFSET
         
         for i in range(len(TextureManager.PLAYER_ICON)):
             print(self.term.move_yx(player_topmost_y+i, camera_offset_chars) + TextureManager.PLAYER_ICON[i])
@@ -325,7 +410,7 @@ class Camera:
         return render_strips
 
     def draw_center(self, render_strips, cursor_texture, layer, obj):
-        empty_block = " "*CameraUtils.GRID_PX_X
+        empty_block = " "*CameraUtils.GRID_CELL_WIDTH
         if obj.data is None:
             if layer[1]:
                 render_strips[1] += cursor_texture + empty_block
@@ -347,7 +432,7 @@ class Camera:
         return render_strips
     
     def draw_l_edge(self, render_strips, cursor_texture, layer, obj):
-        empty_block = " "*(CameraUtils.GRID_PX_X//2)
+        empty_block = " "*(CameraUtils.GRID_CELL_WIDTH//2)
         if obj.data is None:
             if layer[1]:
                 render_strips[1] += empty_block + cursor_texture + empty_block
@@ -371,7 +456,7 @@ class Camera:
         return render_strips
     
     def draw_r_edge(self, render_strips, cursor_texture,layer, obj):
-        empty_block = " "*(CameraUtils.GRID_PX_X//2)
+        empty_block = " "*(CameraUtils.GRID_CELL_WIDTH//2)
         if obj.data is None:
             if layer[1]:
                 render_strips[1] += cursor_texture + empty_block + fcode(background=TextureManager.bg_color) + empty_block
