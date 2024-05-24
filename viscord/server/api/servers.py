@@ -51,7 +51,7 @@ def handle_server_creation() -> None:
     # TODO: make this entire try/except block not api
     try:
         send_query = '''
-            INSERT into "Discord"."ServerInfo" (server_id, server__name, color, server_icon, server_creation_timestamp, server_owner) values (%s, %s, %s, %s, %s, %s)
+            INSERT into "Discord"."ServerInfo" (server_id, server_name, color, server_icon, server_creation_timestamp, server_owner) values (%s, %s, %s, %s, %s, %s)
         '''
 
         cur.execute(send_query, (server_id, server_name, server_color, server_icon, server_timestamp, user_id))
