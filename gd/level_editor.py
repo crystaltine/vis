@@ -4,7 +4,7 @@ from copy import deepcopy
 from render.camera import Camera
 from render.constants import CameraUtils
 from render.utils import fcode
-from parser import parse_level
+from gd.parse import parse_level
 from logger import Logger
 from run_gd import run_level
 from engine.objects import OBJECTS, LevelObject
