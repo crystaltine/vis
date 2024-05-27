@@ -84,9 +84,10 @@ def pull_prev_page(new_page:str):
 
 
 def call_handle_page_function(val):
-    
-    handle_function=getattr(current_module, 'handle_'+current_page['current_screen']+'_page')
-    handle_function(val)
+    if current_page['current_screen']!='play_level':
+        
+        handle_function=getattr(current_module, 'handle_'+current_page['current_screen']+'_page')
+        handle_function(val)
 
 
 def handle_main_page(val):
@@ -103,6 +104,7 @@ def handle_main_page(val):
         changed=True
         
         main_current_index-=1
+
 
         if main_current_index<0:
             main_current_index=2
