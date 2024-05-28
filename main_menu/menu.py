@@ -8,6 +8,8 @@ os.system('clear')
 
 #global variables
 current_button_index = 1 
+pages = ["main", 'app_list', 'viscord', 'veometry'] #starting index at 1
+pages_index = 1
 
 def menu_bg(filename:str): 
     draw(filename, Position.Relative(top=0, left=0), (terminal.width, terminal.height*2), 'scale')
@@ -29,7 +31,10 @@ def viscord_logo_bg(outline:bool):
     draw(f"assets/viscord_logo_copy{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(30% - 15ch)", bottom="calc(50% - 10ch)"))
 
 def GD_logo_bg(outline:bool): 
-    draw(f"assets/gd_logo{'_outline' if outline else ''}.jpeg", pos=Position.Relative(right="calc(30% - 15ch)", bottom="calc(50% - 10ch)"))
+    draw(f"assets/gd_selector_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(30% - 40ch)", bottom="calc(50% - 10ch)"))
+    left_pos = "calc(50% + 15)"
+    bottom_pos = 9
+    draw(f"assets/gd_label.png", Position.Relative(left=left_pos, bottom=bottom_pos), (None, None), 'crop')
 
 def apps_text(filename:str): 
     left_pos = "calc(50% + 95)"
@@ -64,16 +69,17 @@ def create_menu():
 
 def update_cursor_movement(val): 
         global current_button_index
+        global pages_index
 
         changed=False
 
-        if val.name=='KEY_LEFT':
+        if val.name=='KEY_LEFT' and pages_index==2:
             changed=True
             current_button_index-=1
             if current_button_index<0:
                 current_button_index=2
 
-        if val.name=='KEY_RIGHT':
+        if val.name=='KEY_RIGHT' and pages_index==2:
             changed=True
             current_button_index+=1
             if current_button_index>2:
@@ -82,16 +88,32 @@ def update_cursor_movement(val):
         if changed: 
              draw_apps(current_button_index)
 
-        if val.name == 'KEY_ENTER': 
-            menu_bg('assets/menu_bg.png')
-            apps_text('assets/app.png')
-            draw_apps(1)
-            
+        if val.name == 'KEY_ENTER':
+            if pages_index==1:  
+                menu_bg('assets/menu_bg.png')
+                apps_text('assets/app.png')
+                draw_apps(1)
+                pages_index+=1 
+
         if val.name == 'KEY_ESCAPE':
-            menu_bg('assets/menu_bg.png')
-            menu_title('assets/main_menu_title_2_better.png')
-            start_text('assets/start.png')
-            main_logo_bg('assets/updated_logo_2.png')
+            if pages_index == 2: 
+                pages_index-=1 
+                menu_bg('assets/menu_bg.png')
+                menu_title('assets/main_menu_title_2_better.png')
+                start_text('assets/start.png')
+                main_logo_bg('assets/updated_logo_2.png')
+
+            elif pages_index==3: 
+                pages_index-=1 
+                menu_bg('assets/menu_bg.png')
+                apps_text('assets/app.png')
+                draw_apps(1)
+
+            elif pages_index==4: 
+                pages_index-=2 
+                menu_bg('assets/menu_bg.png')
+                apps_text('assets/app.png')
+                draw_apps(1)
 
 #function call 
 create_menu()
