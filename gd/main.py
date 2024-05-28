@@ -13,6 +13,10 @@ from parse import parse_level
 from copy import deepcopy
 from main_page import *
 import sys
+from game import Game
+from parser import parse_level
+from copy import deepcopy
+
 
 current_module = sys.modules[__name__]
 terminal = blessed.Terminal()
@@ -20,11 +24,9 @@ terminal = blessed.Terminal()
 main_current_index=1
 level_select_index=0
 
-# currentgame stores the current attempt of a certain level within the game
-currentgame = None
-# the number of attempts currently tried within a certain level in the game
-attempt = 0
-pages={'main':['character_select', 'level_select', 'level_editor'], 'character_select':[], 'level_select':['play_level'], 'level_editor':[], 'play_level':[]}
+pages={'main':['character_select', 'level_select', 'level_editor'], 'character_select':[], 'level_select':['play_level'], 'level_editor':[],
+        'play_level':[]}
+
 current_page={'previous_page':'main', 'current_screen':'main', 'current_page':0}
 
 def draw_menu_bg():
@@ -38,6 +40,7 @@ def main():
     global currentgame
     global attempt
     init_main_page(terminal)
+    global currentgame
 
     with terminal.hidden_cursor():
 
@@ -81,6 +84,18 @@ def main():
                     run_level(levels[level_select_index]['path'], practice_mode, checkpoints)
 
                 # The call_handle_page_function will call the corresponding function to handle all the specific key bindings for each page
+                # handles resetting the game (occurs after each death)
+                if ((currentgame != None and current_page['current_screen']=='play_level' and currentgame.reseting)):
+                    practice_mode = False
+                    checkpoints = []
+                    # if the game was in practice mode, saves the checkpoints that were stored in the previous attempt
+                    if currentgame.practice_mode:
+                        practice_mode = True
+                        if currentgame.checkpoints:
+                            checkpoints = deepcopy(currentgame.checkpoints)
+                    currentgame = None
+                    # runs the level with the necessary paramaters based on if it is in practice mode or not
+                    run_level(levels[level_select_index]['path'], practice_mode, checkpoints)
 
                 call_handle_page_function(val)
 
@@ -132,6 +147,34 @@ def call_handle_page_function(val):
     # attempt = 0
     # draw_level(level_info['level_name'], level_info['level_description'], int(terminal.width*0.8), int(terminal.height*0.6), 
     #                int(terminal.width*0.1), int(terminal.height*0.3), level_info['color1'], level_info['color2'])
+
+def init_main_page():
+
+    draw_menu_bg()
+    draw_menu_title()
+
+    # draw all three buttons, select middle one by default
+    draw_main_menu_buttons(1)
+ 
+def init_level_selector():
+    global attempt
+
+    # draw fullscreen bg
+    draw_rect("#000000", Position.Relative(0, 0, 0, 0))
+
+    selector_text='Select a level by navigating with the arrow keys and hitting enter once you have chosen a level'
+    draw_text(selector_text, int(terminal.width*0.23), int(terminal.height*0.2))
+
+    # Drawing the two arrows on each side of the level
+
+    draw_spike(int(terminal.width*0.025), int(terminal.width*0.95), int(terminal.height*0.5), 'white', 'right')
+    draw_spike(int(terminal.width*0.025), int(terminal.width*0.03), int(terminal.height*0.5), 'white', 'left')
+
+    level_info=levels[0]
+    # resets the attempt number when returning to the level selector screen
+    attempt = 0
+    draw_level(level_info['level_name'], level_info['level_description'], int(terminal.width*0.8), int(terminal.height*0.6), 
+                   int(terminal.width*0.1), int(terminal.height*0.3), level_info['color1'], level_info['color2'])
 
 def handle_main_page(val):
 
