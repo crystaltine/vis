@@ -1,7 +1,7 @@
 import uuid
 import blessed
 term = blessed.Terminal()
-import COLORS
+import colors
 import cursor
 import keyshortcuts
 import requests
@@ -40,7 +40,7 @@ def hex_to_rgb(hex):
 def draw_background():
     print(term.home + term.clear, end=" ")
     for y in range(term.height):
-        print(term.move(y, 0) + term.on_color_rgb(*hex_to_rgb(COLORS.background)) + ' ' * term.width, end="")
+        print(term.move(y, 0) + term.on_color_rgb(*hex_to_rgb(colors.background)) + ' ' * term.width, end="")
 
 
 def draw_menu():
@@ -48,7 +48,7 @@ def draw_menu():
     tly = int(term.height * 0.2)
 
     for y in range(tly, tly + int(term.height * 0.6)):
-        print(term.move(y, tlx) + term.on_color_rgb(*hex_to_rgb(COLORS.div)) + ' ' * int(term.width * 0.4), end="")
+        print(term.move(y, tlx) + term.on_color_rgb(*hex_to_rgb(colors.div)) + ' ' * int(term.width * 0.4), end="")
 
 
 def center_text(text):
@@ -57,7 +57,7 @@ def center_text(text):
 def draw_all_text():
     global server
     x = center_text("Select a Channel")
-    print(term.move(int(term.height*0.35) - 2, x) + term.color_rgb(*hex_to_rgb(COLORS.header)) + "Select a Channel", end="")
+    print(term.move(int(term.height*0.35) - 2, x) + term.color_rgb(*hex_to_rgb(colors.header)) + "Select a Channel", end="")
     server_display = f"({server['server_icon']}) {server['server_name']}"
     x = center_text(server_display)
     print(term.move(int(term.height*0.35) - 4, x) + term.color_rgb(*hex_to_rgb(server["color"])) + server_display, end="")
@@ -67,20 +67,41 @@ def draw_all_text():
 def draw_fields():
     global data, selection
     length = int(term.height * 0.6) - int(term.height*0.35)
-    if selection < length:
-        chunk = data[:length]
-    else:
-        chunk = data[max(selection-length+1, 1):selection]
+
+
+    chunks = [data[i:i+length] for i in range(0, len(data), length)]
+    if not chunks:
+        return
+    
+    chunk = chunks[selection // length]
+    cursor_pos = selection % length
     field_length = int(term.width * 0.2) + 1
-    cursor_pos = selection
-    for i, chat in enumerate(chunk):
+
+    if len(chunks) > 1 and selection // length != len(chunks) - 1:
+        x = center_text("vvv")
+        print(term.move(int(term.height*0.35) + length, x) + term.on_color_rgb(*hex_to_rgb(colors.div)) + term.cyan + "vvv", end="")
+    else:
+        x = center_text("vvv")
+        print(term.move(int(term.height*0.35) + length, x) + term.on_color_rgb(*hex_to_rgb(colors.div)) + "   ", end="")
+    if len(chunks) > 1 and selection // length != 0:
+        x = center_text("^^^")
+        print(term.move(int(term.height*0.35) - 1, x) + term.on_color_rgb(*hex_to_rgb(colors.div)) + term.cyan + "^^^", end="")
+    else:
+        x = center_text("^^^")
+        print(term.move(int(term.height*0.35) - 1, x) + term.on_color_rgb(*hex_to_rgb(colors.div)) + "   ", end="")
+
+    for i in range(length):
+        if i >= len(chunk):
+            print(term.move_yx(int(term.height*0.35) + i, int(term.width * 0.4)) + term.on_color_rgb(*hex_to_rgb(colors.div)) + term.color_rgb(*hex_to_rgb(colors.text)) + " " * field_length, end="", flush=True)
+            continue
+        chat = chunk[i]
         name = chat["chat_name"]
         if len(name) > field_length:
             name = name[:field_length-3] + "..."
         if i == cursor_pos:
-            print(term.move_yx(int(term.height*0.35) + i, int(term.width * 0.4)) + term.on_color_rgb(*hex_to_rgb(COLORS.field_highlighted)) + term.color_rgb(*hex_to_rgb(COLORS.text)) + term.bold(name + " " * (field_length - len(name))), end="", flush=True)
+            print(term.move_yx(int(term.height*0.35) + i, int(term.width * 0.4)) + term.on_color_rgb(*hex_to_rgb(colors.field_highlighted)) + term.color_rgb(*hex_to_rgb(colors.text)) + term.bold(name + " " * (field_length - len(name))), end="", flush=True)
         else:
-            print(term.move_yx(int(term.height*0.35) + i, int(term.width * 0.4)) + term.color_rgb(*hex_to_rgb(server["color"])) + term.on_color_rgb(*hex_to_rgb(COLORS.field)) + term.bold(name + " " * (field_length - len(name))), end="", flush=True)
+            print(term.move_yx(int(term.height*0.35) + i, int(term.width * 0.4)) + term.color_rgb(*hex_to_rgb(colors.unselected_text)) + term.on_color_rgb(*hex_to_rgb(colors.field)) + term.bold(name + " " * (field_length - len(name))), end="", flush=True)
 
 def redraw_all():
     print(term.clear())
@@ -113,9 +134,7 @@ def main(server_data, user_token):
                     redraw_all()
                 continue
             if val.code == term.KEY_ESCAPE:
-                print(term.clear + term.normal)
-                cursor.show()
-                sys.exit(0)
+                break
             if val.code == term.KEY_DOWN:
                 selection += 1
                 if selection >= len(data):
