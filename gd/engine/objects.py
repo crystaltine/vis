@@ -1,8 +1,35 @@
 from copy import deepcopy
 
 class OBJECTS:
-    block0 = {
+    block0_0 = {
         "name": "block0_0",
+        "hitbox_xrange": [0, 1],
+        "hitbox_yrange": [0, 1],
+        "hitbox_type": "solid", # die when crash into side or bottom,
+        "collide_effect": "crash-block",
+        "requires_click": False, # if player needs to click to activate
+        "multi_activate": False,
+    }
+    block0_1 = {
+        "name": "block0_1",
+        "hitbox_xrange": [0, 1],
+        "hitbox_yrange": [0, 1],
+        "hitbox_type": "solid", # die when crash into side or bottom,
+        "collide_effect": "crash-block",
+        "requires_click": False, # if player needs to click to activate
+        "multi_activate": False,
+    }
+    block0_2 = {
+        "name": "block0_2",
+        "hitbox_xrange": [0, 1],
+        "hitbox_yrange": [0, 1],
+        "hitbox_type": "solid", # die when crash into side or bottom,
+        "collide_effect": "crash-block",
+        "requires_click": False, # if player needs to click to activate
+        "multi_activate": False,
+    }
+    block0_3 = {
+        "name": "block0_3",
         "hitbox_xrange": [0, 1],
         "hitbox_yrange": [0, 1],
         "hitbox_type": "solid", # die when crash into side or bottom,

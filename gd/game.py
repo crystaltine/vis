@@ -53,7 +53,7 @@ class Game:
 
                     Logger.log(f"Rendering frame with player@{[f'{num:2f}' for num in self.player.pos]}. It has been {((curr_frame-last_frame)/1e9):2f}s since last f.")
                     self.camera.render(self.player.pos)
-                    Logger.log(f"done rendering frame!")
+                    #Logger.log(f"done rendering frame!")
                     
                     #Logger.log(f"Just rendered frame with player@{[f'{num:2f}' for num in self.player.pos]}. It has been {((curr_frame-last_frame)/1e9):2f}s since last f.")
                     last_frame = curr_frame

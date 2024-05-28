@@ -1,10 +1,14 @@
 
 from engine.objects import OBJECTS, LevelObject
 from typing import List
+from logger import Logger
 
 SUPPORTED_CHARS = {
     " ": None,
-    "x": OBJECTS.block0,
+    "0": OBJECTS.block0_0,
+    "1": OBJECTS.block0_1,
+    "2": OBJECTS.block0_2,
+    "3": OBJECTS.block0_3,
     "^": OBJECTS.spike,
     "y": OBJECTS.yellow_orb,
     "p": OBJECTS.purple_orb,
@@ -42,7 +46,8 @@ def parse_level(filename: str) -> list:
             row = []
             for x in range(len(lines[reversed_y])):
                 if lines[reversed_y][x] in SUPPORTED_CHARS:
-                    row.append(LevelObject(SUPPORTED_CHARS[lines[reversed_y][x]], x, len(lines)-reversed_y))
+                    row.append(t:=LevelObject(SUPPORTED_CHARS[lines[reversed_y][x]], x, len(lines)-reversed_y))
+                    #Logger.log(f"just added an object, t.data's type is: {type(t.data)}")
             leveldata.append(row)
         
         f.close()
