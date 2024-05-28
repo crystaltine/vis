@@ -36,6 +36,12 @@ def get_chat_perms() -> Dict:
 
         member_query="""select roles_list from "Discord"."MemberInfo" where user_id = %s and server_id= %s"""
         cur.execute(member_query, (user_id, server_id))
+        results = cur.fetchall()
+        if len(results) == 0:
+            data = {"readable": False, "writeable": False}
+            return Response(json.dumps({"type": "success", "data": data}), status=200)
+
+        
         roles_list= cur.fetchall()[0][0]
 
         # Getting the highest perm level for all the user's roles
