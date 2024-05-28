@@ -25,8 +25,11 @@ def start_text(filename:str):
 def main_logo_bg(filename:str): 
     draw(filename, pos=Position.Relative(left="calc(30% - 1ch)", bottom="calc(50% - 10ch)"))
 
-def viscord_logo_bg(filename:str): 
-    draw(filename, pos=Position.Relative(left="calc(30% - 15ch)", bottom="calc(50% - 10ch)"))
+def viscord_logo_bg(outline:bool): 
+    draw(f"assets/viscord_logo_copy{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(30% - 15ch)", bottom="calc(50% - 10ch)"))
+
+def GD_logo_bg(outline:bool): 
+    draw(f"assets/gd_logo{'_outline' if outline else ''}.jpeg", pos=Position.Relative(right="calc(30% - 15ch)", bottom="calc(50% - 10ch)"))
 
 def apps_text(filename:str): 
     left_pos = "calc(50% + 95)"
@@ -34,8 +37,12 @@ def apps_text(filename:str):
     draw(filename, Position.Relative(left=left_pos, top=top_pos), (None, None), 'crop')
 
 def draw_apps(num_button_index): 
-        viscord_logo_bg('assets/viscord_logo_copy.png')
-   
+    if num_button_index == 1: 
+        viscord_logo_bg(True)
+        GD_logo_bg(False)
+    if num_button_index == 2: 
+        viscord_logo_bg(False)
+        GD_logo_bg(True)
 
 def create_menu(): 
           
@@ -75,11 +82,10 @@ def update_cursor_movement(val):
         if changed: 
              draw_apps(current_button_index)
 
-
         if val.name == 'KEY_ENTER': 
             menu_bg('assets/menu_bg.png')
             apps_text('assets/app.png')
-            draw_apps(0)
+            draw_apps(1)
             
         if val.name == 'KEY_ESCAPE':
             menu_bg('assets/menu_bg.png')
