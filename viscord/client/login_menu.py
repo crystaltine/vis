@@ -273,4 +273,3 @@ def main():
             print("")
             if term.width != sx or term.height != sy:
                 redraw_all()
-main()
