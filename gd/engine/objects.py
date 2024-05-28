@@ -111,7 +111,9 @@ class LevelObject:
         self.has_been_activated = False
 
     def __str__(self) -> str:
-        return f"LevelObject<{self.data.get('name')}>(x={self.x},y={self.y})"
+        if self.data:
+            return f"LevelObject<{self.data.get('name')}>(x={self.x},y={self.y})"
+        return f"(Empty) LevelObject(x={self.x},y={self.y})"
         
     def __getitem__(self, key):
         return self.data[key]

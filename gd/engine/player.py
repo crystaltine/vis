@@ -23,9 +23,9 @@ class Player:
         which will spawn a cube at [0,0] with regular speed and gravity.
         """
         self.speed = SPEEDS.decode(start_settings.get("speed")) or SPEEDS.normal
-        self.ORIGINAL_START_POS = start_settings.get("pos") or [10, 0] # used for resetting
-        self.pos = start_settings.get("pos") or [10, 0]
-        """ [x, y], where x is horiz (progress). BOTTOM LEFT of player. """
+        self.ORIGINAL_START_POS = start_settings.get("pos") or [0, 0] # used for resetting
+        self.pos = start_settings.get("pos") or [0, 0]
+        """ [x, y], where x is horiz (progress). BOTTOM LEFT of player. y=0 means on the ground, and y cannot be negative."""
 
         self.yvel = 0
         self.gravity = start_settings.get("gravity") or CONSTANTS.GRAVITY

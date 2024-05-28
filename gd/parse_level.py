@@ -15,13 +15,13 @@ SUPPORTED_CHARS = {
     "b": OBJECTS.blue_orb,
 }
 
-def parse_level(filename: str) -> list:
+def parse_level(filename: str) -> List[List[LevelObject]]:
     """
     Parses a file that contains leveldata. The file
     must be located in the levels/ folder.
     
     The file should only be spaces and keys in the SUPPORTED_CHARS dict.
-    x's are blocks, ^'s are spikes, spaces are blank, y's are yellow orbs, p's are purple orbs.
+    [0,1,2,3]'s are blocks, ^'s are spikes, spaces are blank, y's are yellow orbs, p's are purple orbs, etc.
     Refer to the SUPPORTED_CHARS dict for any more.
     
     The grid matches how it works in game.
@@ -46,7 +46,7 @@ def parse_level(filename: str) -> list:
             row = []
             for x in range(len(lines[reversed_y])):
                 if lines[reversed_y][x] in SUPPORTED_CHARS:
-                    row.append(t:=LevelObject(SUPPORTED_CHARS[lines[reversed_y][x]], x, len(lines)-reversed_y))
+                    row.append(LevelObject(SUPPORTED_CHARS[lines[reversed_y][x]], x, len(lines)-reversed_y-1))
                     #Logger.log(f"just added an object, t.data's type is: {type(t.data)}")
             leveldata.append(row)
         
@@ -60,11 +60,6 @@ def parse_level(filename: str) -> list:
         # add None objects to end of every row to make them the same length
         while len(leveldata[i]) < longest_row:
             leveldata[i].append(LevelObject(None, len(leveldata[i]), len(leveldata)-i))
-            
-        # IMPORTANT: add 10 Nones to beginning of every level. This is to offset the player render
-        # without having to deal with negative grid values.
-        for j in range(10):
-            leveldata[i].insert(0, LevelObject(None, -j, len(leveldata)-i))
     
     return leveldata
 

@@ -51,7 +51,8 @@ class Game:
                 while True:
                     curr_frame = time_ns()
 
-                    Logger.log(f"Rendering frame with player@{[f'{num:2f}' for num in self.player.pos]}. It has been {((curr_frame-last_frame)/1e9):2f}s since last f.")
+                    fps_str = f"{(1e9/(curr_frame-last_frame)):2f}" if (curr_frame-last_frame != 0) else "inf"
+                    Logger.log(f"[Game/render_thread] Rendering frame with player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str} (includes sleeping for {1/CameraUtils.RENDER_FRAMERATE:.2f}s)")
                     self.camera.render(self.player.pos)
                     #Logger.log(f"done rendering frame!")
                     
@@ -62,7 +63,7 @@ class Game:
                     if not self.running:
                         break     
             except Exception as e:
-                Logger.log(f"Error in render thread: {traceback.format_exc()}")
+                Logger.log(f"[Game/render_thread] ERROR: {traceback.format_exc()}")
                 self.running = False       
 
         def physics_thread():
@@ -72,14 +73,17 @@ class Game:
             try:
                 while True:
                     
-                    if not self.running: break
+                    #Logger.log(f"running physics tick. player pos is {self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, time_ns is {time_ns()}")
                     
+                    if not self.running: break
+
                     # check collisions
                     self.player.curr_collisions = self.generate_collisions()
 
                     # apply effects
                     for collision in self.player.curr_collisions:                    
                         # don't auto-run effect here if it requires click. That's a job for the key input thread.
+                        Logger.log(f"Running collision effect for: {collision}")
                         if not collision.obj.data.get("requires_click"):
                             self.run_collision_effect(collision)
                     
@@ -87,11 +91,6 @@ class Game:
                     curr_time = time_ns()
                     self.player.tick((curr_time - self.last_tick)/1e9)
                     self.last_tick = curr_time
-                    
-                    # if player's y-pos exceeds camera's ground offset (hit top of screen), crash
-                    if self.player.pos[1] >= self.camera.ground:
-                        Logger.log(f"self.player.pos[1]: {self.player.pos[1]} >= self.camera.ground: {self.camera.ground}. Crashing. (currently ignored)")
-                        #self.crash()
                     
                     # DO NOT REMOVE. removing this slows down the renderer by A LOT
                     # even if the physics fps is like 389429 it still speeds things up a lot
@@ -154,13 +153,11 @@ class Game:
         # if gravity is negative(up), but we are moving down, "top" crashes. (we jumped into a block.)
         if collision.vert_side is not None:
             if collision.vert_side == "bottom" and self.player.sign_of_gravity() == 1 and self.player.yvel > 0:
-                0
-                #Logger.log("Crashed into top of block. (ignoring for now)")
-                #self.crash()
+                Logger.log("Crashed into top of block.")
+                self.crash()
             elif collision.vert_side == "top" and self.player.sign_of_gravity() == -1 and self.player.yvel < 0:
-                0
-                #Logger.log("Crashed into bottom of block. (ignoring for now)")
-                #self.crash()
+                Logger.log("Crashed into bottom of block.")
+                self.crash()
             return # don't run other effects if we are gliding
         
         elif collision.obj.data["collide_effect"] == 'neg-gravity':
@@ -168,13 +165,11 @@ class Game:
         elif collision.obj.data["collide_effect"]  == 'pos-gravity':
             self.player.gravity = CONSTANTS.GRAVITY
         elif collision.obj.data["collide_effect"]  == 'crash-block':
-            0
-            #Logger.log("Crashed into block (ignoring for now)")
-            #self.crash()
+            Logger.log("Crashed into block")
+            self.crash()
         elif collision.obj.data["collide_effect"]  == 'crash-spike':
-            0
-            #Logger.log("Crashed into spike. (ignoring for now)")
-            #self.crash()
+            Logger.log(f"Crashed into spike, spike x is {collision.obj.x}, player x is {self.player.pos[0]}")
+            self.crash()
         elif collision.obj.data["collide_effect"]  == 'yellow-orb':
             Logger.log("Hit yellow orb.")
             self.player.activate_jump_orb(CONSTANTS.PLAYER_JUMP_STRENGTH)
@@ -199,12 +194,13 @@ class Game:
             self.running = False
             return
 
-        #sleep(1)
+        sleep(CONSTANTS.COOLDOWN_BETWEEN_ATTEMPTS)
+        self.last_tick = time_ns() # this is to prevent moving forward while we are dead lol
 
         # otherwise, restart the level by setting pos back to beginning 
         # also, NOTE: reset song if that is implemented
         self.player.pos = deepcopy(self.player.ORIGINAL_START_POS)
-        #print(f"crash(): setting player pos back to {self.player.ORIGINAL_START_POS}")
+        Logger.log(f"crash(): setting player pos back to {self.player.ORIGINAL_START_POS}")
 
         self.player.curr_collisions = []
 
@@ -217,7 +213,7 @@ class Game:
         """
         
         collisions = []
-        #Logger.log(f"----- New collision generation, using playerpos={self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, yvel={self.player.yvel:.2f}.")
+        #Logger.log(f"----- New collision generation, using playerpos={self.player.pos[0]:.2f},{self.player.pos[1]:.2f}")
         
         # Check a 2x2 of lattice cells, centered around the player's hitbox
         # we pad the positions by 0.25 so when we are at integers, we still check the next block
@@ -243,9 +239,10 @@ class Game:
             for x in range(*curr_x_range):
                 
                 # weird y-index since levels are 0,0 for bottomleft, and array indices are 0,0 for topleft
-                obj = self.leveldata[max(-y-1, -len(self.leveldata))][x]
+                obj = self.leveldata[max(len(self.leveldata)-y-1, 0)][x]
                 
-                # Logger.log(f"Collisions: obj at y={y}, x={x} is {obj['name'] if obj is not None else 'None'}.")
+                #Logger.log(f"[Game/generate_collisions]: obj at x,y={x},{y} is {obj}. btw, y_range was {y_range} and leveldata has len {len(self.leveldata)}")
+                #Logger.log(f"^^ Grabbed self.leveldata[{max(len(self.leveldata)-y-1, 0)}][{x}]")
                 
                 if obj.data is None: continue
                 

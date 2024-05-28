@@ -1,5 +1,5 @@
 from typing import Dict, List, TYPE_CHECKING, Literal
-from render.utils import fcode_opt as fco, blend_pixels, blend_multiple_pixels, first_diff_color, last_diff_color, lesser, greater
+from render.utils import fcode_opt as fco, blend_rgba_img_onto_rgb_img, first_diff_color, last_diff_color, lesser, greater
 from draw_utils import Position, convert_to_chars as convert_to_px, print2
 from time import perf_counter
 from logger import Logger
@@ -10,9 +10,10 @@ if TYPE_CHECKING:
 
 class CameraFrame:
     """
-    Wrapper over a set of 2d arrays (represented by FrameLayer objs) that stores a frame to be rendered to the screen.
-
-    Supports layers. 
+    Wrapper over a 2D array of pixels for rendering to the screen.
+    
+    Images with transparency can be added to a CameraFrame, however the final compiled result that gets
+    printed to the screen will assume all alpha values are 255 (opaque).
     """
 
     def __init__(self, term: "Terminal"):
@@ -25,11 +26,12 @@ class CameraFrame:
         #self.chars: List[str] = []
         #""" array of strings. Each string is a row on the screen. """
         
-        self.pixels: np.ndarray = np.zeros((self.height, self.width, 4), dtype=np.int32)
-        """ 2d array of pixels. Each pixel is an rgba tuple. """
+        self.pixels: np.ndarray = np.zeros((self.height, self.width, 3), dtype=np.uint8)
+        """ 2d array of pixels. Each pixel is an rgb tuple. """
 
     def render_raw(self) -> None:
-        """ Simply prints the frame to the screen, without the need for a previous frame. """
+        """ Simply prints the frame to the screen, without the need for a previous frame. 
+        Keep in mind, this is quite slow and should only be used for rendering the first frame. """
 
         for i in range(0, self.height, 2):
             string = ""
@@ -39,12 +41,8 @@ class CameraFrame:
             print2(self.term.move_xy(0, i//2), string)
 
     def render(self, prev_frame: "CameraFrame") -> None:
-        """        
-        Actually prints the frame to the screen.
-        Optimized by only printing the changes from the previous frame.
-    
-        For every row, only print the chars from the first changed char to the last changed char.
-        """
+        """ Prints the frame to the screen.
+        Optimized by only printing the changes from the previous frame. """
         
         indices_to_print = []
         """ Should end up being a list of tuples (start, end) 
@@ -93,16 +91,15 @@ class CameraFrame:
                 
                 print2(self.term.move_xy(int(start), int(i)), string)
             total_printing_time += perf_counter() - last_printing_time
-        Logger.log(f"[CameraFrame/render]: took {perf_counter()-start_time} seconds to draw frame, {total_printing_time} seconds to print")
+        #Logger.log(f"[CameraFrame/render]: took {perf_counter()-start_time} seconds to draw frame, {total_printing_time} seconds to print")
 
     def fill(self, color: tuple) -> None:
-        """ Fills the entire layer with the given color. RGB or RGBA tuple required. """
-        if len(color) == 3: # make everything rgba. if no a specified, assume fully opaque
-            color = (*color, 255)
-        
-        Logger.log(f"[FrameLayer/fill]: filling layer with color {color}")
+        """ Fills the entire canvas with the given color. RGB (3-tuple) required. Should be pretty efficient because of numpy. """
+        assert len(color) == 3, f"[FrameLayer/fill]: color must be an rgb (3 ints) tuple, instead got {color}"
+
         self.pixels[:,:] = color
 
+    # IMPORTANT: dropped support for now, will fix later (hopefully)
     def add_rect(self, color: tuple, position: Position.Relative, width: int | str | None = None, height: int | str | None = None) -> None:
         """
         Places a rectangle on the frame with the given color and position.
@@ -146,6 +143,7 @@ class CameraFrame:
             color = (*color, 255)
         self.pixels[true_top:true_top+true_height, true_left:true_left+true_width] = color
 
+    # IMPORTANT: dropped support for now, will fix later (hopefully)
     def add_pixels(self, x: int, y: int, pixels: np.ndarray, anchor: Literal["top-left", "top-right", "bottom-left", "bottom-right", "center"] = "top-left") -> None:
         """ 
         Adds a set of pixels to the frame, with the top left corner at the given position.
@@ -171,31 +169,30 @@ class CameraFrame:
         self.pixels[top:top+pixels.shape[0], left:left+pixels.shape[1]] = pixels
         
     def add_pixels_topleft(self, x: int, y: int, pixels: np.ndarray) -> None:
-        """ same as add_pixels, but with the anchor set to top-left. mainly for optimization. """
+        """ Same as add_pixels, but with the anchor set to top-left. mainly for optimization. """
         #Logger.log(f"[FrameLayer/add_pixels_topleft]: adding pixels at {x}, {y}, size {pixels.shape}")
-        
+
         # if x or y are negative, clip them
-        clipped_y = max(0, y)
-        clipped_x = max(0, x)
+        clipped_y1 = max(0, y)
+        #clipped_y2 = min(self.height, y+pixels.shape[0])
+        clipped_x1 = max(0, x)
+        #clipped_x2 = min(self.width, x+pixels.shape[1])
         
-        clipped_off_x = clipped_x - x
-        clipped_off_y = clipped_y - y
-        #Logger.log(f"[FrameLayer/add_pixels_topleft]: x and y are {x}, {y}, clipped to {clipped_x}, {clipped_y}")
+        # these should always be nonnegative
+        offset_x1 = clipped_x1 - x
+        #offset_x2 = clipped_x2 - x
+        offset_y1 = clipped_y1 - y
+        #offset_y2 = clipped_y2 - y
         
         # TODO - this shouldnt happen, but we catch just in case
-        if clipped_off_x >= pixels.shape[1] or clipped_off_y >= pixels.shape[0]:
+        if offset_x1 >= pixels.shape[1] or offset_y1 >= pixels.shape[0]:
             #Logger.log(f"[FrameLayer/add_pixels_topleft]: clipped off all pixels, returning")
             return
         
-        #Logger.log(f"[FrameLayer/add_pixels_topleft] rendering this slice of pixels: [{clipped_off_y}:,{clipped_off_x}:] @ {clipped_y},{clipped_x}")
-        
-        # blend the pixels onto the layer
-        original = self.pixels[clipped_y:clipped_y+pixels.shape[0]-clipped_off_y, clipped_x:clipped_x+pixels.shape[1]-clipped_off_x]
-        
-        # important - this is a future feature
-        #for i in range(pixels.shape[0]-clipped_off_y):
-        #    for j in range(pixels.shape[1]-clipped_off_x):
-        #        self.pixels[clipped_y+i, clipped_x+j] = blend_pixels(original[i,j], pixels[clipped_off_y+i, clipped_off_x+j])
-        
-        self.pixels[clipped_y:clipped_y+pixels.shape[0]-clipped_off_y, clipped_x:clipped_x+pixels.shape[1]-clipped_off_x] = pixels[clipped_off_y:, clipped_off_x:]
+        # blend new pixels onto the layer
+        self.pixels[int(clipped_y1):int(clipped_y1+pixels.shape[0]-offset_y1), int(clipped_x1):int(clipped_x1+pixels.shape[1]-offset_x1)] =\
+            blend_rgba_img_onto_rgb_img(self.pixels[
+                int(clipped_y1):int(clipped_y1+pixels.shape[0]-offset_y1),
+                int(clipped_x1):int(clipped_x1+pixels.shape[1]-offset_x1)
+                ], pixels[int(offset_y1):self.height, int(offset_x1):self.width])
         
