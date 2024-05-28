@@ -6,6 +6,8 @@ class CONSTANTS:
     PLAYER_HITBOX_X = 1
     PLAYER_HITBOX_Y = 1
     
+    COOLDOWN_BETWEEN_ATTEMPTS = 0.5
+    
     PLAYER_JUMP_STRENGTH = 15
     """ How much the player's yvel is set to when they jump. """
     

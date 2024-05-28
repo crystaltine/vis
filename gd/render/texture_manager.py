@@ -324,8 +324,9 @@ TextureManager.premade_textures.update({
     "normal_speed_portal": TextureManager.speed_portal("normal"),
     "double_speed_portal": TextureManager.speed_portal("double"),
     "triple_speed_portal": TextureManager.speed_portal("triple"),
-    "quadruple_speed_portal": TextureManager.speed_portal("quadruple")
+    "quadruple_speed_portal": TextureManager.speed_portal("quadruple"),
+    "ground": TextureManager.build_colorful_texture_to_pixels("./assets/textures/ground.png", **TextureManager.DEFAULT_COLORFUL_TEXTURE_OPTIONS),
 })
 TextureManager.premade_textures.update({
-    f"block0_{i}": TextureManager.block0(i) for i in range(11)
+    f"block0_{i}": TextureManager.block0(i) for i in range(12)
 })

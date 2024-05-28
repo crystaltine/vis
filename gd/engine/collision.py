@@ -30,3 +30,6 @@ class Collision:
         self.vert_coord = vert_coord
         
         self.has_been_activated = False
+        
+    def __str__(self) -> str:
+        return f"Collision(with {self.obj.data['name']} @x,y={self.obj.x},{self.obj.y}"

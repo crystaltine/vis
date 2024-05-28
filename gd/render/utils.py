@@ -129,7 +129,7 @@ def combine_alpha(dest_alpha: int, new_alpha: int) -> int:
     
     return int(dest_alpha + new_alpha * (1 - dest_alpha / 255))
 
-def blend_pixels(dest: tuple | np.ndarray, new: tuple | np.ndarray) -> tuple | np.ndarray:
+def blend_pixels(original: tuple | np.ndarray, new: tuple | np.ndarray) -> tuple | np.ndarray:
     """
     Function to truly blend pixels, including their alpha values.
     Inputs: 2 4-tuples of RGBA, returns a 4-tuple of RGBA.
@@ -138,10 +138,10 @@ def blend_pixels(dest: tuple | np.ndarray, new: tuple | np.ndarray) -> tuple | n
     
     #Logger.log(f"attempting to blend {dest} with new={new}")
     if new[3] == 0:
-        return dest # if new is transparent, don't blend at all (also fixes divide by zero error later on)
+        return original # if new is transparent, don't blend at all (also fixes divide by zero error later on)
 
-    dest_rgb = dest[:3]
-    dest_alpha = dest[3]
+    dest_rgb = original[:3]
+    dest_alpha = original[3]
     
     new_rgb = new[:3]
     new_alpha = new[3]
@@ -152,8 +152,40 @@ def blend_pixels(dest: tuple | np.ndarray, new: tuple | np.ndarray) -> tuple | n
     # calculate the new rgb
     rgb = tuple(int((new_rgb[i]*new_alpha + dest_rgb[i]*dest_alpha*(1 - new_alpha/255)) / alpha) for i in range(3))
     
-    Logger.log(f"[blend_pixels] blended {dest} with {new} to get {rgb + (alpha,)}")
+    Logger.log(f"[blend_pixels] blended {original} with {new} to get {rgb + (alpha,)}")
     return rgb + (alpha,)
+
+def blend_rgba_onto_rgb(original: np.ndarray, new: np.ndarray) -> np.ndarray:
+    """
+    Blends a pixel (with transparency) onto a non-transparent pixel.
+    A 4-tuple is expected for the new pixel (no 3-tuples).
+    """
+
+    new_rgb = new[:3]
+    new_alpha = new[3] / 255
+    
+    return np.array([
+        int(new_rgb[i]*new_alpha + original[i]*(1 - new_alpha)) for i in range(3)
+    ])
+    
+def blend_rgba_img_onto_rgb_img(original: np.ndarray, new: np.ndarray) -> np.ndarray:
+    """
+    Blends two entire 2D arrays of pixels (so, techincally, 3D arrays) together, expecting
+    that the original image is fully opaque and the new image has transparency.
+    
+    Will clip the new image to the size of the original image, anchoring the top left corner.
+    """
+    
+    clipped_new = new[:original.shape[0], :original.shape[1]]
+
+    new_rgb = clipped_new[..., :3] # "img" without alpha
+    new_alpha = clipped_new[..., 3] / 255.0 # array of just the alpha values
+
+    # blend arrays in PARALLEL (yayyyyyyyy!!!!)
+    blended_rgb = new_rgb*new_alpha[..., np.newaxis] + original*(1 - new_alpha[..., np.newaxis])
+
+    # return as uint8 types since this returns floats
+    return blended_rgb.astype(np.uint8)
 
 def blend_multiple_pixels(dstacked_pixels: np.ndarray) -> tuple | np.ndarray:
     """

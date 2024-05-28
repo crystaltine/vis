@@ -217,8 +217,6 @@ def cls() -> None:
 def print2(*args, **kwargs) -> None:
     """
     Wrapper for builtin print that always has end="\\r\\x1b[0m"
-    
-    uhh, i guess you could supply the end kwarg if you want to change it.
     """
     print(*args, **kwargs, end='\r\x1b[0m')
 
