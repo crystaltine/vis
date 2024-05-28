@@ -11,10 +11,9 @@ if plat != "Windows":
         os.makedirs(os.path.expanduser("~/.config/viscord"))
 
     REG_PATH = os.path.expanduser("~/.config/viscord")
+else:
+    import winreg
 
-
-
-import winreg
 def set_reg(name, value):
 
     if plat != "Windows":
