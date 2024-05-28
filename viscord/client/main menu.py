@@ -33,13 +33,20 @@ def draw_menu():
     for y in range(tly, tly + int(term.height * 0.6)):
         print(term.move(y, tlx) + term.on_color_rgb(*hex_to_rgb(colors.div)) + ' ' * int(term.width * 0.4), end="")
 
+    print(term.move(tly-1, tlx-1) + term.on_color_rgb(*hex_to_rgb(colors.background)) + term.color_rgb(*hex_to_rgb(colors.div_shadow)) + "▄" * int(term.width * 0.4 + 2), end="")
+    print(term.move(tly + int(term.height * 0.6), tlx-1) + term.on_color_rgb(*hex_to_rgb(colors.background)) + term.color_rgb(*hex_to_rgb(colors.div_shadow)) + "▀" * int(term.width * 0.4 + 2), end="")
+    for y in range(tly, tly + int(term.height * 0.6)):
+        print(term.move(y, tlx-1) + term.on_color_rgb(*hex_to_rgb(colors.div_shadow)) + " ", end="")
+        print(term.move(y, tlx + int(term.width * 0.4)) + term.on_color_rgb(*hex_to_rgb(colors.div_shadow)) + " ", end="")
+
+
 
 def center_text(text):
     return int(term.width / 2 - len(text) / 2)
 
 def draw_all_text():
     x = center_text("Welcome to Viscord.")
-    print(term.move(int(term.height*0.35) - 2, x) + term.color_rgb(*hex_to_rgb(colors.header)) + "Welcome to Viscord.", end="")
+    print(term.move(int(term.height*0.35) - 2, x) + term.on_color_rgb(*hex_to_rgb(colors.div)) + term.color_rgb(*hex_to_rgb(colors.header)) + "Welcome to Viscord.", end="")
 
     x = center_text("Select an option below")
     print(term.move(int(term.height*0.35) - 1, x) + term.color_rgb(*hex_to_rgb(colors.header)) + "Select an option below", end="")

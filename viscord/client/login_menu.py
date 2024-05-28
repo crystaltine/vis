@@ -36,7 +36,6 @@ def draw_background():
     for y in range(term.height):
         print(term.move(y, 0) + term.on_color_rgb(*hex_to_rgb(colors.background)) + ' ' * term.width, end="")
 
-
 def draw_menu():
     tlx = int(term.width * 0.3)
     tly = int(term.height * 0.2)
@@ -44,13 +43,20 @@ def draw_menu():
     for y in range(tly, tly + int(term.height * 0.6)):
         print(term.move(y, tlx) + term.on_color_rgb(*hex_to_rgb(colors.div)) + ' ' * int(term.width * 0.4), end="")
 
+    print(term.move(tly-1, tlx-1) + term.on_color_rgb(*hex_to_rgb(colors.background)) + term.color_rgb(*hex_to_rgb(colors.div_shadow)) + "▄" * int(term.width * 0.4 + 2), end="")
+    print(term.move(tly + int(term.height * 0.6), tlx-1) + term.on_color_rgb(*hex_to_rgb(colors.background)) + term.color_rgb(*hex_to_rgb(colors.div_shadow)) + "▀" * int(term.width * 0.4 + 2), end="")
+    for y in range(tly, tly + int(term.height * 0.6)):
+        print(term.move(y, tlx-1) + term.on_color_rgb(*hex_to_rgb(colors.div_shadow)) + " ", end="")
+        print(term.move(y, tlx + int(term.width * 0.4)) + term.on_color_rgb(*hex_to_rgb(colors.div_shadow)) + " ", end="")
+
+
 
 def center_text(text):
     return int(term.width / 2 - len(text) / 2)
 
 def draw_all_text():
     x = center_text("Log In")
-    print(term.move(int(term.height*0.35) - 2, x) + term.color_rgb(*hex_to_rgb(colors.header)) + "Log In", end="")
+    print(term.move(int(term.height*0.35) - 2, x) + term.on_color_rgb(*hex_to_rgb(colors.div)) + term.color_rgb(*hex_to_rgb(colors.header)) + "Log In", end="")
 
     print(term.move_yx(int(term.height*0.5) - 4, int(term.width * 0.3) + 4) + term.color_rgb(*hex_to_rgb(colors.text)) + term.on_color_rgb(*hex_to_rgb(colors.div)) + term.bold("Username"), end="")
     print(term.move_yx(int(term.height*0.5), int(term.width * 0.3) + 4) + term.color_rgb(*hex_to_rgb(colors.text)) + term.on_color_rgb(*hex_to_rgb(colors.div)) + term.bold("Password"), end="")

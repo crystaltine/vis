@@ -50,6 +50,13 @@ def draw_menu():
     for y in range(tly, tly + int(term.height * 0.6)):
         print(term.move(y, tlx) + term.on_color_rgb(*hex_to_rgb(colors.div)) + ' ' * int(term.width * 0.4), end="")
 
+    print(term.move(tly-1, tlx-1) + term.on_color_rgb(*hex_to_rgb(colors.background)) + term.color_rgb(*hex_to_rgb(colors.div_shadow)) + "▄" * int(term.width * 0.4 + 2), end="")
+    print(term.move(tly + int(term.height * 0.6), tlx-1) + term.on_color_rgb(*hex_to_rgb(colors.background)) + term.color_rgb(*hex_to_rgb(colors.div_shadow)) + "▀" * int(term.width * 0.4 + 2), end="")
+    for y in range(tly, tly + int(term.height * 0.6)):
+        print(term.move(y, tlx-1) + term.on_color_rgb(*hex_to_rgb(colors.div_shadow)) + " ", end="")
+        print(term.move(y, tlx + int(term.width * 0.4)) + term.on_color_rgb(*hex_to_rgb(colors.div_shadow)) + " ", end="")
+
+
 
 def center_text(text):
     return int(term.width / 2 - len(text) / 2)
@@ -57,7 +64,7 @@ def center_text(text):
 def draw_all_text():
     global server
     x = center_text("Select a Channel")
-    print(term.move(int(term.height*0.35) - 2, x) + term.color_rgb(*hex_to_rgb(colors.header)) + "Select a Channel", end="")
+    print(term.move(int(term.height*0.35) - 2, x) + term.on_color_rgb(*hex_to_rgb(colors.div)) + term.color_rgb(*hex_to_rgb(colors.header)) + "Select a Channel", end="")
     server_display = f"({server['server_icon']}) {server['server_name']}"
     x = center_text(server_display)
     print(term.move(int(term.height*0.35) - 4, x) + term.color_rgb(*hex_to_rgb(server["color"])) + server_display, end="")
