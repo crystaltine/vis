@@ -76,9 +76,7 @@ class Camera:
         Initializes the frame with the background and floor.
         """
         self.curr_frame = CameraFrame(self.term)
-        bg_frame = self.curr_frame.add_empty_layer("background")
-        bg_frame.fill(TextureManager.bg_color)
-        Logger.log("[Camera/render_init] Filled background layer with bg color, rendering!")
+        self.curr_frame.fill(TextureManager.bg_color)
         self.curr_frame.render_raw()
 
     def render_old(self, player_pos: tuple):
@@ -246,14 +244,9 @@ class Camera:
         
         For optimization, we build a new frame, and compare it with the old frame. Only redraw the differences.
         """
-        Logger.log(f"[Camera/render] Rendering frame at player pos {player_pos}")
+        #Logger.log(f"[Camera/render] Rendering frame at player pos {player_pos}")
         new_frame = CameraFrame(self.term)
-        #Logger.log(f"test")
-        bg_layer = new_frame.add_empty_layer("background")
-        bg_layer.fill(TextureManager.bg_color)
-        render_layer = new_frame.add_empty_layer("objects")
-        #Logger.log(f"test2")
-        # TODO - use multiple layers for transparent objects????
+        new_frame.fill(TextureManager.bg_color)
         
         # move camera to player
         self.left = player_pos[0] - CameraUtils.CAMERA_LEFT_OFFSET
@@ -267,9 +260,6 @@ class Camera:
                 continue # row is all behind us
             
             # TODO - add negative cam support or add an assert
-            
-            # we dont need to care about partial rendering anymore!! since the new rendering
-            # system auto-clips the frame to the screen size.
             
             # horizontal range of grid cells that are in the camera range. Includes
             # any partially visible cells on the left and right side.
@@ -287,23 +277,23 @@ class Camera:
                     xpos_on_screen = round((obj.x - self.left) * CameraUtils.GRID_CELL_WIDTH)
                     ypos_on_screen = round((self.ground - obj.y - 1) * CameraUtils.GRID_CELL_HEIGHT)
                     #Logger.log(f"before adding pixels: time is {time_ns()},  obj data name is {obj.data['name']}")
-                    try:
+                    #try:
                         #Logger.log(f"adding pixels topleft: xpos,ypos={xpos_on_screen},{ypos_on_screen}, texture={obj.data['name']}")
-                        render_layer.add_pixels_topleft(xpos_on_screen, ypos_on_screen, TextureManager.premade_textures.get(obj.data["name"]))
-                    except Exception as e:
-                        Logger.log(f"error: {traceback.format_exc()}")
+                    new_frame.add_pixels_topleft(xpos_on_screen, ypos_on_screen, TextureManager.premade_textures.get(obj.data["name"]))
+                    #except Exception as e:
+                    #    Logger.log(f"error: {traceback.format_exc()}")
                     #Logger.log(f"after adding pixels: time is {time_ns()}")
             #Logger.log(f"1")
 
         # draw the player onto the frame
-        player_layer = new_frame.add_empty_layer("player")
+        #player_layer = new_frame.add_empty_layer("player")
         player_xpos_on_screen = round((player_pos[0] - self.left) * CameraUtils.GRID_CELL_WIDTH)
         player_ypos_on_screen = round((self.ground - player_pos[1] - 1) * CameraUtils.GRID_CELL_HEIGHT)
         #Logger.log(f"2")
-        player_layer.add_pixels_topleft(player_xpos_on_screen, player_ypos_on_screen, TextureManager.curr_player_icon)
+        new_frame.add_pixels_topleft(player_xpos_on_screen, player_ypos_on_screen, TextureManager.curr_player_icon)
         
         # render the new frame
-        Logger.log(f"[Camera/render] calling render func on new frame")
+        #Logger.log(f"[Camera/render] calling render func on new frame")
         new_frame.render(self.curr_frame)
         #new_frame.render_raw()
         self.curr_frame = new_frame

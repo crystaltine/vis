@@ -152,6 +152,7 @@ def blend_pixels(dest: tuple | np.ndarray, new: tuple | np.ndarray) -> tuple | n
     # calculate the new rgb
     rgb = tuple(int((new_rgb[i]*new_alpha + dest_rgb[i]*dest_alpha*(1 - new_alpha/255)) / alpha) for i in range(3))
     
+    Logger.log(f"[blend_pixels] blended {dest} with {new} to get {rgb + (alpha,)}")
     return rgb + (alpha,)
 
 def blend_multiple_pixels(dstacked_pixels: np.ndarray) -> tuple | np.ndarray:

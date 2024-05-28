@@ -1,7 +1,9 @@
 from render.utils import fc, mix_colors, mix_colors_opt as mco
 from typing import List, Literal, TypedDict
+from logger import Logger
 from PIL import Image
 import numpy as np
+import traceback
 
 # IMPORTANT TODO - textures should be able to change color and stuff. also, player icon can change.
 
@@ -142,12 +144,13 @@ class TextureManager:
             im = im.resize((im.width * scale, im.height * scale))
 
         pixels = np.array(np.array(im))
-        colored_pixels: np.ndarray = np.zeros_like(pixels)
+        colored_pixels: np.ndarray = np.zeros((len(pixels), len(pixels[0]), 4), dtype=np.uint8)
 
         for i in range(len(pixels)):
             for j in range(len(pixels[i])):
                 
                 px_data = pixels[i][j] # should be a 4-long ndarray of the rgba values
+                alpha = px_data[3] if len(px_data) == 4 else 255
 
                 # find the grayscale values of the pixel (average of rgb).
                 # with the grayscale % (0-100) where 0 is black and 100 is white,
@@ -157,8 +160,7 @@ class TextureManager:
                 gray = sum(px_data[0:3]) / 3 / 255
                 
                 colored_px = mco(replace_dark_with, replace_light_with, gray)
-                colored_pixels[i][j] = (*colored_px, px_data[3]) # insert original alpha back in
-
+                colored_pixels[i][j] = (*colored_px, alpha) # insert original alpha back in
         
         # apply any changes
         final_pixels = np.rot90(colored_pixels, ROTATION_VALUES[rotation])
