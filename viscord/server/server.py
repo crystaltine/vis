@@ -11,7 +11,7 @@ from api.flask_app import app
 
 # import so the modules are executed (defines endpoints for flask app)
 from api import login_flow, chats, friends, invites, members, messages, roles, servers, users
-from api import db
+from api import db, helpers
 
 from flask import request
 import requests
@@ -47,7 +47,10 @@ def handle_message(data: dict):
     payload = json.dumps({
         "author": data["author"],
         "content": data['content'],
+        "time": data['timestamp'],
+        "channel": data['channel']
     }).encode()
+
     print(f"[handle message] content={data['content']} author={data['author']}")
     print(f"^ sending to {len(connections)} sockets (incl. author)")
     
@@ -60,11 +63,29 @@ def handle_message(data: dict):
         # ^^^ crystaltine -> trigtbh: im still sending the message to the author just for consistency;
         # the author's client will wait for the server's confirmation that the message was indeed sent;
         # it shouldnt render on the authors side until the server confirms it was sent to all other clients asw
+
+
+        query1 = "select chat_id, server_id from \"Discord\".\"ChatInfo\" where chat_id = %s"
+
+        db.cur.execute(query1, (data['channel'],))
         try:
-            connections[other].sendall(payload)
+            chat_id, server_id = db.cur.fetchone()
         except:
-            print(f"\x1b[31mError sending to socket with token={other}, marking as removed...\x1b[0m")
-            marked_for_removal.append(other)
+            return
+        
+    
+        resp = requests.get(f"http://localhost:{sc.HTTP_PORT}/api/roles/get_chat_perms", json={"chat_id": chat_id, "server_id": server_id})
+        if resp.status_code != 200:
+            return
+
+        data = resp.json()["data"]
+
+        if data["readable"]:
+            try:
+                connections[other].sendall(payload)
+            except:
+                print(f"\x1b[31mError sending to socket with token={other}, marking as removed...\x1b[0m")
+                marked_for_removal.append(other)
             
     for token in marked_for_removal:
         del connections[token]
@@ -84,7 +105,7 @@ def handle_connection(conn: socket.socket, addr):
     # receive loop
     while True:
         try:
-            data = conn.recv(1024)
+            data = conn.recv(4096)
         except:
             pass
         else:
@@ -96,6 +117,20 @@ def handle_connection(conn: socket.socket, addr):
             # data received - assume it's a sent message
 
             parsed = json.loads(data.decode())
+
+            if not helpers.validate_fields(parsed, {
+                "token": str,
+                "author": str,
+                "content": str,
+                "chat_id": str,
+            }):
+                return
+            
+
+
+            user_id_check = helpers.get_user_id(parsed["token"])
+            if user_id_check != parsed["author"]:
+                return
             
             print(f"socket \x1b[33m{addr=} {token=}\x1b[0m received data (assuming it's a message): \x1b[33m{parsed}\x1b[0m")
             handle_message(parsed)
