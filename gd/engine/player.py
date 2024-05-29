@@ -2,6 +2,7 @@ from engine.constants import CONSTANTS, SPEEDS
 from logger import Logger
 from typing import List
 from engine.collision import Collision
+from time import time_ns
 
 class Player:
     """
@@ -33,7 +34,9 @@ class Player:
         self._jump_requested = False
         """ variable to store when the player jumps before the next physics tick. """
 
-        self.mid_jump = False
+        self.last_on_ground_time = None
+        """ Stores the latest time when self.in_air was set to False. Used for calculating cube rotation as we are falling. """
+        self.in_air = False
         """ If the player is currently jumping. can't double jump. Jump status is reset to false when the player hits a glidable hitbox. """
 
         self.curr_collisions: List[Collision] = []
@@ -49,7 +52,7 @@ class Player:
         If this is the first tick, then timedelta should be 0 (i think).
         """
         
-        #Logger.log(f"Tick: td={timedelta}, pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}, jump_req={self._jump_requested}, mid_jump={self.mid_jump}, grav_dir={self.gravity}")
+        #Logger.log(f"Tick: td={timedelta}, pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}, jump_req={self._jump_requested}, in_air={self.in_air}, grav_dir={self.gravity}")
         #Logger.log(f"^^^: collisions: {[(collision.obj.data['name'], collision.vert_coord, collision.vert_side) for collision in self.curr_collisions]}")
         
         # always move right no matter what
@@ -57,12 +60,12 @@ class Player:
         
         # GLIDE HANDLING BELOW (setting y-values)
         
-        # if y < 0, then we just hit ground and should just set y=0, yvel=0, mid_jump=False
+        # if y < 0, then we just hit ground and should just set y=0, yvel=0, in_air=False
         if self.pos[1] <= 0 and self.yvel <= 0: # if we are going up, we shouldnt hit the ground
-            #Logger.log(f"Hit ground. setting y-pos to 0 and mid_jump to False")
+            #Logger.log(f"Hit ground. setting y-pos to 0 and in_air to False")
             self.pos[1] = 0
             self.yvel = 0
-            self.mid_jump = False            
+            self.in_air = False            
         
         # if gravity is + (down) and we have a "top" collision, adjust the y position to be on top of the block
         elif (self.gravity > 0 and any(collision.vert_side == "top" for collision in self.curr_collisions)):
@@ -70,8 +73,8 @@ class Player:
                 self.pos[1] = max([collision.vert_coord for collision in self.curr_collisions if collision.vert_side == "top"])
                 self.yvel = 0
                 
-                #Logger.log(f"reg gravity: setting y-pos to {self.pos[1]:.2f} and mid_jump to False")
-                self.mid_jump = False
+                #Logger.log(f"reg gravity: setting y-pos to {self.pos[1]:.2f} and in_air to False")
+                self.in_air = False
         
         # if gravity is - (up) and we have a "bottom" collision, adjust the y position to be on top of the block
         elif (self.gravity < 0 and any(collision.vert_side == "bottom" for collision in self.curr_collisions)):
@@ -80,13 +83,13 @@ class Player:
                 self.pos[1] = min([collision.vert_coord for collision in self.curr_collisions if collision.vert_side == "bottom"])-CONSTANTS.PLAYER_HITBOX_Y
                 self.yvel = 0
                 
-                #Logger.log(f"rev gravity: setting y-pos to {self.pos[1]:.2f} and mid_jump to False")
-                self.mid_jump = False
+                #Logger.log(f"rev gravity: setting y-pos to {self.pos[1]:.2f} and in_air to False")
+                self.in_air = False
         
         # otherwise are in mid-air and should apply gravity
         else:
-            #Logger.log(f"seems like we are in the air, mid_jump -> true after this.")
-            self.mid_jump = True
+            #Logger.log(f"seems like we are in the air, in_air -> true after this.")
+            self.in_air = True
             self.yvel -= self.gravity * timedelta
             self.yvel = max(min(self.yvel, CONSTANTS.TERMINAL_VEL), -CONSTANTS.TERMINAL_VEL) # clamp yvel to terminal velocity
         
@@ -94,6 +97,9 @@ class Player:
         if self._jump_requested:
             self._jump()
             self._jump_requested = False
+            
+        if not self.in_air:
+            self.last_on_ground_time = time_ns()
         
         #Logger.log(f"End of tick: updating pos[1] to {self.pos[1]:.4f} since yvel={self.yvel:.4f} and timedelta={timedelta:.4f}")
         self.pos[1] += self.yvel * timedelta
@@ -102,7 +108,7 @@ class Player:
         """
         Requests a jump for the next physics tick.
         """
-        if self.mid_jump: 
+        if self.in_air: 
             #Logger.log(f"XXXXXXXX player tried to jump but cant. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}")
             return
         
@@ -116,12 +122,34 @@ class Player:
         and nowhere else. For external use, use `Player.jump()`.
         """
         self.yvel = CONSTANTS.PLAYER_JUMP_STRENGTH * self.sign_of_gravity()
-        self.mid_jump = True
+        self.in_air = True
+    
+    def get_animation_frame_index(self) -> int:
+        """
+        Returns which rotation index to use for the player sprite.
+        As of 2:35AM May 29, 2024, 4 different frames are planned:
+        - 0: right side up
+        - 1: 22.5 degrees
+        - 2: 45 degrees
+        - 3: 67.5 degrees
+        
+        NOTE: we are assuming full rotational symmetry here, for simplicity. TODO: support asymmetric icons.
+        
+        Every 0.1 seconds that we are in the air, we rotate 22.5 degrees.
+        If touching ground, always return 0
+        """
+        
+        if not self.in_air:
+            return 0
+        
+        seconds_since_last_on_ground = (time_ns() - self.last_on_ground_time) / 1e9
+        
+        return int(seconds_since_last_on_ground / 0.1) % 4
     
     def activate_jump_orb(self, strength: float):
         """
-        Activates a jump orb. Sets whatever velocity, and sets mid_jump to true.
-        However,this function still has effects when in mid_jump, unlike regular jumping.
+        Activates a jump orb. Sets whatever velocity, and sets in_air to true.
+        However,this function still has effects when in in_air, unlike regular jumping.
         
         (this is because the player can activate orbs while in mid-air, but can't jump normally)
         
@@ -130,7 +158,7 @@ class Player:
         """
         
         self.yvel = strength
-        self.mid_jump = True
+        self.in_air = True
         
     def sign_of_gravity(self) -> int:
         """
