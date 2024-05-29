@@ -9,7 +9,7 @@ from img2term.main import draw
 # from run_gd import run_level
 from logger import Logger
 from game import Game
-from parser import parse_level
+from parse import parse_level
 from copy import deepcopy
 from main_page import *
 import sys
@@ -35,7 +35,6 @@ def draw_menu_bg():
 
 def main():
 
-    global current_page_index
     global currentgame
 
     init_main_page(terminal)
@@ -63,13 +62,12 @@ def main():
                     break
                 
                 # handles exit code from level selector or exiting from pause menu within the level
-                if ((current_page_index>0 and current_page_index < 2 and val.name=="KEY_ESCAPE") or (currentgame != None and current_page_index == 2 and currentgame.exiting)) :
+                if ((val.name=="KEY_ESCAPE" and current_page['current_screen']!='main' and current_page['current_screen']!='play_level') or (currentgame != None and current_page['current_screen']=='play_level' and currentgame.exiting)) :
                     # unsets the current game as the attempt is now complete
-                    currentgame = None
-                    current_page_index-=1
-                    render_new_page()
+                    render_new_page(current_page['previous_page'])
+
                 # handles resetting the game (occurs after each death)
-                if ((currentgame != None and current_page_index == 2 and currentgame.reseting)):
+                if ((currentgame != None and current_page['current_screen']=='play_level' and currentgame.reseting)):
                     practice_mode = False
                     checkpoints = []
                     # if the game was in practice mode, saves the checkpoints that were stored in the previous attempt
@@ -80,9 +78,6 @@ def main():
                     currentgame = None
                     # runs the level with the necessary paramaters based on if it is in practice mode or not
                     run_level(levels[level_select_index]['path'], practice_mode, checkpoints)
-                if val.name=="KEY_ESCAPE" and current_page['current_screen']!='main':
-                    
-                    render_new_page(current_page['previous_page'])
 
                 # The call_handle_page_function will call the corresponding function to handle all the specific key bindings for each page
 
@@ -93,7 +88,8 @@ def render_new_page(new_page:str):
     global current_page
 
     # Here, the previous_page to the new_page is getting updated, along with the current_screen and current_page
-
+    Logger.log(f"Switching from {current_page['current_screen']} to {new_page}")
+    
     current_page['previous_page']=pull_prev_page(new_page)
     current_page['current_screen']=new_page
     current_page['current_page']=0
