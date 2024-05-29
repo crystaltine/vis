@@ -1,5 +1,3 @@
-logs
-tests
-__pycache__
-__pycache__*
+*logs
 *__pycache__
+*tests

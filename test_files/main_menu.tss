@@ -1,7 +1,0 @@
-.main-menu {
-    bg_color: #ff0000
-}
-
-.text {
-    center: 50%
-}

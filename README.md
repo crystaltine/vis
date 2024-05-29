@@ -1,9 +1,14 @@
-# Visage
+# Vis
+A collection of app remakes in the terminal. This is a recreational project and it's probably best if you don't actually use these apps.
+
+Some Vis apps are based off a custom-built HTML-like rendering framework called [Visage (see repo here)](https://github.com/crystaltine/visage)
+
+### Visage
 A framework inspired by HTML for creating graphical user interfaces (GUIs) inside modern terminals.
 
 **This project is currently work-in-progress** (dont use)
 
-## Anticipated features (hopefully (maybe))
+#### Anticipated features (hopefully (maybe))
 - Basic HTML elements (div, input, button)
 - Dynamic updates and efficient rerendering
 - Event handler system (keyup, keydown, resize?, etc.)
@@ -16,7 +21,6 @@ A collection of app remakes in the terminal. This is a recreational project and 
 
 Some Vis apps are based off a custom-built HTML-like rendering framework called [Visage (see repo here)](https://github.com/crystaltine/visage)
 
-## List of apps in development:
 ### Discord Remake - "Viscord"?**
 The name is... in progress.
 
@@ -24,7 +28,7 @@ This remake uses the Visage framework mentioned earlier to create a dynamic grap
 
 This will feature a full account system as well as server/channel/profile functionality, friends, roles, permissions, etc. Since we can't have profile pictures, we've replaced them with symbols/emojis and custom colors users can select for their username.
 
-### Geometry Dash
+### Geometry Dash Remake
 Using ANSI color codes and block elements [listed here](https://en.wikipedia.org/wiki/Block_Elements) to make the screen look like an actual game.
 Surprisingly, with correct optimizations, the screen doesn't actually flicker and the game is kinda (sort of) (maybe) semi-playable!!!!!!
 
