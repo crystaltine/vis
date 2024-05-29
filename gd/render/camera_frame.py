@@ -1,9 +1,10 @@
-from typing import Dict, List, TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal
 from render.utils import fcode_opt as fco, blend_rgba_img_onto_rgb_img, first_diff_color, last_diff_color, lesser, greater
 from draw_utils import Position, convert_to_chars as convert_to_px, print2
 from time import perf_counter
 from logger import Logger
 import numpy as np
+from render.font import Font
 
 if TYPE_CHECKING:
     from blessed import Terminal
@@ -168,6 +169,58 @@ class CameraFrame:
                 
         self.pixels[top:top+pixels.shape[0], left:left+pixels.shape[1]] = pixels
         
+    def add_text(self, x: int, y: int, font: Font, text: str, anchor: Literal["top-left", "top-right", "bottom-left", "bottom-right", "center"] = "top-left") -> None:
+        ...
+        
+    def add_text_centered(self, x: int, y: int, font: Font, text: str) -> None:
+        """       
+        Draws a font to the pixel array at the specified x and y values, where (x,y) are the center of the text to be rendered.
+        x and y should be relative to the top left corner of the frame.
+        
+        Note: Fonts SHOULD be monospaced.
+        """
+        
+        concat_pixels = np.empty((font.font_height, len(text)*font.font_width, 4), dtype=np.uint8)
+        
+        for i in range(len(text)):
+            pixels = font.get(text[i])
+            if pixels is None: raise ValueError(f"[FrameLayer/add_text_centered]: Can't render unsupported character '{text[i]}' for font @ {font.fp}")
+
+            concat_pixels[:,i*font.font_width:(i+1)*font.font_width] = pixels
+            
+        # find the top left corner where the text should be placed
+        left = x - concat_pixels.shape[1] // 2
+        top = y - concat_pixels.shape[0] // 2
+        
+        # clip to 0, 0
+        clipped_left = max(0, left)
+        clipped_top = max(0, top)
+        
+        # these should always be nonnegative
+        offset_top = clipped_top - top
+        offset_left = clipped_left - left
+        
+        # if completely offscreen, return
+        if offset_top >= concat_pixels.shape[0] or offset_left >= concat_pixels.shape[1]:
+            return
+        
+        Logger.log(f"[CameraFrame/add_text_centered]: adding text at {x}, {y}, size {concat_pixels.shape}, left={left}, top={top}, clipped_left={clipped_left}, clipped_top={clipped_top}, offset_left={offset_left}, offset_top={offset_top}")
+        
+        # add text onto the layer, clipping if necessary
+        self.pixels[clipped_top:clipped_top+concat_pixels.shape[0]-offset_top, clipped_left:clipped_left+concat_pixels.shape[1]-offset_left] =\
+            blend_rgba_img_onto_rgb_img(self.pixels[
+                clipped_top:clipped_top+concat_pixels.shape[0]-offset_top,
+                clipped_left:clipped_left+concat_pixels.shape[1]-offset_left
+                ], concat_pixels[offset_top:, offset_left:])
+        #self.pixels[
+        #    top:top+concat_pixels.shape[0], 
+        #    left:left+concat_pixels.shape[1]
+        #] = blend_rgba_img_onto_rgb_img(
+        #    self.pixels[
+        #        top:top+concat_pixels.shape[0],
+        #        left:left+concat_pixels.shape[1]
+        #    ], concat_pixels)
+            
     def add_pixels_topleft(self, x: int, y: int, pixels: np.ndarray) -> None:
         """ Same as add_pixels, but with the anchor set to top-left. mainly for optimization. """
         #Logger.log(f"[FrameLayer/add_pixels_topleft]: adding pixels at {x}, {y}, size {pixels.shape}")

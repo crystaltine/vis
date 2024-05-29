@@ -32,8 +32,6 @@ class Game:
 
         self.leveldata = leveldata
 
-        self.attempt_number = 1 # starts at 1
-
         self.player = Player()
         self.camera = Camera(self.leveldata)
 
@@ -47,7 +45,7 @@ class Game:
         self.practice_mode = False
         self.last_checkpoint = None
         self.checkpoints = []
-        self.attempt = 1
+        self.attempt_number = 1
         self.game_start_time = time.time()
 
     def start_level(self, cb=None):
@@ -70,7 +68,7 @@ class Game:
 
                     fps_str = f"{(1e9/(curr_frame-last_frame)):2f}" if (curr_frame-last_frame != 0) else "inf"
                     Logger.log(f"[Game/render_thread] Rendering frame with player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str} (includes sleeping for {1/CameraUtils.RENDER_FRAMERATE:.2f}s)")
-                    self.camera.render(self.player.pos)
+                    self.camera.render(self)
                     # renders the most recent checkpoint if it exists
                     if self.last_checkpoint:
                         self.camera.draw_checkpoint(self.player.pos[0], self.last_checkpoint[0], self.last_checkpoint[1])
@@ -79,7 +77,6 @@ class Game:
                     last_frame = curr_frame
 
                     # draws the attempt number given the players current and intial positions
-                    self.camera.draw_attempt(self.player.pos[0], player_initial_pos[0], self.attempt)
                     sleep(1/CameraUtils.RENDER_FRAMERATE)
 
                     if not self.running:

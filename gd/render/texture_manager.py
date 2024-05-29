@@ -3,6 +3,7 @@ from typing import List, Literal, TypedDict
 from logger import Logger
 from PIL import Image
 import numpy as np
+from render.font import Font
 import traceback
 
 # IMPORTANT TODO - textures should be able to change color and stuff. also, player icon can change.
@@ -29,9 +30,16 @@ class TextureManager:
     ground_color: tuple = (8, 32, 170)
     """ Can change throughout the level using triggers. keep as rgb tuple. """
     
-    curr_player_icon: np.ndarray = ... # set lower down
+    player_color1: tuple = (120, 202, 102)
+    player_color2: tuple = (118, 231, 241)
+    player_icon_idx = 0
+    player_icons = []
+    """ A list of frames for the player icon. As of 2:43AM 29May2024, 
+    this should be 4 frames, with 0=0deg rotation, 1=22.5, and so on. Only supports 4-way symmetry for now. """
     
     premade_textures = {}
+    
+    font_small1 = Font("./assets/fonts/small1.png")
     
     def get(texture_name: str):
         return TextureManager.premade_textures[texture_name]
@@ -269,8 +277,6 @@ class TextureManager:
         
         return final_pixels
 
-    curr_player_icon = build_grayscale_texture_to_pixels("assets/textures/default_cube.png", (120, 202, 102), (118, 231, 241))
-
     def spike(options: GrayscaleTextureOptions = DEFAULT_GRAYSCALE_TEXTURE_OPTIONS) -> np.ndarray:
         return TextureManager.build_grayscale_texture_to_pixels("./assets/textures/spike.png", **options)
     
@@ -330,3 +336,11 @@ TextureManager.premade_textures.update({
 TextureManager.premade_textures.update({
     f"block0_{i}": TextureManager.block0(i) for i in range(12)
 })
+
+TextureManager.player_icons = [
+    TextureManager.build_grayscale_texture_to_pixels(
+        f"./assets/textures/icons/cubes/{TextureManager.player_icon_idx}/{i}.png", 
+        TextureManager.player_color1, 
+        TextureManager.player_color2
+    ) for i in range(4)
+]

@@ -186,8 +186,6 @@ def run_level(path: str, practice_mode: bool = False, checkpoints: list[tuple[fl
     leveldata = path
     if isinstance(leveldata, str):
         leveldata = parse_level(leveldata)
-        for row in leveldata:
-            Logger.log(f"Level row types: {[type(row_obj) for row_obj in row]}")
 
     currentgame = Game(leveldata)
     # increments the attempt number
