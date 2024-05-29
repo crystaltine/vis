@@ -103,7 +103,7 @@ def render_new_page(new_page:str):
         init_function(terminal)
 
     # draw all three buttons, select middle one by default
-    draw_main_menu_buttons(1)
+    # draw_main_menu_buttons(1)
  
 def init_level_selector():
     global attempt
@@ -120,16 +120,17 @@ def pull_prev_page(new_page:str):
 
 
 def call_handle_page_function(val):
+    global attempt
     if current_page['current_screen']!='play_level':
         
         handle_function=getattr(current_module, 'handle_'+current_page['current_screen']+'_page')
         handle_function(val)
 
-    level_info=levels[0]
-    # resets the attempt number when returning to the level selector screen
-    attempt = 0
-    draw_level(level_info['level_name'], level_info['level_description'], int(terminal.width*0.8), int(terminal.height*0.6), 
-                   int(terminal.width*0.1), int(terminal.height*0.3), level_info['color1'], level_info['color2'])
+    # level_info=levels[0]
+    # # resets the attempt number when returning to the level selector screen
+    # attempt = 0
+    # draw_level(level_info['level_name'], level_info['level_description'], int(terminal.width*0.8), int(terminal.height*0.6), 
+    #                int(terminal.width*0.1), int(terminal.height*0.3), level_info['color1'], level_info['color2'])
 
 def handle_main_page(val):
 
