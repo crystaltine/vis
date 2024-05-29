@@ -4,6 +4,7 @@ from draw_utils import Position, draw_rect
 import traceback
 from GDMenu import draw_main_menu_buttons
 from level_selector import *
+from level_editor_menu import *
 import os 
 from img2term.main import draw
 # from run_gd import run_level
@@ -17,35 +18,17 @@ from copy import deepcopy
 current_module = sys.modules[__name__]
 terminal = blessed.Terminal()
 
-main_current_index=1
 level_select_index=0
 currentgame = None
 attempt = 0
-pages={'main':['character_select', 'level_select', 'level_editor'], 'character_select':[], 'level_select':['play_level'], 'level_editor':[],
-        'play_level':[]}
 
-current_page={'previous_page':'main', 'current_screen':'main', 'current_page':0}
-pages=['main', 'LEVEL SELECTOR', 'level']
-current_page_index=0
+pages={'main':['character_select', 'level_select', 'level_editor'], 'character_select':[], 'level_select':['play_level'], 
+       'level_editor':['create_level', 'created_levels', 'online_levels'], 'play_level':[], 'create_level':[], 'created_levels':[], 
+       'online_levels':['search_levels', 'upload_levels'], 'search_levels':[], 'upload_levels':[]}
 
-def draw_menu_bg():
-    """ This is a very crude function im writing at 5am ill make it better later """
-    draw('gd/assets/menu_bg_1.png', Position.Relative(top=0, left=0), (terminal.width, terminal.height*2), 'scale')
-
-def draw_menu_title():
-    """ Attempts to draw the GEOMETRY DASH title in the center-top of the screen. it's 141 pixels wide, so requires fullscreen.
-    Who knows what horrors will happen if the term isn't that wide...
-    """
-    
-    # important: title img is 141ch x 7ch
-    
-    left_pos = "calc(50% - 70)"
-    top_pos = 4 # arbitrary value
-    draw('gd/assets/menu_title_1_editable.png', Position.Relative(left=left_pos, top=top_pos), (None, None), 'crop')
+current_page={'previous_page':'main', 'current_screen':'main', 'current_page':1}
 
 def main():
-    global currentgame
-    global attempt
 
     init_main_page(terminal)
 
@@ -71,30 +54,14 @@ def main():
                     os.system('clear')
                     break
                 
-                # handles exit code from level selector or exiting from pause menu within the level
-                if ((val.name=="KEY_ESCAPE" and current_page['current_screen']!='main' and current_page['current_screen']!='play_level') or (currentgame != None and current_page['current_screen']=='play_level' and currentgame.exiting)) :
-                    # unsets the current game as the attempt is now complete
-                    attempt = 0
+                if val.name=="KEY_ESCAPE" and current_page['current_screen']!='main':
+                    
                     render_new_page(current_page['previous_page'])
-
-                # The call_handle_page_function will call the corresponding function to handle all the specific key bindings for each page
-                # handles resetting the game (occurs after each death)
-                if ((currentgame != None and current_page['current_screen']=='play_level' and currentgame.reseting)):
-                    practice_mode = False
-                    checkpoints = []
-                    # if the game was in practice mode, saves the checkpoints that were stored in the previous attempt
-                    if currentgame.practice_mode:
-                        practice_mode = True
-                        if currentgame.checkpoints:
-                            checkpoints = deepcopy(currentgame.checkpoints)
-                    currentgame = None
-                    # runs the level with the necessary paramaters based on if it is in practice mode or not
-                    run_level(levels[level_select_index]['path'], practice_mode, checkpoints)
 
                 # The call_handle_page_function will call the corresponding function to handle all the specific key bindings for each page
 
                 call_handle_page_function(val)
-
+                
 def render_new_page(new_page:str):
 
     global current_page
@@ -105,6 +72,9 @@ def render_new_page(new_page:str):
     current_page['current_screen']=new_page
     current_page['current_page']=0
 
+    if new_page=='main':
+        current_page['current_page']=1
+
     # Play_level is the only page that doesn't follow the generic "init_[page]" function structure as the other pages
 
     if new_page=='play_level':
@@ -113,7 +83,6 @@ def render_new_page(new_page:str):
         init_function=getattr(current_module, 'init_'+new_page+'_page')
         init_function(terminal)
 
-
 def pull_prev_page(new_page:str):
     prev_page='main'
     for screen in pages:
@@ -121,18 +90,19 @@ def pull_prev_page(new_page:str):
             prev_page=screen
     return prev_page
 
-
 def call_handle_page_function(val):
-    if current_page['current_screen']!='play_level':
-        
+
+    if current_page['current_screen']=='level_select':
         handle_function=getattr(current_module, 'handle_'+current_page['current_screen']+'_page')
         handle_function(val)
 
+    elif current_page['current_screen']!='play_level':
+        handle_generic_page(val)
+        
 
-def handle_main_page(val):
-
-    global main_current_index
-    
+def handle_generic_page(val):
+    global current_page
+    global levels
 
     changed=False
 
@@ -142,30 +112,29 @@ def handle_main_page(val):
         
         changed=True
         
-        main_current_index-=1
+        current_page['current_page']-=1
 
-
-        if main_current_index<0:
-            main_current_index=2
+        if current_page['current_page']<0:
+            current_page['current_page']=len(pages[current_page['current_screen']])-1
         
     if val.name=='KEY_RIGHT':
         
         changed=True
-        main_current_index+=1
-        if main_current_index>2:
-            main_current_index=0
+        current_page['current_page']+=1
+        if current_page['current_page']>len(pages[current_page['current_screen']])-1:
+            current_page['current_page']=0
 
     # Opening the level selector if space is selected
 
-    if val.name=='KEY_ENTER' and main_current_index==1:
+    if val.name=='KEY_ENTER':
         
-        render_new_page('level_select')
-       
-    # If a button has been pressed, we rerender the new button and the previous button to get rid of/add in the white outline
-
+        render_new_page(pages[current_page['current_screen']][current_page['current_page']])
+    
     if changed:
-        draw_main_menu_buttons(main_current_index)
-
+        if current_page['current_screen']=='main':
+            draw_main_menu_buttons(current_page['current_page'])
+        elif current_page['current_screen']=='level_editor':
+            draw_all_buttons(current_page['current_page'])
 
 def handle_level_select_page(val):
 
@@ -192,11 +161,8 @@ def handle_level_select_page(val):
     # Running test gd file if space is selected
 
     if val.name=='KEY_ENTER':
-        current_page_index=2
-    
-        #Logger.log(f"calling run level (from main), val.name was {val.name}")
-        run_level(levels[level_select_index]['path'])
-
+        render_new_page('play_level')
+        
     # If a button has been pressed, reset the level, and regenerate the new level onto the screen
 
     if changed:
@@ -252,4 +218,6 @@ if __name__ == "__main__":
         print(f"\x1b[31m{traceback.format_exc()}\x1b[0m")
         
     Logger.write()
-''' 
+        
+
+
