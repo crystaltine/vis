@@ -14,6 +14,15 @@ import socket
 global s
 s = None
 
+global data
+data = {}
+
+global typed_message
+typed_message = ""
+
+def draw_typed_message():
+    print(term.move(int(term.width * 0.1 + 1), int(term.height * 0.9) - 1) + term.on_color_rgb(*hex_to_rgb(colors.field)) + term.color_rgb(*hex_to_rgb(colors.text)) + typed_message + " " * (int(term.width * 0.8 - 1)))
+
 
 
 def hex_to_rgb(hex):
@@ -33,21 +42,39 @@ def draw_menu():
     for y in range(tly, tly + int(term.height * 0.8)):
         print(term.move(y, tlx) + term.on_color_rgb(*hex_to_rgb(colors.div)) + ' ' * int(term.width * 0.8), end="")
 
+def show_recent_messages():
+    ...
+
 
 def redraw_all():
     draw_background()
     draw_menu()
+
+    draw_typed_message()
 
     print("")
 
 
 
 def main(user_token, server_id, channel_id):
-    global s
+    global s, data
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
     s.connect((config.HOST, config.SOCKET_PORT))
     s.send(user_token.encode())
+
+
+    resp = requests.post(f"{config.API_URL}/api/messages/get_recent", json={
+        "server_id": server_id,
+        "channel_id": channel_id,
+        "user_token": user_token
+    })
+    if resp.status_code != 200:
+        return
+    data = resp.json()["data"]
+
+
+
     redraw_all()
     with term.cbreak():
         val = ""
