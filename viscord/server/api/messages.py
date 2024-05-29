@@ -29,6 +29,7 @@ def pin_message() -> Literal['success', 'failure']:
     except Exception as e:
         return return_error(e)
 
+
 @app.route("/api/messages/send", methods=["POST"])
 def create_message() -> Literal['success', 'failure', 'incomplete-data']:
     """
