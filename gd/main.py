@@ -36,7 +36,7 @@ def draw_menu_bg():
 def main():
 
     global currentgame
-
+    global attempt
     init_main_page(terminal)
 
     with terminal.hidden_cursor():
@@ -64,6 +64,7 @@ def main():
                 # handles exit code from level selector or exiting from pause menu within the level
                 if ((val.name=="KEY_ESCAPE" and current_page['current_screen']!='main' and current_page['current_screen']!='play_level') or (currentgame != None and current_page['current_screen']=='play_level' and currentgame.exiting)) :
                     # unsets the current game as the attempt is now complete
+                    attempt = 0
                     render_new_page(current_page['previous_page'])
 
                 # handles resetting the game (occurs after each death)
