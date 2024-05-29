@@ -40,7 +40,6 @@ def main():
     global currentgame
     global attempt
     init_main_page(terminal)
-    global currentgame
 
     with terminal.hidden_cursor():
 
@@ -64,8 +63,9 @@ def main():
                     os.system('cls')
                     break
                 
-                if val.name=="KEY_ESCAPE" and current_page['current_screen']!='main':
-                    
+                # handles exit code from level selector or exiting from pause menu within the level
+                if ((val.name=="KEY_ESCAPE" and current_page['current_screen']!='main' and current_page['current_screen']!='play_level') or (currentgame != None and current_page['current_screen']=='play_level' and currentgame.exiting)) :
+                    # unsets the current game as the attempt is now complete
                     render_new_page(current_page['previous_page'])
 
                 # The call_handle_page_function will call the corresponding function to handle all the specific key bindings for each page
