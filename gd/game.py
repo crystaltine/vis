@@ -10,6 +10,12 @@ from logger import Logger
 from typing import List, TYPE_CHECKING
 import traceback
 from copy import deepcopy
+from multiprocessing import process
+from copy import deepcopy
+from draw_utils import Position, draw_rect
+from img2term.main import draw
+from bottom_menu import draw_text
+import time
 
 if TYPE_CHECKING:
     from engine.objects import LevelObject
@@ -36,15 +42,28 @@ class Game:
         self.running = False
         self.last_tick = None
 
+        # wayyy too many of these variables, don't need them all - will come back later and clean this up
+        self.paused = False
+        self.exiting = False
+        self.reseting = False
+        self.practice_mode = False
+        self.last_checkpoint = None
+        self.checkpoints = []
+        self.attempt = 1
+        self.game_start_time = time.time()
+
     def start_level(self, cb=None):
         """
         Begin a separate thread to run level physics/animation ticks
         """
 
         self.running = True
-
+        # unpauses the game
+        self.paused = False
         # Initialize camera rendering
         self.camera.render_init()
+        # stores the players initial position when the level starts (for rendering purposes)
+        player_initial_pos = deepcopy(self.player.pos)
         def render_thread():
             try:
                 last_frame = time_ns()
@@ -54,10 +73,15 @@ class Game:
                     fps_str = f"{(1e9/(curr_frame-last_frame)):2f}" if (curr_frame-last_frame != 0) else "inf"
                     Logger.log(f"[Game/render_thread] Rendering frame with player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str} (includes sleeping for {1/CameraUtils.RENDER_FRAMERATE:.2f}s)")
                     self.camera.render(self.player.pos)
-                    #Logger.log(f"done rendering frame!")
+                    # renders the most recent checkpoint if it exists
+                    if self.last_checkpoint:
+                        self.camera.draw_checkpoint(self.player.pos[0], self.last_checkpoint[0], self.last_checkpoint[1])
                     
                     #Logger.log(f"Just rendered frame with player@{[f'{num:2f}' for num in self.player.pos]}. It has been {((curr_frame-last_frame)/1e9):2f}s since last f.")
                     last_frame = curr_frame
+
+                    # draws the attempt number given the players current and intial positions
+                    self.camera.draw_attempt(self.player.pos[0], player_initial_pos[0], self.attempt)
                     sleep(1/CameraUtils.RENDER_FRAMERATE)
 
                     if not self.running:
@@ -104,45 +128,68 @@ class Game:
         self.last_tick = time_ns()
         Thread(target=render_thread).start()
         Thread(target=physics_thread).start()
+        # stores the start time of the level (for assigning checkpoint purposes)
+        start_time = time.time()
         
         # Main thread handles key input
         with self.camera.term.cbreak():
 
             while self.running:
-                val = ''
-                while val.lower() not in CONSTANTS.ALL_KEYS:
-                    val = self.camera.term.inkey(0.01)
-                    if not self.running:
-                        return
-
-                if val in CONSTANTS.QUIT_KEYS:
-                    self.running = False
+                # val = ''
+                # while val.lower() not in CONSTANTS.ALL_KEYS:
+                val = self.camera.term.inkey(0.01)
+                if not self.running:
                     return
-                
-                elif val in CONSTANTS.JUMP_KEYS:
-                    
-                    something_got_activated = False
-                    
-                    # also go through the player's current collisions and
-                    # activate the first requires_click effect where "has_been_activated" is False
-                    for collision in self.player.curr_collisions:
-                        if collision.obj.data.get("requires_click"):
-                            
-                            if collision.obj.data.get("multi_activate"): # always run effect if multi_activate
-                                self.run_collision_effect(collision)
-                                something_got_activated = True
-                                break # can only perform one action per jump
+                # if a checkpoint has not been set for 2 seconds, set one at the players current position
+                if time.time() - start_time > 2 and self.practice_mode:
+                    self.last_checkpoint = deepcopy(self.player.pos)
+                    self.checkpoints.append((self.last_checkpoint[0], self.last_checkpoint[1]))
+                    # reset the timer
+                    start_time = time.time()
+
+                if val in CONSTANTS.ALL_KEYS:
+                    if val in CONSTANTS.QUIT_KEYS:
+                        self.running = False
+                        return
+                    elif val in CONSTANTS.PAUSE_KEYS:
+                        self.pause()
+                        return
+                    # place a checkpoint if a user attempts to
+                    elif val in CONSTANTS.CHECKPOINT_KEYS and self.practice_mode:
+                        self.last_checkpoint = deepcopy(self.player.pos)
+                        self.checkpoints.append((self.last_checkpoint[0], self.last_checkpoint[1]))
+                        # reset the checkpoint timer
+                        start_time = time.time()
+                    # remove the most recent checkpoint if a user attempts to
+                    elif val in CONSTANTS.REMOVE_CHECKPOINT_KEYS and self.practice_mode and self.checkpoints:
+                        self.checkpoints.pop()
+                        self.last_checkpoint = self.checkpoints[-1] if self.checkpoints else None
+                        # reset the checkpoint timer
+                        start_time = time.time()
+                    elif val in CONSTANTS.JUMP_KEYS:
+                        
+                        something_got_activated = False
+                        
+                        # also go through the player's current collisions and
+                        # activate the first requires_click effect where "has_been_activated" is False
+                        for collision in self.player.curr_collisions:
+                            if collision.obj.data.get("requires_click"):
                                 
-                            elif not collision.has_been_activated: # run effect if not multi_activate and not activated
-                                self.run_collision_effect(collision)
-                                something_got_activated = True
-                                collision.has_been_activated = True
-                                break # can only perform one action per jump
-                    
-                    Logger.log(f"something_got_activated is {something_got_activated}")
-                    # if nothing got activated, then jump
-                    if not something_got_activated:
-                        self.player.jump()
+                                if collision.obj.data.get("multi_activate"): # always run effect if multi_activate
+                                    self.run_collision_effect(collision)
+                                    something_got_activated = True
+                                    break # can only perform one action per jump
+                                    
+                                elif not collision.has_been_activated: # run effect if not multi_activate and not activated
+                                    self.run_collision_effect(collision)
+                                    something_got_activated = True
+                                    collision.has_been_activated = True
+                                    break # can only perform one action per jump
+                        
+                        Logger.log(f"something_got_activated is {something_got_activated}")
+                        # if nothing got activated, then jump
+                        if not something_got_activated:
+                            self.player.jump()
         
     def run_collision_effect(self, collision: Collision):
         
@@ -184,7 +231,10 @@ class Game:
             # change velocity to a modest amount, in the sign of the NEW direction of gravity
             self.player.yvel = CONSTANTS.BLUE_ORB_STARTING_VELOCITY * -self.player.sign_of_gravity()
 
-    def crash(self, restart: bool = True):
+    def crash_old(self, restart: bool = True):
+        """
+        The old function for crash handling. Might convert to normal mode crash later on.
+        """
         #self.running=True
         # self.player=Player()
         #self.start_level()
@@ -205,6 +255,163 @@ class Game:
         self.player.curr_collisions = []
 
         self.attempt_number += 1
+
+    def pause(self) -> None:
+        """
+        Pauses the game and displays the pause menu.
+        Draws the pause menu background, progress bar, and pause menu buttons. 
+        Then passes off handling user interaction with the pause menu.
+        Also sets initial selected index to the play button.
+        """
+        # stops the game and sets paused to true
+        self.running = False
+        self.paused = True
+        # calculates progress bar based on length of level and player position
+        progresspercent = round((self.player.pos[0] / len(self.leveldata[0])) * 100)
+        # sets selected index to play button
+        pausemenuselectindex = 1
+
+        # Draw pause menu background, progress bar, and buttons
+        draw('assets/pausemenubg.png', Position.Relative(top=5, left=10), (self.camera.term.width - 20, self.camera.term.height * 2 - 20), 'scale')
+        draw_text(f"Progress: {progresspercent}%", (self.camera.term.width - 10) // 2, 10, bg_color='black')
+        self.draw_pause_menu_buttons(pausemenuselectindex)
+
+        # call method to handle interaction with pause menu
+        self.handle_pause_menu_interaction(pausemenuselectindex)
+
+    def handle_pause_menu_interaction(self, pausemenuselectindex: int) -> None:
+        """
+        Handles the user interaction with the pause menu.
+        Processes user input to navigate the pause menu and perform actions
+        such as reset, unpause, toggle practice mode, or exit.
+        Args:
+            pausemenuselectindex (int): The current selected index in the pause menu.
+        """
+        reset = False
+        unpause = False
+
+        with self.camera.term.hidden_cursor():
+            while not self.running:
+                with self.camera.term.cbreak():
+                    val = self.camera.term.inkey(1)
+                    changed = False
+
+                    if val:
+                        # move the selected index
+                        if val.name == 'KEY_LEFT':
+                            changed = True
+                            pausemenuselectindex -= 1
+                            if pausemenuselectindex < 0:
+                                pausemenuselectindex = 3
+                        # move the selected index
+                        elif val.name == 'KEY_RIGHT':
+                            changed = True
+                            pausemenuselectindex += 1
+                            if pausemenuselectindex > 3:
+                                pausemenuselectindex = 0
+                        # carry out functions based on selected index if enter is pressed, then break
+                        # out of the while loop
+                        elif val.name == 'KEY_ENTER':
+                            if pausemenuselectindex == 0:
+                                reset = True
+                            elif pausemenuselectindex == 1:
+                                unpause = True
+                            elif pausemenuselectindex == 2:
+                                self.practice_mode = not self.practice_mode
+                                reset = True
+                            elif pausemenuselectindex == 3:
+                                self.exiting = True
+                            break
+
+                        # if the selected element is changed, redraw the pause buttons accordingly
+                        if changed:
+                            self.draw_pause_menu_buttons(pausemenuselectindex)
+
+        if reset:
+            self.reset()
+        elif unpause:
+            self.unpause()
+
+    def draw_pause_menu_buttons(self, index: int) -> None:
+        """
+        Draws the pause menu buttons with highlights based on the selected index.
+        Args:
+            index (int): The index of the currently selected menu button.
+        """
+
+        # OLD TEXT BASED RENDERING OF BUTTONS
+        # draw_text("Reset", 10 + ((self.camera.term.width - 50) // 4), (self.camera.term.height) // 2, bg_color='white' if index == 0 else 'black')
+        # draw_text("Play", 10 + ((self.camera.term.width - 50) // 4) * 2, (self.camera.term.height) // 2, bg_color='white' if index == 1 else 'black')
+        # draw_text("Practice", 10 + ((self.camera.term.width - 50) // 4) * 3, (self.camera.term.height) // 2, bg_color=practice_bg_color)
+        # draw_text("Exit", 10 + ((self.camera.term.width - 50) // 4) * 4, (self.camera.term.height) // 2, bg_color='white' if index == 3 else 'black')
+
+
+        # Stores the positions and labels for the buttons
+        positions = [
+            "calc(15% - 10ch)",
+            "calc(36.5% - 10ch)",
+            "calc(58% - 10ch)",
+            "calc(79.5% - 10ch)"
+        ]
+        button_labels = ["reset_button", "play_button", "practice_button", "exit_button"]
+
+        # Determine the practice button state
+        practice_bg_color = '_active' if self.practice_mode else ''
+
+        # Draw each button, highlighting the selected one
+        for i, label in enumerate(button_labels):
+            selected = '_selected' if index == i else ''
+            suffix = practice_bg_color if label == "practice_button" and not selected else selected
+            draw(f"assets/pause_menu/{label}{suffix}.png", pos=Position.Relative(left=positions[i], bottom="calc(55% - 10ch)"))
+
+        # Draw additional text labels for controls
+        draw_text("Add Checkpoint - Z", 12 + ((self.camera.term.width - 64) // 4) * 3, (self.camera.term.height + 20) // 2, bg_color='black')
+        draw_text("Remove Checkpoint - X", 10 + ((self.camera.term.width - 64) // 4) * 3, (self.camera.term.height + 25) // 2, bg_color='black')
+
+    def unpause(self) -> None:
+        """
+            Unpauses the level.
+        """
+        self.start_level()
+        self.paused = False
+
+    def crash(self) -> None:
+        """
+        Handles the game crash event.
+        First, stops the game. If the played died within 0.4 seconds of starting and
+        is in practice mode, it removes the last checkpoint assuming it will lead
+        to an infinite death loop. Finally, it then resets the game.
+        """
+        self.running = False
+
+        if time.time() - self.game_start_time < 0.4 and self.practice_mode and self.checkpoints:
+            self.checkpoints.pop()
+            self.last_checkpoint = self.checkpoints[-1] if self.checkpoints else None
+
+        self.reset()
+
+    def reset(self) -> None:
+        """
+        Resets the level.
+        """
+        self.reseting = True
+
+        # OLD RESET CODE - ATTEMPT TO TERMINATE THE THREADS FAILED MISERABLY
+        # self.running = False
+        # self.paused = False
+        # # self.terminate_threads = True  # Set the flag to terminate threads
+
+        # # # Wait for the render and physics threads to finish
+        # # if self.render_thread_instance:
+        # #     self.render_thread_instance.join()
+        # # if self.physics_thread_instance:
+        # #     self.physics_thread_instance.join()
+
+        # # self.terminate_threads = False
+        # self.player = Player()
+        # self.camera = Camera(self.leveldata)
+        # self.last_tick = None
+        # self.start_level()
 
     def generate_collisions(self) -> List[Collision]:
         """

@@ -326,6 +326,7 @@ TextureManager.premade_textures.update({
     "triple_speed_portal": TextureManager.speed_portal("triple"),
     "quadruple_speed_portal": TextureManager.speed_portal("quadruple"),
     "ground": TextureManager.build_colorful_texture_to_pixels("./assets/textures/ground.png", **TextureManager.DEFAULT_COLORFUL_TEXTURE_OPTIONS),
+    "checkpoint": TextureManager.build_colorful_texture_to_pixels("./assets/textures/checkpoint.png", **TextureManager.DEFAULT_COLORFUL_TEXTURE_OPTIONS),
 })
 TextureManager.premade_textures.update({
     f"block0_{i}": TextureManager.block0(i) for i in range(12)
