@@ -4,6 +4,7 @@ from draw_utils import Position, draw_rect
 import traceback
 from GDMenu import draw_main_menu_buttons
 from level_selector import *
+from level_editor_menu import *
 import os 
 from img2term.main import draw
 from run_gd import run_level
@@ -14,13 +15,14 @@ import sys
 current_module = sys.modules[__name__]
 terminal = blessed.Terminal()
 
-main_current_index=1
 level_select_index=0
+level_editor_menu_button_index=1 
 
-pages={'main':['character_select', 'level_select', 'level_editor'], 'character_select':[], 'level_select':['play_level'], 'level_editor':[],
-        'play_level':[]}
+pages={'main':['character_select', 'level_select', 'level_editor'], 'character_select':[], 'level_select':['play_level'], 
+       'level_editor':['create_level', 'created_levels', 'online_levels'], 'play_level':[], 'create_level':[], 'created_levels':[], 
+       'online_levels':['search_levels', 'upload_levels'], 'search_levels':[], 'upload_levels':[]}
 
-current_page={'previous_page':'main', 'current_screen':'main', 'current_page':0}
+current_page={'previous_page':'main', 'current_screen':'main', 'current_page':1}
 
 def main():
 
@@ -66,6 +68,9 @@ def render_new_page(new_page:str):
     current_page['current_screen']=new_page
     current_page['current_page']=0
 
+    if new_page=='main':
+        current_page['current_page']=1
+
     # Play_level is the only page that doesn't follow the generic "init_[page]" function structure as the other pages
 
     if new_page=='play_level':
@@ -84,16 +89,18 @@ def pull_prev_page(new_page:str):
 
 
 def call_handle_page_function(val):
-    if current_page['current_screen']!='play_level':
-        
+
+    if current_page['current_screen']=='level_select':
         handle_function=getattr(current_module, 'handle_'+current_page['current_screen']+'_page')
         handle_function(val)
 
+    elif current_page['current_screen']!='play_level':
+        handle_generic_page(val)
+        
 
-def handle_main_page(val):
-
-    global main_current_index
-    
+def handle_generic_page(val):
+    global current_page
+    global levels
 
     changed=False
 
@@ -103,29 +110,29 @@ def handle_main_page(val):
         
         changed=True
         
-        main_current_index-=1
+        current_page['current_page']-=1
 
-
-        if main_current_index<0:
-            main_current_index=2
+        if current_page['current_page']<0:
+            current_page['current_page']=len(pages[current_page['current_screen']])-1
         
     if val.name=='KEY_RIGHT':
         
         changed=True
-        main_current_index+=1
-        if main_current_index>2:
-            main_current_index=0
+        current_page['current_page']+=1
+        if current_page['current_page']>len(pages[current_page['current_screen']])-1:
+            current_page['current_page']=0
 
     # Opening the level selector if space is selected
 
-    if val.name=='KEY_ENTER' and main_current_index==1:
+    if val.name=='KEY_ENTER':
         
-        render_new_page('level_select')
-       
-    # If a button has been pressed, we rerender the new button and the previous button to get rid of/add in the white outline
-
+        render_new_page(pages[current_page['current_screen']][current_page['current_page']])
+    
     if changed:
-        draw_main_menu_buttons(main_current_index)
+        if current_page['current_screen']=='main':
+            draw_main_menu_buttons(current_page['current_page'])
+        elif current_page['current_screen']=='level_editor':
+            draw_all_buttons(current_page['current_page'])
 
 
 def handle_level_select_page(val):
@@ -163,6 +170,8 @@ def handle_level_select_page(val):
         reset_level()
         draw_level(level_info['level_name'], level_info['level_description'], int(terminal.width*0.8), int(terminal.height*0.6), 
                    int(terminal.width*0.1), int(terminal.height*0.3), level_info['color1'], level_info['color2'])
+
+
 
 if __name__ == "__main__":
     # testing
