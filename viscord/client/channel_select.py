@@ -159,5 +159,5 @@ def main(server_data, user_token):
                     continue
                 channel = data[selection]
                 import messages
-                messages.main(server["server_id"], channel["chat_id"], user_token)
+                messages.main(user_token, server["server_id"], channel["chat_id"])
                 redraw_all()

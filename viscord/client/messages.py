@@ -58,21 +58,28 @@ def redraw_all():
 
 def main(user_token, server_id, channel_id):
     global s, data
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    
-    s.connect((config.HOST, config.SOCKET_PORT))
-    s.send(user_token.encode())
+    import traceback
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        
+        s.connect((config.HOST, config.SOCKET_PORT))
+        s.send(user_token.encode())
 
 
-    resp = requests.post(f"{config.API_URL}/api/messages/get_recent", json={
-        "server_id": server_id,
-        "channel_id": channel_id,
-        "user_token": user_token
-    })
-    if resp.status_code != 200:
-        return
-    data = resp.json()["data"]
-
+        resp = requests.post(f"{config.API_URL}/api/messages/get_recent", json={
+            "chat_id": channel_id,
+            "user_token": user_token,
+            "num": 15
+        })
+        if resp.status_code != 200:
+            print(resp.status_code)
+            input()
+        data = resp.json()["data"]
+    except Exception as e:
+        print(term.clear)
+        print(traceback.format_exc(), flush=True)
+        input()
+        raise
 
 
     redraw_all()
