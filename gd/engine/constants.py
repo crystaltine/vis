@@ -19,7 +19,10 @@ class CONSTANTS:
     
     QUIT_KEYS = ['q', 'ctrl+c']
     JUMP_KEYS = [' ', 'up', 'w']
-    ALL_KEYS = set(QUIT_KEYS + JUMP_KEYS)
+    PAUSE_KEYS = ['p', '', 'esc']
+    CHECKPOINT_KEYS = ['z']
+    REMOVE_CHECKPOINT_KEYS = ['x']
+    ALL_KEYS = set(QUIT_KEYS + JUMP_KEYS + PAUSE_KEYS + CHECKPOINT_KEYS + REMOVE_CHECKPOINT_KEYS)
 
 class SPEEDS:
     slow = 0.8

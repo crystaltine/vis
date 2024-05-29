@@ -20,6 +20,12 @@ class TEXTURES:
         fcode("00f", "ff0")+"o  o",
         fcode("00f", "ff0")+"====",
     ]
+
+    # TEMPORARY CHECKPOINT ICON - MAKE LESS UGLY LATER
+    CHECKPOINT_ICON = [
+        fcode("fff", "0f0")+" ^ ",
+        fcode("fff", "0f0")+"< >",
+    ]
     
     spike = [
         f"{fcode(background=BG_COLOR)} {fcode(foreground='000')}/\\{fcode(background=BG_COLOR)} ",
