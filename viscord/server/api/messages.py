@@ -11,11 +11,15 @@ from flask import request, Response
 @app.route("/api/messages/pin", methods=["POST"])
 def pin_message() -> Literal['success', 'failure']:
     
-    if not validate_fields(request.json, {"message_id": str, "chat_id": str}):
+    if not validate_fields(request.json, {"user_token": str, "message_id": str, "chat_id": str}):
         return invalid_fields()
     
     message_id = request.json["message_id"]
     chat_id = request.json["chat_id"]
+
+    perms = member_perms(request.json["user_token"], chat_id)
+    if not perms["writable"]:
+        return missing_permissions()
 
     try:
         # Update the ChatInfo table with the new pinned message ID
@@ -55,13 +59,20 @@ def create_message() -> Literal['success', 'failure', 'incomplete-data']:
     message_data = request.json
 
     message_id = str(uuid4())
-    user_id = message_data["user_id"]
+
+    user_id = get_user_id(message_data["user_token"])
+
     server_id = message_data["server_id"]
     chat_id = message_data["chat_id"]
     replied_to_id = message_data.get("replied_to_id")
     message_content = message_data["message_content"]
     message_timestamp = datetime.datetime.now()
     pinged_user_ids = message_data["pinged_user_ids"]
+
+    perms = member_perms(message_data["user_token"], server_id, chat_id)
+    if not perms["writable"]:
+        return missing_permissions()
+
 
     send_query = '''
     INSERT INTO "Discord"."MessageInfo" (message_id, user_id, chat_id, server_id, replied_to_id, message_content, message_timestamp, pinged_user_ids)
@@ -80,11 +91,15 @@ def get_recent_messages() -> List[MessageInfo]:
     `num` specifies how many to return (default 15)
     """
 
-    if not validate_fields(request.json, {"chat_id": str, "num": int}):
+    if not validate_fields(request.json, {"user_token": str, "chat_id": str, "num": int}):
         return invalid_fields()
     
     chat_id = request.json["chat_id"]
     num = request.json.get("num", 15)
+
+    perms = member_perms(request.json["user_token"], chat_id)
+    if not perms["readable"]:
+        return missing_permissions()
 
     send_query = """
     SELECT message_id, user_id, chat_id, server_id, replied_to_id, message_content, message_timestamp, pinged_user_ids
@@ -116,12 +131,17 @@ def get_recent_messages() -> List[MessageInfo]:
 @app.route("/api/messages/get_chunk", methods=["POST"])
 def get_message_chunk() -> List[MessageInfo]:
 
-    if not validate_fields(request.json, {"chat_id": str, "offset": int, "num": int}):
+    if not validate_fields(request.json, {"user_token": str, "chat_id": str, "offset": int, "num": int}):
         return invalid_fields()
     
     chat_id = request.json["chat_id"]
     offset = request.json["offset"]
     num = request.json["num"]
+
+    perms = member_perms(request.json["user_token"], chat_id)
+    if not perms["readable"]:
+        return missing_permissions()
+    
 
     send_query = """
     SELECT *
