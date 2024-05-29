@@ -154,3 +154,10 @@ def main(server_data, user_token):
                     selection = 0
                 update_direction = -1
                 draw_fields()
+            if val.code == term.KEY_ENTER:
+                if selection >= len(data):
+                    continue
+                channel = data[selection]
+                import messages
+                messages.main(server["server_id"], channel["chat_id"], user_token)
+                redraw_all()

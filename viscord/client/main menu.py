@@ -90,6 +90,13 @@ def main():
         registry.del_reg("cache")
     global selection
 
+    try:
+        requests.get(f"https://{config.HOST}:{config.PORT}")
+    except Exception as e:
+        print(term.red + f"Could not establish a connection to the Viscord server at {config.HOST}:{config.PORT}, exiting..." + term.normal)
+        cursor.show()
+        sys.exit(1)
+
     if registry.get_reg("cache"):
         
         cache = registry.get_reg("cache")
