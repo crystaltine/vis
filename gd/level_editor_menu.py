@@ -41,9 +41,9 @@ def draw_all_buttons(outline_index=0):
     
 def init_level_editor_page(terminal): 
           
-    draw_menu_background('assets/level_editor_menu/level_editor_menu.png', terminal)
-    draw_menu_title_level_editor()
-    draw_all_buttons(0)
+          draw_menu_background('assets/level_editor_menu/level_editor_menu.png', terminal)
+          draw_menu_title_level_editor()
+          draw_all_buttons(0)
 
 
 
