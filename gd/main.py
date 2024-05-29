@@ -49,8 +49,6 @@ def main():
                 draw_text('CREATED LEVELS', int((terminal.width-len('Created Levels'))*0.5), int(terminal.height*0.1))
             else:
                 draw_text('', 0, 0)
-            
-                
 
             with terminal.cbreak():
                 
