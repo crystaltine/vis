@@ -1,0 +1,15 @@
+<div id="body" class_str="body">
+    <div id="text_container" class_str="text_container">
+        <text id="login-form-title" class_str="login_form_title" text="Log In"></>
+
+        <text class_str="username_input_label" text="Username"></>
+        <input id="username-input" class_str="input1" placeholder="Enter username..."></>
+    
+        <text class_str="password_input_label" text="Password"></>
+        <input id="password-input" class_str="input2" placeholder="Enter password..."></>
+
+        <button id="submit-button" class_str="submit_button">
+            <text id="submit-button-text" class_str="submit_button_text" text="Submit"></>
+        </>
+    </>
+</>

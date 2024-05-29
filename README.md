@@ -1,4 +1,17 @@
-# Vis
+# Visage
+A framework inspired by HTML for creating graphical user interfaces (GUIs) inside modern terminals.
+
+**This project is currently work-in-progress** (dont use)
+
+## Anticipated features (hopefully (maybe))
+- Basic HTML elements (div, input, button)
+- Dynamic updates and efficient rerendering
+- Event handler system (keyup, keydown, resize?, etc.)
+- Flexible CSS-like style definitions
+- React-like components
+- Automatically managed component tree which can be navigated with tab/arrow keys
+
+Usage/examples will maybe probably be added here as features get polished.# Vis
 A collection of app remakes in the terminal. This is a recreational project and it's probably best if you don't actually use these apps.
 
 Some Vis apps are based off a custom-built HTML-like rendering framework called [Visage (see repo here)](https://github.com/crystaltine/visage)
