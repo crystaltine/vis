@@ -27,6 +27,9 @@ pages={'main':['character_select', 'level_select', 'level_editor'], 'character_s
 
 current_page={'previous_page':'main', 'current_screen':'main', 'current_page':1}
 
+global currentgame
+currentgame = None
+
 def main():
     global currentgame
     global attempt
