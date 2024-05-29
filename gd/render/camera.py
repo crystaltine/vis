@@ -12,6 +12,7 @@ from bottom_menu import draw_text
 if TYPE_CHECKING:
     from engine.objects import LevelObject
     from game import Game
+    from game import Game
 
 class Camera:
     """
@@ -106,6 +107,21 @@ class Camera:
         
         return screen_x, screen_y
 
+    def get_screen_coordinates(self, obj_x: int, obj_y: int) -> tuple:
+        """
+        Returns the screen coordinates for the given object, in (x,y),
+        where x is the number of pixels from the left of the screen, and 
+        is the number of pixels from the top of the screen.
+        
+        `obj_x` and `obj_y` are the physics coordinates of the object (in blocks).
+        """
+        screen_x = round((obj_x - self.camera_left) * CameraUtils.BLOCK_WIDTH)
+        screen_y = self.px_height - round((obj_y - self.camera_bottom) * CameraUtils.BLOCK_HEIGHT)
+        
+        Logger.log(f"[Camera/get_screen_coordinates] obj_x,y={obj_x},{obj_y}, camera_left,bottom={self.camera_left},{self.camera_bottom} => screen_x,y={screen_x},{screen_y}")
+        
+        return screen_x, screen_y
+
     def render_init(self) -> None:
         """
         New rendering algorithm that uses CameraFrames instead of just characters.
@@ -131,6 +147,8 @@ class Camera:
         new_frame.fill(TextureManager.bg_color)
         
         # move camera to player
+        self.update_camera_y_pos(game.player.pos)
+        self.camera_left = game.player.pos[0] - CameraUtils.CAMERA_LEFT_OFFSET
         self.update_camera_y_pos(game.player.pos)
         self.camera_left = game.player.pos[0] - CameraUtils.CAMERA_LEFT_OFFSET
         camera_right = self.camera_left + CameraUtils.screen_width_blocks(self.term)
@@ -177,11 +195,22 @@ class Camera:
         #Logger.log(f"slice: {visible_vert_slice}, range: {visible_vert_range}")
         
         # draw ground. The top of the ground ground should be at physics y=0.
+        # draw ground. The top of the ground ground should be at physics y=0.
         ground_screen_y_pos = camera_top * CameraUtils.BLOCK_HEIGHT
         new_frame.add_pixels_topleft(0, ground_screen_y_pos, TextureManager.textures.get("ground"))
+        new_frame.add_pixels_topleft(0, ground_screen_y_pos, TextureManager.premade_textures.get("ground"))
 
         # draw player
+        # draw player
         player_xpos_on_screen = CameraUtils.CAMERA_LEFT_OFFSET * CameraUtils.BLOCK_WIDTH
+        new_frame.add_pixels_topleft(player_xpos_on_screen, self.player_y_info['screen_pos'], TextureManager.player_icons[game.player.get_animation_frame_index()])
+        
+        # draw attempt number
+        self.draw_attempt(new_frame, game.player.ORIGINAL_START_POS[0], game.attempt_number) # draw the attempt number
+        
+        # draw any checkpoints TODO - render multiple checkpoints, OOP-ize practice mode?
+        if game.last_checkpoint:
+            self.draw_checkpoint(new_frame, game.last_checkpoint[0], game.last_checkpoint[1])
         new_frame.add_pixels_topleft(player_xpos_on_screen, self.player_y_info['screen_pos'], TextureManager.player_icons[game.player.get_animation_frame_index()])
         
         # draw attempt number
@@ -254,6 +283,7 @@ class Camera:
             print(self.term.move_yx(row_in_terminal, 0) + all_strips[i])
             row_in_terminal += 1
 
+  
     def draw_checkpoint(self, frame: CameraFrame, x: float, y: float) -> None:
         """
         Draws a checkpoint at the specified position relative to the given player position.
@@ -263,7 +293,7 @@ class Camera:
         """
 
         pos_on_screen = self.get_screen_coordinates(x, y)
-        frame.add_pixels_topleft(*pos_on_screen, TextureManager.get_texture("checkpoint")())
+        frame.add_pixels_topleft(*pos_on_screen, TextureManager.get("checkpoint")())
         
     def draw_attempt(self, frame: CameraFrame, player_initial_x: float, attempt: int) -> None:
         """
@@ -280,9 +310,17 @@ class Camera:
         
         pos_on_screen = self.get_screen_coordinates(x, y)
         
-        frame.add_text_centered_at(*pos_on_screen, TextureManager.font_small1, f"Attempt {attempt}")
+        frame.add_text_centered(*pos_on_screen, TextureManager.font_small1, f"Attempt: {attempt}".upper())
 
         # Calculate player's topmost y-coordinate for positioning text
+        #player_topmost_y = round((self.ground - y - 1) * CameraUtils.GRID_PX_Y)
+        ## offset x coordinate of drawing by where the player is on the screen
+        #offset = round(player_x - x + 1)
+        #camera_offset_chars = CameraUtils.GRID_PX_X * (CameraUtils.CAMERA_LEFT_OFFSET - offset // 2)
+#
+        ## Draw the attempt text if it's within the camera's view
+        #if camera_offset_chars > 0:
+        #    draw_text(f"Attempt: {attempt}", camera_offset_chars, player_topmost_y, bg_color="#007eff")
         #player_topmost_y = round((self.ground - y - 1) * CameraUtils.GRID_PX_Y)
         ## offset x coordinate of drawing by where the player is on the screen
         #offset = round(player_x - x + 1)
