@@ -6,6 +6,7 @@ from render.rect import PxRect
 from logger import Logger
 from math import floor, ceil
 from render.TEXTURES import TEXTURES
+from bottom_menu import draw_text
 
 if TYPE_CHECKING:
     from engine.objects import LevelObject
@@ -297,6 +298,52 @@ class Camera:
         
         for i in range(len(TEXTURES.PLAYER_ICON)):
             print(self.term.move_yx(player_topmost_y+i, camera_offset_chars) + TEXTURES.PLAYER_ICON[i])
+
+    def draw_checkpoint(self, player_x: float, x: float, y: float) -> None:
+        """
+        Draws a checkpoint at the specified position relative to the given player position.
+        Args:
+            player_x (float): The x-coordinate of the player position.
+            player_y (float): The y-coordinate of the player position.
+            x (float): The x-coordinate of the checkpoint.
+            y (float): The y-coordinate of the checkpoint.
+        """
+
+        # Offset y-pos to ground level
+        player_topmost_y = round((self.ground - y - 1) * CameraUtils.GRID_PX_Y)
+        # Check the difference between the player and the checkpoint
+        offset = round(player_x - x + 1)
+        # then offset the x coordinate to display by the camera offset - the difference between the player and the checkpoint
+        camera_offset_chars = CameraUtils.GRID_PX_X * (CameraUtils.CAMERA_LEFT_OFFSET - offset)
+
+        # if the checkpoint is off the screen (the x coordinate is negative, don't display)
+        if camera_offset_chars > 0:
+            for i in range(len(TEXTURES.CHECKPOINT_ICON)):
+                print(self.term.move_yx(player_topmost_y + i, round(camera_offset_chars)) + TEXTURES.CHECKPOINT_ICON[i])
+
+    def draw_attempt(self, player_x: float, player_initial_x: float, attempt: int) -> None:
+        """
+        Draws the attempt number when the player spawns in.
+        Args:
+            player_x (float): The current x-coordinate of the player position.
+            player_initial_x (float): The initial x-coordinate of the player when the game began.
+            attempt (int): The current attempt number to be displayed.
+        """
+
+        # Set coordinates for drawing the attempt text
+        # (setting the x coordinate to the coordinate the player spawned in at)
+        x = player_initial_x
+        y = 10
+
+        # Calculate player's topmost y-coordinate for positioning text
+        player_topmost_y = round((self.ground - y - 1) * CameraUtils.GRID_PX_Y)
+        # offset x coordinate of drawing by where the player is on the screen
+        offset = round(player_x - x + 1)
+        camera_offset_chars = CameraUtils.GRID_PX_X * (CameraUtils.CAMERA_LEFT_OFFSET - offset // 2)
+
+        # Draw the attempt text if it's within the camera's view
+        if camera_offset_chars > 0:
+            draw_text(f"Attempt: {attempt}", camera_offset_chars, player_topmost_y, bg_color="#007eff")
 
     def draw_cursor(self, cur_pos: tuple, cursor_pos: tuple, cursor_texture, render_strips: list, obj, cur_cursor_obj):
         if obj.data is not None and (obj.data["name"].find("orb") != -1 or obj.data["name"].find("block") != -1):
