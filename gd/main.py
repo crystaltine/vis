@@ -14,7 +14,7 @@ from copy import deepcopy
 from main_page import *
 import sys
 from game import Game
-from parser import parse_level
+from parse import parse_level
 from copy import deepcopy
 
 
@@ -64,24 +64,9 @@ def main():
                     os.system('cls')
                     break
                 
-                # handles exit code from level selector or exiting from pause menu within the level
-                if ((val.name=="KEY_ESCAPE" and current_page['current_screen']!='main' and current_page['current_screen']!='play_level') or (currentgame != None and current_page['current_screen']=='play_level' and currentgame.exiting)) :
-                    # unsets the current game as the attempt is now complete
-                    attempt = 0
+                if val.name=="KEY_ESCAPE" and current_page['current_screen']!='main':
+                    
                     render_new_page(current_page['previous_page'])
-
-                # handles resetting the game (occurs after each death)
-                if ((currentgame != None and current_page['current_screen']=='play_level' and currentgame.reseting)):
-                    practice_mode = False
-                    checkpoints = []
-                    # if the game was in practice mode, saves the checkpoints that were stored in the previous attempt
-                    if currentgame.practice_mode:
-                        practice_mode = True
-                        if currentgame.checkpoints:
-                            checkpoints = deepcopy(currentgame.checkpoints)
-                    currentgame = None
-                    # runs the level with the necessary paramaters based on if it is in practice mode or not
-                    run_level(levels[level_select_index]['path'], practice_mode, checkpoints)
 
                 # The call_handle_page_function will call the corresponding function to handle all the specific key bindings for each page
                 # handles resetting the game (occurs after each death)
@@ -96,6 +81,8 @@ def main():
                     currentgame = None
                     # runs the level with the necessary paramaters based on if it is in practice mode or not
                     run_level(levels[level_select_index]['path'], practice_mode, checkpoints)
+
+                # The call_handle_page_function will call the corresponding function to handle all the specific key bindings for each page
 
                 call_handle_page_function(val)
 
