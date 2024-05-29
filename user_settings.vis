@@ -1,9 +1,0 @@
-<div class_str="body">
-    <div class_str="top_panel" id="top_panel">
-        <text class_str="title" text="User Settings"></>
-        <text class_str="save_status" id="save_status" text="No changes made"></>
-        <text class_str="keybind_info_1" text="[esc] exit"></>
-        <text class_str="keybind_info_2" text="[ctrl+s] save"></>
-    </>
-    <scrollbox class_str="main_panel" id="main_panel"></>
-</>
