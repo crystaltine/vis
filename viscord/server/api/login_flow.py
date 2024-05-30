@@ -17,7 +17,16 @@ if not key:
 else:
     key = key.encode()
 
-class TokenCache:
+base_path = os.path.basename(os.path.basename(os.path.realpath(__file__)))
+
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class TokenCache(metaclass=Singleton):
     def __init__(self):
         self.tokens = {}
 
@@ -36,7 +45,6 @@ from .helpers import *
 
 @app.route("/api/login", methods=["POST"])
 def handle_login():
-
     if not validate_fields(request.json, {"user": str, "password": str, "sys_uuid": str}): 
         return invalid_fields()
 
