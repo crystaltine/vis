@@ -92,8 +92,9 @@ def handle_message(data: dict):
 
         cursor.execute(query1, (new_data['chat_id'],))
         try:
-            chat_id, server_id = db.cur.fetchone()
-        except:
+            chat_id, server_id = cursor.fetchone()
+        except Exception as e:
+            print(e)
             return
         
     
@@ -105,6 +106,8 @@ def handle_message(data: dict):
             except:
                 print(f"\x1b[31mError sending to socket with token={other}, marking as removed...\x1b[0m")
                 marked_for_removal.append(other)
+            else:
+                print(f"sent to {other}")
             
     for token in marked_for_removal:
         del connections[token]
