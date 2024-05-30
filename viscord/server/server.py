@@ -44,11 +44,31 @@ connections: Dict[str, socket.socket] = {}
 """ map of `{token -> socket obj}` for all connected sockets """
 
 def handle_message(data: dict):
+
+    message_id = data["message_id"]
+    query = """select user_id, chat_id, server_id, replied_to_id, message_content, message_timestamp, pinged_user_ids from "Discord"."MessageInfo" where message_id = %s"""
+    db.cur.execute(query, (message_id,))
+    try:
+        author, channel, server, replied_to, content, timestamp, pinged = db.cur.fetchone()
+    except:
+        return
+    
+    check_id = helpers.get_user_id(data["token"])
+    if check_id != author:
+        return
+    
     payload = json.dumps({
-        "author": data["author"],
-        "content": data['content'],
-        "time": data['timestamp'],
-        "channel": data['channel']
+        "type": "message",
+        "data": {
+            "message_id": message_id,
+            "author": author,
+            "channel_id": channel,
+            "server_id": server,
+            "replied_to_id": replied_to,
+            "message_content": content,
+            "timestamp": str(timestamp),
+            "pinged_user_ids": pinged
+        }
     }).encode()
 
     print(f"[handle message] content={data['content']} author={data['author']}")
@@ -74,7 +94,7 @@ def handle_message(data: dict):
             return
         
     
-        resp = requests.get(f"http://localhost:{sc.HTTP_PORT}/api/roles/get_chat_perms", json={"chat_id": chat_id, "server_id": server_id})
+        resp = requests.get(f"https://{sc.HOST}:{sc.HTTP_PORT}/api/roles/get_chat_perms", json={"chat_id": chat_id, "server_id": server_id})
         if resp.status_code != 200:
             return
 
@@ -120,18 +140,11 @@ def handle_connection(conn: socket.socket, addr):
 
             if not helpers.validate_fields(parsed, {
                 "token": str,
-                "author": str,
-                "content": str,
-                "chat_id": str,
+                "message_id": str
             }):
                 return
             
 
-
-            user_id_check = helpers.get_user_id(parsed["token"])
-            if user_id_check != parsed["author"]:
-                return
-            
             print(f"socket \x1b[33m{addr=} {token=}\x1b[0m received data (assuming it's a message): \x1b[33m{parsed}\x1b[0m")
             handle_message(parsed)
             

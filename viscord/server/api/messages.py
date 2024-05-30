@@ -81,7 +81,17 @@ def create_message() -> Literal['success', 'failure', 'incomplete-data']:
     '''
     try:
         cur.execute(send_query, (message_id, user_id, chat_id, server_id, replied_to_id, message_content, message_timestamp, pinged_user_ids))
-        return return_success()
+        data = {
+            "message_id": message_id,
+            "user_id": user_id,
+            "chat_id": chat_id,
+            "server_id": server_id,
+            "replied_to_id": replied_to_id,
+            "message_content": message_content,
+            "message_timestamp": message_timestamp,
+            "pinged_user_ids": pinged_user_ids
+        }
+        return Response(json.dumps({"type": "success", "data": data}), status=200)
     except Exception as e:
         return return_error(e)
     
