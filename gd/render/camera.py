@@ -143,8 +143,8 @@ class Camera:
 
         # y-pos on screen (in pixels) to render the next row at.
         # increment by block_height_px after each row.
-        # start at term_height_px - ground_height_px - number of rows to render * block_height_px
-        curr_screen_y_pos = self.px_height - CameraConstants.GROUND_HEIGHT*CameraConstants.BLOCK_HEIGHT - num_rows_to_render*CameraConstants.BLOCK_HEIGHT
+        # start at term_height_px - ground_height_px (since we render bottom to top now)
+        curr_screen_y_pos = self.px_height - CameraConstants.GROUND_HEIGHT*CameraConstants.BLOCK_HEIGHT # - num_rows_to_render*CameraConstants.BLOCK_HEIGHT
 
         #Logger.log(f"[Camera/render] visible_vert_slice = {visible_vert_slice}, initial curr_screen_y_pos = {curr_screen_y_pos}")
         for row in range(*visible_vert_range):
@@ -169,7 +169,7 @@ class Camera:
                     #except Exception as e:
                     #    Logger.log(f"error: {traceback.format_exc()}")
                     
-            curr_screen_y_pos += CameraConstants.BLOCK_HEIGHT
+            curr_screen_y_pos -= CameraConstants.BLOCK_HEIGHT
         
         
         #Logger.log(f"[Camera/render] camera_top: {camera_top:2f}, camera_bottom: {self.camera_bottom:2f}")
