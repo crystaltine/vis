@@ -46,7 +46,7 @@ def is_valid_token(token: str) -> bool:
     return token in tokens
 
 def get_user_id(token: str) -> str:
-    name, _id = tokens.get_id(token)
+    name, _id = tokens[token]
     return _id
 
 def forbidden():

@@ -12,6 +12,7 @@ from api.flask_app import app
 # import so the modules are executed (defines endpoints for flask app)
 from api import login_flow, chats, friends, invites, members, messages, roles, servers, users
 from api import db, helpers
+from api.login_flow import tokens
 
 from flask import request
 import requests
@@ -112,6 +113,7 @@ def handle_message(data: dict):
         del connections[token]
 
 def handle_connection(conn: socket.socket, addr):
+    print(tokens)
     print(f"\x1b[33mHandling connection {addr=}\x1b[0m")
     # expect them to immediately send their token
     try:
