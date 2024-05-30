@@ -161,7 +161,7 @@ def handle_server_creation() -> None:
         }
 
         # handle_chat_creation(user_id, server_id, "general", "text chat", "General chat for the server", 0, 0, 0, False)
-        return return_success()
+        return Response(json.dumps(data), status=200)
     except Exception as e:
         return return_error(e)
 
