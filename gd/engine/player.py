@@ -3,7 +3,7 @@ from time import time_ns
 from copy import deepcopy
 
 from logger import Logger
-from engine.constants import CONSTANTS, SPEEDS
+from engine.constants import EngineConstants, SPEEDS
 from engine.collision import Collision
 
 from engine.gamemodes.cube import tick_cube, jump_cube
@@ -21,8 +21,8 @@ class Player:
         ```python
         {
             pos: [int, int], # [x, y] to start at, default [0, 0]
-            speed: "slow", "normal", ... "quadruple" # see constants.SPEEDS
-            gravity: int # set a starting gravity. CONSTANTS.gravity for default, negative that for reverse
+            speed: "half", "normal", ... "quadruple" # see constants.SPEEDS
+            gravity: int # set a starting gravity. EngineConstants.gravity for default, negative that for reverse
         }
         ```
 
@@ -41,7 +41,7 @@ class Player:
         """ [x, y], where x is horiz (progress). BOTTOM LEFT of player. y=0 means on the ground, and y cannot be negative."""
 
         self.yvel = 0
-        self.gravity = start_settings.get("gravity") or CONSTANTS.GRAVITY
+        self.gravity = start_settings.get("gravity") or EngineConstants.GRAVITY
         
         self.jump_requested = False
         """ variable to store when the player jumps before the next physics tick. """
@@ -85,7 +85,7 @@ class Player:
         self.curr_collisions.clear()
         self.gamemode = self.START_SETTINGS.get("gamemode") or "cube"
         self.speed = SPEEDS.decode(self.START_SETTINGS.get("speed")) or SPEEDS.normal
-        self.gravity = self.START_SETTINGS.get("gravity") or CONSTANTS.GRAVITY
+        self.gravity = self.START_SETTINGS.get("gravity") or EngineConstants.GRAVITY
         self.last_on_ground_time = time_ns()
     
     def jump(self):
@@ -152,8 +152,8 @@ class Player:
         For black orbs, should be -4*player jump strength.
         """
         
-        self.yvel = strength
-        self.in_air = True
+        self.yvel = strength * self.sign_of_gravity()
+        self.in_air = True # we are PROBABLY in the air. TODO - maybe remove?
         
     def sign_of_gravity(self) -> int:
         """
@@ -165,13 +165,13 @@ class Player:
         """
         Sets the gravity to normal.
         """
-        self.gravity = CONSTANTS.GRAVITY
+        self.gravity = EngineConstants.GRAVITY
         
     def reverse_gravity(self):
         """
         Sets the gravity to reverse.
         """
-        self.gravity = -CONSTANTS.GRAVITY
+        self.gravity = -EngineConstants.GRAVITY
         
     def change_gravity(self):
         """

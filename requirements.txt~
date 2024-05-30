@@ -2,4 +2,3 @@ pyfiglet
 psycopg2
 blessed
 numpy
-pynput

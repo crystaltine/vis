@@ -1,26 +1,34 @@
-from render.utils import fc, mix_colors, mix_colors_opt as mco
-from typing import List, Tuple, Literal, TypedDict
-from logger import Logger
+from typing import List, Tuple, Literal, TypedDict, TYPE_CHECKING
 from PIL import Image
 import numpy as np
-from render.font import Font
 import traceback
 
-RGBTuple = Tuple[int, int, int]
-RGBATuple = Tuple[int, int, int, int]
-ROTATION_VALUES = {"up": 0, "right": 3, "down": 2, "left": 1}
+from logger import Logger
+from render.utils import fc, mix_colors, mix_colors_opt as mco
+from render.font import Font
+from render.constants import CameraConstants
+
+if TYPE_CHECKING:
+    from level import Level, LevelObject
+
+ROTATION_VALUES = {
+    CameraConstants.OBJECT_ROTATIONS.UP: 0,
+    CameraConstants.OBJECT_ROTATIONS.RIGHT: 1,
+    CameraConstants.OBJECT_ROTATIONS.DOWN: 2,
+    CameraConstants.OBJECT_ROTATIONS.LEFT: 3
+}
 
 class GrayscaleTextureOptions(TypedDict):
     replace_dark_with: str | tuple
     replace_light_with: str | tuple
     scale: int
-    rotation: Literal["up", "right", "down", "left"]
-    reflections: Literal["none", "vert", "horiz", "both"]
+    rotation: CameraConstants.OBJECT_ROTATIONS
+    reflections: CameraConstants.OBJECT_REFLECTIONS
     
 class ColorfulTextureOptions(TypedDict):
     scale: int
-    rotation: Literal["up", "right", "down", "left"]
-    reflections: Literal["none", "vert", "horiz", "both"]
+    rotation: CameraConstants.OBJECT_ROTATIONS
+    reflections: CameraConstants.OBJECT_REFLECTIONS
 
 class TextureManager:
     
@@ -29,29 +37,40 @@ class TextureManager:
     ground_color: tuple = (8, 32, 170)
     """ Can change throughout the level using triggers. keep as rgb tuple. """
     
-    player_color1: tuple = (111, 255, 83)
-    player_color2: tuple = (90, 250, 255)
+    player_color1: CameraConstants.RGBTuple = (111, 255, 83)
+    player_color2: CameraConstants.RGBTuple = (90, 250, 255)
     player_icon_idx = 0
     player_icons = []
     """ A list of frames for the player icon. As of 2:43AM 29May2024, 
     this should be 4 frames, with 0=0deg rotation, 1=22.5, and so on. Only supports 4-way symmetry for now. """
     
     textures = {}
+    texture_cache = {} # TODO
+    """
+    Caches transformed textures that we've seen before.
+    
+    Cache keys are stored in the following format:
+    
+    `{object name}_{rotation}_{reflection}_{color1 hex|None}_{color2 hex|None}`
+    """
     
     def get_texture(texture_name: str):
         return TextureManager.textures[texture_name]
+    
+    def get_cached_texture(object_name: str, object_options: dict):
+        pass # TODO
 
     DEFAULT_GRAYSCALE_TEXTURE_OPTIONS: GrayscaleTextureOptions = {
         "replace_dark_with": (0, 0, 0),
         "replace_light_with": (255, 255, 255),
         "scale": 1,
-        "rotation": "up",
-        "reflections": "none"
+        "rotation": CameraConstants.OBJECT_ROTATIONS.UP,
+        "reflections": CameraConstants.OBJECT_REFLECTIONS.NONE
     }
     DEFAULT_COLORFUL_TEXTURE_OPTIONS: ColorfulTextureOptions = {
         "scale": 1,
-        "rotation": "up",
-        "reflections": "none"
+        "rotation": CameraConstants.OBJECT_ROTATIONS.UP,
+        "reflections": CameraConstants.OBJECT_REFLECTIONS.NONE
     }
 
     # should be unused due to new rendering system not needing chars
@@ -60,8 +79,8 @@ class TextureManager:
         replace_dark_with: str | tuple = "#000000",
         replace_light_with: str | tuple = "#ffffff",
         scale: int = 1,
-        rotation: Literal["up", "right", "down", "left"] = "up",
-        reflections: Literal["none", "vert", "horiz", "both"] = "none",
+        rotation: CameraConstants.OBJECT_ROTATIONS = "up",
+        reflections: CameraConstants.OBJECT_REFLECTIONS = "none",
         transparency_color: str | tuple = None) -> list[str]:
         """
         Internal function for "compiling" a texture from a grayscale image. (applies colors, scale, rotation, reflections)
@@ -72,7 +91,7 @@ class TextureManager:
         """
         
         im = Image.open(filepath)
-        transparency_color = TextureManager.replace_light_with if transparency_color is None else transparency_color
+        transparency_color = replace_light_with if transparency_color is None else transparency_color
         
         # apply scaling if necessary
         if scale != 1:
@@ -114,22 +133,22 @@ class TextureManager:
         # apply any changes
         final_chars = np.rot90(final_chars, ROTATION_VALUES[rotation])
         
-        if reflections == "vert":
+        if reflections == CameraConstants.OBJECT_REFLECTIONS.VERTICAL:
             final_chars = np.flipud(final_chars)
-        elif reflections == "horiz":
+        elif reflections == CameraConstants.OBJECT_REFLECTIONS.HORIZONTAL:
             final_chars = np.fliplr(final_chars)
-        elif reflections == "both":
+        elif reflections == CameraConstants.OBJECT_REFLECTIONS.BOTH:
             final_chars = np.flipud(np.fliplr(final_chars))
             
         return ["".join(row) for row in final_chars]
     
     def build_grayscale_texture_to_pixels(
         filepath: str,
-        replace_dark_with: tuple = (0, 0, 0),
-        replace_light_with: tuple = (255, 255, 255),
+        replace_dark_with: CameraConstants.RGBTuple = (0, 0, 0),
+        replace_light_with: CameraConstants.RGBTuple = (255, 255, 255),
         scale: int = 1,
-        rotation: Literal["up", "right", "down", "left"] = "up",
-        reflections: Literal["none", "vert", "horiz", "both"] = "none"
+        rotation: CameraConstants.OBJECT_ROTATIONS = "up",
+        reflections: CameraConstants.OBJECT_REFLECTIONS = "none"
         ) -> np.ndarray:
         """
         Internal function for "compiling" a texture from a grayscale image. (applies colors, scale, rotation, reflections)
@@ -165,11 +184,11 @@ class TextureManager:
         # apply any changes
         final_pixels = np.rot90(colored_pixels, ROTATION_VALUES[rotation])
         
-        if reflections == "vert":
+        if reflections == CameraConstants.OBJECT_REFLECTIONS.VERTICAL:
             final_pixels = np.flipud(final_pixels)
-        elif reflections == "horiz":
+        elif reflections == CameraConstants.OBJECT_REFLECTIONS.HORIZONTAL:
             final_pixels = np.fliplr(final_pixels)
-        elif reflections == "both":
+        elif reflections == CameraConstants.OBJECT_REFLECTIONS.BOTH:
             final_pixels = np.flipud(np.fliplr(final_pixels))
             
         return final_pixels
@@ -225,11 +244,11 @@ class TextureManager:
         # apply any changes
         final_chars = np.rot90(final_chars, ROTATION_VALUES[rotation])
         
-        if reflections == "vert":
+        if reflections == CameraConstants.OBJECT_REFLECTIONS.VERTICAL:
             final_chars = np.flipud(final_chars)
-        elif reflections == "horiz":
+        elif reflections == CameraConstants.OBJECT_REFLECTIONS.HORIZONTAL:
             final_chars = np.fliplr(final_chars)
-        elif reflections == "both":
+        elif reflections == CameraConstants.OBJECT_REFLECTIONS.BOTH:
             final_chars = np.flipud(np.fliplr(final_chars))
             
         return ["".join(row) for row in final_chars]
@@ -258,86 +277,77 @@ class TextureManager:
         
         final_pixels = np.rot90(pixels, ROTATION_VALUES[rotation])
         
-        if reflections == "vert":
+        if reflections == CameraConstants.OBJECT_REFLECTIONS.VERTICAL:
             final_pixels = np.flipud(final_pixels)
-        elif reflections == "horiz":
+        elif reflections ==  CameraConstants.OBJECT_REFLECTIONS.HORIZONTAL:
             final_pixels = np.fliplr(final_pixels)
-        elif reflections == "both":
+        elif reflections ==  CameraConstants.OBJECT_REFLECTIONS.BOTH:
             final_pixels = np.flipud(np.fliplr(final_pixels))
         
         return final_pixels
 
     def spike(options: GrayscaleTextureOptions = DEFAULT_GRAYSCALE_TEXTURE_OPTIONS) -> np.ndarray:
-        return TextureManager.build_grayscale_texture_to_pixels("./assets/textures/spike.png", **options)
+        return TextureManager.build_grayscale_texture_to_pixels("./assets/objects/spike.png", **options)
     
     def orb(type: Literal["yellow", "purple", "blue", "green", "red", "black"], options: ColorfulTextureOptions = DEFAULT_COLORFUL_TEXTURE_OPTIONS) -> np.ndarray:
-        return TextureManager.build_colorful_texture_to_pixels(f"./assets/textures/orb_{type}.png", **options)
+        return TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/orbs/orb_{type}.png", **options)
     
     def pad(type: Literal["yellow", "purple", "blue", "red"], options: ColorfulTextureOptions = DEFAULT_COLORFUL_TEXTURE_OPTIONS) -> np.ndarray:
-        return TextureManager.build_colorful_texture_to_pixels(f"./assets/textures/pad_{type}.png", **options)
+        return TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/pads/pad_{type}.png", **options)
+
+    def get_transformed_texture(self, level_obj: "Level", object: "LevelObject") -> np.ndarray:
+        """
+        Given a `LevelObject`, attempts to search & return its specific texture in the cache.
+        If not found, calculates the transformed texture of the object,
+        with the correct rotation, reflection, and color (based on the object's color channel
+        and what that color channel is currently set to in the `Level` object.
+        
+        Saves to texture cache. Returns the texture.
+        """
+        pass # TODO
     
-    def mode_portal(type: Literal["cube", "ship", "ball", "ufo", "wave", "robot", "spider"], options: ColorfulTextureOptions = DEFAULT_COLORFUL_TEXTURE_OPTIONS) -> np.ndarray:
-        return TextureManager.build_colorful_texture_to_pixels(f"./assets/textures/mode_portal_{type}.png", **options)
-
-    def grav_portal(type: Literal["normal", "reverse"], options: ColorfulTextureOptions = DEFAULT_COLORFUL_TEXTURE_OPTIONS) -> np.ndarray:
-        return TextureManager.build_colorful_texture_to_pixels(f"./assets/textures/grav_portal_{type}.png", **options)
-
-    def speed_portal(type: Literal["half", "normal", "double", "triple"], options: ColorfulTextureOptions = DEFAULT_COLORFUL_TEXTURE_OPTIONS) -> np.ndarray:
-        return TextureManager.build_colorful_texture_to_pixels(f"./assets/textures/speed_portal_{type}.png", **options)
-
-    def block0(index: int, options: GrayscaleTextureOptions = DEFAULT_GRAYSCALE_TEXTURE_OPTIONS) -> np.ndarray:
-        """
-        Indices - determines which edges are filled in. (for connected texture support)
-        e.g. 0 is all edges filled, 1 is 3 edges filled, etc.
-
-        Indices go from 0 to 10. See ./assets/textures/texture_map for the block textures.
-        Index starts at 0 for the highest block texture, then goes down and to the right.
-        """
-        return TextureManager.build_grayscale_texture_to_pixels(f"./assets/textures/block0/{index}.png", **options)
+    
 
 # preload all textures
 
 # load objects
 TextureManager.textures.update({
-    "spike": TextureManager.spike(),
-    "yellow_orb": TextureManager.orb("yellow"),
-    "purple_orb": TextureManager.orb("purple"),
-    "blue_orb": TextureManager.orb("blue"),
-    "green_orb": TextureManager.orb("green"),
-    "red_orb": TextureManager.orb("red"),
-    "black_orb": TextureManager.orb("black"),
-    "yellow_pad": TextureManager.pad("yellow"),
-    "purple_pad": TextureManager.pad("purple"),
-    "blue_pad": TextureManager.pad("blue"),
-    "red_pad": TextureManager.pad("red"),
-    "cube_portal": TextureManager.mode_portal("cube"),
-    "ship_portal": TextureManager.mode_portal("ship"),
-    "ball_portal": TextureManager.mode_portal("ball"),
-    "ufo_portal": TextureManager.mode_portal("ufo"),
-    "wave_portal": TextureManager.mode_portal("wave"),
-    "robot_portal": TextureManager.mode_portal("robot"),
-    "spider_portal": TextureManager.mode_portal("spider"),
-    "normal_grav_portal": TextureManager.grav_portal("normal"),
-    "reverse_grav_portal": TextureManager.grav_portal("reverse"),
-    "half_speed_portal": TextureManager.speed_portal("half"),
-    "normal_speed_portal": TextureManager.speed_portal("normal"),
-    "double_speed_portal": TextureManager.speed_portal("double"),
-    "triple_speed_portal": TextureManager.speed_portal("triple"),
-    "quadruple_speed_portal": TextureManager.speed_portal("quadruple"),
-    "ground": TextureManager.build_colorful_texture_to_pixels("./assets/textures/ground.png", **TextureManager.DEFAULT_COLORFUL_TEXTURE_OPTIONS),
-    "checkpoint": TextureManager.build_colorful_texture_to_pixels("./assets/textures/checkpoint.png", **TextureManager.DEFAULT_COLORFUL_TEXTURE_OPTIONS),
+    "spike": TextureManager.build_grayscale_texture_to_pixels("./assets/objects/spike.png"),
+    "ground": TextureManager.build_colorful_texture_to_pixels("./assets/objects/ground.png"),
+    "checkpoint": TextureManager.build_colorful_texture_to_pixels("./assets/objects/checkpoint.png"),
+    "yellow_orb": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/orbs/orb_yellow.png"),
+    "purple_orb": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/orbs/orb_purple.png"),
+    "blue_orb": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/orbs/orb_blue.png"),
+    "green_orb": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/orbs/orb_green.png"),
+    "red_orb": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/orbs/orb_red.png"),
+    "black_orb": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/orbs/orb_black.png"),
+    "yellow_pad": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/pads/pad_yellow.png"),
+    "purple_pad": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/pads/pad_purple.png"),
+    "blue_pad": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/pads/pad_blue.png"),
+    "red_pad": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/pads/pad_red.png"),
+    "cube_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/mode_portals/mode_portal_cube.png"),
+    "ship_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/mode_portals/mode_portal_ship.png"),
+    "ball_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/mode_portals/mode_portal_ball.png"),
+    "ufo_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/mode_portals/mode_portal_ufo.png"),
+    "wave_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/mode_portals/mode_portal_wave.png"),
+    "robot_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/mode_portals/mode_portal_robot.png"),
+    "spider_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/mode_portals/mode_portal_spider.png"),
+    "normal_grav_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/grav_portals/grav_portal_normal.png"),
+    "reverse_grav_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/grav_portals/grav_portal_reverse.png"),
+    "half_speed_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/speed_portals/speed_portal_half.png"),
+    "normal_speed_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/speed_portals/speed_portal_normal.png"),
+    "double_speed_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/speed_portals/speed_portal_double.png"),
+    "triple_speed_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/speed_portals/speed_portal_triple.png"),
+    "quadruple_speed_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/speed_portals/speed_portal_quadruple.png"),
 })
 TextureManager.textures.update({
-    f"block0_{i}": TextureManager.block0(i) for i in range(12)
+    f"block0_{i}": TextureManager.build_grayscale_texture_to_pixels(f"./assets/objects/block0/{i}.png") for i in range(12)
 })
 
-# load player icon rotation textures
+# load player icons
 TextureManager.player_icons = [
-    TextureManager.build_grayscale_texture_to_pixels(
-        f"./assets/textures/icons/cubes/{TextureManager.player_icon_idx}/{i}.png", 
-        TextureManager.player_color1, 
-        TextureManager.player_color2
-    ) for i in range(4)
+    TextureManager.build_grayscale_texture_to_pixels(f"./assets/icons/cubes/0/{i}.png", TextureManager.player_color1, TextureManager.player_color2)
+    for i in range(4)
 ]
 
 # load fonts

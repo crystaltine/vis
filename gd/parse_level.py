@@ -1,5 +1,6 @@
 
-from engine.objects import OBJECTS, LevelObject
+from engine.objects import OBJECTS
+from level import LevelObject, Level
 from typing import List
 from logger import Logger
 
@@ -62,17 +63,3 @@ def parse_level(filename: str) -> List[List[LevelObject]]:
             leveldata[i].append(LevelObject(None, len(leveldata[i]), len(leveldata)-i))
     
     return leveldata
-
-def test_parse_level(filename): 
-
-    for i in range(0, len(parse_level(filename)), 1): 
-        for j in range(0, len(parse_level(filename)[i]), 1):
-
-            if parse_level(filename)[i][j].data is None: 
-                print("None")
-                print('\n')
-            else: 
-                print(parse_level(filename)[i][j].data["name"])
-                print('\n')
-#test_parse_level("test2.level")
-#test_parse_level("test.level")

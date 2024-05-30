@@ -32,7 +32,7 @@ def tick_cube(player: "Player", timedelta: float) -> None:
     
     # if gravity is + (down) and we have a "top" collision, adjust the y position to be on top of the block
     elif (player.gravity > 0 and any(collision.vert_side == "top" for collision in player.curr_collisions)):
-        if player.yvel < 0: # only hit ground if we are going down
+        if player.yvel < 0: # only care if we are going down
             player.pos[1] = max([collision.vert_coord for collision in player.curr_collisions if collision.vert_side == "top"])
             player.yvel = 0
             

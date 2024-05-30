@@ -64,10 +64,14 @@ class Game:
             try:
                 last_frame = time_ns()
                 while True:
+                    
                     curr_frame = time_ns()
 
                     fps_str = f"{(1e9/(curr_frame-last_frame)):2f}" if (curr_frame-last_frame != 0) else "inf"
-                    Logger.log(f"[Game/render_thread] Rendering frame, player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str}")
+                    if self.is_crashed:
+                        Logger.log(f"[Game/render_thread] Rendering CRASHED frame, player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str}")
+                    else:
+                        Logger.log(f"[Game/render_thread] Rendering LIVE frame, player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str}")
                     self.camera.render(self)
                     # renders the most recent checkpoint if it exists
                     # note: this has been moved to Camera.render
@@ -91,12 +95,11 @@ class Game:
                 while True:
                     #Logger.log(f"running physics tick. player pos is {self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, time_ns is {time_ns()}")
                     if not self.running: break
-                    
-                    # before collisions is updated, tick physics.                
-                    curr_time = time_ns()
-                    self.player.tick((curr_time - self.last_tick)/1e9)
-                    Logger.log(f"[Physics Thread] Player ticked. pos={self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, yvel={self.player.yvel:.2f}, TPS: {1/((curr_time-self.last_tick)/1e9):.2f}")
-                    self.last_tick = curr_time
+                    if self.is_crashed:
+                        Logger.log(f"[Physics Thread] Physics paused due to is_crashed being true. player@{[f'{num:2f}' for num in self.player.pos]}.")
+                        sleep(0.01) # TODO - replace with continue or alternatively sleep until crash period ends
+                        # continuing here is a bad idea, because we need to sleep to prevent the thread from running too fast
+                        # and slowing everything down.
                     
                     # check collisions
                     self.player.curr_collisions = self.generate_collisions()
@@ -107,6 +110,14 @@ class Game:
                         Logger.log(f"Running collision effect for: {collision}")
                         if not collision.obj.data.get("requires_click"):
                             self.run_collision_effect(collision)
+                    
+                    # after collisions is updated, tick physics.                
+                    curr_time = time_ns()
+                    self.player.tick((curr_time - self.last_tick)/1e9)
+                    
+                    _tps_str = f"{1e9/((curr_time-self.last_tick)):.2f}" if (curr_time-self.last_tick != 0) else "inf"
+                    Logger.log(f"[Physics Thread] Player ticked. pos={self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, yvel={self.player.yvel:.2f}, TPS: {_tps_str}")
+                    self.last_tick = curr_time
                     
                     # DO NOT REMOVE. removing this slows down the renderer by A LOT
                     # even if the physics fps is like 389429 it still speeds things up a lot
@@ -210,13 +221,14 @@ class Game:
             self.crash_normal()
         elif collision.obj.data["collide_effect"]  == 'yellow-orb':
             Logger.log("Hit yellow orb.")
-            self.player.activate_jump_orb(CONSTANTS.PLAYER_JUMP_STRENGTH)
+            self.player.activate_jump_orb(CONSTANTS.PLAYER_JUMP_STRENGTH*CONSTANTS.YELLOW_ORB_MULTIPLIER)
         elif collision.obj.data["collide_effect"]  == 'purple-orb':
             Logger.log("Hit purple orb.")
             self.player.activate_jump_orb(CONSTANTS.PLAYER_JUMP_STRENGTH*CONSTANTS.PURPLE_ORB_MULTIPLIER)
+        elif collision.obj.data["collide_effect"]  == 'red-orb':
+            Logger.log("Hit purple orb.")
+            self.player.activate_jump_orb(CONSTANTS.PLAYER_JUMP_STRENGTH*CONSTANTS.RED_ORB_MULTIPLIER)
         elif collision.obj.data["collide_effect"]  == 'blue-orb':
-            Logger.log(f"Hit blue orb. sign of gravity is curr {self.player.sign_of_gravity()} and about to be changed.")
-            
             self.player.change_gravity()
             
             # change velocity to a modest amount, in the sign of the NEW direction of gravity
@@ -226,6 +238,7 @@ class Game:
         """
         The old function for crash handling. Might convert to normal mode crash later on.
         """
+        Logger.log(f"[Game/crash_normal]: Player crashed!")
         self.is_crashed = True
         #self.running=True
         # self.player=Player()
@@ -242,7 +255,6 @@ class Game:
 
         # otherwise, restart the level by setting pos back to beginning 
         # also, NOTE: reset song if that is implemented
-        Logger.log(f"crash_normal(): setting player pos back to {self.player.ORIGINAL_START_POS}")
         self.attempt_number += 1
 
     def pause(self) -> None:
@@ -503,3 +515,23 @@ class Game:
         
         #Logger.log(f"Collisions END: player is touching {[(collision.obj.data['name'],collision.vert_side,collision.vert_coord) if collision is not None else 'None' for collision in collisions]}.")
         return collisions
+
+    def highest_solid_object_beneath_player(self) -> "LevelObject | None":
+        """
+        Returns the highest solid object beneath the player. None if none exist above y=0 (ground)
+        Solid is defined as objects whose crash_effect is `"crash-block"` (so for now, just blocks) 
+        
+        If the player is in between two "columns" of the level (say, at `(x,y)=(4.5,10)`), then attempts to return the
+        higher block (e.g. if the highest block at x=4 is at y=6, and the highest block at x=5 is at y=7, this function
+        will return the block at x=5, y=7).
+        
+        However, if the highest blocks under the player are at the same height, then it will return rightmost block (higher x-val)  
+        """
+        
+        # scan the two columns the player might be occupying
+        
+        left = floor(self.player.pos[0])
+        right = ceil(self.player.pos[0]+CONSTANTS.PLAYER_HITBOX_X)
+        
+        # TODO - will be easier with new leveldata format.
+        raise NotImplementedError("This function is not yet implemented - waiting for JSON-based leveldata format.")
