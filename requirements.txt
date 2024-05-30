@@ -4,3 +4,4 @@ blessed
 numpy
 pynput
 pywin32; platform_system == "Windows"
+win32gui; platform_system == "Windows"
