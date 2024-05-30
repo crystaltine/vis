@@ -58,10 +58,7 @@ def handle_message(data: dict):
     except:
         return
     
-    
-    payload = json.dumps({
-        "type": "message",
-        "data": {
+    new_data = {
             "message_id": message_id,
             "author": author,
             "channel_id": channel,
@@ -71,9 +68,13 @@ def handle_message(data: dict):
             "timestamp": str(timestamp),
             "pinged_user_ids": pinged
         }
+    
+    payload = json.dumps({
+        "type": "message",
+        "data": new_data
     }).encode()
 
-    print(f"[handle message] content={data['message_content']} author={data['author']}")
+    print(f"[handle message] content={new_data['message_content']} author={new_data['author']}")
     print(f"^ sending to {len(connections)} sockets (incl. author)")
     
     marked_for_removal = [] # sockets that were found to be dc'ed
