@@ -1,6 +1,6 @@
 from .db import cur
 from uuid import uuid4
-import datetime
+from datetime import datetime
 from typing import Literal, List
 from ._types import *
 from .flask_app import app
@@ -67,7 +67,7 @@ def create_message() -> Literal['success', 'failure', 'incomplete-data']:
     chat_id = message_data["chat_id"]
     replied_to_id = message_data.get("replied_to_id")
     message_content = message_data["message_content"]
-    message_timestamp = datetime.datetime.now()
+    message_timestamp = datetime.now()
     pinged_user_ids = message_data["pinged_user_ids"]
 
     perms = member_perms(message_data["user_token"], server_id, chat_id)
