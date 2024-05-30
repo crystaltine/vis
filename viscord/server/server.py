@@ -61,7 +61,7 @@ def handle_message(data: dict):
     new_data = {
             "message_id": message_id,
             "author": author,
-            "channel_id": channel,
+            "chat_id": channel,
             "server_id": server,
             "replied_to_id": replied_to,
             "message_content": content,
@@ -90,7 +90,7 @@ def handle_message(data: dict):
 
         query1 = "select chat_id, server_id from \"Discord\".\"ChatInfo\" where chat_id = %s"
 
-        cursor.execute(query1, (data['channel_id'],))
+        cursor.execute(query1, (new_data['chat_id'],))
         try:
             chat_id, server_id = db.cur.fetchone()
         except:
