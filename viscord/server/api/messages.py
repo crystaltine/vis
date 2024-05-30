@@ -11,13 +11,14 @@ from flask import request, Response
 @app.route("/api/messages/pin", methods=["POST"])
 def pin_message() -> Literal['success', 'failure']:
     
-    if not validate_fields(request.json, {"user_token": str, "message_id": str, "chat_id": str}):
+    if not validate_fields(request.json, {"user_token": str, "message_id": str, "chat_id": str, "server_id": str}):
         return invalid_fields()
     
     message_id = request.json["message_id"]
     chat_id = request.json["chat_id"]
+    server_id = request.json["server_id"]
 
-    perms = member_perms(request.json["user_token"], chat_id)
+    perms = member_perms(request.json["user_token"], server_id, chat_id)
     if not perms["writable"]:
         return missing_permissions()
 

@@ -6,7 +6,7 @@ from .server_config import URI
 
 def member_perms(user_token: str, server_id: str, chat_id: str) -> bool:
     try:
-        resp = requests.post(URI + "/api/roles/get_chat_perms", json={"chat_id": chat_id, "server_id": server_id})
+        resp = requests.post(URI + "/api/roles/get_chat_perms", json={"chat_id": chat_id, "server_id": server_id, "user_token": user_token})
         if resp.status_code != 200:
             return {"readable": False, "writable": False}
         return resp.json()["data"]
