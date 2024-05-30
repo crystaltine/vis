@@ -50,8 +50,8 @@ def draw_created_levels():
         text=level_path
     else:
         color=random.choice(colors)
-        level_name=level_path[level_path.index('\\')+1:level_path.index('.level')]
-        level_name=level_name[0].upper()+level_name[1:]
+        level_name=level_path[0:level_path.index('.')]
+        level_name=level_path[0].upper()+level_name[1:]
         draw_created_level(level_name, int(GD.term.width*0.8), int(GD.term.height*0.6), int(GD.term.width*0.1), int(GD.term.height*0.3), color[0], color[1])
     
     while True:
