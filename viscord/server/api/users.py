@@ -223,3 +223,37 @@ def change_user_symbol() -> None:
         return return_success()
     except Exception as e:
         return return_error(e)
+    
+
+@app.route("/api/users/user_info", methods=["POST"])
+def user_info() -> Literal["success", "failure"]:
+    """
+    Get the user's info given their id.
+    """
+    
+    if not validate_fields(request.json, {"user_id": str}):
+        return invalid_fields()
+    
+    user_id = request.json["user_id"]
+
+    send_query = '''
+        select user_name, user_color, user_symbol
+        from "Discord"."UserInfo"
+        where user_id = %s
+    '''
+    try:
+        cur.execute(send_query, (user_id,))
+        records = cur.fetchall()
+        data = {
+            "username": records[0][0],
+            "color": records[0][1],
+            "symbol": records[0][2],
+            "user_id": user_id
+        }
+        return Response(json.dumps({
+            "type": "success",
+            "data": data
+        
+        }), status=200, mimetype="application/json")
+    except Exception as e:
+        return return_error(e)
