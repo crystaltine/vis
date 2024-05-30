@@ -16,6 +16,7 @@ from api import db, helpers
 from flask import request
 import requests
 
+import psycopg2
 from api import server_config as sc
 from uuid import uuid4
 
@@ -45,11 +46,15 @@ connections: Dict[str, socket.socket] = {}
 
 def handle_message(data: dict):
 
+    connection = psycopg2.connect(db.conn_uri)
+    cursor = connection.cursor()
+
+
     message_id = data["message_id"]
     query = """select user_id, chat_id, server_id, replied_to_id, message_content, message_timestamp, pinged_user_ids from "Discord"."MessageInfo" where message_id = %s"""
-    db.cur.execute(query, (message_id,))
+    cursor.execute(query, (message_id,))
     try:
-        author, channel, server, replied_to, content, timestamp, pinged = db.cur.fetchone()
+        author, channel, server, replied_to, content, timestamp, pinged = cursor.fetchone()
     except:
         return
     
@@ -87,18 +92,14 @@ def handle_message(data: dict):
 
         query1 = "select chat_id, server_id from \"Discord\".\"ChatInfo\" where chat_id = %s"
 
-        db.cur.execute(query1, (data['channel'],))
+        cursor.execute(query1, (data['channel'],))
         try:
             chat_id, server_id = db.cur.fetchone()
         except:
             return
         
     
-        resp = requests.get(f"https://{sc.HOST}:{sc.HTTP_PORT}/api/roles/get_chat_perms", json={"chat_id": chat_id, "server_id": server_id})
-        if resp.status_code != 200:
-            return
-
-        data = resp.json()["data"]
+        perms = api.chats.chat_perms_wrapper(author, server, channel, cursor=cursor)
 
         if data["readable"]:
             try:

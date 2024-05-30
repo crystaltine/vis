@@ -6,6 +6,7 @@ from ._types import *
 from .flask_app import app
 from .helpers import *
 from flask import request, Response
+from .roles import chat_perms_wrapper
 
 
 @app.route("/api/messages/pin", methods=["POST"])
@@ -18,7 +19,8 @@ def pin_message() -> Literal['success', 'failure']:
     chat_id = request.json["chat_id"]
     server_id = request.json["server_id"]
 
-    perms = member_perms(request.json["user_token"], server_id, chat_id)
+    user_id = get_user_id(request.json["user_token"])
+    perms = chat_perms_wrapper(user_id, server_id, chat_id)
     if not perms["writeable"]:
         return missing_permissions()
 
@@ -69,8 +71,8 @@ def create_message() -> Literal['success', 'failure', 'incomplete-data']:
     message_content = message_data["message_content"]
     message_timestamp = str(datetime.now())
     pinged_user_ids = message_data["pinged_user_ids"]
-
-    perms = member_perms(message_data["user_token"], server_id, chat_id)
+    
+    perms = chat_perms_wrapper(user_id, server_id, chat_id)
     if not perms["writeable"]:
         return missing_permissions()
 
@@ -111,7 +113,9 @@ def get_recent_messages() -> List[MessageInfo]:
     num = request.json.get("num", 15)
     server_id = request.json["server_id"]
 
-    perms = member_perms(request.json["user_token"], server_id, chat_id)
+    user_id = get_user_id(request.json["user_token"])
+    perms = chat_perms_wrapper(user_id, server_id, chat_id)
+
     if not perms["readable"]:
         return missing_permissions()
 
@@ -152,8 +156,9 @@ def get_message_chunk() -> List[MessageInfo]:
     offset = request.json["offset"]
     num = request.json["num"]
     server_id = request.json["server_id"]
+    user_id = get_user_id(request.json["user_token"])
+    perms = chat_perms_wrapper(user_id, server_id, chat_id)
 
-    perms = member_perms(request.json["user_token"], server_id, chat_id)
     if not perms["readable"]:
         return missing_permissions()
     
