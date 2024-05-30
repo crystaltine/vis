@@ -125,11 +125,6 @@ class Camera:
             # if crashed, don't render anything
             return
         
-        
-        if game.is_crashed:
-            # if crashed, don't render anything
-            return
-        
         new_frame = CameraFrame(self.term)
         new_frame.fill(TextureManager.bg_color)
         
@@ -170,7 +165,6 @@ class Camera:
                     #Logger.log(f"^^ Meanwhile, the player's screen pos is {self.player_y_info['screen_pos']}")
                     #Logger.log(f"the obj's physics x-pos is {obj.x}, cam_left={self.camera_left}, player_x={player_pos[0]}")
                     new_frame.add_pixels_topleft(xpos_on_screen, curr_screen_y_pos, TextureManager.textures.get(obj.data["name"]))
-                    new_frame.add_pixels_topleft(xpos_on_screen, curr_screen_y_pos, TextureManager.textures.get(obj.data["name"]))
                     #except Exception as e:
                     #    Logger.log(f"error: {traceback.format_exc()}")
                     
@@ -182,6 +176,7 @@ class Camera:
         
         # draw ground. The top of the ground ground should be at physics y=0.
         ground_screen_y_pos = camera_top * CameraUtils.BLOCK_HEIGHT
+        new_frame.add_pixels_topleft(0, ground_screen_y_pos, TextureManager.textures.get("ground"))
         new_frame.add_pixels_topleft(0, ground_screen_y_pos, TextureManager.textures.get("ground"))
 
         # draw player
@@ -240,8 +235,6 @@ class Camera:
                 else: 
                     render_strip_1 += TextureManager.get_texture(obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
                     render_strip_2 += TextureManager.get_texture(obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
-                    render_strip_1 += TextureManager.get_texture(obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
-                    render_strip_2 += TextureManager.get_texture(obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
                 cur_x += 1
             
             render_strip_1 += " "*max(0, self.term.width-len_no_ansi(render_strip_1))
@@ -270,6 +263,7 @@ class Camera:
 
         pos_on_screen = self.get_screen_coordinates(x, y)
         frame.add_pixels_topleft(*pos_on_screen, TextureManager.get_texture("checkpoint")())
+        frame.add_pixels_topleft(*pos_on_screen, TextureManager.get_texture("checkpoint")())
         
     def draw_attempt(self, frame: CameraFrame, player_initial_x: float, attempt: int) -> None:
         """
@@ -289,6 +283,7 @@ class Camera:
         pos_on_screen = self.get_screen_coordinates(x, y)
         
         frame.add_text_centered_at(*pos_on_screen, TextureManager.font_small1, f"Attempt {attempt}")
+        frame.add_text_centered_at(*pos_on_screen, TextureManager.font_small1, f"Attempt {attempt}")
 
         # Calculate player's topmost y-coordinate for positioning text
         #player_topmost_y = round((self.ground - y - 1) * CameraUtils.GRID_PX_Y)
@@ -304,8 +299,6 @@ class Camera:
         if obj.data is not None and (obj.data["name"].find("orb") != -1 or obj.data["name"].find("block") != -1):
             render_strips[1] += TextureManager.get_texture(obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
             render_strips[0] += TextureManager.get_texture(obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
-            render_strips[1] += TextureManager.get_texture(obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
-            render_strips[0] += TextureManager.get_texture(obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
             return render_strips
         if cur_pos[1] == cursor_pos[1]:
             layer = (True, True)
@@ -316,8 +309,6 @@ class Camera:
         if cur_pos[0] == cursor_pos[0]:
             if layer == (True, True) and cur_cursor_obj != None:
                 if cur_cursor_obj.data["name"].find("orb") != -1 or cur_cursor_obj.data["name"].find("block") != -1:
-                    render_strips[1] += TextureManager.get_texture(cur_cursor_obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
-                    render_strips[0] += TextureManager.get_texture(cur_cursor_obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
                     render_strips[1] += TextureManager.get_texture(cur_cursor_obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
                     render_strips[0] += TextureManager.get_texture(cur_cursor_obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
                 else:
