@@ -16,6 +16,9 @@ getting_messages = True
 
 import socket
 
+global token
+token = None
+
 global s
 s = None
 
@@ -32,16 +35,25 @@ def hex_to_rgb(hex):
 
 def draw_typed_message():
     global typed_message
-    print(term.move(int(term.height * 0.9 - 2), int(term.width * 0.1) + 1) + term.on_color_rgb(*hex_to_rgb(colors.field)) + term.color_rgb(*hex_to_rgb(colors.text)) + " " * (int(term.width * 0.8 - 2)))
+    #print(term.move(int(term.height * 0.9 - 2), int(term.width * 0.1) + 1) + term.on_color_rgb(*hex_to_rgb(colors.field)) + term.color_rgb(*hex_to_rgb(colors.text)) + " " * (int(term.width * 0.8 - 2)))
 
     print(term.move(int(term.height * 0.9 - 4), int(term.width * 0.1)) + term.on_color_rgb(*hex_to_rgb(colors.div_shadow)) + term.color_rgb(*hex_to_rgb(colors.div_shadow)) + " " * (int(term.width * 0.8)))
 
 
-    chunked = [typed_message[i:i+int(term.width * 0.8 - 2)] for i in range(0, len(typed_message), int(term.width * 0.8 - 2))]
+    chunked = [typed_message[i:i+int(term.width * 0.8 - 2) - 1] for i in range(0, len(typed_message), int(term.width * 0.8 - 2) - 1)]
     try:
         if len(chunked) > 0:
             to_show = chunked[-1]
             print(term.move(int(term.height * 0.9 - 2), int(term.width * 0.1) + 1) + term.on_color_rgb(*hex_to_rgb(colors.field)) + term.color_rgb(*hex_to_rgb(colors.text)) + to_show + " " * (int(term.width * 0.8 - 2) - len(to_show)))
+            if len(chunked) > 1:
+                print(term.move(int(term.height * 0.9 - 2), int(term.width * 0.1)) + term.cyan + term.on_color_rgb(*hex_to_rgb(colors.div)) + "<" + term.normal)
+            else:
+                print(term.move(int(term.height * 0.9 - 2), int(term.width * 0.1)) + term.cyan + term.on_color_rgb(*hex_to_rgb(colors.div)) + " " + term.normal)
+            print(term.move(int(term.height * 0.9 - 2), int(term.width * 0.1) + 1 + len(to_show)) + term.on_color_rgb(*hex_to_rgb(colors.cursor)) + term.color_rgb(*hex_to_rgb(colors.text)) + " ")
+        else:
+            print(term.move(int(term.height * 0.9 - 2), int(term.width * 0.1) + 1) + term.on_color_rgb(*hex_to_rgb(colors.field)) + term.color_rgb(*hex_to_rgb(colors.text)) + " " * (int(term.width * 0.8 - 2)))
+            print(term.move(int(term.height * 0.9 - 2), int(term.width * 0.1) + 1) + term.on_color_rgb(*hex_to_rgb(colors.cursor)) + term.color_rgb(*hex_to_rgb(colors.text)) + " ")
+        
     except Exception as e:
         print(str(e))
 
@@ -66,7 +78,7 @@ def draw_menu():
         print(term.move(y, tlx + int(term.width * 0.8)) + term.on_color_rgb(*hex_to_rgb(colors.div_shadow)) + " ", end="")
 
 def socket_handler():
-    global s, data, getting_messages
+    global s, data, getting_messages, token
     while not s:
         pass
     try:
@@ -75,10 +87,22 @@ def socket_handler():
             if not receiveddata:
                 break
             message_data = json.loads(receiveddata.decode())
+
+            msgdata_real = message_data["data"]
+            user_id = msgdata_real["author"]
+            resp = requests.post(f"{config.API_URL}/api/users/user_info", json={
+                "user_id": user_id,
+                "user_token": token
+            })
+
+            msgdata_real["username"] = resp.json()["data"]["username"]
+            msgdata_real["color"] = resp.json()["data"]["color"]
+            msgdata_real["symbol"] = resp.json()["data"]["symbol"]
+
             data.insert(0, message_data["data"])
             show_recent_messages()
     except Exception as e:
-        pass
+        print(e)
     
 
 def show_recent_messages():
@@ -95,10 +119,30 @@ def show_recent_messages():
             break
         msg = data[msg_index]
         msg_index += 1
-        starting_y -= 1
         text = msg["message_content"]
-        print(term.move(starting_y, tlx) + term.on_color_rgb(*hex_to_rgb(colors.div)) + term.color_rgb(*hex_to_rgb(colors.text)) + text + " " * (int(term.width * 0.8 - len(text))))
 
+
+        chunks = [text[i:i+int(term.width * 0.8 - 2) - 1] for i in range(0, len(text), int(term.width * 0.8 - 2) - 1)]
+
+        for chunk in chunks[::-1]:
+            print(term.move(starting_y, tlx) + term.on_color_rgb(*hex_to_rgb(colors.div)) + term.color_rgb(*hex_to_rgb(colors.text)) + chunk + " " * (int(term.width * 0.8 - len(chunk))))
+            starting_y -= 1
+            if starting_y == tly:
+                break
+
+        if starting_y <= tly:
+            break
+        
+
+        if msg_index < len(data) - 1 and data[msg_index]["author"] == msg["author"]:
+            continue
+        color = msg["color"]
+        symbol = msg["symbol"]
+        username = msg["username"]
+        print(term.move(starting_y, tlx) + term.on_color_rgb(*hex_to_rgb(colors.div)) + term.color_rgb(*hex_to_rgb(color)) + term.bold + f"{symbol} {username}" + term.normal, end="", flush=True)
+        starting_y -= 2
+
+        
 
 
 def redraw_all():
@@ -113,7 +157,7 @@ def redraw_all():
 
 
 def main(user_token, server_id, channel_id):
-    global s, data, getting_messages, typed_message
+    global s, data, getting_messages, typed_message, token
     import traceback
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -131,6 +175,20 @@ def main(user_token, server_id, channel_id):
         if resp.status_code != 200:
             return
         data = resp.json()["data"]
+
+        for i in range(len(data)):
+            user_id = data[i]["user_id"]
+            data[i]["author"] = user_id
+
+            resp = requests.post(f"{config.API_URL}/api/users/user_info", json={
+                "user_id": user_id,
+                "user_token": user_token
+            })
+
+            data[i]["username"] = resp.json()["data"]["username"]
+            data[i]["color"] = resp.json()["data"]["color"]
+            data[i]["symbol"] = resp.json()["data"]["symbol"]
+
     except Exception as e:
         return
 
@@ -150,6 +208,7 @@ def main(user_token, server_id, channel_id):
             if val.code == term.KEY_ESCAPE:
                 s.close()
                 getting_messages = False
+                typed_message = ""
                 break
             elif val.code is None and val in keyshortcuts.typeable:
                 typed_message += val
