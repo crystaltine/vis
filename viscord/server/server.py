@@ -119,8 +119,10 @@ def handle_connection(conn: socket.socket, addr):
     try:
         data = conn.recv(1024)
         token = data.decode()
-    except:
+    except Exception as e:
         print(f"\x1b[31mjust kidding ({addr} disconnected during init handshake)\x1b[0m")
+        print(str(e))
+        return
         
     print(f"\x1b[32msocket {addr=} {token=} completed init handshake (connected!)\x1b[0m")
     connections[token] = conn
