@@ -10,3 +10,5 @@ back_keys = [
 ]
 
 color_keys = "0123456789abcdef"
+
+typable = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+-=[]{}|;':\",./<>?\\`~"
