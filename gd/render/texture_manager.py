@@ -268,22 +268,22 @@ class TextureManager:
         return final_pixels
 
     def spike(options: GrayscaleTextureOptions = DEFAULT_GRAYSCALE_TEXTURE_OPTIONS) -> np.ndarray:
-        return TextureManager.build_grayscale_texture_to_pixels("./assets/textures/spike.png", **options)
+        return TextureManager.build_grayscale_texture_to_pixels("gd/assets/textures/spike.png", **options)
     
     def orb(type: Literal["yellow", "purple", "blue", "green", "red", "black"], options: ColorfulTextureOptions = DEFAULT_COLORFUL_TEXTURE_OPTIONS) -> np.ndarray:
-        return TextureManager.build_colorful_texture_to_pixels(f"./assets/textures/orb_{type}.png", **options)
+        return TextureManager.build_colorful_texture_to_pixels(f"gd/assets/textures/orb_{type}.png", **options)
     
     def pad(type: Literal["yellow", "purple", "blue", "red"], options: ColorfulTextureOptions = DEFAULT_COLORFUL_TEXTURE_OPTIONS) -> np.ndarray:
-        return TextureManager.build_colorful_texture_to_pixels(f"./assets/textures/pad_{type}.png", **options)
+        return TextureManager.build_colorful_texture_to_pixels(f"gd/assets/textures/pad_{type}.png", **options)
     
     def mode_portal(type: Literal["cube", "ship", "ball", "ufo", "wave", "robot", "spider"], options: ColorfulTextureOptions = DEFAULT_COLORFUL_TEXTURE_OPTIONS) -> np.ndarray:
-        return TextureManager.build_colorful_texture_to_pixels(f"./assets/textures/mode_portal_{type}.png", **options)
+        return TextureManager.build_colorful_texture_to_pixels(f"gd/assets/textures/mode_portal_{type}.png", **options)
 
     def grav_portal(type: Literal["normal", "reverse"], options: ColorfulTextureOptions = DEFAULT_COLORFUL_TEXTURE_OPTIONS) -> np.ndarray:
-        return TextureManager.build_colorful_texture_to_pixels(f"./assets/textures/grav_portal_{type}.png", **options)
+        return TextureManager.build_colorful_texture_to_pixels(f"gd/assets/textures/grav_portal_{type}.png", **options)
 
     def speed_portal(type: Literal["half", "normal", "double", "triple"], options: ColorfulTextureOptions = DEFAULT_COLORFUL_TEXTURE_OPTIONS) -> np.ndarray:
-        return TextureManager.build_colorful_texture_to_pixels(f"./assets/textures/speed_portal_{type}.png", **options)
+        return TextureManager.build_colorful_texture_to_pixels(f"gd/assets/textures/speed_portal_{type}.png", **options)
 
     def block0(index: int, options: GrayscaleTextureOptions = DEFAULT_GRAYSCALE_TEXTURE_OPTIONS) -> np.ndarray:
         """
@@ -293,7 +293,7 @@ class TextureManager:
         Indices go from 0 to 10. See ./assets/textures/texture_map for the block textures.
         Index starts at 0 for the highest block texture, then goes down and to the right.
         """
-        return TextureManager.build_grayscale_texture_to_pixels(f"./assets/textures/block0/{index}.png", **options)
+        return TextureManager.build_grayscale_texture_to_pixels(f"gd/assets/textures/block0/{index}.png", **options)
 
 # preload all textures
 
@@ -324,7 +324,7 @@ TextureManager.textures.update({
     "double_speed_portal": TextureManager.speed_portal("double"),
     "triple_speed_portal": TextureManager.speed_portal("triple"),
     "quadruple_speed_portal": TextureManager.speed_portal("quadruple"),
-    "ground": TextureManager.build_colorful_texture_to_pixels("./assets/textures/ground.png", **TextureManager.DEFAULT_COLORFUL_TEXTURE_OPTIONS),
+    "ground": TextureManager.build_colorful_texture_to_pixels("gd/assets/textures/ground.png", **TextureManager.DEFAULT_COLORFUL_TEXTURE_OPTIONS),
 })
 TextureManager.textures.update({
     f"block0_{i}": TextureManager.block0(i) for i in range(12)
@@ -333,12 +333,12 @@ TextureManager.textures.update({
 # load player icon rotation textures
 TextureManager.player_icons = [
     TextureManager.build_grayscale_texture_to_pixels(
-        f"./assets/textures/icons/cubes/{TextureManager.player_icon_idx}/{i}.png", 
+        f"gd/assets/textures/icons/cubes/{TextureManager.player_icon_idx}/{i}.png", 
         TextureManager.player_color1, 
         TextureManager.player_color2
     ) for i in range(4)
 ]
 
 # load fonts
-TextureManager.font_small1 = Font("./assets/fonts/small1.png")
-TextureManager.font_title = Font("./assets/fonts/title.png")
+TextureManager.font_small1 = Font("gd/assets/fonts/small1.png")
+TextureManager.font_title = Font("gd/assets/fonts/title.png")

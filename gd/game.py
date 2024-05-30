@@ -8,6 +8,8 @@ from threading import Thread
 from math import floor, ceil
 from logger import Logger
 from typing import List, TYPE_CHECKING
+import traceback
+from copy import deepcopy
 from multiprocessing import process
 from copy import deepcopy
 from draw_utils import Position
@@ -259,7 +261,7 @@ class Game:
         pausemenuselectindex = 1
 
         # Draw pause menu background, progress bar, and buttons
-        draw('assets/pausemenubg.png', Position.Relative(top=5, left=10), (self.camera.term.width - 20, self.camera.term.height * 2 - 20), 'scale')
+        draw('gd/assets/pausemenubg.png', Position.Relative(top=5, left=10), (self.camera.term.width - 20, self.camera.term.height * 2 - 20), 'scale')
         draw_text(f"Progress: {progresspercent}%", (self.camera.term.width - 10) // 2, 10, bg_color='black')
         self.draw_pause_menu_buttons(pausemenuselectindex)
 
@@ -318,7 +320,6 @@ class Game:
         elif unpause:
             self.unpause()
 
-
     def draw_pause_menu_buttons(self, index: int) -> None:
         """
         Draws the pause menu buttons with highlights based on the selected index.
@@ -349,7 +350,7 @@ class Game:
         for i, label in enumerate(button_labels):
             selected = '_selected' if index == i else ''
             suffix = practice_bg_color if label == "practice_button" and not selected else selected
-            draw(f"assets/pause_menu/{label}{suffix}.png", pos=Position.Relative(left=positions[i], bottom="calc(55% - 10ch)"))
+            draw(f"gd/assets/pause_menu/{label}{suffix}.png", pos=Position.Relative(left=positions[i], bottom="calc(55% - 10ch)"))
 
         # Draw additional text labels for controls
         draw_text("Add Checkpoint - Z", 12 + ((self.camera.term.width - 64) // 4) * 3, (self.camera.term.height + 20) // 2, bg_color='black')
@@ -376,7 +377,6 @@ class Game:
             self.last_checkpoint = self.checkpoints[-1] if self.checkpoints else None
 
         self.reset()
-
 
     def reset(self) -> None:
         """

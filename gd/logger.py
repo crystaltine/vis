@@ -26,8 +26,7 @@ class Logger:
         
         for i in range(min(len(Logger.onscreen_history), Logger.max_onscreen_len)):
             print(term.move_xy(0, i) + f"[INFO] " + Logger.onscreen_history[-i-1])
-            
-    def write_old(dont_clear_buffer: bool = False):
+
     def write_old(dont_clear_buffer: bool = False):
         """ Writes logs to new file in the logs directory. """
         
@@ -37,7 +36,7 @@ class Logger:
             if not os.path.exists((fp:=os.path.dirname(os.path.realpath(__file__)))+"/logs"):
                 os.makedirs(fp+"/logs")
 
-            with open(f"logs/{int(time())}.log", "w", encoding='utf-8') as log_f:
+            with open(f"gd/logs/{int(time())}.log", "w", encoding='utf-8') as log_f:
                 log_f.writelines('\n'.join(Logger.buffer))
                 log_f.close()
                 print(f"\x1b[0mLogged {Logger._count} messages to logs/{int(time())}.log.")

@@ -7,7 +7,7 @@ import logging
 
 terminal = blessed.Terminal()
 
-os.system('cls')
+os.system('clear')
 
 colors=[('blue', 'gray'), ('red', 'gray')]
 

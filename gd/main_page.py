@@ -31,7 +31,7 @@ def _draw_icon_selector_button(outline: bool = False):
     see gd/assets/main_menu/main_menu_layout_calcs.png for the calculations/numbers used in this method.
     """
     
-    draw(f"assets/main_menu/icon_selector_button{'_outline' if outline else ''}.png",
+    draw(f"gd/assets/main_menu/icon_selector_button{'_outline' if outline else ''}.png",
         pos=Position.Relative(left="calc(30% - 23ch)", bottom="calc(50% - 13ch)"))
     
 def _draw_start_button(outline: bool = False):
@@ -47,7 +47,7 @@ def _draw_start_button(outline: bool = False):
     see gd/assets/main_menu/main_menu_layout_calcs.png for the calculations/numbers used in this method.
     """
     
-    draw(f"assets/main_menu/start_button{'_outline' if outline else ''}.png",
+    draw(f"gd/assets/main_menu/start_button{'_outline' if outline else ''}.png",
         pos=Position.Relative(left="calc(50% - 18ch)", bottom="calc(50% - 15ch)"))
     
 def _draw_create_button(outline: bool = False):
@@ -63,12 +63,12 @@ def _draw_create_button(outline: bool = False):
     see gd/assets/main_menu/main_menu_layout_calcs.png for the calculations/numbers used in this method.
     """
     
-    draw(f"assets/main_menu/create_button{'_outline' if outline else ''}.png",
+    draw(f"gd/assets/main_menu/create_button{'_outline' if outline else ''}.png",
         pos=Position.Relative(right="calc(30% - 23ch)", bottom="calc(50% - 13ch)"))
 
 def draw_menu_bg(terminal):
     """ This is a very crude function im writing at 5am ill make it better later """
-    draw('assets/menu_bg_1.png', Position.Relative(top=0, left=0), (terminal.width, terminal.height*2), 'scale')
+    draw('gd/assets/menu_bg_1.png', Position.Relative(top=0, left=0), (terminal.width, terminal.height*2), 'scale')
 
 def draw_menu_title():
     """ Attempts to draw the GEOMETRY DASH title in the center-top of the screen. it's 141 pixels wide, so requires fullscreen.
@@ -79,7 +79,7 @@ def draw_menu_title():
     
     left_pos = "calc(50% - 70)"
     top_pos = 4 # arbitrary value
-    draw('assets/menu_title_1_editable.png', Position.Relative(left=left_pos, top=top_pos), (None, None), 'crop')
+    draw('gd/assets/menu_title_1_editable.png', Position.Relative(left=left_pos, top=top_pos), (None, None), 'crop')
 
 def init_main_page(terminal):
 

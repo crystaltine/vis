@@ -53,7 +53,7 @@ def main():
             # Quitting game if q is hit
 
             if val == "q":
-                os.system('cls')
+                os.system('clear')
                 break
             
             if val.name=="KEY_ESCAPE" and current_page['current_screen']!='main':
