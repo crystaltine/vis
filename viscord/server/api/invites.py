@@ -188,7 +188,8 @@ def handle_user_joining_server():
             response = requests.post(URI + "/api/members/add_role", json=data)
             if response.status_code != 200:
                 return Response(json.dumps({"type": "failure", "message": "Joined server; failed to add base role"}), status=400)
-            return return_success()
+            data = {"type": "success", "server_id": server_id}
+            return Response(json.dumps(data), status=200)
             
         else:
             return Response(json.dumps({"type": "incorrect", "message": "Invalid invite code"}), status=400)
