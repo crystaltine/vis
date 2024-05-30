@@ -35,6 +35,7 @@ class Game:
         self.player = Player()
         self.camera = Camera(self.leveldata)
 
+        self.is_crashed = False
         self.running = False
         self.last_tick = None
 
@@ -196,10 +197,10 @@ class Game:
         if collision.vert_side is not None:
             if collision.vert_side == "bottom" and self.player.sign_of_gravity() == 1 and self.player.yvel > 0:
                 Logger.log("Crashed into top of block.")
-                self.crash()
+                self.crash_normal()
             elif collision.vert_side == "top" and self.player.sign_of_gravity() == -1 and self.player.yvel < 0:
                 Logger.log("Crashed into bottom of block.")
-                self.crash()
+                self.crash_normal()
             return # don't run other effects if we are gliding
         
         elif collision.obj.data["collide_effect"] == 'neg-gravity':
@@ -208,10 +209,10 @@ class Game:
             self.player.gravity = CONSTANTS.GRAVITY
         elif collision.obj.data["collide_effect"]  == 'crash-block':
             Logger.log("Crashed into block")
-            self.crash()
+            self.crash_normal()
         elif collision.obj.data["collide_effect"]  == 'crash-spike':
             Logger.log(f"Crashed into spike, spike x is {collision.obj.x}, player x is {self.player.pos[0]}")
-            self.crash()
+            self.crash_normal()
         elif collision.obj.data["collide_effect"]  == 'yellow-orb':
             Logger.log("Hit yellow orb.")
             self.player.activate_jump_orb(CONSTANTS.PLAYER_JUMP_STRENGTH)
@@ -225,6 +226,32 @@ class Game:
             
             # change velocity to a modest amount, in the sign of the NEW direction of gravity
             self.player.yvel = CONSTANTS.BLUE_ORB_STARTING_VELOCITY * -self.player.sign_of_gravity()
+
+    def crash_normal(self, restart: bool = True):
+        """
+        The old function for crash handling. Might convert to normal mode crash later on.
+        """
+        self.is_crashed = True
+        #self.running=True
+        # self.player=Player()
+        #self.start_level()
+        #self.running = False
+        if not restart:
+            self.running = False
+            return
+
+        sleep(CONSTANTS.COOLDOWN_BETWEEN_ATTEMPTS)
+        self.is_crashed = False
+        self.last_tick = time_ns() # this is to prevent moving forward while we are dead lol
+
+        # otherwise, restart the level by setting pos back to beginning 
+        # also, NOTE: reset song if that is implemented
+        self.player.pos = deepcopy(self.player.ORIGINAL_START_POS)
+        Logger.log(f"crash_normal(): setting player pos back to {self.player.ORIGINAL_START_POS}")
+
+        self.player.curr_collisions = []
+
+        self.attempt_number += 1
 
     def pause(self) -> None:
         """
@@ -260,42 +287,41 @@ class Game:
         reset = False
         unpause = False
 
-        with self.camera.term.hidden_cursor():
-            while not self.running:
-                with self.camera.term.cbreak():
-                    val = self.camera.term.inkey(1)
-                    changed = False
+        while not self.running:
+            with self.camera.term.cbreak():
+                val = self.camera.term.inkey(1)
+                changed = False
 
-                    if val:
-                        # move the selected index
-                        if val.name == 'KEY_LEFT':
-                            changed = True
-                            pausemenuselectindex -= 1
-                            if pausemenuselectindex < 0:
-                                pausemenuselectindex = 3
-                        # move the selected index
-                        elif val.name == 'KEY_RIGHT':
-                            changed = True
-                            pausemenuselectindex += 1
-                            if pausemenuselectindex > 3:
-                                pausemenuselectindex = 0
-                        # carry out functions based on selected index if enter is pressed, then break
-                        # out of the while loop
-                        elif val.name == 'KEY_ENTER':
-                            if pausemenuselectindex == 0:
-                                reset = True
-                            elif pausemenuselectindex == 1:
-                                unpause = True
-                            elif pausemenuselectindex == 2:
-                                self.practice_mode = not self.practice_mode
-                                reset = True
-                            elif pausemenuselectindex == 3:
-                                self.exiting = True
-                            break
+                if val:
+                    # move the selected index
+                    if val.name == 'KEY_LEFT':
+                        changed = True
+                        pausemenuselectindex -= 1
+                        if pausemenuselectindex < 0:
+                            pausemenuselectindex = 3
+                    # move the selected index
+                    elif val.name == 'KEY_RIGHT':
+                        changed = True
+                        pausemenuselectindex += 1
+                        if pausemenuselectindex > 3:
+                            pausemenuselectindex = 0
+                    # carry out functions based on selected index if enter is pressed, then break
+                    # out of the while loop
+                    elif val.name == 'KEY_ENTER':
+                        if pausemenuselectindex == 0:
+                            reset = True
+                        elif pausemenuselectindex == 1:
+                            unpause = True
+                        elif pausemenuselectindex == 2:
+                            self.practice_mode = not self.practice_mode
+                            reset = True
+                        elif pausemenuselectindex == 3:
+                            self.exiting = True
+                        break
 
-                        # if the selected element is changed, redraw the pause buttons accordingly
-                        if changed:
-                            self.draw_pause_menu_buttons(pausemenuselectindex)
+                    # if the selected element is changed, redraw the pause buttons accordingly
+                    if changed:
+                        self.draw_pause_menu_buttons(pausemenuselectindex)
 
         if reset:
             self.reset()

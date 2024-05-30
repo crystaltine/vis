@@ -122,7 +122,11 @@ class Camera:
         Optimized to compare the newly constructed frame with the last rendered frame, 
         and to only redraw the differences.
         """
-
+        
+        if game.is_crashed:
+            # if crashed, don't render anything
+            return
+        
         new_frame = CameraFrame(self.term)
         new_frame.fill(TextureManager.bg_color)
         
@@ -162,7 +166,7 @@ class Camera:
                     #Logger.log(f"^^ obtained x_pos_on_screen: {xpos_on_screen} by doing round(({obj.x} - {self.camera_left}) * {CameraUtils.BLOCK_WIDTH})")
                     #Logger.log(f"^^ Meanwhile, the player's screen pos is {self.player_y_info['screen_pos']}")
                     #Logger.log(f"the obj's physics x-pos is {obj.x}, cam_left={self.camera_left}, player_x={player_pos[0]}")
-                    new_frame.add_pixels_topleft(xpos_on_screen, curr_screen_y_pos, TextureManager.premade_textures.get(obj.data["name"]))
+                    new_frame.add_pixels_topleft(xpos_on_screen, curr_screen_y_pos, TextureManager.textures.get(obj.data["name"]))
                     #except Exception as e:
                     #    Logger.log(f"error: {traceback.format_exc()}")
                     
@@ -174,7 +178,7 @@ class Camera:
         
         # draw ground. The top of the ground ground should be at physics y=0.
         ground_screen_y_pos = camera_top * CameraUtils.BLOCK_HEIGHT
-        new_frame.add_pixels_topleft(0, ground_screen_y_pos, TextureManager.premade_textures.get("ground"))
+        new_frame.add_pixels_topleft(0, ground_screen_y_pos, TextureManager.textures.get("ground"))
 
         # draw player
         player_xpos_on_screen = CameraUtils.CAMERA_LEFT_OFFSET * CameraUtils.BLOCK_WIDTH
@@ -230,8 +234,8 @@ class Camera:
                     render_strip_2 += empty_block + fcode(background=TextureManager.bg_color)
 
                 else: 
-                    render_strip_1 += TextureManager.get(obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
-                    render_strip_2 += TextureManager.get(obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
+                    render_strip_1 += TextureManager.get_texture(obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
+                    render_strip_2 += TextureManager.get_texture(obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
                 cur_x += 1
             
             render_strip_1 += " "*max(0, self.term.width-len_no_ansi(render_strip_1))
@@ -259,7 +263,7 @@ class Camera:
         """
 
         pos_on_screen = self.get_screen_coordinates(x, y)
-        frame.add_pixels_topleft(*pos_on_screen, TextureManager.get("checkpoint")())
+        frame.add_pixels_topleft(*pos_on_screen, TextureManager.get_texture("checkpoint")())
         
     def draw_attempt(self, frame: CameraFrame, player_initial_x: float, attempt: int) -> None:
         """
@@ -276,7 +280,7 @@ class Camera:
         
         pos_on_screen = self.get_screen_coordinates(x, y)
         
-        frame.add_text_centered(*pos_on_screen, TextureManager.font_small1, f"Attempt: {attempt}".upper())
+        frame.add_text_centered_at(*pos_on_screen, TextureManager.font_small1, f"Attempt {attempt}")
 
         # Calculate player's topmost y-coordinate for positioning text
         #player_topmost_y = round((self.ground - y - 1) * CameraUtils.GRID_PX_Y)
@@ -290,8 +294,8 @@ class Camera:
 
     def draw_cursor(self, cur_pos: tuple, cursor_pos: tuple, cursor_texture, render_strips: list, obj, cur_cursor_obj):
         if obj.data is not None and (obj.data["name"].find("orb") != -1 or obj.data["name"].find("block") != -1):
-            render_strips[1] += TextureManager.get(obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
-            render_strips[0] += TextureManager.get(obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
+            render_strips[1] += TextureManager.get_texture(obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
+            render_strips[0] += TextureManager.get_texture(obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
             return render_strips
         if cur_pos[1] == cursor_pos[1]:
             layer = (True, True)
@@ -302,8 +306,8 @@ class Camera:
         if cur_pos[0] == cursor_pos[0]:
             if layer == (True, True) and cur_cursor_obj != None:
                 if cur_cursor_obj.data["name"].find("orb") != -1 or cur_cursor_obj.data["name"].find("block") != -1:
-                    render_strips[1] += TextureManager.get(cur_cursor_obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
-                    render_strips[0] += TextureManager.get(cur_cursor_obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
+                    render_strips[1] += TextureManager.get_texture(cur_cursor_obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
+                    render_strips[0] += TextureManager.get_texture(cur_cursor_obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
                 else:
                     render_strips = self.draw_center(render_strips, cursor_texture, layer, cur_cursor_obj)
             else:

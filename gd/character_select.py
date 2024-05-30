@@ -117,8 +117,7 @@ class CharacterSelect:
 
 # testing
 try:
-    with GD.term.hidden_cursor():
-        CharacterSelect.render()
+    CharacterSelect.render()
 except Exception as e:
     Logger.log(f"Error in CharacterSelect.render(): {e}")
     Logger.log(f"Traceback: {traceback.format_exc()}")

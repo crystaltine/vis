@@ -1,24 +1,27 @@
-import logging
-import blessed
-from draw_utils import Position, draw_rect
+import random
 import traceback
+import os 
+import sys
+from cursor import hide, show
+
+from logger import Logger
+from GD import GD
+from game import Game
+from img2term.main import draw
+from parse_level import parse_level
 from GDMenu import draw_main_menu_buttons
 from level_selector import *
 from level_editor_menu import *
-import os 
-from img2term.main import draw
-# from run_gd import run_level
-from logger import Logger
+from run_level_editor import *
 from main_page import *
-import sys
-from game import Game
-from parse import parse_level
-from copy import deepcopy
+from created_levels import *
+from online_levels import *
 
 current_module = sys.modules[__name__]
-terminal = blessed.Terminal()
+terminal = GD.term
 
 level_select_index=0
+created_levels_index=0
 currentgame = None
 attempt = 0
 
@@ -32,36 +35,35 @@ def main():
 
     init_main_page(terminal)
 
-    with terminal.hidden_cursor():
+    while True:
 
-        while True:
+        # The only page that needs text on the top of the screen is the level selector
 
-            # The only page that needs text on the top of the screen is the level selector
+        if current_page['current_screen']=='level_select':
+            draw_text('LEVEL SELECTOR', int((terminal.width-len('LEVEL SELECTOR'))*0.5), int(terminal.height*0.1))
+        elif current_page['current_screen']=='created_levels':
+            draw_text('CREATED LEVELS', int((terminal.width-len('Created Levels'))*0.5), int(terminal.height*0.1))
+        else:
+            draw_text('', 0, 0)
 
-            if current_page['current_screen']!='level_select':
-                draw_text('', 0, 0)
+        with terminal.cbreak():
             
-            else:
-                draw_text('LEVEL_SELECTOR', int((terminal.width-len('LEVEL_SELECTOR'))*0.5), int(terminal.height*0.1))
+            val = terminal.inkey(timeout=1)
 
-            with terminal.cbreak():
+            # Quitting game if q is hit
+
+            if val == "q":
+                os.system('cls')
+                break
+            
+            if val.name=="KEY_ESCAPE" and current_page['current_screen']!='main':
                 
-                val = terminal.inkey(timeout=1)
+                render_new_page(current_page['previous_page'])
 
-                # Quitting game if q is hit
+            # The call_handle_page_function will call the corresponding function to handle all the specific key bindings for each page
 
-                if val == "q":
-                    os.system('clear')
-                    break
-                
-                if val.name=="KEY_ESCAPE" and current_page['current_screen']!='main':
-                    
-                    render_new_page(current_page['previous_page'])
-
-                # The call_handle_page_function will call the corresponding function to handle all the specific key bindings for each page
-
-                call_handle_page_function(val)
-                
+            call_handle_page_function(val)
+            
 def render_new_page(new_page:str):
 
     global current_page
@@ -79,6 +81,8 @@ def render_new_page(new_page:str):
 
     if new_page=='play_level':
         run_level(levels[level_select_index]['path'])
+    elif new_page=='create_level':
+        run_editor()
     else:
         init_function=getattr(current_module, 'init_'+new_page+'_page')
         init_function(terminal)
@@ -92,7 +96,7 @@ def pull_prev_page(new_page:str):
 
 def call_handle_page_function(val):
 
-    if current_page['current_screen']=='level_select':
+    if current_page['current_screen']=='level_select' or current_page['current_screen']=='created_levels':
         handle_function=getattr(current_module, 'handle_'+current_page['current_screen']+'_page')
         handle_function(val)
 
@@ -135,6 +139,8 @@ def handle_generic_page(val):
             draw_main_menu_buttons(current_page['current_page'])
         elif current_page['current_screen']=='level_editor':
             draw_all_buttons(current_page['current_page'])
+        elif current_page['current_screen']=='online_levels':
+            draw_all_buttons_online(current_page['current_page'])
 
 def handle_level_select_page(val):
 
@@ -171,6 +177,43 @@ def handle_level_select_page(val):
         reset_level()
         draw_level(level_info['level_name'], level_info['level_description'], int(terminal.width*0.8), int(terminal.height*0.6), 
                    int(terminal.width*0.1), int(terminal.height*0.3), level_info['color1'], level_info['color2'])
+        
+def handle_created_levels_page(val):
+
+    # Change level_select_index if arrow keys pressed
+
+    global created_levels_index
+  
+    changed=False
+    
+    if val.name=='KEY_LEFT':
+        
+        changed=True
+        
+        created_levels_index-=1
+        if created_levels_index<0:
+            created_levels_index=len(levels)-1
+        
+    if val.name=='KEY_RIGHT':
+        changed=True
+        created_levels_index+=1
+        if created_levels_index>len(levels)-1:
+           created_levels_index=0
+    
+    # Running test gd file if space is selected
+
+    if val.name=='KEY_ENTER':
+        render_new_page('play_level')
+        
+    # If a button has been pressed, reset the level, and regenerate the new level onto the screen
+
+    if changed:
+
+        level_info=level_file_names[created_levels_index]
+        reset_level()
+        color=random.choice(colors)
+        draw_created_level(level_info[level_info.index('\\')+1:level_info.index('.level')], int(terminal.width*0.8), int(terminal.height*0.6), 
+                   int(terminal.width*0.1), int(terminal.height*0.3), color[0], color[1])
 
 def run_level(path: str, practice_mode: bool = False, checkpoints: list[tuple[float, float]] = None) -> None:
     """
@@ -208,14 +251,13 @@ def run_level(path: str, practice_mode: bool = False, checkpoints: list[tuple[fl
 if __name__ == "__main__":
     # testing
     try:
+        hide()
         main()
 
     except Exception as e:
-        Logger.log(f"Error in main.py: {e}")
-        Logger.log(f"Traceback: {traceback.format_exc()}")
+        Logger.log(f"[Main Thread/main.py] Error: {traceback.format_exc()}")
         print(f"\x1b[31m{traceback.format_exc()}\x1b[0m")
         
+    show()        
     Logger.write()
         
-
-
