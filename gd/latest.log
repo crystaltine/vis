@@ -1,0 +1,527 @@
+[Game/render_thread] Rendering frame, player@['0.000000', '0.000000']. FPS: inf
+[Physics Thread] Player ticked. pos=0.02,0.00, yvel=0.00, TPS: 497.86
+[Physics Thread] Player ticked. pos=0.17,0.00, yvel=0.00, TPS: 58.40
+[Physics Thread] Player ticked. pos=0.33,0.00, yvel=0.00, TPS: 58.20
+[Game/render_thread] Rendering frame, player@['0.326845', '0.000000']. FPS: 20.474517
+[Physics Thread] Player ticked. pos=0.48,0.00, yvel=0.00, TPS: 58.66
+[Physics Thread] Player ticked. pos=0.63,0.00, yvel=0.00, TPS: 58.40
+[Game/render_thread] Rendering frame, player@['0.634371', '0.000000']. FPS: 36.879820
+[Physics Thread] Player ticked. pos=0.79,0.00, yvel=0.00, TPS: 59.45
+[Game/render_thread] Rendering frame, player@['0.785758', '0.000000']. FPS: 50.071101
+[Physics Thread] Player ticked. pos=0.94,0.00, yvel=0.00, TPS: 58.68
+[Game/render_thread] Rendering frame, player@['0.939144', '0.000000']. FPS: 48.321551
+[Physics Thread] Player ticked. pos=1.10,0.00, yvel=0.00, TPS: 57.67
+[Game/render_thread] Rendering frame, player@['1.095205', '0.000000']. FPS: 48.941877
+[Physics Thread] Player ticked. pos=1.25,0.00, yvel=0.00, TPS: 59.05
+[Physics Thread] Player ticked. pos=1.41,0.00, yvel=0.00, TPS: 55.12
+[Game/render_thread] Rendering frame, player@['1.410908', '0.000000']. FPS: 49.352739
+[Physics Thread] Player ticked. pos=1.56,0.00, yvel=0.00, TPS: 58.78
+[Game/render_thread] Rendering frame, player@['1.564025', '0.000000']. FPS: 48.304512
+[Physics Thread] Player ticked. pos=1.72,0.00, yvel=0.00, TPS: 59.08
+[Game/render_thread] Rendering frame, player@['1.716365', '0.000000']. FPS: 48.495429
+[Physics Thread] Player ticked. pos=1.87,0.00, yvel=0.00, TPS: 58.76
+[Game/render_thread] Rendering frame, player@['1.869525', '0.000000']. FPS: 50.634706
+[Physics Thread] Player ticked. pos=2.02,0.00, yvel=0.00, TPS: 59.50
+[Game/render_thread] Rendering frame, player@['2.020792', '0.000000']. FPS: 48.425916
+[Physics Thread] Player ticked. pos=2.18,0.00, yvel=0.00, TPS: 56.82
+[Physics Thread] Player ticked. pos=2.33,0.00, yvel=0.00, TPS: 58.47
+[Game/render_thread] Rendering frame, player@['2.333113', '0.000000']. FPS: 44.054028
+[Physics Thread] Player ticked. pos=2.49,0.00, yvel=0.00, TPS: 57.93
+[Game/render_thread] Rendering frame, player@['2.488463', '0.000000']. FPS: 44.702727
+[Physics Thread] Player ticked. pos=2.65,0.00, yvel=0.00, TPS: 57.01
+[Game/render_thread] Rendering frame, player@['2.646339', '0.000000']. FPS: 46.513575
+[Physics Thread] Player ticked. pos=2.80,0.00, yvel=0.00, TPS: 58.75
+[Physics Thread] Player ticked. pos=2.95,0.00, yvel=0.00, TPS: 58.17
+[Game/render_thread] Rendering frame, player@['2.954251', '0.000000']. FPS: 46.231230
+[Physics Thread] Player ticked. pos=3.11,0.00, yvel=0.00, TPS: 59.26
+[Game/render_thread] Rendering frame, player@['3.106124', '0.000000']. FPS: 47.411790
+[Physics Thread] Player ticked. pos=3.26,0.00, yvel=0.00, TPS: 59.21
+[Game/render_thread] Rendering frame, player@['3.258127', '0.000000']. FPS: 46.606792
+[Physics Thread] Player ticked. pos=3.41,0.00, yvel=0.00, TPS: 57.98
+[Game/render_thread] Rendering frame, player@['3.413356', '0.000000']. FPS: 47.454764
+[Physics Thread] Player ticked. pos=3.57,0.00, yvel=0.00, TPS: 58.28
+[Game/render_thread] Rendering frame, player@['3.567793', '0.000000']. FPS: 65.815887
+[Physics Thread] Player ticked. pos=3.72,0.00, yvel=0.00, TPS: 58.29
+[Physics Thread] Player ticked. pos=3.88,0.00, yvel=0.00, TPS: 58.21
+[Game/render_thread] Rendering frame, player@['3.876786', '0.000000']. FPS: 40.252788
+[Physics Thread] Player ticked. pos=4.03,0.00, yvel=0.00, TPS: 57.89
+[Game/render_thread] Rendering frame, player@['4.032241', '0.000000']. FPS: 47.256746
+[Physics Thread] Player ticked. pos=4.19,0.00, yvel=0.00, TPS: 58.13
+[Game/render_thread] Rendering frame, player@['4.187070', '0.000000']. FPS: 47.713794
+[Physics Thread] Player ticked. pos=4.34,0.00, yvel=0.00, TPS: 59.19
+[Game/render_thread] Rendering frame, player@['4.339130', '0.000000']. FPS: 44.730121
+[Physics Thread] Player ticked. pos=4.49,0.00, yvel=0.00, TPS: 57.85
+[Physics Thread] Player ticked. pos=4.65,0.00, yvel=0.00, TPS: 58.32
+[Game/render_thread] Rendering frame, player@['4.649037', '0.000000']. FPS: 47.209227
+[Physics Thread] Player ticked. pos=4.81,0.00, yvel=0.00, TPS: 56.51
+[Game/render_thread] Rendering frame, player@['4.808305', '0.000000']. FPS: 46.589638
+[Physics Thread] Player ticked. pos=4.96,0.00, yvel=0.00, TPS: 58.36
+[Game/render_thread] Rendering frame, player@['4.962513', '0.000000']. FPS: 45.860200
+[Physics Thread] Player ticked. pos=5.12,0.00, yvel=0.00, TPS: 58.47
+[Game/render_thread] Rendering frame, player@['5.116435', '0.000000']. FPS: 47.630388
+[Physics Thread] Player ticked. pos=5.27,0.00, yvel=0.00, TPS: 58.71
+something_got_activated is False
+[Physics Thread] Player ticked. pos=5.42,0.28, yvel=16.00, TPS: 58.07
+[Game/render_thread] Rendering frame, player@['5.424708', '0.275512']. FPS: 44.349438
+[Physics Thread] Player ticked. pos=5.58,0.54, yvel=15.14, TPS: 57.92
+[Game/render_thread] Rendering frame, player@['5.580096', '0.536854']. FPS: 45.616068
+[Physics Thread] Player ticked. pos=5.74,0.78, yvel=14.27, TPS: 57.73
+[Game/render_thread] Rendering frame, player@['5.736005', '0.784066']. FPS: 56.738554
+[Physics Thread] Player ticked. pos=5.89,1.01, yvel=13.41, TPS: 58.27
+[Game/render_thread] Rendering frame, player@['5.890469', '1.014259']. FPS: 44.880886
+[Physics Thread] Player ticked. pos=6.05,1.23, yvel=12.55, TPS: 58.07
+[Game/render_thread] Rendering frame, player@['6.045456', '1.230403']. FPS: 44.555933
+[Physics Thread] Player ticked. pos=6.20,1.43, yvel=11.68, TPS: 57.35
+[Physics Thread] Player ticked. pos=6.36,1.62, yvel=10.82, TPS: 58.29
+[Game/render_thread] Rendering frame, player@['6.356800', '1.619725']. FPS: 35.551637
+[Physics Thread] Player ticked. pos=6.51,1.79, yvel=9.96, TPS: 58.11
+[Physics Thread] Player ticked. pos=6.67,1.95, yvel=9.09, TPS: 57.25
+[Game/render_thread] Rendering frame, player@['6.668878', '1.949882']. FPS: 41.307634
+[Physics Thread] Player ticked. pos=6.83,2.10, yvel=8.20, TPS: 56.19
+[Game/render_thread] Rendering frame, player@['6.829058', '2.095789']. FPS: 42.556813
+[Physics Thread] Player ticked. pos=6.98,2.22, yvel=7.33, TPS: 57.89
+[Game/render_thread] Rendering frame, player@['6.984519', '2.222479']. FPS: 38.652571
+[Physics Thread] Player ticked. pos=7.14,2.33, yvel=6.48, TPS: 58.61
+[Physics Thread] Player ticked. pos=7.29,2.43, yvel=5.61, TPS: 57.45
+[Game/render_thread] Rendering frame, player@['7.294755', '2.430740']. FPS: 42.930431
+[Physics Thread] Player ticked. pos=7.45,2.51, yvel=4.74, TPS: 57.72
+[Game/render_thread] Rendering frame, player@['7.450672', '2.512937']. FPS: 43.177893
+[Physics Thread] Player ticked. pos=7.60,2.58, yvel=3.89, TPS: 58.40
+[Game/render_thread] Rendering frame, player@['7.604779', '2.579519']. FPS: 43.473157
+[Physics Thread] Player ticked. pos=7.76,2.63, yvel=3.02, TPS: 57.48
+[Physics Thread] Player ticked. pos=7.92,2.67, yvel=2.13, TPS: 56.57
+[Game/render_thread] Rendering frame, player@['7.920451', '2.669772']. FPS: 44.415624
+[Physics Thread] Player ticked. pos=8.07,2.69, yvel=1.28, TPS: 58.29
+[Game/render_thread] Rendering frame, player@['8.074841', '2.691679']. FPS: 41.818782
+[Physics Thread] Player ticked. pos=8.23,2.70, yvel=0.42, TPS: 58.59
+[Game/render_thread] Rendering frame, player@['8.228457', '2.698910']. FPS: 55.086403
+[Physics Thread] Player ticked. pos=8.39,2.69, yvel=-0.45, TPS: 57.15
+[Game/render_thread] Rendering frame, player@['8.385945', '2.691012']. FPS: 43.310292
+[Physics Thread] Player ticked. pos=8.54,2.67, yvel=-1.32, TPS: 57.87
+[Physics Thread] Player ticked. pos=8.70,2.63, yvel=-2.18, TPS: 57.91
+[Game/render_thread] Rendering frame, player@['8.696902', '2.630653']. FPS: 40.100411
+[Physics Thread] Player ticked. pos=8.85,2.58, yvel=-3.05, TPS: 57.72
+[Game/render_thread] Rendering frame, player@['8.852840', '2.577891']. FPS: 37.979203
+[Physics Thread] Player ticked. pos=9.01,2.51, yvel=-3.90, TPS: 58.46
+[Physics Thread] Player ticked. pos=9.16,2.43, yvel=-4.76, TPS: 58.31
+[Game/render_thread] Rendering frame, player@['9.161150', '2.429566']. FPS: 40.427072
+[Physics Thread] Player ticked. pos=9.31,2.34, yvel=-5.60, TPS: 59.31
+[Game/render_thread] Rendering frame, player@['9.312891', '2.335132']. FPS: 43.644489
+[Physics Thread] Player ticked. pos=9.47,2.22, yvel=-6.46, TPS: 58.26
+[Physics Thread] Player ticked. pos=9.62,2.10, yvel=-7.32, TPS: 58.20
+[Game/render_thread] Rendering frame, player@['9.622011', '2.098518']. FPS: 42.982098
+[Physics Thread] Player ticked. pos=9.78,1.96, yvel=-8.18, TPS: 58.03
+[Game/render_thread] Rendering frame, player@['9.777104', '1.957555']. FPS: 41.238304
+[Physics Thread] Player ticked. pos=9.93,1.80, yvel=-9.03, TPS: 58.85
+[Game/render_thread] Rendering frame, player@['9.930047', '1.804109']. FPS: 40.127284
+[Physics Thread] Player ticked. pos=10.09,1.63, yvel=-9.90, TPS: 57.30
+[Physics Thread] Player ticked. pos=10.24,1.44, yvel=-10.78, TPS: 57.09
+[Game/render_thread] Rendering frame, player@['10.244755', '1.442511']. FPS: 38.916563
+[Physics Thread] Player ticked. pos=10.41,1.23, yvel=-11.67, TPS: 55.83
+[Game/render_thread] Rendering frame, player@['10.405956', '1.233423']. FPS: 39.276218
+[Physics Thread] Player ticked. pos=10.56,1.02, yvel=-12.54, TPS: 57.56
+[Physics Thread] Player ticked. pos=10.72,0.78, yvel=-13.43, TPS: 56.45
+[Game/render_thread] Rendering frame, player@['10.721749', '0.777648']. FPS: 40.453402
+[Physics Thread] Player ticked. pos=10.87,0.54, yvel=-14.28, TPS: 58.94
+[Game/render_thread] Rendering frame, player@['10.874458', '0.535410']. FPS: 39.574808
+[Physics Thread] Player ticked. pos=11.03,0.28, yvel=-15.12, TPS: 59.08
+[Physics Thread] Player ticked. pos=11.18,0.01, yvel=-15.98, TPS: 58.66
+[Game/render_thread] Rendering frame, player@['11.180216', '0.007115']. FPS: 42.036235
+[Physics Thread] Player ticked. pos=11.33,-0.28, yvel=-16.82, TPS: 59.15
+[Game/render_thread] Rendering frame, player@['11.332376', '-0.277262']. FPS: 42.578557
+[Physics Thread] Player ticked. pos=11.49,0.00, yvel=0.00, TPS: 58.05
+[Game/render_thread] Rendering frame, player@['11.487422', '0.000000']. FPS: 40.404204
+[Physics Thread] Player ticked. pos=11.64,0.00, yvel=0.00, TPS: 58.20
+[Physics Thread] Player ticked. pos=11.80,0.00, yvel=0.00, TPS: 58.68
+[Game/render_thread] Rendering frame, player@['11.795439', '0.000000']. FPS: 40.409755
+[Physics Thread] Player ticked. pos=11.95,0.00, yvel=0.00, TPS: 59.52
+[Game/render_thread] Rendering frame, player@['11.946650', '0.000000']. FPS: 45.211022
+[Physics Thread] Player ticked. pos=12.10,0.00, yvel=0.00, TPS: 58.78
+[Physics Thread] Player ticked. pos=12.26,0.00, yvel=0.00, TPS: 57.66
+[Game/render_thread] Rendering frame, player@['12.255845', '0.000000']. FPS: 43.683192
+[Physics Thread] Player ticked. pos=12.41,0.00, yvel=0.00, TPS: 58.80
+[Game/render_thread] Rendering frame, player@['12.408900', '0.000000']. FPS: 42.903724
+[Physics Thread] Player ticked. pos=12.56,0.00, yvel=0.00, TPS: 59.33
+[Game/render_thread] Rendering frame, player@['12.560595', '0.000000']. FPS: 64.100510
+[Physics Thread] Player ticked. pos=12.72,0.00, yvel=0.00, TPS: 57.20
+[Game/render_thread] Rendering frame, player@['12.717941', '0.000000']. FPS: 46.748851
+[Physics Thread] Player ticked. pos=12.87,0.00, yvel=0.00, TPS: 58.82
+[Game/render_thread] Rendering frame, player@['12.870947', '0.000000']. FPS: 46.983870
+[Physics Thread] Player ticked. pos=13.02,0.00, yvel=0.00, TPS: 59.62
+[Physics Thread] Player ticked. pos=13.18,0.00, yvel=0.00, TPS: 58.57
+[Game/render_thread] Rendering frame, player@['13.175565', '0.000000']. FPS: 45.840018
+[Physics Thread] Player ticked. pos=13.33,0.00, yvel=0.00, TPS: 58.37
+[Game/render_thread] Rendering frame, player@['13.329765', '0.000000']. FPS: 45.408930
+[Physics Thread] Player ticked. pos=13.48,0.00, yvel=0.00, TPS: 59.01
+[Game/render_thread] Rendering frame, player@['13.482293', '0.000000']. FPS: 45.170995
+[Physics Thread] Player ticked. pos=13.64,0.00, yvel=0.00, TPS: 58.66
+[Game/render_thread] Rendering frame, player@['13.635707', '0.000000']. FPS: 45.559539
+[Physics Thread] Player ticked. pos=13.80,0.00, yvel=0.00, TPS: 56.49
+[Physics Thread] Player ticked. pos=13.95,0.00, yvel=0.00, TPS: 58.01
+[Game/render_thread] Rendering frame, player@['13.950168', '0.000000']. FPS: 45.708853
+[Physics Thread] Player ticked. pos=14.11,0.00, yvel=0.00, TPS: 56.37
+[Game/render_thread] Rendering frame, player@['14.109837', '0.000000']. FPS: 46.133760
+[Physics Thread] Player ticked. pos=14.26,0.00, yvel=0.00, TPS: 58.62
+[Game/render_thread] Rendering frame, player@['14.263379', '0.000000']. FPS: 42.185371
+[Physics Thread] Player ticked. pos=14.43,0.00, yvel=0.00, TPS: 54.66
+[Physics Thread] Player ticked. pos=14.58,0.00, yvel=0.00, TPS: 57.89
+[Game/render_thread] Rendering frame, player@['14.583500', '0.000000']. FPS: 44.618954
+[Physics Thread] Player ticked. pos=14.74,0.00, yvel=0.00, TPS: 58.12
+[Game/render_thread] Rendering frame, player@['14.738357', '0.000000']. FPS: 46.943067
+[Physics Thread] Player ticked. pos=14.89,0.00, yvel=0.00, TPS: 58.13
+[Game/render_thread] Rendering frame, player@['14.893187', '0.000000']. FPS: 57.963286
+[Physics Thread] Player ticked. pos=15.05,0.00, yvel=0.00, TPS: 58.94
+[Game/render_thread] Rendering frame, player@['15.045888', '0.000000']. FPS: 48.813586
+[Physics Thread] Player ticked. pos=15.20,0.00, yvel=0.00, TPS: 59.24
+[Game/render_thread] Rendering frame, player@['15.197817', '0.000000']. FPS: 51.292047
+something_got_activated is False
+[Physics Thread] Player ticked. pos=15.35,0.27, yvel=16.00, TPS: 59.22
+[Game/render_thread] Rendering frame, player@['15.349781', '0.270158']. FPS: 48.974235
+[Physics Thread] Player ticked. pos=15.51,0.55, yvel=15.08, TPS: 54.63
+[Game/render_thread] Rendering frame, player@['15.514534', '0.546298']. FPS: 45.758842
+[Physics Thread] Player ticked. pos=15.68,0.80, yvel=14.19, TPS: 55.83
+[Physics Thread] Player ticked. pos=15.83,1.03, yvel=13.31, TPS: 57.19
+[Game/render_thread] Rendering frame, player@['15.833113', '1.033272']. FPS: 45.021318
+[Physics Thread] Player ticked. pos=15.99,1.25, yvel=12.45, TPS: 57.73
+[Game/render_thread] Rendering frame, player@['15.989012', '1.248910']. FPS: 44.741528
+[Physics Thread] Player ticked. pos=16.14,1.45, yvel=11.59, TPS: 57.90
+[Game/render_thread] Rendering frame, player@['16.144442', '1.448986']. FPS: 45.668774
+[Physics Thread] Player ticked. pos=16.30,1.63, yvel=10.72, TPS: 57.97
+[Physics Thread] Player ticked. pos=16.45,1.80, yvel=9.86, TPS: 58.24
+[Game/render_thread] Rendering frame, player@['16.454210', '1.803309']. FPS: 42.387789
+[Physics Thread] Player ticked. pos=16.61,1.96, yvel=9.02, TPS: 58.97
+[Game/render_thread] Rendering frame, player@['16.606838', '1.956215']. FPS: 44.111549
+[Physics Thread] Player ticked. pos=16.76,2.10, yvel=8.17, TPS: 58.78
+[Game/render_thread] Rendering frame, player@['16.759956', '2.095138']. FPS: 46.666169
+[Physics Thread] Player ticked. pos=16.91,2.22, yvel=7.31, TPS: 58.17
+[Physics Thread] Player ticked. pos=17.07,2.33, yvel=6.42, TPS: 56.72
+[Game/render_thread] Rendering frame, player@['17.073335', '2.333999']. FPS: 43.573364
+[Physics Thread] Player ticked. pos=17.23,2.43, yvel=5.56, TPS: 57.58
+[Game/render_thread] Rendering frame, player@['17.229650', '2.430502']. FPS: 44.174684
+[Physics Thread] Player ticked. pos=17.38,2.51, yvel=4.70, TPS: 58.13
+[Game/render_thread] Rendering frame, player@['17.384481', '2.511291']. FPS: 49.788895
+[Physics Thread] Player ticked. pos=17.54,2.58, yvel=3.82, TPS: 56.94
+[Game/render_thread] Rendering frame, player@['17.542536', '2.578343']. FPS: 43.739175
+[Physics Thread] Player ticked. pos=17.69,2.63, yvel=2.98, TPS: 59.39
+[Physics Thread] Player ticked. pos=17.85,2.67, yvel=2.08, TPS: 55.99
+[Game/render_thread] Rendering frame, player@['17.854833', '2.665661']. FPS: 48.911475
+[Physics Thread] Player ticked. pos=18.01,2.69, yvel=1.24, TPS: 59.59
+[Game/render_thread] Rendering frame, player@['18.005861', '2.686537']. FPS: 47.796578
+[Physics Thread] Player ticked. pos=18.16,2.69, yvel=0.38, TPS: 58.03
+[Game/render_thread] Rendering frame, player@['18.160943', '2.693126']. FPS: 44.515670
+[Physics Thread] Player ticked. pos=18.31,2.69, yvel=-0.46, TPS: 59.66
+[Game/render_thread] Rendering frame, player@['18.311801', '2.685488']. FPS: 46.428920
+[Physics Thread] Player ticked. pos=18.46,2.66, yvel=-1.29, TPS: 59.58
+[Physics Thread] Player ticked. pos=18.62,2.63, yvel=-2.14, TPS: 59.14
+[Game/render_thread] Rendering frame, player@['18.615045', '2.627563']. FPS: 47.282665
+[Physics Thread] Player ticked. pos=18.77,2.58, yvel=-2.99, TPS: 58.84
+[Game/render_thread] Rendering frame, player@['18.767995', '2.576748']. FPS: 45.464052
+[Physics Thread] Player ticked. pos=18.92,2.51, yvel=-3.86, TPS: 57.45
+[Game/render_thread] Rendering frame, player@['18.924657', '2.509550']. FPS: 45.408930
+[Physics Thread] Player ticked. pos=19.08,2.43, yvel=-4.72, TPS: 58.14
+[Game/render_thread] Rendering frame, player@['19.079460', '2.428357']. FPS: 48.718936
+[Physics Thread] Player ticked. pos=19.24,2.33, yvel=-5.60, TPS: 56.80
+[Game/render_thread] Rendering frame, player@['19.237913', '2.329751']. FPS: 57.164743
+[Physics Thread] Player ticked. pos=19.40,2.22, yvel=-6.48, TPS: 57.14
+[Physics Thread] Player ticked. pos=19.55,2.09, yvel=-7.35, TPS: 57.08
+[Game/render_thread] Rendering frame, player@['19.553073', '2.087641']. FPS: 45.891979
+[Physics Thread] Player ticked. pos=19.71,1.95, yvel=-8.20, TPS: 58.83
+[Game/render_thread] Rendering frame, player@['19.706054', '1.948232']. FPS: 46.022717
+[Physics Thread] Player ticked. pos=19.86,1.79, yvel=-9.05, TPS: 58.85
+[Game/render_thread] Rendering frame, player@['19.858991', '1.794426']. FPS: 44.601442
+[Physics Thread] Player ticked. pos=20.01,1.62, yvel=-9.91, TPS: 58.19
+[Physics Thread] Player ticked. pos=20.17,1.43, yvel=-10.80, TPS: 55.90
+[Game/render_thread] Rendering frame, player@['20.174680', '1.430798']. FPS: 44.046266
+[Physics Thread] Player ticked. pos=20.33,1.23, yvel=-11.67, TPS: 57.76
+[Game/render_thread] Rendering frame, player@['20.330492', '1.228750']. FPS: 44.704925
+[Physics Thread] Player ticked. pos=20.49,1.01, yvel=-12.53, TPS: 57.86
+[Game/render_thread] Rendering frame, player@['20.486046', '1.012102']. FPS: 46.408019
+[Physics Thread] Player ticked. pos=20.64,0.78, yvel=-13.39, TPS: 58.42
+[Game/render_thread] Rendering frame, player@['20.640114', '0.782870']. FPS: 47.265234
+[Physics Thread] Player ticked. pos=20.79,0.54, yvel=-14.25, TPS: 58.36
+[Physics Thread] Player ticked. pos=20.95,0.28, yvel=-15.11, TPS: 57.85
+[Game/render_thread] Rendering frame, player@['20.949897', '0.277528']. FPS: 44.229978
+[Physics Thread] Player ticked. pos=21.10,0.00, yvel=-15.97, TPS: 58.14
+[Game/render_thread] Rendering frame, player@['21.104690', '0.002826']. FPS: 47.520160
+[Physics Thread] Player ticked. pos=21.26,-0.30, yvel=-16.86, TPS: 56.40
+[Game/render_thread] Rendering frame, player@['21.264254', '-0.296058']. FPS: 49.851691
+[Physics Thread] Player ticked. pos=21.42,0.00, yvel=0.00, TPS: 58.13
+[Game/render_thread] Rendering frame, player@['21.419085', '0.000000']. FPS: 46.526993
+[Physics Thread] Player ticked. pos=21.57,0.00, yvel=0.00, TPS: 58.92
+[Game/render_thread] Rendering frame, player@['21.571829', '0.000000']. FPS: 48.020591
+[Physics Thread] Player ticked. pos=21.72,0.00, yvel=0.00, TPS: 59.49
+[Game/render_thread] Rendering frame, player@['21.723111', '0.000000']. FPS: 61.147120
+[Physics Thread] Player ticked. pos=21.88,0.00, yvel=0.00, TPS: 55.75
+[Physics Thread] Player ticked. pos=22.04,0.00, yvel=0.00, TPS: 57.95
+[Game/render_thread] Rendering frame, player@['22.039840', '0.000000']. FPS: 48.238801
+something_got_activated is False
+[Physics Thread] Player ticked. pos=22.19,0.27, yvel=16.00, TPS: 59.02
+[Game/render_thread] Rendering frame, player@['22.192342', '0.271115']. FPS: 49.379546
+[Physics Thread] Player ticked. pos=22.35,0.54, yvel=15.12, TPS: 57.04
+[Game/render_thread] Rendering frame, player@['22.350120', '0.536243']. FPS: 51.825555
+[Physics Thread] Player ticked. pos=22.50,0.78, yvel=14.28, TPS: 59.07
+[Game/render_thread] Rendering frame, player@['22.502477', '0.777932']. FPS: 47.711289
+[Physics Thread] Player ticked. pos=22.66,1.01, yvel=13.42, TPS: 58.50
+[Game/render_thread] Rendering frame, player@['22.656315', '1.007362']. FPS: 46.636788
+[Physics Thread] Player ticked. pos=22.81,1.22, yvel=12.57, TPS: 58.98
+[Physics Thread] Player ticked. pos=22.97,1.43, yvel=11.68, TPS: 55.96
+[Game/render_thread] Rendering frame, player@['22.969724', '1.429288']. FPS: 45.461985
+[Physics Thread] Player ticked. pos=23.13,1.62, yvel=10.82, TPS: 57.83
+[Game/render_thread] Rendering frame, player@['23.125349', '1.616325']. FPS: 44.954124
+[Physics Thread] Player ticked. pos=23.28,1.79, yvel=9.96, TPS: 58.44
+[Game/render_thread] Rendering frame, player@['23.279342', '1.786763']. FPS: 44.560500
+[Physics Thread] Player ticked. pos=23.44,1.94, yvel=9.09, TPS: 57.46
+[Game/render_thread] Rendering frame, player@['23.435978', '1.944981']. FPS: 44.589509
+[Physics Thread] Player ticked. pos=23.59,2.08, yvel=8.25, TPS: 59.24
+[Physics Thread] Player ticked. pos=23.74,2.21, yvel=7.38, TPS: 57.60
+[Game/render_thread] Rendering frame, player@['23.744143', '2.212290']. FPS: 43.831774
+[Physics Thread] Player ticked. pos=23.90,2.33, yvel=6.51, TPS: 57.71
+[Game/render_thread] Rendering frame, player@['23.900089', '2.325135']. FPS: 52.623547
+[Physics Thread] Player ticked. pos=24.06,2.42, yvel=5.65, TPS: 58.00
+[Game/render_thread] Rendering frame, player@['24.055270', '2.422561']. FPS: 46.000064
+[Physics Thread] Player ticked. pos=24.21,2.50, yvel=4.79, TPS: 58.15
+[Physics Thread] Player ticked. pos=24.37,2.57, yvel=3.93, TPS: 57.94
+[Game/render_thread] Rendering frame, player@['24.365372', '2.572730']. FPS: 42.803455
+[Physics Thread] Player ticked. pos=24.52,2.62, yvel=3.08, TPS: 59.28
+[Game/render_thread] Rendering frame, player@['24.517203', '2.624759']. FPS: 41.802350
+[Physics Thread] Player ticked. pos=24.67,2.66, yvel=2.23, TPS: 58.49
+[Game/render_thread] Rendering frame, player@['24.671069', '2.662872']. FPS: 46.439269
+[Physics Thread] Player ticked. pos=24.82,2.69, yvel=1.38, TPS: 58.59
+[Physics Thread] Player ticked. pos=24.98,2.70, yvel=0.52, TPS: 58.43
+[Game/render_thread] Rendering frame, player@['24.978712', '2.695258']. FPS: 42.109696
+[Physics Thread] Player ticked. pos=25.13,2.69, yvel=-0.33, TPS: 58.90
+[Game/render_thread] Rendering frame, player@['25.131521', '2.689676']. FPS: 34.881733
+[Physics Thread] Player ticked. pos=25.29,2.67, yvel=-1.20, TPS: 57.61
+[Physics Thread] Player ticked. pos=25.44,2.63, yvel=-2.05, TPS: 58.71
+[Game/render_thread] Rendering frame, player@['25.441046', '2.634013']. FPS: 44.181320
+[Physics Thread] Player ticked. pos=25.60,2.58, yvel=-2.95, TPS: 55.51
+[Game/render_thread] Rendering frame, player@['25.603165', '2.580892']. FPS: 40.500095
+[Physics Thread] Player ticked. pos=25.76,2.52, yvel=-3.79, TPS: 59.20
+[Game/render_thread] Rendering frame, player@['25.755184', '2.516815']. FPS: 40.382340
+[Physics Thread] Player ticked. pos=25.91,2.44, yvel=-4.67, TPS: 57.14
+[Physics Thread] Player ticked. pos=26.07,2.34, yvel=-5.54, TPS: 57.58
+[Game/render_thread] Rendering frame, player@['26.069011', '2.338938']. FPS: 44.782001
+[Physics Thread] Player ticked. pos=26.22,2.23, yvel=-6.40, TPS: 57.81
+[Game/render_thread] Rendering frame, player@['26.224685', '2.228204']. FPS: 39.918885
+[Physics Thread] Player ticked. pos=26.38,2.10, yvel=-7.25, TPS: 58.65
+[Physics Thread] Player ticked. pos=26.53,1.96, yvel=-8.11, TPS: 58.12
+[Game/render_thread] Rendering frame, player@['26.532978', '1.964905']. FPS: 39.121182
+[Physics Thread] Player ticked. pos=26.69,1.81, yvel=-8.96, TPS: 58.82
+[Game/render_thread] Rendering frame, player@['26.685996', '1.812486']. FPS: 39.916654
+[Physics Thread] Player ticked. pos=26.84,1.64, yvel=-9.83, TPS: 58.02
+[Physics Thread] Player ticked. pos=26.99,1.46, yvel=-10.67, TPS: 59.04
+[Game/render_thread] Rendering frame, player@['26.993535', '1.462364']. FPS: 38.717521
+[Physics Thread] Player ticked. pos=27.15,1.27, yvel=-11.51, TPS: 59.41
+[Game/render_thread] Rendering frame, player@['27.145031', '1.268534']. FPS: 36.293293
+[Physics Thread] Player ticked. pos=27.30,1.06, yvel=-12.37, TPS: 58.54
+[Physics Thread] Player ticked. pos=27.45,0.83, yvel=-13.24, TPS: 57.66
+Running collision effect for: Collision(with block0_0 @x,y=27,0
+Running collision effect for: Collision(with block0_3 @x,y=28,0
+[Game/render_thread] Rendering frame, player@['27.454862', '0.827682']. FPS: 40.208279
+[Physics Thread] Player ticked. pos=27.61,1.00, yvel=0.00, TPS: 58.81
+Running collision effect for: Collision(with block0_0 @x,y=27,0
+Running collision effect for: Collision(with block0_3 @x,y=28,0
+[Game/render_thread] Rendering frame, player@['27.607899', '1.000000']. FPS: 38.626444
+[Physics Thread] Player ticked. pos=27.76,1.00, yvel=0.00, TPS: 58.65
+Running collision effect for: Collision(with block0_0 @x,y=27,0
+Running collision effect for: Collision(with block0_3 @x,y=28,0
+[Physics Thread] Player ticked. pos=27.92,1.00, yvel=0.00, TPS: 57.58
+Running collision effect for: Collision(with block0_0 @x,y=27,0
+Running collision effect for: Collision(with block0_3 @x,y=28,0
+[Game/render_thread] Rendering frame, player@['27.917645', '1.000000']. FPS: 40.928420
+[Physics Thread] Player ticked. pos=28.07,1.00, yvel=0.00, TPS: 57.95
+Running collision effect for: Collision(with block0_3 @x,y=28,0
+Running collision effect for: Collision(with block0_3 @x,y=29,0
+[Game/render_thread] Rendering frame, player@['28.072938', '1.000000']. FPS: 43.496416
+[Physics Thread] Player ticked. pos=28.23,1.00, yvel=0.00, TPS: 58.85
+Running collision effect for: Collision(with block0_3 @x,y=28,0
+Running collision effect for: Collision(with block0_3 @x,y=29,0
+[Game/render_thread] Rendering frame, player@['28.225857', '1.000000']. FPS: 58.069986
+[Physics Thread] Player ticked. pos=28.38,1.00, yvel=0.00, TPS: 57.63
+Running collision effect for: Collision(with block0_3 @x,y=28,0
+Running collision effect for: Collision(with block0_3 @x,y=29,0
+[Game/render_thread] Rendering frame, player@['28.382036', '1.000000']. FPS: 44.632496
+[Physics Thread] Player ticked. pos=28.53,1.00, yvel=0.00, TPS: 58.99
+Running collision effect for: Collision(with block0_3 @x,y=28,0
+Running collision effect for: Collision(with block0_3 @x,y=29,0
+[Physics Thread] Player ticked. pos=28.69,1.00, yvel=0.00, TPS: 58.40
+Running collision effect for: Collision(with block0_3 @x,y=28,0
+Running collision effect for: Collision(with block0_3 @x,y=29,0
+[Game/render_thread] Rendering frame, player@['28.688714', '1.000000']. FPS: 43.931520
+[Physics Thread] Player ticked. pos=28.84,1.00, yvel=0.00, TPS: 59.18
+Running collision effect for: Collision(with block0_3 @x,y=28,0
+Running collision effect for: Collision(with block0_3 @x,y=29,0
+[Game/render_thread] Rendering frame, player@['28.840795', '1.000000']. FPS: 41.709941
+[Physics Thread] Player ticked. pos=28.99,1.00, yvel=0.00, TPS: 59.51
+Running collision effect for: Collision(with block0_3 @x,y=28,0
+Running collision effect for: Collision(with block0_3 @x,y=29,0
+[Game/render_thread] Rendering frame, player@['28.992019', '1.000000']. FPS: 44.063345
+[Physics Thread] Player ticked. pos=29.15,1.00, yvel=0.00, TPS: 57.21
+Running collision effect for: Collision(with block0_3 @x,y=29,0
+Running collision effect for: Collision(with block0_3 @x,y=30,0
+[Physics Thread] Player ticked. pos=29.31,1.00, yvel=0.00, TPS: 56.76
+Running collision effect for: Collision(with block0_3 @x,y=29,0
+Running collision effect for: Collision(with block0_3 @x,y=30,0
+[Game/render_thread] Rendering frame, player@['29.307909', '1.000000']. FPS: 43.263074
+[Physics Thread] Player ticked. pos=29.46,1.00, yvel=0.00, TPS: 59.28
+Running collision effect for: Collision(with block0_3 @x,y=29,0
+Running collision effect for: Collision(with block0_3 @x,y=30,0
+[Game/render_thread] Rendering frame, player@['29.459740', '1.000000']. FPS: 42.597783
+[Physics Thread] Player ticked. pos=29.61,1.00, yvel=0.00, TPS: 58.63
+Running collision effect for: Collision(with block0_3 @x,y=29,0
+Running collision effect for: Collision(with block0_3 @x,y=30,0
+[Game/render_thread] Rendering frame, player@['29.613255', '1.000000']. FPS: 44.635086
+[Physics Thread] Player ticked. pos=29.77,1.00, yvel=0.00, TPS: 56.73
+Running collision effect for: Collision(with block0_3 @x,y=29,0
+Running collision effect for: Collision(with block0_3 @x,y=30,0
+[Physics Thread] Player ticked. pos=29.93,1.00, yvel=0.00, TPS: 58.11
+Running collision effect for: Collision(with block0_3 @x,y=29,0
+Running collision effect for: Collision(with block0_3 @x,y=30,0
+[Game/render_thread] Rendering frame, player@['29.926775', '1.000000']. FPS: 43.532582
+[Physics Thread] Player ticked. pos=30.08,1.00, yvel=0.00, TPS: 57.07
+Running collision effect for: Collision(with block0_3 @x,y=30,0
+Running collision effect for: Collision(with block0_3 @x,y=31,0
+[Game/render_thread] Rendering frame, player@['30.084468', '1.000000']. FPS: 44.051505
+something_got_activated is False
+[Physics Thread] Player ticked. pos=30.24,1.27, yvel=16.00, TPS: 58.80
+[Game/render_thread] Rendering frame, player@['30.237541', '1.272130']. FPS: 46.539118
+[Physics Thread] Player ticked. pos=30.39,1.53, yvel=15.13, TPS: 57.60
+[Game/render_thread] Rendering frame, player@['30.393780', '1.534820']. FPS: 51.718074
+[Physics Thread] Player ticked. pos=30.54,1.77, yvel=14.29, TPS: 59.58
+[Physics Thread] Player ticked. pos=30.70,2.00, yvel=13.44, TPS: 58.78
+[Game/render_thread] Rendering frame, player@['30.697947', '2.003393']. FPS: 39.712797
+[Physics Thread] Player ticked. pos=30.85,2.22, yvel=12.59, TPS: 58.97
+[Game/render_thread] Rendering frame, player@['30.850572', '2.216970']. FPS: 37.774764
+[Physics Thread] Player ticked. pos=31.01,2.42, yvel=11.73, TPS: 58.02
+[Physics Thread] Player ticked. pos=31.17,2.61, yvel=10.85, TPS: 56.36
+[Game/render_thread] Rendering frame, player@['31.165380', '2.611617']. FPS: 38.314176
+[Physics Thread] Player ticked. pos=31.32,2.78, yvel=10.00, TPS: 59.30
+[Game/render_thread] Rendering frame, player@['31.317152', '2.780289']. FPS: 36.791353
+[Physics Thread] Player ticked. pos=31.47,2.94, yvel=9.15, TPS: 58.44
+[Physics Thread] Player ticked. pos=31.63,3.08, yvel=8.27, TPS: 56.80
+[Game/render_thread] Rendering frame, player@['31.629613', '3.082340']. FPS: 37.812902
+[Physics Thread] Player ticked. pos=31.78,3.21, yvel=7.42, TPS: 59.12
+[Physics Thread] Player ticked. pos=31.93,3.32, yvel=6.58, TPS: 59.62
+[Game/render_thread] Rendering frame, player@['31.932811', '3.318259']. FPS: 37.806183
+[Physics Thread] Player ticked. pos=32.09,3.42, yvel=5.72, TPS: 58.30
+[Game/render_thread] Rendering frame, player@['32.087195', '3.416450']. FPS: 36.101213
+[Physics Thread] Player ticked. pos=32.24,3.50, yvel=4.86, TPS: 58.11
+[Physics Thread] Player ticked. pos=32.40,3.57, yvel=4.01, TPS: 58.75
+[Game/render_thread] Rendering frame, player@['32.395254', '3.568445']. FPS: 37.881658
+[Physics Thread] Player ticked. pos=32.55,3.62, yvel=3.17, TPS: 59.31
+[Game/render_thread] Rendering frame, player@['32.546993', '3.621886']. FPS: 38.083342
+[Physics Thread] Player ticked. pos=32.71,3.66, yvel=2.28, TPS: 55.97
+[Physics Thread] Player ticked. pos=32.86,3.69, yvel=1.42, TPS: 58.39
+[Game/render_thread] Rendering frame, player@['32.861912', '3.686876']. FPS: 39.710432
+[Physics Thread] Player ticked. pos=33.02,3.70, yvel=0.57, TPS: 58.74
+[Game/render_thread] Rendering frame, player@['33.015124', '3.696563']. FPS: 39.014798
+[Physics Thread] Player ticked. pos=33.17,3.69, yvel=-0.28, TPS: 58.64
+[Physics Thread] Player ticked. pos=33.33,3.67, yvel=-1.16, TPS: 57.24
+[Game/render_thread] Rendering frame, player@['33.325858', '3.671503']. FPS: 41.001587
+[Physics Thread] Player ticked. pos=33.48,3.64, yvel=-2.04, TPS: 56.70
+[Game/render_thread] Rendering frame, player@['33.484593', '3.635538']. FPS: 40.346333
+[Physics Thread] Player ticked. pos=33.64,3.59, yvel=-2.90, TPS: 58.03
+[Physics Thread] Player ticked. pos=33.79,3.52, yvel=-3.76, TPS: 58.20
+[Game/render_thread] Rendering frame, player@['33.794342', '3.520938']. FPS: 37.754655
+[Physics Thread] Player ticked. pos=33.95,3.44, yvel=-4.64, TPS: 56.77
+[Game/render_thread] Rendering frame, player@['33.952865', '3.439199']. FPS: 38.034817
+[Physics Thread] Player ticked. pos=34.11,3.35, yvel=-5.50, TPS: 58.41
+[Physics Thread] Player ticked. pos=34.26,3.24, yvel=-6.35, TPS: 58.56
+[Game/render_thread] Rendering frame, player@['34.260651', '3.236636']. FPS: 40.023374
+[Physics Thread] Player ticked. pos=34.41,3.11, yvel=-7.20, TPS: 59.12
+[Game/render_thread] Rendering frame, player@['34.412885', '3.114911']. FPS: 36.191496
+[Physics Thread] Player ticked. pos=34.57,2.98, yvel=-8.05, TPS: 58.77
+[Game/render_thread] Rendering frame, player@['34.566019', '2.977990']. FPS: 57.157228
+[Physics Thread] Player ticked. pos=34.72,2.83, yvel=-8.91, TPS: 58.26
+[Physics Thread] Player ticked. pos=34.88,2.66, yvel=-9.77, TPS: 58.02
+[Game/render_thread] Rendering frame, player@['34.875631', '2.656780']. FPS: 37.948360
+[Physics Thread] Player ticked. pos=35.03,2.48, yvel=-10.61, TPS: 59.27
+[Game/render_thread] Rendering frame, player@['35.027467', '2.477770']. FPS: 38.501521
+[Physics Thread] Player ticked. pos=35.18,2.28, yvel=-11.48, TPS: 57.75
+[Physics Thread] Player ticked. pos=35.34,2.07, yvel=-12.32, TPS: 59.20
+[Game/render_thread] Rendering frame, player@['35.335328', '2.070931']. FPS: 38.343117
+[Physics Thread] Player ticked. pos=35.49,1.85, yvel=-13.17, TPS: 58.62
+[Game/render_thread] Rendering frame, player@['35.488871', '1.846178']. FPS: 37.428371
+[Physics Thread] Player ticked. pos=35.65,1.60, yvel=-14.04, TPS: 57.61
+[Physics Thread] Player ticked. pos=35.80,1.34, yvel=-14.93, TPS: 56.31
+[Game/render_thread] Rendering frame, player@['35.804927', '1.337292']. FPS: 37.907793
+[Physics Thread] Player ticked. pos=35.97,1.05, yvel=-15.84, TPS: 54.66
+[Game/render_thread] Rendering frame, player@['35.969583', '1.047412']. FPS: 37.509799
+[Physics Thread] Player ticked. pos=36.12,0.76, yvel=-16.69, TPS: 58.90
+Running collision effect for: Collision(with block0_3 @x,y=36,0
+Crashed into block
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 38.259352
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 86.171982
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 87.472228
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 86.186836
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 86.461062
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 85.819230
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 84.018081
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 86.394581
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 89.497472
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 88.329859
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 89.109087
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 83.421621
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 85.883353
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 84.572318
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 83.414663
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 83.669405
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 82.797221
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 87.920590
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 82.295721
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 84.893967
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 81.789555
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 82.385896
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 87.280598
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 85.231873
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 86.352803
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 87.276790
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 87.053416
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 88.366544
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 87.940693
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 85.645769
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 83.946845
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 86.460315
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 83.244539
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 86.654362
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 87.051143
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 87.694682
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 85.339523
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 84.690499
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 83.611341
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 83.083391
+[Game/render_thread] Rendering frame, player@['36.122392', '0.763975']. FPS: 86.934599
+crash_normal(): setting player pos back to [0, 0]
+[Game/render_thread] Rendering frame, player@['0.000000', '0.000000']. FPS: 88.490094
+[Physics Thread] Player ticked. pos=0.15,0.00, yvel=0.00, TPS: 59.01
+[Physics Thread] Player ticked. pos=0.31,0.00, yvel=0.00, TPS: 55.73
+[Game/render_thread] Rendering frame, player@['0.314017', '0.000000']. FPS: 22.738745
+[Physics Thread] Player ticked. pos=0.47,0.00, yvel=0.00, TPS: 59.19
+[Game/render_thread] Rendering frame, player@['0.466058', '0.000000']. FPS: 46.912237
+[Physics Thread] Player ticked. pos=0.62,0.00, yvel=0.00, TPS: 58.81
+[Physics Thread] Player ticked. pos=0.77,0.00, yvel=0.00, TPS: 58.02
+[Game/render_thread] Rendering frame, player@['0.774220', '0.000000']. FPS: 49.610311
+[Physics Thread] Player ticked. pos=0.93,0.00, yvel=0.00, TPS: 58.45
+[Game/render_thread] Rendering frame, player@['0.928188', '0.000000']. FPS: 47.399430
+[Physics Thread] Player ticked. pos=1.08,0.00, yvel=0.00, TPS: 59.04
+[Game/render_thread] Rendering frame, player@['1.080628', '0.000000']. FPS: 48.681463
+[Physics Thread] Player ticked. pos=1.23,0.00, yvel=0.00, TPS: 58.66
+[Game/render_thread] Rendering frame, player@['1.234055', '0.000000']. FPS: 61.281644
+[Physics Thread] Player ticked. pos=1.39,0.00, yvel=0.00, TPS: 57.88
+[Game/render_thread] Rendering frame, player@['1.389555', '0.000000']. FPS: 49.962778
+[Physics Thread] Player ticked. pos=1.55,0.00, yvel=0.00, TPS: 57.80
+[Game/render_thread] Rendering frame, player@['1.545254', '0.000000']. FPS: 48.588740
+[Physics Thread] Player ticked. pos=1.70,0.00, yvel=0.00, TPS: 59.59
+[Game/render_thread] Rendering frame, player@['1.696291', '0.000000']. FPS: 47.726318
+[Physics Thread] Player ticked. pos=1.86,0.00, yvel=0.00, TPS: 56.30
+[Physics Thread] Player ticked. pos=2.01,0.00, yvel=0.00, TPS: 57.65
+[Game/render_thread] Rendering frame, player@['2.012255', '0.000000']. FPS: 46.754315
+[Physics Thread] Player ticked. pos=2.16,0.00, yvel=0.00, TPS: 59.02
+[Game/render_thread] Rendering frame, player@['2.164737', '0.000000']. FPS: 47.840710
+[Physics Thread] Player ticked. pos=2.32,0.00, yvel=0.00, TPS: 59.17
+[Game/render_thread] Rendering frame, player@['2.316849', '0.000000']. FPS: 47.189845
+[Physics Thread] Player ticked. pos=2.47,0.00, yvel=0.00, TPS: 58.27
+[Game/render_thread] Rendering frame, player@['2.471297', '0.000000']. FPS: 47.590720
+[Physics Thread] Player ticked. pos=2.62,0.00, yvel=0.00, TPS: 58.93
+[Physics Thread] Player ticked. pos=2.78,0.00, yvel=0.00, TPS: 57.59
+[Game/render_thread] Rendering frame, player@['2.780300', '0.000000']. FPS: 45.428321

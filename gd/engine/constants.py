@@ -1,15 +1,19 @@
 class CONSTANTS:
     BLOCKS_PER_SECOND = 9
-    GRAVITY = 40
-    TERMINAL_VEL = 20
+    GRAVITY = 50
+    PLAYER_JUMP_STRENGTH = 16
+    """ How much the player's yvel is set to when they jump. """
+    TERMINAL_VEL = 30
+    """ The maximum downward velocity the player can accumulate due to GRAVITY (can exceed if using a black orb, for example). """
+
+    CUBE_GRAVITY_MULTIPLIER = 1
+    BALL_GRAVITY_MULTIPLIER = 0.8
+    UFO_GRAVITY_MULTIPLIER = 0.7
 
     PLAYER_HITBOX_X = 1
     PLAYER_HITBOX_Y = 1
     
     COOLDOWN_BETWEEN_ATTEMPTS = 0.5
-    
-    PLAYER_JUMP_STRENGTH = 15
-    """ How much the player's yvel is set to when they jump. """
     
     PURPLE_ORB_MULTIPLIER = 0.5
     

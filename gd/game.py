@@ -10,7 +10,7 @@ from logger import Logger
 from typing import List, TYPE_CHECKING
 from multiprocessing import process
 from copy import deepcopy
-from draw_utils import Position, draw_rect
+from draw_utils import Position
 from img2term.main import draw
 from bottom_menu import draw_text
 import time
@@ -55,12 +55,9 @@ class Game:
         """
 
         self.running = True
-        # unpauses the game
         self.paused = False
-        # Initialize camera rendering
+        
         self.camera.render_init()
-        # stores the players initial position when the level starts (for rendering purposes)
-        player_initial_pos = deepcopy(self.player.pos)
         def render_thread():
             try:
                 last_frame = time_ns()
@@ -68,11 +65,12 @@ class Game:
                     curr_frame = time_ns()
 
                     fps_str = f"{(1e9/(curr_frame-last_frame)):2f}" if (curr_frame-last_frame != 0) else "inf"
-                    Logger.log(f"[Game/render_thread] Rendering frame with player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str} (includes sleeping for {1/CameraUtils.RENDER_FRAMERATE:.2f}s)")
+                    Logger.log(f"[Game/render_thread] Rendering frame, player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str}")
                     self.camera.render(self)
                     # renders the most recent checkpoint if it exists
-                    if self.last_checkpoint:
-                        self.camera.draw_checkpoint(self.player.pos[0], self.last_checkpoint[0], self.last_checkpoint[1])
+                    # note: this has been moved to Camera.render
+                    # if self.last_checkpoint:
+                    #     self.camera.draw_checkpoint(self.player.pos[0], self.last_checkpoint[0], self.last_checkpoint[1])
                     
                     #Logger.log(f"Just rendered frame with player@{[f'{num:2f}' for num in self.player.pos]}. It has been {((curr_frame-last_frame)/1e9):2f}s since last f.")
                     last_frame = curr_frame
@@ -83,42 +81,37 @@ class Game:
                     if not self.running:
                         break     
             except Exception as e:
-                Logger.log(f"[Game/render_thread] ERROR: {traceback.format_exc()}")
+                Logger.log(f"[Render Thread] ERROR: {traceback.format_exc()}")
                 self.running = False       
 
         def physics_thread():
-            
-            # for row in self.leveldata:
-            #     Logger.log(f"Leveldata: {[obj.data['name'] if obj is not None else 'None' for obj in row]}")
             try:
                 while True:
-                    
                     #Logger.log(f"running physics tick. player pos is {self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, time_ns is {time_ns()}")
-                    
                     if not self.running: break
-
+                    
+                    # before collisions is updated, tick physics.                
+                    curr_time = time_ns()
+                    self.player.tick((curr_time - self.last_tick)/1e9)
+                    Logger.log(f"[Physics Thread] Player ticked. pos={self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, yvel={self.player.yvel:.2f}, TPS: {1/((curr_time-self.last_tick)/1e9):.2f}")
+                    self.last_tick = curr_time
+                    
                     # check collisions
                     self.player.curr_collisions = self.generate_collisions()
-
-                    # apply effects
+                    
+                    # apply collision effects
                     for collision in self.player.curr_collisions:                    
                         # don't auto-run effect here if it requires click. That's a job for the key input thread.
                         Logger.log(f"Running collision effect for: {collision}")
                         if not collision.obj.data.get("requires_click"):
                             self.run_collision_effect(collision)
                     
-                    # after collisions is updated, tick physics.                
-                    curr_time = time_ns()
-                    self.player.tick((curr_time - self.last_tick)/1e9)
-                    self.last_tick = curr_time
-                    
                     # DO NOT REMOVE. removing this slows down the renderer by A LOT
                     # even if the physics fps is like 389429 it still speeds things up a lot
                     # to have this sleep here. DONT ASK ME WHY IDK EITHER
                     sleep(1/CONSTANTS.PHYSICS_FRAMERATE)
-
             except Exception as e:
-                Logger.log(f"Error in physics thread: {traceback.format_exc()}")
+                Logger.log(f"[Physics Thread] ERROR: {traceback.format_exc()}")
                 self.running = False
         
         self.last_tick = time_ns()
@@ -242,15 +235,12 @@ class Game:
 
         sleep(CONSTANTS.COOLDOWN_BETWEEN_ATTEMPTS)
         self.is_crashed = False
+        self.player.reset_physics()
         self.last_tick = time_ns() # this is to prevent moving forward while we are dead lol
 
         # otherwise, restart the level by setting pos back to beginning 
         # also, NOTE: reset song if that is implemented
-        self.player.pos = deepcopy(self.player.ORIGINAL_START_POS)
         Logger.log(f"crash_normal(): setting player pos back to {self.player.ORIGINAL_START_POS}")
-
-        self.player.curr_collisions = []
-
         self.attempt_number += 1
 
     def pause(self) -> None:

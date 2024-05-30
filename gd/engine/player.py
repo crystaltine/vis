@@ -1,8 +1,14 @@
-from engine.constants import CONSTANTS, SPEEDS
-from logger import Logger
 from typing import List
-from engine.collision import Collision
 from time import time_ns
+from copy import deepcopy
+
+from logger import Logger
+from engine.constants import CONSTANTS, SPEEDS
+from engine.collision import Collision
+
+from engine.gamemodes.cube import tick_cube, jump_cube
+from engine.gamemodes.ball import tick_ball, jump_ball
+from engine.gamemodes.ufo import tick_ufo, jump_ufo
 
 class Player:
     """
@@ -23,7 +29,13 @@ class Player:
         If a setting isn't provided, default values are used,
         which will spawn a cube at [0,0] with regular speed and gravity.
         """
+        self.START_SETTINGS = start_settings
+        
         self.speed = SPEEDS.decode(start_settings.get("speed")) or SPEEDS.normal
+        
+        self.gamemode = start_settings.get("gamemode") or "cube"
+        """ One of "cube", "ship", "ball", "ufo", "wave", "robot", "spider" (swing maybe? idk)"""
+        
         self.ORIGINAL_START_POS = start_settings.get("pos") or [0, 0] # used for resetting
         self.pos = start_settings.get("pos") or [0, 0]
         """ [x, y], where x is horiz (progress). BOTTOM LEFT of player. y=0 means on the ground, and y cannot be negative."""
@@ -31,7 +43,7 @@ class Player:
         self.yvel = 0
         self.gravity = start_settings.get("gravity") or CONSTANTS.GRAVITY
         
-        self._jump_requested = False
+        self.jump_requested = False
         """ variable to store when the player jumps before the next physics tick. """
 
         self.last_on_ground_time = None
@@ -44,85 +56,68 @@ class Player:
 
     def tick(self, timedelta: float):
         """ 
-        Physics tick for the player.
-
-        Note Mar. 7, 2024 @2:14AM: this currently runs AFTER collisions are checked for the current position.
-
-        Timedelta should be in seconds and should represent the time since last tick.
-        If this is the first tick, then timedelta should be 0 (i think).
+        General physics tick for the player. Calls the appropriate tick function based on the current gamemode.
         """
         
-        #Logger.log(f"Tick: td={timedelta}, pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}, jump_req={self._jump_requested}, in_air={self.in_air}, grav_dir={self.gravity}")
-        #Logger.log(f"^^^: collisions: {[(collision.obj.data['name'], collision.vert_coord, collision.vert_side) for collision in self.curr_collisions]}")
+        # TODO - make code better by keeping a list and using getattr?
+        match self.gamemode:
+            case "cube":
+                tick_cube(self, timedelta)
+            case "ball":
+                tick_ball(self, timedelta)
+            case "ufo":
+                tick_ufo(self, timedelta)
+            case _:
+                raise Exception(f"[Player/tick] Error: gamemode {self.gamemode} does not exist.")
+
+    
+    def reset_physics(self, new_pos = None) -> None:
+        """
+        Reset to starting physics (yvel=0, in_air=False, etc.)
+        This should be used when the player dies or resets.
+        Optionally, can select a new position to reset to.
+        """
         
-        # always move right no matter what
-        self.pos[0] += self.speed * CONSTANTS.BLOCKS_PER_SECOND * timedelta
-        
-        # GLIDE HANDLING BELOW (setting y-values)
-        
-        # if y < 0, then we just hit ground and should just set y=0, yvel=0, in_air=False
-        if self.pos[1] <= 0 and self.yvel <= 0: # if we are going up, we shouldnt hit the ground
-            #Logger.log(f"Hit ground. setting y-pos to 0 and in_air to False")
-            self.pos[1] = 0
-            self.yvel = 0
-            self.in_air = False            
-        
-        # if gravity is + (down) and we have a "top" collision, adjust the y position to be on top of the block
-        elif (self.gravity > 0 and any(collision.vert_side == "top" for collision in self.curr_collisions)):
-            if self.yvel < 0: # only hit ground if we are going down
-                self.pos[1] = max([collision.vert_coord for collision in self.curr_collisions if collision.vert_side == "top"])
-                self.yvel = 0
-                
-                #Logger.log(f"reg gravity: setting y-pos to {self.pos[1]:.2f} and in_air to False")
-                self.in_air = False
-        
-        # if gravity is - (up) and we have a "bottom" collision, adjust the y position to be on top of the block
-        elif (self.gravity < 0 and any(collision.vert_side == "bottom" for collision in self.curr_collisions)):
-            if self.yvel > 0: # only hit ground if we are going up
-                # we have to subtract the player hitbox yrange to get the top of the player
-                self.pos[1] = min([collision.vert_coord for collision in self.curr_collisions if collision.vert_side == "bottom"])-CONSTANTS.PLAYER_HITBOX_Y
-                self.yvel = 0
-                
-                #Logger.log(f"rev gravity: setting y-pos to {self.pos[1]:.2f} and in_air to False")
-                self.in_air = False
-        
-        # otherwise are in mid-air and should apply gravity
-        else:
-            #Logger.log(f"seems like we are in the air, in_air -> true after this.")
-            self.in_air = True
-            self.yvel -= self.gravity * timedelta
-            self.yvel = max(min(self.yvel, CONSTANTS.TERMINAL_VEL), -CONSTANTS.TERMINAL_VEL) # clamp yvel to terminal velocity
-        
-        # if jump was requested, set the jump physics
-        if self._jump_requested:
-            self._jump()
-            self._jump_requested = False
-            
-        if not self.in_air:
-            self.last_on_ground_time = time_ns()
-        
-        #Logger.log(f"End of tick: updating pos[1] to {self.pos[1]:.4f} since yvel={self.yvel:.4f} and timedelta={timedelta:.4f}")
-        self.pos[1] += self.yvel * timedelta
-        
+        self.pos = new_pos or deepcopy(self.ORIGINAL_START_POS)
+        self.in_air = False
+        self.yvel = 0
+        self.jump_requested = False        
+        self.curr_collisions.clear()
+        self.gamemode = self.START_SETTINGS.get("gamemode") or "cube"
+        self.speed = SPEEDS.decode(self.START_SETTINGS.get("speed")) or SPEEDS.normal
+        self.gravity = self.START_SETTINGS.get("gravity") or CONSTANTS.GRAVITY
+        self.last_on_ground_time = time_ns()
+    
     def jump(self):
         """
         Requests a jump for the next physics tick.
         """
-        if self.in_air: 
-            #Logger.log(f"XXXXXXXX player tried to jump but cant. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}")
-            return
+        # NOTE: this is getting moved to each gamemmode's specific jump handler,
+        # since you can multi-input in some (such as ufo)
+        #if self.in_air: 
+        #    #Logger.log(f"XXXXXXXX player tried to jump but cant. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}")
+        #    return
         
         #Logger.log(f"XXXXXXXX player jumped. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}, walking_on={self._walking_on:.2f}, names of colliding objs: {[collision.obj.data['name'] for collision in self.curr_collisions]}")
         
-        self._jump_requested = True
+        self.jump_requested = True
     
     def _jump(self):
         """
-        Sets the physics for jumping. Should only be used in `Player.tick()`
+        Sets the physics for jumping, depending on the gamemode. Should only be used in `Player.tick()`
         and nowhere else. For external use, use `Player.jump()`.
         """
-        self.yvel = CONSTANTS.PLAYER_JUMP_STRENGTH * self.sign_of_gravity()
-        self.in_air = True
+        
+        # TODO - make code better by keeping a list and using getattr?
+        match self.gamemode:
+            case "cube":
+                jump_cube(self)
+            case "ball":
+                jump_ball(self)
+            case "ufo":
+                jump_ufo(self)
+            case _:
+                raise Exception(f"[Player/_jump] Error: gamemode {self.gamemode} does not exist.")
     
     def get_animation_frame_index(self) -> int:
         """
