@@ -104,7 +104,13 @@ def main():
         try:
             resp = requests.post(f"https://{config.HOST}:{config.PORT}/api/login/bypass", json={"cache": cache, "sys_uuid": sys_uuid})
             if resp.status_code == 200:
-                server_select.main(resp.json()["token"])
+                try:
+                    server_select.main(resp.json()["token"])
+                except Exception as e:
+                    print(term.red + "An error occurred while trying to bypass the login, please log in manually." + term.normal)
+                    print(e)
+                    
+
                 sys.exit(0)
             elif resp.status_code != 500:
                 print(term.red + f"Could not establish a connection to the Viscord server at {config.HOST}:{config.PORT}, exiting..." + term.normal)

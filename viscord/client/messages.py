@@ -25,17 +25,26 @@ data = {}
 global typed_message
 typed_message = ""
 
+def hex_to_rgb(hex):
+    hex = hex.lstrip('#')
+    return tuple(int(hex[i:i+2], 16) for i in (0, 2, 4))
+
+
 def draw_typed_message():
+    global typed_message
     print(term.move(int(term.height * 0.9 - 2), int(term.width * 0.1) + 1) + term.on_color_rgb(*hex_to_rgb(colors.field)) + term.color_rgb(*hex_to_rgb(colors.text)) + " " * (int(term.width * 0.8 - 2)))
 
     print(term.move(int(term.height * 0.9 - 4), int(term.width * 0.1)) + term.on_color_rgb(*hex_to_rgb(colors.div_shadow)) + term.color_rgb(*hex_to_rgb(colors.div_shadow)) + " " * (int(term.width * 0.8)))
 
-    
 
+    chunked = [typed_message[i:i+int(term.width * 0.8 - 2)] for i in range(0, len(typed_message), int(term.width * 0.8 - 2))]
+    try:
+        if len(chunked) > 0:
+            to_show = chunked[-1]
+            print(term.move(int(term.height * 0.9 - 2), int(term.width * 0.1) + 1) + term.on_color_rgb(*hex_to_rgb(colors.field)) + term.color_rgb(*hex_to_rgb(colors.text)) + to_show + " " * (int(term.width * 0.8 - 2) - len(to_show)))
+    except Exception as e:
+        print(str(e))
 
-def hex_to_rgb(hex):
-    hex = hex.lstrip('#')
-    return tuple(int(hex[i:i+2], 16) for i in (0, 2, 4))
 
 def draw_background():
     print(term.home + term.clear, end=" ")
@@ -66,7 +75,7 @@ def socket_handler():
             if not receiveddata:
                 break
             message_data = json.loads(receiveddata.decode())
-            data.append(message_data)
+            data.insert(0, message_data["data"])
             show_recent_messages()
     except Exception as e:
         pass
@@ -78,6 +87,18 @@ def show_recent_messages():
 
     for y in range(tly, tly + int(term.height * 0.8) - 4):
         print(term.move(y, tlx) + term.on_color_rgb(*hex_to_rgb(colors.div)) + " " * (int(term.width * 0.8)))
+
+    starting_y = tly + int(term.height * 0.8) - 5
+    msg_index = 0
+    while starting_y > tly:
+        if msg_index >= len(data):
+            break
+        msg = data[msg_index]
+        msg_index += 1
+        starting_y -= 1
+        text = msg["message_content"]
+        print(term.move(starting_y, tlx) + term.on_color_rgb(*hex_to_rgb(colors.div)) + term.color_rgb(*hex_to_rgb(colors.text)) + text + " " * (int(term.width * 0.8 - len(text))))
+
 
 
 def redraw_all():
@@ -130,7 +151,7 @@ def main(user_token, server_id, channel_id):
                 s.close()
                 getting_messages = False
                 break
-            elif repr(val.code) in keyshortcuts.typable:
+            elif val.code is None and val in keyshortcuts.typeable:
                 typed_message += val
                 draw_typed_message()
             elif val.code == term.KEY_BACKSPACE:
@@ -146,7 +167,6 @@ def main(user_token, server_id, channel_id):
                     "replied_to_id": None
                 })
                 if resp.status_code != 200:
-                    print(resp.status_code)
                     continue
 
                 socket_data = {
@@ -156,5 +176,5 @@ def main(user_token, server_id, channel_id):
                 s.send(json.dumps(socket_data).encode())
 
                 typed_message = ""
-
+                draw_typed_message()
 
