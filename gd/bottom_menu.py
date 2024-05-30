@@ -98,7 +98,7 @@ def draw_bottom_menu():
     
    # This clears the screen
 
-    os.system('cls')
+    os.system('clear')
 
     # Setting bg color to blue
     draw_rect('blue', Position.Relative(0,0,0,0))

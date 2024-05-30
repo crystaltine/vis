@@ -17,7 +17,7 @@ current_page_index=0
 
 def draw_menu_bg():
     """ This is a very crude function im writing at 5am ill make it better later """
-    draw('assets/menu_bg_1.png', Position.Relative(top=0, left=0), (terminal.width, terminal.height*2), 'scale')
+    draw('gd/assets/menu_bg_1.png', Position.Relative(top=0, left=0), (terminal.width, terminal.height*2), 'scale')
 
 def draw_menu_title():
     """ Attempts to draw the GEOMETRY DASH title in the center-top of the screen. it's 141 pixels wide, so requires fullscreen.
@@ -28,7 +28,7 @@ def draw_menu_title():
     
     left_pos = "calc(50% - 70)"
     top_pos = 4 # arbitrary value
-    draw('assets/menu_title_1_editable.png', Position.Relative(left=left_pos, top=top_pos), (None, None), 'crop')
+    draw('gd/assets/menu_title_1_editable.png', Position.Relative(left=left_pos, top=top_pos), (None, None), 'crop')
 
 def main():
 
@@ -55,7 +55,7 @@ def main():
                 # Quitting game if q is hit
 
                 if val == "q":
-                    os.system('cls')
+                    os.system('clear')
                     break
                 
                 if current_page_index>0 and val.name=="KEY_ESCAPE":
@@ -178,14 +178,19 @@ def handle_level_select_page(val):
         draw_level(level_info['level_name'], level_info['level_description'], int(terminal.width*0.8), int(terminal.height*0.6), 
                    int(terminal.width*0.1), int(terminal.height*0.3), level_info['color1'], level_info['color2'])
 
+
+main()
+
+'''
 if __name__ == "__main__":
     # testing
     try:
         main()
+
     except Exception as e:
         Logger.log(f"Error in CharacterSelect.render(): {e}")
         Logger.log(f"Traceback: {traceback.format_exc()}")
         print(f"\x1b[31m{traceback.format_exc()}\x1b[0m")
         
     Logger.write()
-        
+''' 

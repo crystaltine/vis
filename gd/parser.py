@@ -33,7 +33,7 @@ def parse_level(filename: str) -> list:
     ```    
     """
     
-    with open(f"levels/{filename}", "r") as f:
+    with open(f"gd/levels/{filename}", "r") as f:
         lines = f.readlines()
         
         leveldata: List[List[LevelObject]] = []

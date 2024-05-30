@@ -1,6 +1,6 @@
 import re
 import os
-from logger import Logger
+from logger_menu import Logger
 from MM import MM
 
 class Position:
@@ -212,7 +212,7 @@ def cls() -> None:
 
     @TODO - uh i forgot how to check for OS names, idk if cls works everywhere. works on ps win11 tho.
     """
-    os.system('cls')
+    os.system('clear')
 
 def print2(*args, **kwargs) -> None:
     """

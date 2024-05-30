@@ -13,22 +13,22 @@ def draw_menu_background(filename:str):
 def draw_menu_title(): 
     left_pos = "calc(50% - 70)"
     top_pos = 4 
-    draw('assets/level_editor_menu/level_menu_title_2.jpeg', Position.Relative(left=left_pos, top=top_pos), (None, None), 'crop')
+    draw('gd/assets/level_editor_menu/level_menu_title_2.jpeg', Position.Relative(left=left_pos, top=top_pos), (None, None), 'crop')
 
 def draw_publish_button(outline:bool): 
-    draw(f"assets/level_editor_menu/publish_button_main{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(30% - 44.8ch)", bottom="calc(50% - 13ch)"))
+    draw(f"gd/assets/level_editor_menu/publish_button_main{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(30% - 44.8ch)", bottom="calc(50% - 13ch)"))
 
 def draw_create_button(outline:bool): 
-    draw(f"assets/main_menu/create_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(50% - 46ch)", bottom="calc(50% - 13ch)"))
+    draw(f"gd/assets/main_menu/create_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(50% - 46ch)", bottom="calc(50% - 13ch)"))
 
 def draw_search_button(outline:bool): 
-    draw(f"assets/level_editor_menu/search_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(30% - 45ch)", bottom="calc(50% - 13ch)"))
+    draw(f"gd/assets/level_editor_menu/search_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(30% - 45ch)", bottom="calc(50% - 13ch)"))
 
 def draw_my_levels_button(outline:bool): 
-    draw(f"assets/level_editor_menu/my_levels_button{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(30% - 13ch)", bottom="calc(50% - 13ch)")) 
+    draw(f"gd/assets/level_editor_menu/my_levels_button{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(30% - 13ch)", bottom="calc(50% - 13ch)")) 
 
 def _draw_start_button(outline:bool): 
-     draw(f"assets/level_editor_menu/start_button_smaller{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(50% - 14ch)", bottom="calc(50% - 13ch)"))
+     draw(f"gd/assets/level_editor_menu/start_button_smaller{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(50% - 14ch)", bottom="calc(50% - 13ch)"))
 
 def draw_all_buttons(number): 
     if number == 1: 

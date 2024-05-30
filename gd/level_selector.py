@@ -1,6 +1,6 @@
 from bottom_menu import *
 
-os.system('cls')
+os.system('clear')
 
 levels=[{'level_name':'TEST LEVEL 1',
          'level_description':'This is a random test level for demo purposes',

@@ -3,8 +3,8 @@ import numpy
 from PIL import Image
 from img2term.utils import fcode_opt
 from typing import List, Tuple, Literal
-from draw_utils import Position, print2
-from logger import Logger
+from main_menu_draw_utils import Position, print2
+from logger_menu import Logger
 
 PIXEL = "▀" # top half is bg, bottom half is fg
 

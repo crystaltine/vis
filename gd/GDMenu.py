@@ -30,7 +30,7 @@ def _draw_icon_selector_button(outline: bool = False):
     see gd/assets/main_menu/main_menu_layout_calcs.png for the calculations/numbers used in this method.
     """
     
-    draw(f"assets/main_menu/icon_selector_button{'_outline' if outline else ''}.png",
+    draw(f"gd/assets/main_menu/icon_selector_button{'_outline' if outline else ''}.png",
         pos=Position.Relative(left="calc(30% - 23ch)", bottom="calc(50% - 13ch)"))
     
 def _draw_start_button(outline: bool = False):
@@ -46,7 +46,7 @@ def _draw_start_button(outline: bool = False):
     see gd/assets/main_menu/main_menu_layout_calcs.png for the calculations/numbers used in this method.
     """
     
-    draw(f"assets/main_menu/start_button{'_outline' if outline else ''}.png",
+    draw(f"gd/assets/main_menu/start_button{'_outline' if outline else ''}.png",
         pos=Position.Relative(left="calc(50% - 18ch)", bottom="calc(50% - 15ch)"))
     
 def _draw_create_button(outline: bool = False):
@@ -62,5 +62,5 @@ def _draw_create_button(outline: bool = False):
     see gd/assets/main_menu/main_menu_layout_calcs.png for the calculations/numbers used in this method.
     """
     
-    draw(f"assets/main_menu/create_button{'_outline' if outline else ''}.png",
+    draw(f"gd/assets/main_menu/create_button{'_outline' if outline else ''}.png",
         pos=Position.Relative(right="calc(30% - 23ch)", bottom="calc(50% - 13ch)"))
