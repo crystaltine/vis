@@ -218,7 +218,7 @@ def print2(*args, **kwargs) -> None:
     """
     Wrapper for builtin print that always has end="\\r\\x1b[0m"
     """
-    print(*args, **kwargs, end='\r\x1b[0m')
+    print(*args, **kwargs, end='\n\r\x1b[0m')
 
 def convert_to_chars(container_dim: int, dimvalue: int | str | None) -> int | None:
     """
@@ -342,9 +342,8 @@ def draw_rect(
     #Logger.log(f"color: {color}\n")
     
     # draw the rectangle
-    with GD.term.hidden_cursor():
-        for i in range(true_top, true_top + true_height):
-            print2(GD.term.move_yx(i, true_left) + fcode(color) + "█"*true_width)
+    for i in range(true_top, true_top + true_height):
+        print2(GD.term.move_yx(i, true_left) + fcode(color) + "█"*true_width)
 
 def colorize_pixel(grayscale_value: int, primary_color: str | tuple, secondary_color: str | tuple) -> tuple:
     """
