@@ -80,10 +80,10 @@ class Level:
         self.leveldata: List[List["LevelObject"]] = leveldata
         """ The backend level data. SHOULD be rectangular - see level_parser """
         
-        self.width = len(leveldata[0])
-        """ The width of the level. Ends at the last object (rightmost object)"""
+        self.length = len(leveldata[0])
+        """ The length of the level in blocks. Equal to x-coord of the rightmost object + 1."""
         self.height = len(leveldata)
-        """ The height of the level. """
+        """ The height of the level in blocks. Equal to y-coord of the highest object + 1. """
         
         self.color_channels: Dict[int, Tuple[int, int, int]] = {}
         """ Dict of id -> RGB color. Objects can reference these IDs to get their color. """
@@ -91,13 +91,12 @@ class Level:
         self.bg_color = metadata["start_settings"]["bg_color"]
         self.ground_color = metadata["start_settings"]["ground_color"]
     
-    # TODO: implement this
-    def parse(self, level_filepath: str) -> "Level":
+    def parse_from_file(self, filepath: str) -> "Level":
         """ Parses a level file (using the new JSON-based system) and returns a Level object."""
         
         levelfile: dict = ...
         
-        with open(level_filepath, 'r') as f:
+        with open(filepath, 'r') as f:
             levelfile = json.load(f)
             f.close()
 
@@ -107,13 +106,13 @@ class Level:
 
         level_metadata_format = LEVEL_TYPES.get(level_type)
         if level_metadata_format is None: 
-            raise LevelParseError(f"Error while parsing level {level_filepath}: type {level_type} is not supported.")
+            raise LevelParseError(f"Error while parsing level {filepath}: type {level_type} is not supported.")
 
         required_keys = level_metadata_format.__required_keys__
 
         diff = required_keys.difference(metadata.keys())
         if len(diff) > 0:
-            raise LevelParseError(f"Error while parsing level {level_filepath}: Missing the following metadata for level type {level_type}: {', '.join(diff)}")
+            raise LevelParseError(f"Error while parsing level {filepath}: Missing the following metadata for level type {level_type}: {', '.join(diff)}")
         
         # pad leveldata to be rectangular (all rows the same length).
         # add nones
@@ -130,7 +129,19 @@ class Level:
                 row.extend([None] * len_diff)
 
         return Level(metadata, leveldata)
+    
+    parse = parse_from_file
+    """ Alias for `parse_from_file` function. """
+    
+    def write_to_file(self, filepath: str) -> None:
+        """ Writes the level in JSON format to a specified filepath, overwriting if the path already exists. """
         
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump({
+                'metadata': self.metadata,
+                'leveldata': self.leveldata
+            }, f)
+    
     def get_object_at(self, x: int, y: int) -> "LevelObject" | None:
         """
         Return a reference to the LevelObject at these specific coordinates.
@@ -139,21 +150,67 @@ class Level:
         coordinates refer to the bottom left corner of a LevelObject.
         """
         
-        row_index = len(self.leveldata) - y - 1
-        return self.leveldata[row_index][x]
+        row_index_in_list = len(self.leveldata) - y - 1
+        return self.leveldata[row_index_in_list][x]
+    
+    def set_object_at(self, obj: "LevelObject", x: int, y: int) -> None:
+        """
+        Sets the object at coordinates x, y to `obj`.
+        x and y must both be nonnegative.
+        
+        If out of range, expands the level.
+        """
+        # check for nonnegativitiy
+        if x < 0 or y < 0:
+            raise ValueError(f"Invalid position ({x},{y}) while trying to set object in level - both coordinates must be nonnegative.")
+        
+        if x > self.length:
+            # expand level horizontally, add Nones as padding at the end of each row
+            for row in self.leveldata:
+                row.extend([None] * (x - self.length + 1))
+                
+            # update length field
+            self.length += x - self.length + 1
+        
+        if y > self.height:
+            # expand level vertically, add Nones as padding
+            # note that to go higher, we add rows at the beginning
+            new_rows = [[None] * self.length] * (y - self.height + 1)
+            self.leveldata = new_rows + self.leveldata
+            
+            # update height field
+            self.height += y - self.height + 1
+        
+        # set the new object    
+        row_index_in_list = self.height - y - 1
+        self.leveldata[row_index_in_list][x] = obj            
     
     def get_row(self, y: int) -> List["LevelObject"]:
         """ Return a list of LevelObjects at a specific y-coordinate. """
-        return self.leveldata[len(self.leveldata) - y - 1]
+        return self.leveldata[self.height - y - 1]
     
     def set_color_channel(self, id: int, new_color: CameraConstants.RGBTuple):
         """ Update the color of a color channel. Creates a new channel if it doesn't exist. """
         self.color_channels[id] = new_color
         
     def get_color_channel(self, id: int) -> CameraConstants.RGBTuple:
-        """ Get the color of a color channel. If the channel was never set, sets it to `(255, 255, 255)` (white) and returns that. """
+        """ Get the current color of a color channel. If the channel was never set, sets it to `(255, 255, 255)` (white) and returns that. """
         self.color_channels.setdefault(id, (255, 255, 255))
         return self.color_channels[id]
+    
+    def get_colors_of(self, object: "LevelObject") -> Tuple[CameraConstants.RGBTuple | None, CameraConstants.RGBTuple | None]
+        """
+        Returns a tuple (color1, color2) of the colors a LevelObject currently has.
+        
+        For objects with only 1 or no color options (such as orbs not being able to be recolored)
+        None will be returned as the corresponding tuple element.
+        
+        (For objects with a single color returns the color as the first element. The second will be None).
+        """
+        curr_color1 = self.get_color_channel(object.color1_channel) if object.color1_channel is not None else None
+        curr_color2 = self.get_color_channel(object.color2_channel) if object.color2_channel is not None else None 
+        
+        return curr_color1, curr_color2      
         
 class LevelObject:
     """
@@ -169,14 +226,14 @@ class LevelObject:
         """ The type of object this is. """
         
         self.x: float = posx
-        """ Represents the left x-position of the object """
+        """ Represents the x-position (left edge) of the object """
         self.y: float = posy
-        """ Represents the bottom y-position of the object """
+        """ Represents the y-position (bottom edge) of the object """
         
         self.rotation: CameraConstants.ROTATIONS = CameraConstants.ROTATIONS.UP
-        """ Represents the rotation of the object. """
+        """ Represents the rotation of the object, Can be 'up','right','down','left'. up = no rotation, right = 90deg to the right, etc. """
         self.reflection: CameraConstants.REFLECTIONS = CameraConstants.REFLECTIONS.NONE
-        """ Represents the reflection of the object. """
+        """ Represents the reflection of the object. Can be 'none', 'horizontal', 'vertical', or 'both' """
         
         self.color1_channel: int
         """ the id of the color channel this object's color1 conforms to """

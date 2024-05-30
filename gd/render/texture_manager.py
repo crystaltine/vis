@@ -51,7 +51,7 @@ class TextureManager:
     
     Cache keys are stored in the following format:
     
-    `{object name}_{rotation}_{reflection}_{color1 hex|None}_{color2 hex|None}`
+    `{object name}_{rotation}_{reflection}_{color1|None}_{color2|None}`
     """
     
     def get_texture(texture_name: str):
@@ -286,16 +286,7 @@ class TextureManager:
         
         return final_pixels
 
-    def spike(options: GrayscaleTextureOptions = DEFAULT_GRAYSCALE_TEXTURE_OPTIONS) -> np.ndarray:
-        return TextureManager.build_grayscale_texture_to_pixels("./assets/objects/spike.png", **options)
-    
-    def orb(type: Literal["yellow", "purple", "blue", "green", "red", "black"], options: ColorfulTextureOptions = DEFAULT_COLORFUL_TEXTURE_OPTIONS) -> np.ndarray:
-        return TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/orbs/orb_{type}.png", **options)
-    
-    def pad(type: Literal["yellow", "purple", "blue", "red"], options: ColorfulTextureOptions = DEFAULT_COLORFUL_TEXTURE_OPTIONS) -> np.ndarray:
-        return TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/pads/pad_{type}.png", **options)
-
-    def get_transformed_texture(self, level_obj: "Level", object: "LevelObject") -> np.ndarray:
+    def get_transformed_texture(self, level: "Level", object: "LevelObject") -> np.ndarray:
         """
         Given a `LevelObject`, attempts to search & return its specific texture in the cache.
         If not found, calculates the transformed texture of the object,
@@ -304,8 +295,26 @@ class TextureManager:
         
         Saves to texture cache. Returns the texture.
         """
-        pass # TODO
+        # search in cache
+        cached = self.texture_cache.get(TextureManager.get_transformed_key(object))
+        
+        if cached is not None: return cached
+        
+        # else, construct texture, save to cache, and return it
     
+    def get_transformed_key(self, level: "Level", object: "LevelObject") -> str:
+        """
+        Returns the "name" (key) that this object would have in the texture cache. 
+        
+        Format: 
+        `{object name}_{rotation}_{reflection}_{color1|None}_{color2|None}`
+        
+        Level object is required as this function checks for the current
+        color of the color channels that `object` is assigned to.
+        """
+        
+        curr_color1, curr_color2 = level.get_colors_of(object)
+        return f"{object.type}_{object.rotation}_{object.reflection}_{curr_color1}_{curr_color2}"
     
 
 # preload all textures
