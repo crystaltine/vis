@@ -1,13 +1,13 @@
 from render.utils import fc, mix_colors, mix_colors_opt as mco
-from typing import List, Literal, TypedDict
+from typing import List, Tuple, Literal, TypedDict
 from logger import Logger
 from PIL import Image
 import numpy as np
 from render.font import Font
 import traceback
 
-# IMPORTANT TODO - textures should be able to change color and stuff. also, player icon can change.
-
+RGBTuple = Tuple[int, int, int]
+RGBATuple = Tuple[int, int, int, int]
 ROTATION_VALUES = {"up": 0, "right": 3, "down": 2, "left": 1}
 
 class GrayscaleTextureOptions(TypedDict):
@@ -24,28 +24,22 @@ class ColorfulTextureOptions(TypedDict):
 
 class TextureManager:
     
-    RS = "\033[0m"
     bg_color: tuple = (24, 67, 240)
     """ Can change throughout the level using triggers. keep as rgb tuple. """
     ground_color: tuple = (8, 32, 170)
     """ Can change throughout the level using triggers. keep as rgb tuple. """
     
-    player_color1: tuple = (120, 202, 102)
-    player_color2: tuple = (118, 231, 241)
+    player_color1: tuple = (111, 255, 83)
+    player_color2: tuple = (90, 250, 255)
     player_icon_idx = 0
     player_icons = []
     """ A list of frames for the player icon. As of 2:43AM 29May2024, 
     this should be 4 frames, with 0=0deg rotation, 1=22.5, and so on. Only supports 4-way symmetry for now. """
     
-    premade_textures = {}
+    textures = {}
     
-    font_small1 = Font("./assets/fonts/small1.png")
-    
-    def get(texture_name: str):
-        return TextureManager.premade_textures[texture_name]
-    
-    def get_raw_obj_text(texture_name: str):
-        return getattr(TextureManager, "raw_" + texture_name)
+    def get_texture(texture_name: str):
+        return TextureManager.textures[texture_name]
 
     DEFAULT_GRAYSCALE_TEXTURE_OPTIONS: GrayscaleTextureOptions = {
         "replace_dark_with": (0, 0, 0),
@@ -61,7 +55,6 @@ class TextureManager:
     }
 
     # should be unused due to new rendering system not needing chars
-    @staticmethod
     def build_grayscale_texture(
         filepath: str,
         replace_dark_with: str | tuple = "#000000",
@@ -130,7 +123,6 @@ class TextureManager:
             
         return ["".join(row) for row in final_chars]
     
-    @staticmethod
     def build_grayscale_texture_to_pixels(
         filepath: str,
         replace_dark_with: tuple = (0, 0, 0),
@@ -183,7 +175,6 @@ class TextureManager:
         return final_pixels
 
     # should be unused due to new rendering system not needing chars
-    @staticmethod
     def build_colorful_texture(
         filepath: str,
         scale: int = 1,
@@ -243,7 +234,6 @@ class TextureManager:
             
         return ["".join(row) for row in final_chars]
 
-    @staticmethod
     def build_colorful_texture_to_pixels(
         filepath: str,
         scale: int = 1,
@@ -304,8 +294,11 @@ class TextureManager:
         Index starts at 0 for the highest block texture, then goes down and to the right.
         """
         return TextureManager.build_grayscale_texture_to_pixels(f"./assets/textures/block0/{index}.png", **options)
-    
-TextureManager.premade_textures.update({
+
+# preload all textures
+
+# load objects
+TextureManager.textures.update({
     "spike": TextureManager.spike(),
     "yellow_orb": TextureManager.orb("yellow"),
     "purple_orb": TextureManager.orb("purple"),
@@ -334,10 +327,11 @@ TextureManager.premade_textures.update({
     "ground": TextureManager.build_colorful_texture_to_pixels("./assets/textures/ground.png", **TextureManager.DEFAULT_COLORFUL_TEXTURE_OPTIONS),
     "checkpoint": TextureManager.build_colorful_texture_to_pixels("./assets/textures/checkpoint.png", **TextureManager.DEFAULT_COLORFUL_TEXTURE_OPTIONS),
 })
-TextureManager.premade_textures.update({
+TextureManager.textures.update({
     f"block0_{i}": TextureManager.block0(i) for i in range(12)
 })
 
+# load player icon rotation textures
 TextureManager.player_icons = [
     TextureManager.build_grayscale_texture_to_pixels(
         f"./assets/textures/icons/cubes/{TextureManager.player_icon_idx}/{i}.png", 
@@ -345,3 +339,7 @@ TextureManager.player_icons = [
         TextureManager.player_color2
     ) for i in range(4)
 ]
+
+# load fonts
+TextureManager.font_small1 = Font("./assets/fonts/small1.png")
+TextureManager.font_title = Font("./assets/fonts/title.png")

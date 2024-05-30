@@ -1,7 +1,10 @@
-from typing import Dict
+from typing import Dict, TYPE_CHECKING
 from logger import Logger
 from PIL import Image
 import numpy as np
+
+if TYPE_CHECKING:
+    from render.texture_manager import RGBTuple, RGBATuple
 
 class Font:
     """ Represents a monospaced font (parsed from images) that can be drawn to the screen. """
@@ -14,7 +17,7 @@ class Font:
     
     def __init__(self, path_to_font_png: str):
         """
-        Initializes and loads each letter of the font into this object.
+        Initializes and loads each charcter of the font into this object.
         
         # IMPORTANT FORMATTING INFO:
         Font PNGs MUST be formatted in the following way:
@@ -36,7 +39,7 @@ class Font:
         If the dimensions of the image do not conform to these dimensional constraints, this constructor raises an error.
         """
         
-        self.fp = path_to_font_png
+        self.filepath = path_to_font_png
         self.symbols: Dict[str, np.ndarray] = {}
         """ Map of all symbols to their respective images, as 3D numpy arrays. """
         
@@ -56,8 +59,8 @@ class Font:
         for i in range(len(Font.PARSER_FORMAT)):
             
             symbols_to_define = Font.PARSER_FORMAT[i]
-            curr_row = img[i*self.font_height:(i+1)*self.font_height]
-            #Logger.log(f"curr_row has shape {curr_row.shape}")
+            curr_row = img[i*(self.font_height+1):i*(self.font_height+1)+self.font_height]
+            #Logger.log(f"curr_row has shape {curr_row.shape}, img has shape {img.shape}. used indices {i*(self.font_height+1)}:{i*(self.font_height+1)+1}")
             
             for j in range(len(symbols_to_define)):
                 self.symbols[symbols_to_define[j]] = curr_row[:, j*(self.font_width+1):(j+1)*(self.font_width+1)-1]
@@ -83,3 +86,32 @@ class Font:
             key: The character (e.g. "a", "*", etc.) to get the image of.
         """
         return self.symbols.get(key)
+    
+    def assemble(self, text: str, color: "RGBTuple | RGBATuple" = (255, 255, 255), spacing: int = 1) -> np.ndarray:
+        """ Converts some text and a color into a single image of the text, returned as a numpy array of pixels. 
+        If `text` contains any characters that are not supported by this font, a ValueError is raised. 
+        
+        `spacing` specifies how many pixels to put in between characters. Default is 1.
+        """
+        
+        # alloc enough space to accomodate height 
+        projected_height = self.font_height
+        projected_width = len(text)*self.font_width + (len(text))*spacing
+        concat_pixels = np.empty((projected_height, projected_width, 4), dtype=np.uint8)
+        
+        for i in range(len(text)):
+            pixels = self.get(text[i].upper())
+            if pixels is None: raise ValueError(f"[FrameLayer/add_text_centered_at]: Can't render unsupported character '{text[i]}' for font @ {self.filepath}")
+
+            # add spacing to the right of the character
+            pixels = np.pad(pixels, ((0, 0), (0, spacing), (0, 0)), mode='constant', constant_values=0)
+            concat_pixels[:,i*(self.font_width+1):i*(self.font_width+1)+self.font_width+spacing] = pixels
+            
+        # remove the last spacing
+        concat_pixels = concat_pixels[:,:-spacing]
+            
+        # colorize - replace all non-transparent pixels with the color
+        rgba_color = color + (255,) if len(color) == 3 else color
+        concat_pixels[concat_pixels[:,:,3] != 0] = rgba_color
+        
+        return concat_pixels
