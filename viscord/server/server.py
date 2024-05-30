@@ -98,7 +98,7 @@ def handle_message(data: dict):
             return
         
     
-        perms = api.chats.chat_perms_wrapper(author, server, channel, cursor=cursor)
+        perms = api.messages.chat_perms_wrapper(author, server, channel, cursor=cursor)
 
         if data["readable"]:
             try:
