@@ -27,7 +27,7 @@ class Logger:
         for i in range(min(len(Logger.onscreen_history), Logger.max_onscreen_len)):
             print(term.move_xy(0, i) + f"[INFO] " + Logger.onscreen_history[-i-1])
             
-    def write(dont_clear_buffer: bool = False):
+    def write_old(dont_clear_buffer: bool = False):
         
         if len(Logger.buffer) > 0:
             
@@ -43,5 +43,20 @@ class Logger:
                 if not dont_clear_buffer:
                     Logger.buffer.clear()
         
+        else:
+            print(f"\x1b[0mLogger buffer is empty, did not write to file.")
+            
+    def write(dont_clear_buffer: bool = False):
+        """ Writes logs to `latest.log`. Clears and rewrites every time so you dont have to dig through 10000 log files. """
+
+        if len(Logger.buffer) > 0:
+            with open(f"latest.log", "w", encoding='utf-8') as log_f:
+                log_f.writelines('\n'.join(Logger.buffer))
+                log_f.close()
+                print(f"\x1b[0mLogged {Logger._count} messages to latest.log.")
+
+                if not dont_clear_buffer:
+                    Logger.buffer.clear()
+                    
         else:
             print(f"\x1b[0mLogger buffer is empty, did not write to file.")
