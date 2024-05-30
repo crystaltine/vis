@@ -133,7 +133,7 @@ def get_recent_messages() -> List[MessageInfo]:
                 "server_id": msg[3],
                 "replied_to_id": msg[4], 
                 "message_content": msg[5], 
-                "message_timestamp": msg[6],
+                "message_timestamp": str(msg[6]),
                 "pinged_user_ids": msg[7]
             } for msg in messages
         ]
