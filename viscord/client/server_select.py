@@ -161,5 +161,14 @@ def main(user_token):
                 redraw_all()
             if val.code == term.KEY_CTRL_S:
                 ... # TODO
-            if val.code == term.KEY_CTRL_N:
-                ... # TODO
+            if val == "\x0e":
+                import new_server
+                ret = new_server.main(user_token)
+                if ret:
+                    resp = requests.post(config.API_URL + "/api/servers/server_info", json={"server_id": ret, "user_token": user_token})
+                    returned = resp.json()["data"]
+                    returned["server_id"] = ret
+                    data.append(returned)
+                    import channel_select
+                    channel_select.main(returned, user_token)
+                redraw_all()

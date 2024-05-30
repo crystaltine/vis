@@ -161,3 +161,8 @@ def main(server_data, user_token):
                 import messages
                 messages.main(user_token, server["server_id"], channel["chat_id"])
                 redraw_all()
+
+            if val == "\x04": # control-d
+                import create_invite
+                create_invite.main(user_token, server["server_id"])
+                redraw_all()

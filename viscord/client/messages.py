@@ -114,7 +114,7 @@ def show_recent_messages():
 
     starting_y = tly + int(term.height * 0.8) - 5
     msg_index = 0
-    while starting_y > tly:
+    while starting_y >= tly:
         if msg_index >= len(data):
             break
         msg = data[msg_index]
@@ -127,10 +127,10 @@ def show_recent_messages():
         for chunk in chunks[::-1]:
             print(term.move(starting_y, tlx) + term.on_color_rgb(*hex_to_rgb(colors.div)) + term.color_rgb(*hex_to_rgb(colors.text)) + chunk + " " * (int(term.width * 0.8 - len(chunk))))
             starting_y -= 1
-            if starting_y == tly:
+            if starting_y < tly:
                 break
 
-        if starting_y <= tly:
+        if starting_y < tly:
             break
         
 
@@ -217,6 +217,7 @@ def main(user_token, server_id, channel_id):
                 typed_message = typed_message[:-1]
                 draw_typed_message()
             elif val.code == term.KEY_ENTER:
+                if len(typed_message.strip()) == 0: continue
                 resp = requests.post(f"{config.API_URL}/api/messages/send", json={
                     "chat_id": channel_id,
                     "server_id": server_id,
