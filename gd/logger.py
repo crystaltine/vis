@@ -10,7 +10,7 @@ class Logger:
     max_onscreen_len = 5
 
     def log(msg: str):
-        Logger.buffer.append(msg)
+        Logger.buffer.append(str(msg))
         Logger._count += 1
     
     def log_on_screen(term, msg: str):
