@@ -1,21 +1,22 @@
+from typing import List, TYPE_CHECKING
+from copy import deepcopy
+from math import floor, ceil
+from time import time_ns, sleep
+from threading import Thread
+from multiprocessing import process
+from copy import deepcopy
+import traceback
+import time
+
+from logger import Logger
+from render.camera import Camera
+from render.constants import CameraUtils
 from engine.collision import Collision
 from engine.constants import CONSTANTS
 from engine.player import Player
-from render.camera import Camera
-from render.constants import CameraUtils
-from time import time_ns, sleep
-from threading import Thread
-from math import floor, ceil
-from logger import Logger
-from typing import List, TYPE_CHECKING
-import traceback
-from copy import deepcopy
-from multiprocessing import process
-from copy import deepcopy
 from draw_utils import Position
 from img2term.main import draw
 from bottom_menu import draw_text
-import time
 
 if TYPE_CHECKING:
     from engine.objects import LevelObject
@@ -413,6 +414,7 @@ class Game:
         # self.last_tick = None
         # self.start_level()
 
+    # IMPORTANT TODO - hitboxes rotate based on object rotation
     def generate_collisions(self) -> List[Collision]:
         """
         Generates a list of `Collision` objects which represents all the objects
