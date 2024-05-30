@@ -182,7 +182,7 @@ def handle_user_joining_server():
             data = {
                 "user_token": user_token,
                 "server_id": server_id,
-                "role_id": "everyone"
+                "role_id": server_id + "_everyone"
             }
 
             response = requests.post(URI + "/api/members/add_role", json={"data": data})
