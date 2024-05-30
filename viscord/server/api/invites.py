@@ -174,10 +174,10 @@ def handle_user_joining_server():
             member_join_date = str(datetime.datetime.now())
 
             send_query = '''
-                INSERT into "Discord"."MemberInfo" (member_id, user_id, server_id, member_join_date) values (%s, %s, %s)
+                INSERT into "Discord"."MemberInfo" (member_id, user_id, server_id, member_join_date) values (%s, %s, %s, %s)
             '''
 
-            cur.execute(send_query, (uuid4(), user_id, server_id, member_join_date))
+            cur.execute(send_query, (str(uuid4()), user_id, server_id, member_join_date))
 
             data = {
                 "user_token": user_token,
