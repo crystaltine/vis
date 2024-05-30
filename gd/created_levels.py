@@ -40,9 +40,8 @@ def draw_created_level(level_name:str, width:int, height:int, x:int, y:int, colo
 
 def draw_created_levels():
 
-    with GD.term.hidden_cursor():
-        text=''
-        level_path=level_file_names[0]
+    text=''
+    level_path=level_file_names[0]
 
         if level_path=='You have not created any levels':
             text=level_path
