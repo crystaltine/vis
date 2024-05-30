@@ -19,7 +19,7 @@ def pin_message() -> Literal['success', 'failure']:
     server_id = request.json["server_id"]
 
     perms = member_perms(request.json["user_token"], server_id, chat_id)
-    if not perms["writable"]:
+    if not perms["writeable"]:
         return missing_permissions()
 
     try:
@@ -71,7 +71,7 @@ def create_message() -> Literal['success', 'failure', 'incomplete-data']:
     pinged_user_ids = message_data["pinged_user_ids"]
 
     perms = member_perms(message_data["user_token"], server_id, chat_id)
-    if not perms["writable"]:
+    if not perms["writeable"]:
         return missing_permissions()
 
 
