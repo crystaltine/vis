@@ -73,7 +73,7 @@ def handle_message(data: dict):
         }
     }).encode()
 
-    print(f"[handle message] content={data['content']} author={data['author']}")
+    print(f"[handle message] content={data['message_content']} author={data['author']}")
     print(f"^ sending to {len(connections)} sockets (incl. author)")
     
     marked_for_removal = [] # sockets that were found to be dc'ed
@@ -89,7 +89,7 @@ def handle_message(data: dict):
 
         query1 = "select chat_id, server_id from \"Discord\".\"ChatInfo\" where chat_id = %s"
 
-        cursor.execute(query1, (data['channel'],))
+        cursor.execute(query1, (data['channel_id'],))
         try:
             chat_id, server_id = db.cur.fetchone()
         except:
