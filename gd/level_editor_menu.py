@@ -15,23 +15,14 @@ def draw_menu_title_level_editor():
     draw('assets/level_editor_menu/level_menu_title_2.jpeg', Position.Relative(left=left_pos, top=top_pos), (None, None), 'crop')
 
 def _draw_create_level_button(outline:bool): 
-    draw(f"assets/main_menu/create_button{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(30% - 13ch)", bottom="calc(50% - 13ch)"))
-    #draw(f"assets/main_menu/create_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(50% - 46ch)", bottom="calc(50% - 13ch)"))
-
-def _draw_search_button(outline:bool): 
-    draw(f"assets/level_editor_menu/search_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(30% - 45ch)", bottom="calc(50% - 13ch)"))
+    draw(f"assets/level_editor_menu/plus_button{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(30% - 13ch)", bottom="calc(50% - 13ch)"))
 
 def _draw_created_levels_button(outline:bool):
 
     draw(f"assets/level_editor_menu/my_levels_button{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(50% - 14ch)", bottom="calc(50% - 13ch)")) 
-    #draw(f"assets/level_editor_menu/my_levels_button{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(30% - 13ch)", bottom="calc(50% - 13ch)")) 
-
-def _draw_start_button(outline:bool): 
-     draw(f"assets/level_editor_menu/start_button_smaller{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(50% - 14ch)", bottom="calc(50% - 13ch)"))
 
 def _draw_online_levels_button(outline:bool):
-    draw(f"assets/level_editor_menu/search_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(50% - 46ch)", bottom="calc(50% - 13ch)"))
-    #draw(f"assets/level_editor_menu/search_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(30% - 45ch)", bottom="calc(50% - 13ch)"))
+    draw(f"assets/level_editor_menu/online_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(50% - 46ch)", bottom="calc(50% - 13ch)"))
 
 def draw_all_buttons(outline_index=0): 
     
@@ -41,9 +32,9 @@ def draw_all_buttons(outline_index=0):
     
 def init_level_editor_page(terminal): 
           
-          draw_menu_background('assets/level_editor_menu/level_editor_menu.png', terminal)
-          draw_menu_title_level_editor()
-          draw_all_buttons(0)
+    draw_menu_background('assets/level_editor_menu/level_editor_menu.png', terminal)
+    draw_menu_title_level_editor()
+    draw_all_buttons(0)
 
 
 

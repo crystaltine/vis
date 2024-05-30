@@ -19,7 +19,7 @@ def _draw_search_level_button(outline:bool):
     #draw(f"assets/main_menu/create_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(50% - 46ch)", bottom="calc(50% - 13ch)"))
 
 def _draw_uploaded_levels_button(outline:bool): 
-    draw(f"assets/level_editor_menu/publish_button_main{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(50% - 46ch)", bottom="calc(50% - 13ch)"))
+    draw(f"assets/level_editor_menu/downloaded_levels_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(50% - 46ch)", bottom="calc(50% - 13ch)"))
 
 def draw_all_buttons_online(outline_index=0): 
     

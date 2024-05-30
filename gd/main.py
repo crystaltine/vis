@@ -207,7 +207,8 @@ def handle_created_levels_page(val):
     # Running test gd file if space is selected
 
     if val.name=='KEY_ENTER':
-        render_new_page('play_level')
+        run_level()
+        #render_new_page('play_level')
         
     # If a button has been pressed, reset the level, and regenerate the new level onto the screen
 
@@ -215,8 +216,10 @@ def handle_created_levels_page(val):
 
         level_info=level_file_names[created_levels_index]
         reset_level()
-        color=random.choice(colors)
-        draw_created_level(level_info[level_info.index('\\')+1:level_info.index('.level')], int(terminal.width*0.8), int(terminal.height*0.6), 
+        color=colors[0]
+        level_name=level_info[level_info.index('\\')+1:level_info.index('.level')]
+        level_name=level_name[0].upper()+level_name[1:]
+        draw_created_level(level_name, int(terminal.width*0.8), int(terminal.height*0.6), 
                    int(terminal.width*0.1), int(terminal.height*0.3), color[0], color[1])
 
 def run_level(path: str, practice_mode: bool = False, checkpoints: list[tuple[float, float]] = None) -> None:

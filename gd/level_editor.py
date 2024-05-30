@@ -123,6 +123,7 @@ class LevelEditor:
                         line += symbol_map.get(item.data["name"], '?')  # Use '?' as a default for unknown objects
                 f.write(line + '\n')
         print(f"Level saved as {filename}")
+        print('')
 
     def increase_height(self):
         self.undo_stack.append(deepcopy(self.level))
