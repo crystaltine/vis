@@ -1,0 +1,49 @@
+{
+    "metadata": {
+        "start_settings": {
+            "bg_color": [51, 117, 238],
+            "ground_color": [62, 77, 153],
+            "position": [0, 0],
+            "gamemode": "cube",
+            "speed": "normal",
+            "gravity": "normal"
+        },
+        "type": "official",
+        "name": "bad level",
+        "song_filepath": "./assets/audio/StereoMadness.ogg",
+        "song_start_time": 0,
+        "total_attempts": 0,
+        "progress_normal": 0,
+        "progress_practice": 0 
+    },
+    "leveldata": [
+        [
+            null,
+            null,
+            {
+                "type": "yellow_orb",
+                "rotation": "up",
+                "reflection": "none",
+                "color1_channel": 1,
+                "color2_channel": 2
+            }
+        ],
+        [
+            {
+                "type": "block0_0",
+                "rotation": "up",
+                "reflection": "none",
+                "color1_channel": 1,
+                "color2_channel": 2
+            },
+            null,
+            {
+                "type": "spike",
+                "rotation": "up",
+                "reflection": "none",
+                "color1_channel": 1,
+                "color2_channel": 2
+            }
+        ]
+    ]
+}

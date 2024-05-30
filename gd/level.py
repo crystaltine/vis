@@ -1,13 +1,15 @@
 from typing import List, Tuple, Dict, TYPE_CHECKING, Literal, TypedDict
 from copy import deepcopy
+import json
 
 from GD import GDConstants
+from engine.objects import OBJECTS
 from render.constants import CameraConstants
 
 class StartSettings(TypedDict):
     bg_color: CameraConstants.RGBTuple
     ground_color: CameraConstants.RGBTuple
-    position: Tuple[int, int] | None # defaults to (0, 0)
+    position: Tuple[int, int]
     gamemode: GDConstants.gamemodes
     speed: GDConstants.speeds
     gravity: GDConstants.gravities
@@ -58,6 +60,14 @@ class OnlineLevelMetadata(TypedDict):
     progress_practice: int
 
 LevelMetadata = OfficialLevelMetadata | CreatedLevelMetadata | OnlineLevelMetadata
+LEVEL_TYPES: Dict[str, TypedDict] = {
+    "official": OfficialLevelMetadata,
+    "created": CreatedLevelMetadata,
+    "online": OnlineLevelMetadata
+}
+
+class LevelParseError(Exception):
+    pass
 
 class Level:
     """ Class that contains helpful methods related to levels.
@@ -66,7 +76,7 @@ class Level:
     """
 
     def __init__(self, metadata: LevelMetadata, leveldata: List[List["LevelObject"]]):
-        self.metadata = metadata
+        self.metadata: LevelMetadata = metadata
         self.leveldata: List[List["LevelObject"]] = leveldata
         """ The backend level data. SHOULD be rectangular - see level_parser """
         
@@ -84,7 +94,42 @@ class Level:
     # TODO: implement this
     def parse(self, level_filepath: str) -> "Level":
         """ Parses a level file (using the new JSON-based system) and returns a Level object."""
-        pass
+        
+        levelfile: dict = ...
+        
+        with open(level_filepath, 'r') as f:
+            levelfile = json.load(f)
+            f.close()
+
+        # parse metadata & check
+        metadata: dict = levelfile['metadata']
+        level_type: str = metadata.get("type")
+
+        level_metadata_format = LEVEL_TYPES.get(level_type)
+        if level_metadata_format is None: 
+            raise LevelParseError(f"Error while parsing level {level_filepath}: type {level_type} is not supported.")
+
+        required_keys = level_metadata_format.__required_keys__
+
+        diff = required_keys.difference(metadata.keys())
+        if len(diff) > 0:
+            raise LevelParseError(f"Error while parsing level {level_filepath}: Missing the following metadata for level type {level_type}: {', '.join(diff)}")
+        
+        # pad leveldata to be rectangular (all rows the same length).
+        # add nones
+        leveldata: List[List[dict]] = levelfile['leveldata']
+
+        max_leveldata_row_length = len(leveldata[0])
+        for row in leveldata:
+            max_leveldata_row_length = max(max_leveldata_row_length, len(row))
+
+        for row in leveldata:
+            len_diff = max_leveldata_row_length - len(row)
+            if len_diff > 0:
+                # pad with a lot of Nones
+                row.extend([None] * len_diff)
+
+        return Level(metadata, leveldata)
         
     def get_object_at(self, x: int, y: int) -> "LevelObject" | None:
         """
@@ -117,10 +162,10 @@ class LevelObject:
     
     Contains other data such as has_been_activated, position, (in the future, group, color, etc.)
     """
-    def __init__(self, obj_dict: dict, posx: float, posy: float):
-        self.data = deepcopy(obj_dict)
+    def __init__(self, type: str, posx: float, posy: float):
+        self.data = deepcopy(getattr(OBJECTS, type))
         
-        self.type = obj_dict.get("name")
+        self.type = type
         """ The type of object this is. """
         
         self.x: float = posx
