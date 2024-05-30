@@ -26,9 +26,9 @@ class Singleton(type):
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
+
 tokens = {}
 
-from .helpers import *
 
 @app.route("/api/login", methods=["POST"])
 def handle_login():
@@ -82,3 +82,7 @@ def handle_token_bypass():
         return Response(json.dumps(d), status=200)
     except Exception as e:
         return Response(json.dumps({"type": "error", "message": str(e)}), status=500)
+    
+
+
+from .helpers import *
