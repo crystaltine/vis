@@ -102,8 +102,6 @@ class Camera:
         screen_x = round((obj_x - self.camera_left) * CameraUtils.BLOCK_WIDTH)
         screen_y = self.px_height - round((obj_y - self.camera_bottom) * CameraUtils.BLOCK_HEIGHT)
         
-        Logger.log(f"[Camera/get_screen_coordinates] obj_x,y={obj_x},{obj_y}, camera_left,bottom={self.camera_left},{self.camera_bottom} => screen_x,y={screen_x},{screen_y}")
-        
         return screen_x, screen_y
 
     def render_init(self) -> None:
@@ -272,9 +270,11 @@ class Camera:
             player_initial_x (float): The initial x-coordinate of the player when the game began.
             attempt (int): The current attempt number to be displayed.
         """
+        
+        # TODO - this might be optimizable, since we are still constructing the font
+        # every frame. Instead, we could just stop doing that once we are fully out of
+        # range of the attempt counter.
 
-        # Set coordinates for drawing the attempt text
-        # (setting the x coordinate to the coordinate the player spawned in at)
         x = player_initial_x
         y = 10
         
