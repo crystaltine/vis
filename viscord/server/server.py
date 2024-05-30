@@ -98,9 +98,9 @@ def handle_message(data: dict):
             return
         
     
-        perms = api.messages.chat_perms_wrapper(author, server, channel, cursor=cursor)
+        perms = api.messages.chat_perms_wrapper(author, server_id, chat_id, cursor=cursor)
 
-        if data["readable"]:
+        if perms["readable"]:
             try:
                 connections[other].sendall(payload)
             except:
