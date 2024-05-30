@@ -29,7 +29,7 @@ def handle_invite_creation(user_id, server_id, invite_code):
             INSERT into "Discord"."InvitesInfo" (invite_id, server_id, invite_code, invite_creator_id) values (%s, %s, %s, %s)
         '''
 
-        cur.execute(send_query, (invite_id, user_id, server_id, invite_code))   
+        cur.execute(send_query, (invite_id, server_id, invite_code, user_id))   
         return True, invite_id
     except Exception as e:
         return False, str(e)
