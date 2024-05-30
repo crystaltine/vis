@@ -26,8 +26,8 @@ currentgame = None
 attempt = 0
 
 pages={'main':['character_select', 'level_select', 'level_editor'], 'character_select':[], 'level_select':['play_level'], 
-       'level_editor':['create_level', 'created_levels', 'online_levels'], 'play_level':[], 'create_level':[], 'created_levels':[], 
-       'online_levels':['search_levels', 'upload_levels'], 'search_levels':[], 'upload_levels':[]}
+       'level_editor':['create_level', 'created_levels', 'online_levels'], 'play_level':[], 'create_level':[], 'created_levels':['play_created_level'], 
+       'online_levels':['search_levels', 'upload_levels'], 'play_created_level':[],'search_levels':[], 'upload_levels':[]}
 
 current_page={'previous_page':'main', 'current_screen':'main', 'current_page':1}
 
