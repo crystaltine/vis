@@ -11,8 +11,7 @@ from api.flask_app import app
 
 # import so the modules are executed (defines endpoints for flask app)
 from api import login_flow, chats, friends, invites, members, messages, roles, servers, users
-from api import db
-from api.login_flow import tokens
+from api import db, helpers
 
 from flask import request
 import requests
@@ -59,9 +58,6 @@ def handle_message(data: dict):
     except:
         return
     
-    check_id = login_flow.get_user_id(data["token"])
-    if check_id != author:
-        return
     
     payload = json.dumps({
         "type": "message",
@@ -142,7 +138,7 @@ def handle_connection(conn: socket.socket, addr):
 
             parsed = json.loads(data.decode())
 
-            if not login_flow.validate_fields(parsed, {
+            if not helpers.validate_fields(parsed, {
                 "token": str,
                 "message_id": str
             }):
