@@ -92,13 +92,16 @@ def get_recent_messages() -> List[MessageInfo]:
     `num` specifies how many to return (default 15)
     """
 
-    if not validate_fields(request.json, {"user_token": str, "chat_id": str, "num": int}):
+    if not validate_fields(request.json, {"user_token": str, "chat_id": str, "server_id": str, "num": int}):
         return invalid_fields()
     
+
+    user_token = request.json["user_token"]
     chat_id = request.json["chat_id"]
     num = request.json.get("num", 15)
+    server_id = request.json["server_id"]
 
-    perms = member_perms(request.json["user_token"], chat_id)
+    perms = member_perms(request.json["user_token"], server_id, chat_id)
     if not perms["readable"]:
         return missing_permissions()
 
@@ -132,14 +135,15 @@ def get_recent_messages() -> List[MessageInfo]:
 @app.route("/api/messages/get_chunk", methods=["POST"])
 def get_message_chunk() -> List[MessageInfo]:
 
-    if not validate_fields(request.json, {"user_token": str, "chat_id": str, "offset": int, "num": int}):
+    if not validate_fields(request.json, {"user_token": str, "chat_id": str, "server_id": str, "offset": int, "num": int}):
         return invalid_fields()
     
     chat_id = request.json["chat_id"]
     offset = request.json["offset"]
     num = request.json["num"]
+    server_id = request.json["server_id"]
 
-    perms = member_perms(request.json["user_token"], chat_id)
+    perms = member_perms(request.json["user_token"], server_id, chat_id)
     if not perms["readable"]:
         return missing_permissions()
     
