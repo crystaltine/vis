@@ -1,26 +1,24 @@
-import logging
 import random
-import blessed
-from draw_utils import Position, draw_rect
 import traceback
+import os 
+import sys
+from cursor import hide, show
+
+from logger import Logger
+from GD import GD
+from game import Game
+from img2term.main import draw
+from parse_level import parse_level
 from GDMenu import draw_main_menu_buttons
 from level_selector import *
 from level_editor_menu import *
-from online_levels import *
-import os 
-from img2term.main import draw
 from run_level_editor import *
-# from run_gd import run_level
-from logger import Logger
 from main_page import *
-import sys
-from game import Game
-from parse_level import parse_level
-from copy import deepcopy
 from created_levels import *
+from online_levels import *
 
 current_module = sys.modules[__name__]
-terminal = blessed.Terminal()
+terminal = GD.term
 
 level_select_index=0
 created_levels_index=0
@@ -37,37 +35,35 @@ def main():
 
     init_main_page(terminal)
 
-    with terminal.hidden_cursor():
+    while True:
 
-        while True:
+        # The only page that needs text on the top of the screen is the level selector
 
-            # The only page that needs text on the top of the screen is the level selector
+        if current_page['current_screen']=='level_select':
+            draw_text('LEVEL SELECTOR', int((terminal.width-len('LEVEL SELECTOR'))*0.5), int(terminal.height*0.1))
+        elif current_page['current_screen']=='created_levels':
+            draw_text('CREATED LEVELS', int((terminal.width-len('Created Levels'))*0.5), int(terminal.height*0.1))
+        else:
+            draw_text('', 0, 0)
 
-            if current_page['current_screen']=='level_select':
-                draw_text('LEVEL SELECTOR', int((terminal.width-len('LEVEL SELECTOR'))*0.5), int(terminal.height*0.1))
-            elif current_page['current_screen']=='created_levels':
-                draw_text('CREATED LEVELS', int((terminal.width-len('Created Levels'))*0.5), int(terminal.height*0.1))
-            else:
-                draw_text('', 0, 0)
+        with terminal.cbreak():
+            
+            val = terminal.inkey(timeout=1)
 
-            with terminal.cbreak():
+            # Quitting game if q is hit
+
+            if val == "q":
+                os.system('cls')
+                break
+            
+            if val.name=="KEY_ESCAPE" and current_page['current_screen']!='main':
                 
-                val = terminal.inkey(timeout=1)
+                render_new_page(current_page['previous_page'])
 
-                # Quitting game if q is hit
+            # The call_handle_page_function will call the corresponding function to handle all the specific key bindings for each page
 
-                if val == "q":
-                    os.system('cls')
-                    break
-                
-                if val.name=="KEY_ESCAPE" and current_page['current_screen']!='main':
-                    
-                    render_new_page(current_page['previous_page'])
-
-                # The call_handle_page_function will call the corresponding function to handle all the specific key bindings for each page
-
-                call_handle_page_function(val)
-                
+            call_handle_page_function(val)
+            
 def render_new_page(new_page:str):
 
     global current_page
@@ -255,11 +251,12 @@ def run_level(path: str, practice_mode: bool = False, checkpoints: list[tuple[fl
 if __name__ == "__main__":
     # testing
     try:
+        hide()
         main()
     except Exception as e:
-        Logger.log(f"Error in main.py: {e}")
-        Logger.log(f"Traceback: {traceback.format_exc()}")
+        Logger.log(f"[Main Thread/main.py] Error: {traceback.format_exc()}")
         print(f"\x1b[31m{traceback.format_exc()}\x1b[0m")
         
+    show()        
     Logger.write()
         
