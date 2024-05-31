@@ -1,0 +1,13 @@
+[Main Thread/main.py] Error: Traceback (most recent call last):
+  File "/Users/vaibhav_satish/Documents/vs-code/vis/gd/main.py", line 257, in <module>
+    main()
+  File "/Users/vaibhav_satish/Documents/vs-code/vis/gd/main.py", line 63, in main
+    call_handle_page_function(val)
+  File "/Users/vaibhav_satish/Documents/vs-code/vis/gd/main.py", line 102, in call_handle_page_function
+    handle_generic_page(val)
+  File "/Users/vaibhav_satish/Documents/vs-code/vis/gd/main.py", line 133, in handle_generic_page
+    render_new_page(pages[current_page['current_screen']][current_page['current_page']])
+  File "/Users/vaibhav_satish/Documents/vs-code/vis/gd/main.py", line 85, in render_new_page
+    init_function=getattr(current_module, 'init_'+new_page+'_page')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module '__main__' has no attribute 'init_character_select_page'. Did you mean: 'init_level_select_page'?

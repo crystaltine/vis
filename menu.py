@@ -29,11 +29,14 @@ def main_logo_bg(filename:str):
 
 def viscord_logo_bg(outline:bool): 
     draw(f"main_menu_assets/viscord_logo_copy{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(30% - 15ch)", bottom="calc(50% - 10ch)"))
+    right_pos = "calc(50% + 11)"
+    bottom_pos = 8.95
+    draw(f"main_menu_assets/viscord_label.png", Position.Relative(right=right_pos, bottom=bottom_pos), (None, None), 'crop')
 
 def GD_logo_bg(outline:bool): 
-    draw(f"main_menu_assets/gd_selector_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(30% - 40ch)", bottom="calc(50% - 10ch)"))
-    left_pos = "calc(50% + 15)"
-    bottom_pos = 9
+    draw(f"main_menu_assets/gd_selector_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(30% - 37ch)", bottom="calc(50% - 10ch)"))
+    left_pos = "calc(50% + 11)"
+    bottom_pos = 8.95
     draw(f"main_menu_assets/gd_label.png", Position.Relative(left=left_pos, bottom=bottom_pos), (None, None), 'crop')
 
 def apps_text(filename:str): 
