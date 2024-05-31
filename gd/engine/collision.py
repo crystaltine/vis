@@ -1,7 +1,7 @@
 from typing import Literal, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from engine.objects import LevelObject
+    from level import LevelObject
 
 class Collision:
     """
@@ -16,7 +16,7 @@ class Collision:
         
         `vert_side` - optional: which vertical edge of the hitbox the player is touching.
         This should be among the values `["top", "bottom"]`, we dont care about left or right.
-        Definition of "touching": within 0-CONSTANTS.SOLID_SURFACE_LENIENCY of an edge.
+        Definition of "touching": within 0-EngineConstants.SOLID_SURFACE_LENIENCY of an edge.
         
         `vert_coord` - req'd if vert_side: the y coordinate of the vertical edge of the hitbox the player is touching.
         This is used to adjust position of the player when they are touching a solid surface.
@@ -31,7 +31,7 @@ class Collision:
         self.vert_side: Literal["top", "bottom"] | None = vert_side
         """ optional: which vertical edge of the hitbox the player is touching.
         This should be among the values `["top", "bottom"]`, we dont care about left or right.
-        Definition of "touching": within 0-CONSTANTS.SOLID_SURFACE_LENIENCY of an edge. """
+        Definition of "touching": within 0-EngineConstants.SOLID_SURFACE_LENIENCY of an edge. """
         
         self.vert_coord: float | None = vert_coord
         """ (None if vert_side is None) the y coordinate of the vertical edge of the hitbox the player is touching.
@@ -40,4 +40,4 @@ class Collision:
         self.has_been_activated = False
         
     def __str__(self) -> str:
-        return f"Collision(with {self.obj.data['name']} @x,y={self.obj.x},{self.obj.y}"
+        return f"Collision(with {self.obj.type}@x,y={self.obj.x},{self.obj.y}"

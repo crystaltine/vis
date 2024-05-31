@@ -171,10 +171,15 @@ def blend_rgba_onto_rgb(original: np.ndarray, new: np.ndarray) -> np.ndarray:
 def blend_rgba_img_onto_rgb_img(original: np.ndarray, new: np.ndarray) -> np.ndarray:
     """
     Blends two entire 2D arrays of pixels (so, techincally, 3D arrays) together, expecting
-    that the original image is fully opaque and the new image has transparency.
+    that the original image is fully opaque and the new image has transparency. If the new
+    image is RGB-based (no alpha, 3 channels), it will be treated as fully opaque.
     
     Will clip the new image to the size of the original image, anchoring the top left corner.
     """
+    
+    # if the new image has no alpha, just return the new image
+    if new.shape[2] == 3:
+        return new
     
     clipped_new = new[:original.shape[0], :original.shape[1]]
 

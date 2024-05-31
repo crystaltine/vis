@@ -1,28 +1,27 @@
-import random
 import traceback
 import os 
 import sys
 from cursor import hide, show
 
 from logger import Logger
-from GD import GD
+from gd_constants import GDConstants
 from game import Game
+from level import Level
 from img2term.main import draw
-from parse_level import parse_level
 from GDMenu import draw_main_menu_buttons
 from level_selector import *
 from level_editor_menu import *
-from run_level_editor import *
+#from run_level_editor import *
 from main_page import *
 from created_levels import *
 from online_levels import *
 
 current_module = sys.modules[__name__]
-terminal = GD.term
+terminal = GDConstants.term
 
 level_select_index=0
 created_levels_index=0
-currentgame = None
+game = None
 attempt = 0
 
 pages={'main':['character_select', 'level_select', 'level_editor'], 'character_select':[], 'level_select':['play_level'], 
@@ -82,7 +81,8 @@ def render_new_page(new_page:str):
     if new_page=='play_level':
         run_level(levels[level_select_index]['path'])
     elif new_page=='create_level':
-        run_editor()
+        #run_editor()
+        pass # level editor disabled for now
     else:
         init_function=getattr(current_module, 'init_'+new_page+'_page')
         init_function(terminal)
@@ -218,39 +218,35 @@ def handle_created_levels_page(val):
         draw_created_level(level_name, int(terminal.width*0.8), int(terminal.height*0.6), 
                    int(terminal.width*0.1), int(terminal.height*0.3), color[0], color[1])
 
-
-def run_level(path: str, practice_mode: bool = False, checkpoints: list[tuple[float, float]] = None) -> None:
+# TODO - this function is rlly janky. practice mode should be OOP-ized.
+def run_level(filepath: str, practice_mode: bool = False, checkpoints: list[tuple[float, float]] = None) -> None:
     """
     Runs the specified level from the given path utilizing the given checkpoints (if any).
     Args:
-        path (str): The path to the level file to be run. (e.g. "levels/level1.txt")
+        filepath (str): The path to the level file to be run. (e.g. "levels/level1.json")
         practice_mode (bool): If True, the level will be run in practice mode. Defaults to False.
         checkpoints (list[tuple[float, float]]): A list of checkpoint coordinates (for practice mode), each checkpoint is a tuple of (x, y) positions. Defaults to None.
     """
-    global currentgame
+    global game
     global attempt
 
-    leveldata = path
-    if isinstance(leveldata, str):
-        leveldata = parse_level(leveldata)
-
-    currentgame = Game(leveldata)
+    game = Game(Level.parse_from_file(filepath))
     # increments the attempt number
     attempt += 1
-    currentgame.attempt = attempt
+    game.attempt = attempt
 
     # if the level is in practice mode, then it sets it as so
     if practice_mode:
-        currentgame.practice_mode = True
+        game.practice_mode = True
         # if the level has existing checkpoints, it adds them into the current game
         # additionally, it sets the most recent checkpoint, and the player position there
         # this is so that in practice mode the player will respawn at the most recent checkpoint
         if checkpoints:
-            currentgame.checkpoints = checkpoints
-            currentgame.last_checkpoint = checkpoints[-1]
-            currentgame.player.pos = [currentgame.last_checkpoint[0], currentgame.last_checkpoint[1]]
+            game.checkpoints = checkpoints
+            game.last_checkpoint = checkpoints[-1]
+            game.player.pos = [game.last_checkpoint[0], game.last_checkpoint[1]]
 
-    currentgame.start_level()
+    game.start_level()
 
 if __name__ == "__main__":
     # testing

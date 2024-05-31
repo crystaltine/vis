@@ -5,7 +5,7 @@ from time import perf_counter
 from logger import Logger
 import numpy as np
 from render.font import Font
-from render.texture_manager import RGBTuple, RGBATuple
+from render.constants import CameraConstants
 
 if TYPE_CHECKING:
     from blessed import Terminal
@@ -172,7 +172,7 @@ class CameraFrame:
     def add_text(self, x: int, y: int, font: Font, text: str, anchor: Literal["top-left", "top-right", "bottom-left", "bottom-right", "center"] = "top-left") -> None:
         ...
         
-    def add_text_centered_at(self, x: int, y: int, font: Font, text: str, color: RGBTuple | RGBATuple = (255,255,255)) -> None:
+    def add_text_centered_at(self, x: int, y: int, font: Font, text: str, color: CameraConstants.RGBTuple | CameraConstants.RGBATuple = (255,255,255)) -> None:
         """       
         Draws a font to the pixel array at the specified x and y values, where (x,y) are the center of the text to be rendered.
         x and y should be relative to the top left corner of the frame.
@@ -229,7 +229,7 @@ class CameraFrame:
         # blend new pixels onto the layer
         self.pixels[int(clipped_y1):int(clipped_y1+pixels.shape[0]-offset_y1), int(clipped_x1):int(clipped_x1+pixels.shape[1]-offset_x1)] =\
             blend_rgba_img_onto_rgb_img(self.pixels[
-                int(clipped_y1):int(clipped_y1+pixels.shape[0]-offset_y1),
-                int(clipped_x1):int(clipped_x1+pixels.shape[1]-offset_x1)
+                    int(clipped_y1):int(clipped_y1+pixels.shape[0]-offset_y1),
+                    int(clipped_x1):int(clipped_x1+pixels.shape[1]-offset_x1)
                 ], pixels[int(offset_y1):self.height, int(offset_x1):self.width])
         

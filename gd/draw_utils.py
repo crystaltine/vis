@@ -1,7 +1,7 @@
 import re
 import os
 from logger import Logger
-from GD import GD
+from gd_constants import GDConstants
 
 class Position:
     """
@@ -43,11 +43,11 @@ class Position:
         def get_absolute(self, container_width: int = None, container_height: int = None) -> "Position.Absolute":
             """
             Returns the absolute values of the position, based on the container width and height.
-            If container width or height is not provided, the GD.term width and height will be used.
+            If container width or height is not provided, the GDConstants.term width and height will be used.
             """
             
-            container_width = container_width or GD.term.width
-            container_height = container_height or GD.term.height
+            container_width = container_width or GDConstants.term.width
+            container_height = container_height or GDConstants.term.height
             
             return Position.Absolute(
                 top=convert_to_chars(container_height, self.top),
@@ -146,7 +146,7 @@ def fcode(foreground: str | tuple[int] = None, background: str | tuple[int] = No
     
     This will print 'Hello, world!' in bold* magenta with a yellow background.
     
-    Having that `RS` code at the end is technically optional but without it the formatting will continue to be used by the GD.term.
+    Having that `RS` code at the end is technically optional but without it the formatting will continue to be used by the GDConstants.term.
     
     *Note that it seems that the bold style does not seem to be supported on some terminals (notably Windows Terminal).
     '''
@@ -311,11 +311,11 @@ def draw_rect(
     
     # convert width and height to characters if they are not already
     #Logger.log(f"draw_rect: width, height: {width}, {height}")
-    conv_width = convert_to_chars(GD.term.width, width) if width is not None else GD.term.width
-    conv_height = convert_to_chars(GD.term.height, height) if height is not None else GD.term.height
+    conv_width = convert_to_chars(GDConstants.term.width, width) if width is not None else GDConstants.term.width
+    conv_height = convert_to_chars(GDConstants.term.height, height) if height is not None else GDConstants.term.height
     #Logger.log(f"^^ converted width, height: {conv_width}, {conv_height}")
     
-    abs_pos = position.get_absolute(GD.term.width, GD.term.height)
+    abs_pos = position.get_absolute(GDConstants.term.width, GDConstants.term.height)
     
     # assert that at least one of the two dimensions is specified
     if position.top is None and position.bottom is None:
@@ -327,12 +327,12 @@ def draw_rect(
     # find true top and left values
     #Logger.log(f"conv_height, conv_width: {conv_height}, {conv_width}")
     #Logger.log(f"conv_height, conv_width: {conv_height}, {conv_width}")
-    true_top = abs_pos.top if abs_pos.top is not None else GD.term.height - abs_pos.bottom - conv_height
-    true_left = abs_pos.left if abs_pos.left is not None else GD.term.width - abs_pos.right - conv_width
+    true_top = abs_pos.top if abs_pos.top is not None else GDConstants.term.height - abs_pos.bottom - conv_height
+    true_left = abs_pos.left if abs_pos.left is not None else GDConstants.term.width - abs_pos.right - conv_width
     
     # find true width and height
-    true_width = GD.term.width - abs_pos.right - abs_pos.left if (abs_pos.left is not None and abs_pos.right is not None) else conv_width
-    true_height = GD.term.height - abs_pos.bottom - abs_pos.top if (abs_pos.top is not None and abs_pos.bottom is not None) else conv_height
+    true_width = GDConstants.term.width - abs_pos.right - abs_pos.left if (abs_pos.left is not None and abs_pos.right is not None) else conv_width
+    true_height = GDConstants.term.height - abs_pos.bottom - abs_pos.top if (abs_pos.top is not None and abs_pos.bottom is not None) else conv_height
     
     #Logger.log(f"drawing rect from row,col= {true_top}, {true_left} to {true_top+true_height}, {true_left+true_width}")
     #Logger.log(f"abs_pos: {abs_pos}")
@@ -343,7 +343,7 @@ def draw_rect(
     
     # draw the rectangle
     for i in range(true_top, true_top + true_height):
-        print2(GD.term.move_yx(i, true_left) + fcode(color) + "█"*true_width)
+        print2(GDConstants.term.move_yx(i, true_left) + fcode(color) + "█"*true_width)
 
 def colorize_pixel(grayscale_value: int, primary_color: str | tuple, secondary_color: str | tuple) -> tuple:
     """

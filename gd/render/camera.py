@@ -36,7 +36,7 @@ class Camera:
         """ Measured in blocks from the bottom (lowermost row) of the level. """
         
         self.player_y_info = {
-            "physics_pos": 0, # assume default TODO - maybe give Camera access to the player object?
+            "physics_pos": level.metadata.get("start_settings").get("position")[1], # start at player's initial y (bottom of player icon)
             "screen_pos": self.px_height - CameraConstants.GROUND_HEIGHT*CameraConstants.BLOCK_HEIGHT - CameraConstants.BLOCK_HEIGHT
         }
         """ 
@@ -107,12 +107,9 @@ class Camera:
         return screen_x, screen_y
 
     def render_init(self) -> None:
-        """
-        New rendering algorithm that uses CameraFrames instead of just characters.
-        Initializes the frame with the background color, and sets self.curr_frame for the first time.
-        """
+        """ Initializes the screen with the background color, and sets self.curr_frame for the first time. """
         self.curr_frame = CameraFrame(self.term)
-        self.curr_frame.fill(TextureManager.bg_color)
+        self.curr_frame.fill(self.level.bg_color)
         self.curr_frame.render_raw()
 
     def render(self, game: "Game") -> None:
@@ -128,7 +125,7 @@ class Camera:
             return
         
         new_frame = CameraFrame(self.term)
-        new_frame.fill(TextureManager.bg_color)
+        new_frame.fill(self.level.bg_color)
         
         # move camera to player
         self.update_camera_y_pos(game.player.pos)
@@ -136,25 +133,22 @@ class Camera:
         camera_right = self.camera_left + CameraConstants.screen_width_blocks(self.term)
         camera_top = self.camera_bottom + CameraConstants.screen_height_blocks(self.term)
 
-        visible_vert_range = floor(self.camera_bottom), 1+ceil(self.camera_bottom + CameraConstants.screen_height_blocks(self.term))
+        visible_vert_range = max(0, floor(self.camera_bottom)), min(self.level.height, 1+ceil(self.camera_bottom + CameraConstants.screen_height_blocks(self.term)))
         # this should be smth like (5, 12) which is the range of y-pos of the grid that is visible on the screen. Exclusive of the second number.
 
-        num_rows_to_render = min(self.level.height, self.level.width-visible_vert_range[0]+1) - max(0, self.level.height-visible_vert_range[1]+1)
-
-        # y-pos on screen (in pixels) to render the next row at.
-        # increment by block_height_px after each row.
-        # start at term_height_px - ground_height_px (since we render bottom to top now)
-        curr_screen_y_pos = self.px_height - CameraConstants.GROUND_HEIGHT*CameraConstants.BLOCK_HEIGHT # - num_rows_to_render*CameraConstants.BLOCK_HEIGHT
+        # y-pos on screen (in pixels) to render the next row at. decrement by block_height_px after each row.
+        # start at term_height_px - ground_height_px (since we render bottom to top)
+        curr_screen_y_pos = self.px_height - CameraConstants.GROUND_HEIGHT*CameraConstants.BLOCK_HEIGHT - CameraConstants.BLOCK_HEIGHT
 
         #Logger.log(f"[Camera/render] visible_vert_slice = {visible_vert_slice}, initial curr_screen_y_pos = {curr_screen_y_pos}")
         for row in range(*visible_vert_range):
             # horizontal range of grid cells that are in the camera range. Includes any partially visible cells on the sides.
-            visible_horiz_range = (max(0, floor(self.camera_left)), min(len(row), ceil(camera_right))) # last index is exclusive
+            visible_horiz_range = (max(0, floor(self.camera_left)), min(self.level.length, ceil(camera_right))) # last index is exclusive
 
-            #Logger.log(f"[Camera/render] {self.camera_left=}, player-x={player_pos[0]}, {visible_horiz_range=}")
+            #Logger.log(f"[Camera/render] {self.camera_left=}, {row=}, {curr_screen_y_pos=}, player@{game.player.pos=}, {visible_horiz_range=}, {visible_vert_range=}")
 
-            # add textures of all the objects in the row to the frame
-            for obj in self.level.get_row(row):
+            # add textures of all the visible objects in this row to the new frame
+            for obj in self.level.get_row(row, *visible_horiz_range):
                 if obj is not None:
                     
                     # calculate where it will truly be rendered on the screen
@@ -176,12 +170,13 @@ class Camera:
         #Logger.log(f"slice: {visible_vert_slice}, range: {visible_vert_range}")
         
         # draw ground. The top of the ground ground should be at physics y=0.
+        # TODO - make ground recolorable
         ground_screen_y_pos = camera_top * CameraConstants.BLOCK_HEIGHT
-        new_frame.add_pixels_topleft(0, ground_screen_y_pos, TextureManager.textures.get("ground"))
+        new_frame.add_pixels_topleft(0, ground_screen_y_pos, TextureManager.base_textures.get("ground"))
 
         # draw player
         player_xpos_on_screen = CameraConstants.CAMERA_LEFT_OFFSET * CameraConstants.BLOCK_WIDTH
-        new_frame.add_pixels_topleft(player_xpos_on_screen, self.player_y_info['screen_pos'], TextureManager.player_icons[game.player.get_animation_frame_index()])
+        new_frame.add_pixels_topleft(round(player_xpos_on_screen), round(self.player_y_info['screen_pos']), TextureManager.player_icons[game.player.get_animation_frame_index()])
         
         # draw attempt number
         self.draw_attempt(new_frame, game.player.ORIGINAL_START_POS[0], game.attempt_number) # draw the attempt number
@@ -207,8 +202,8 @@ class Camera:
         for row in self.level[-self.ground:]:
             cur_x = 1
 
-            render_strip_1 = fcode(background=TextureManager.bg_color) # start as the bg format code
-            render_strip_2 = fcode(background=TextureManager.bg_color) # start as the bg format code
+            render_strip_1 = fcode(background=self.level.bg_color) # start as the bg format code
+            render_strip_2 = fcode(background=self.level.bg_color) # start as the bg format code
             
             if (floor(self.camera_left)) >= len(row):
                 continue # row is all behind us
@@ -229,12 +224,12 @@ class Camera:
                         continue
                 if obj.data is None:
                     empty_block = " "*CameraConstants.BLOCK_WIDTH
-                    render_strip_1 += empty_block + fcode(background=TextureManager.bg_color)
-                    render_strip_2 += empty_block + fcode(background=TextureManager.bg_color)
+                    render_strip_1 += empty_block + fcode(background=self.level.bg_color)
+                    render_strip_2 += empty_block + fcode(background=self.level.bg_color)
 
                 else: 
-                    render_strip_1 += TextureManager.get_texture(obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
-                    render_strip_2 += TextureManager.get_texture(obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
+                    render_strip_1 += TextureManager.get_base_texture(obj.data["name"])()[1] + fcode(background=self.level.bg_color)
+                    render_strip_2 += TextureManager.get_base_texture(obj.data["name"])()[0] + fcode(background=self.level.bg_color)
                 cur_x += 1
             
             render_strip_1 += " "*max(0, self.term.width-len_no_ansi(render_strip_1))
@@ -245,7 +240,7 @@ class Camera:
             cur_y += 1
 
         for i in range(self.ground*CameraConstants.BLOCK_HEIGHT - len(all_strips)):
-            print(self.term.move_yx(i, 0) + fcode(background=TextureManager.bg_color) + " "*self.term.width)
+            print(self.term.move_yx(i, 0) + fcode(background=self.level.bg_color) + " "*self.term.width)
 
         row_in_terminal = (self.ground)*CameraConstants.BLOCK_HEIGHT - len(all_strips)
         for i in range(len(all_strips)):
@@ -262,7 +257,7 @@ class Camera:
         """
 
         pos_on_screen = self.get_screen_coordinates(x, y)
-        frame.add_pixels_topleft(*pos_on_screen, TextureManager.get_texture("checkpoint")())
+        frame.add_pixels_topleft(*pos_on_screen, TextureManager.get_base_texture("checkpoint")())
         
     def draw_attempt(self, frame: CameraFrame, player_initial_x: float, attempt: int) -> None:
         """
@@ -295,8 +290,8 @@ class Camera:
 
     def draw_cursor(self, cur_pos: tuple, cursor_pos: tuple, cursor_texture, render_strips: list, obj, cur_cursor_obj):
         if obj.data is not None and (obj.data["name"].find("orb") != -1 or obj.data["name"].find("block") != -1):
-            render_strips[1] += TextureManager.get_texture(obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
-            render_strips[0] += TextureManager.get_texture(obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
+            render_strips[1] += TextureManager.get_base_texture(obj.data["name"])()[0] + fcode(background=self.level.bg_color)
+            render_strips[0] += TextureManager.get_base_texture(obj.data["name"])()[1] + fcode(background=self.level.bg_color)
             return render_strips
         if cur_pos[1] == cursor_pos[1]:
             layer = (True, True)
@@ -307,8 +302,8 @@ class Camera:
         if cur_pos[0] == cursor_pos[0]:
             if layer == (True, True) and cur_cursor_obj != None:
                 if cur_cursor_obj.data["name"].find("orb") != -1 or cur_cursor_obj.data["name"].find("block") != -1:
-                    render_strips[1] += TextureManager.get_texture(cur_cursor_obj.data["name"])()[0] + fcode(background=TextureManager.bg_color)
-                    render_strips[0] += TextureManager.get_texture(cur_cursor_obj.data["name"])()[1] + fcode(background=TextureManager.bg_color)
+                    render_strips[1] += TextureManager.get_base_texture(cur_cursor_obj.data["name"])()[0] + fcode(background=self.level.bg_color)
+                    render_strips[0] += TextureManager.get_base_texture(cur_cursor_obj.data["name"])()[1] + fcode(background=self.level.bg_color)
                 else:
                     render_strips = self.draw_center(render_strips, cursor_texture, layer, cur_cursor_obj)
             else:
@@ -347,11 +342,11 @@ class Camera:
             if layer[1]:
                 render_strips[1] += empty_block + cursor_texture + empty_block
             else:
-                render_strips[1] += empty_block + fcode(background=TextureManager.bg_color) + empty_block
+                render_strips[1] += empty_block + fcode(background=self.level.bg_color) + empty_block
             if layer[0]:
                 render_strips[0] += empty_block + cursor_texture + empty_block
             else:
-                render_strips[0] += empty_block + fcode(background=TextureManager.bg_color) + empty_block
+                render_strips[0] += empty_block + fcode(background=self.level.bg_color) + empty_block
         else:
             top = TextureManager.get_raw_obj_text(obj.data["name"])[1]
             bottom = TextureManager.get_raw_obj_text(obj.data["name"])[0]
@@ -369,22 +364,22 @@ class Camera:
         empty_block = " "*(CameraConstants.BLOCK_WIDTH//2)
         if obj.data is None:
             if layer[1]:
-                render_strips[1] += cursor_texture + empty_block + fcode(background=TextureManager.bg_color) + empty_block
+                render_strips[1] += cursor_texture + empty_block + fcode(background=self.level.bg_color) + empty_block
             else:
-                render_strips[1] += empty_block + fcode(background=TextureManager.bg_color) + empty_block
+                render_strips[1] += empty_block + fcode(background=self.level.bg_color) + empty_block
             if layer[0]:
-                render_strips[0] += cursor_texture + empty_block + fcode(background=TextureManager.bg_color) + empty_block
+                render_strips[0] += cursor_texture + empty_block + fcode(background=self.level.bg_color) + empty_block
             else:
-                render_strips[0] += empty_block + fcode(background=TextureManager.bg_color) + empty_block
+                render_strips[0] += empty_block + fcode(background=self.level.bg_color) + empty_block
         else:
             top = TextureManager.get_raw_obj_text(obj.data["name"])[1]
             bottom = TextureManager.get_raw_obj_text(obj.data["name"])[0]
             if layer[1]:
-                render_strips[1] += cursor_texture + bottom[len(bottom) - 4:len(bottom) - 2] + fcode(background=TextureManager.bg_color) + bottom[len(bottom) - 2:]
+                render_strips[1] += cursor_texture + bottom[len(bottom) - 4:len(bottom) - 2] + fcode(background=self.level.bg_color) + bottom[len(bottom) - 2:]
             else:
                 render_strips[1] += bottom
             if layer[0]:
-                render_strips[0] += cursor_texture + top[len(top) - 4:len(top) - 2] + fcode(background=TextureManager.bg_color) + top[len(top) - 2:]
+                render_strips[0] += cursor_texture + top[len(top) - 4:len(top) - 2] + fcode(background=self.level.bg_color) + top[len(top) - 2:]
             else:
                 render_strips[0] += top
         return render_strips

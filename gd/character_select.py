@@ -1,8 +1,6 @@
 from draw_utils import draw_rect, cls, Position, convert_to_chars
-from GD import GD
-from draw_utils import draw_rect, cls, Position, convert_to_chars
-from GD import GD
-from logger import Logger
+from gd_constants import GDConstantsfrom draw_utils import draw_rect, cls, Position, convert_to_chars
+from gd_constants import GDConstantsfrom logger import Logger
 from img2term.main import draw
 import traceback
 from icons import draw_cube_icon, draw_colorized_cube_icon, COLORS
@@ -88,20 +86,20 @@ class CharacterSelect:
         # the other row of colors is the exact same but bottom=(20% - (0.09*term.width))/2 + 5%
         
         # pre-calculate the gap between the squares. there are 15 squares, target gap=1% + square width (4%)
-        square_width = convert_to_chars(GD.term.width, "4%")
-        intersquare_gap = max(int(convert_to_chars(GD.term.width, "1%")), 1) # minimum of 1ch. Also try to make it integer
+        square_width = convert_to_chars(GDConstants.term.width, "4%")
+        intersquare_gap = max(int(convert_to_chars(GDConstants.term.width, "1%")), 1) # minimum of 1ch. Also try to make it integer
         gap = square_width + intersquare_gap # how much to move right after each square
         
         # total width taken up by squares and gaps
         total_width = 16*square_width + 15*intersquare_gap
         
         # calc margin on left side
-        left_margin = (GD.term.width - total_width) // 2
+        left_margin = (GDConstants.term.width - total_width) // 2
         
         # vertical gap: gap / 2 (divide by 2 cuz characters are taller than they are wide), then round
         for i in range(16):
-            draw_rect(COLORS[i], Position.Relative(left=left_margin + i*gap, bottom=f"calc(15% - {round(0.045*GD.term.width/2)}ch)"), width=square_width, height=square_width/2)
-            draw_rect(COLORS[i], Position.Relative(left=left_margin + i*gap, bottom=f"calc(15% - {round(0.045*GD.term.width/2 - gap/2)}ch)"), width=square_width, height=square_width/2)
+            draw_rect(COLORS[i], Position.Relative(left=left_margin + i*gap, bottom=f"calc(15% - {round(0.045*GDConstants.term.width/2)}ch)"), width=square_width, height=square_width/2)
+            draw_rect(COLORS[i], Position.Relative(left=left_margin + i*gap, bottom=f"calc(15% - {round(0.045*GDConstants.term.width/2 - gap/2)}ch)"), width=square_width, height=square_width/2)
 
     def _draw_currently_selected_cube():
         """ Draws an enlarged rendering of the currently selected cube icon """

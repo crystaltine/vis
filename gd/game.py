@@ -10,33 +10,28 @@ import time
 
 from logger import Logger
 from render.camera import Camera
-from render.constants import CameraUtils
+from render.constants import CameraConstants
 from engine.collision import Collision
-from engine.constants import CONSTANTS
+from engine.constants import EngineConstants
 from engine.player import Player
 from draw_utils import Position
 from img2term.main import draw
 from bottom_menu import draw_text
 
-if TYPE_CHECKING:
-    from engine.objects import LevelObject
+from level import Level, LevelObject
 
 class Game:
     """
     Represents a level "world" and contains a player object.
 
-    Handles physics ticks for the player and animations
+    Coordinates keyboard, render, physics threads. 
     """
 
-    def __init__(self, leveldata: List[List['LevelObject']] = []):
-        """
-        Creates a `Player` object automatically.
-        """
-
-        self.leveldata = leveldata
+    def __init__(self, level: Level):
+        self.level = level
 
         self.player = Player()
-        self.camera = Camera(self.leveldata)
+        self.camera = Camera(self.level)
 
         self.is_crashed = False
         self.running = False
@@ -52,7 +47,7 @@ class Game:
         self.attempt_number = 1
         self.game_start_time = time.time()
 
-    def start_level(self, cb=None):
+    def start_level(self) -> None:
         """
         Begin a separate thread to run level physics/animation ticks
         """
@@ -83,7 +78,7 @@ class Game:
                     last_frame = curr_frame
 
                     # draws the attempt number given the players current and intial positions
-                    sleep(1/CameraUtils.RENDER_FRAMERATE)
+                    sleep(1/CameraConstants.RENDER_FRAMERATE)
 
                     if not self.running:
                         break     
@@ -108,7 +103,7 @@ class Game:
                     # apply collision effects
                     for collision in self.player.curr_collisions:                    
                         # don't auto-run effect here if it requires click. That's a job for the key input thread.
-                        Logger.log(f"Running collision effect for: {collision}")
+                        #Logger.log(f"Running collision effect for: {collision}")
                         if not collision.obj.data.get("requires_click"):
                             self.run_collision_effect(collision)
                     
@@ -123,7 +118,7 @@ class Game:
                     # DO NOT REMOVE. removing this slows down the renderer by A LOT
                     # even if the physics fps is like 389429 it still speeds things up a lot
                     # to have this sleep here. DONT ASK ME WHY IDK EITHER
-                    sleep(1/CONSTANTS.PHYSICS_FRAMERATE)
+                    sleep(1/EngineConstants.PHYSICS_FRAMERATE)
             except Exception as e:
                 Logger.log(f"[Physics Thread] ERROR: {traceback.format_exc()}")
                 self.running = False
@@ -139,7 +134,7 @@ class Game:
 
             while self.running:
                 # val = ''
-                # while val.lower() not in CONSTANTS.ALL_KEYS:
+                # while val.lower() not in EngineConstants.ALL_KEYS:
                 val = self.camera.term.inkey(0.01)
                 if not self.running:
                     return
@@ -150,26 +145,26 @@ class Game:
                     # reset the timer
                     start_time = time.time()
 
-                if val in CONSTANTS.ALL_KEYS:
-                    if val in CONSTANTS.QUIT_KEYS:
+                if val in EngineConstants.ALL_KEYS:
+                    if val in EngineConstants.QUIT_KEYS:
                         self.running = False
                         return
-                    elif val in CONSTANTS.PAUSE_KEYS:
+                    elif val in EngineConstants.PAUSE_KEYS:
                         self.pause()
                         return
                     # place a checkpoint if a user attempts to
-                    elif val in CONSTANTS.CHECKPOINT_KEYS and self.practice_mode:
+                    elif val in EngineConstants.CHECKPOINT_KEYS and self.practice_mode:
                         self.last_checkpoint = deepcopy(self.player.pos)
                         self.checkpoints.append((self.last_checkpoint[0], self.last_checkpoint[1]))
                         # reset the checkpoint timer
                         start_time = time.time()
                     # remove the most recent checkpoint if a user attempts to
-                    elif val in CONSTANTS.REMOVE_CHECKPOINT_KEYS and self.practice_mode and self.checkpoints:
+                    elif val in EngineConstants.REMOVE_CHECKPOINT_KEYS and self.practice_mode and self.checkpoints:
                         self.checkpoints.pop()
                         self.last_checkpoint = self.checkpoints[-1] if self.checkpoints else None
                         # reset the checkpoint timer
                         start_time = time.time()
-                    elif val in CONSTANTS.JUMP_KEYS:
+                    elif val in EngineConstants.JUMP_KEYS:
                         
                         something_got_activated = False
                         
@@ -211,9 +206,9 @@ class Game:
             return # don't run other effects if we are gliding
         
         elif collision.obj.data["collide_effect"] == 'neg-gravity':
-            self.player.gravity = -CONSTANTS.GRAVITY
+            self.player.gravity = -EngineConstants.GRAVITY
         elif collision.obj.data["collide_effect"]  == 'pos-gravity':
-            self.player.gravity = CONSTANTS.GRAVITY
+            self.player.gravity = EngineConstants.GRAVITY
         elif collision.obj.data["collide_effect"]  == 'crash-block':
             Logger.log("Crashed into block")
             self.crash_normal()
@@ -222,18 +217,18 @@ class Game:
             self.crash_normal()
         elif collision.obj.data["collide_effect"]  == 'yellow-orb':
             Logger.log("Hit yellow orb.")
-            self.player.activate_jump_orb(CONSTANTS.PLAYER_JUMP_STRENGTH*CONSTANTS.YELLOW_ORB_MULTIPLIER)
+            self.player.activate_jump_orb(EngineConstants.PLAYER_JUMP_STRENGTH*EngineConstants.YELLOW_ORB_MULTIPLIER)
         elif collision.obj.data["collide_effect"]  == 'purple-orb':
             Logger.log("Hit purple orb.")
-            self.player.activate_jump_orb(CONSTANTS.PLAYER_JUMP_STRENGTH*CONSTANTS.PURPLE_ORB_MULTIPLIER)
+            self.player.activate_jump_orb(EngineConstants.PLAYER_JUMP_STRENGTH*EngineConstants.PURPLE_ORB_MULTIPLIER)
         elif collision.obj.data["collide_effect"]  == 'red-orb':
             Logger.log("Hit purple orb.")
-            self.player.activate_jump_orb(CONSTANTS.PLAYER_JUMP_STRENGTH*CONSTANTS.RED_ORB_MULTIPLIER)
+            self.player.activate_jump_orb(EngineConstants.PLAYER_JUMP_STRENGTH*EngineConstants.RED_ORB_MULTIPLIER)
         elif collision.obj.data["collide_effect"]  == 'blue-orb':
             self.player.change_gravity()
             
             # change velocity to a modest amount, in the sign of the NEW direction of gravity
-            self.player.yvel = CONSTANTS.BLUE_ORB_STARTING_VELOCITY * -self.player.sign_of_gravity()
+            self.player.yvel = EngineConstants.BLUE_ORB_STARTING_VELOCITY * -self.player.sign_of_gravity()
 
     def crash_normal(self, restart: bool = True):
         """
@@ -249,7 +244,7 @@ class Game:
             self.running = False
             return
 
-        sleep(CONSTANTS.COOLDOWN_BETWEEN_ATTEMPTS)
+        sleep(EngineConstants.COOLDOWN_BETWEEN_ATTEMPTS)
         self.is_crashed = False
         self.player.reset_physics()
         self.last_tick = time_ns() # this is to prevent moving forward while we are dead lol
@@ -269,7 +264,7 @@ class Game:
         self.running = False
         self.paused = True
         # calculates progress bar based on length of level and player position
-        progresspercent = round((self.player.pos[0] / len(self.leveldata[0])) * 100)
+        progresspercent = round((self.player.pos[0] / self.level.length) * 100)
         # sets selected index to play button
         pausemenuselectindex = 1
 
@@ -426,34 +421,33 @@ class Game:
         
         # Check a 2x2 of lattice cells, centered around the player's hitbox
         # we pad the positions by 0.25 so when we are at integers, we still check the next block
-        x_range = floor(self.player.pos[0]-0.25), ceil(self.player.pos[0]+CONSTANTS.PLAYER_HITBOX_X+0.25)
-        y_range = floor(self.player.pos[1]-0.25), ceil(self.player.pos[1]+CONSTANTS.PLAYER_HITBOX_Y+0.25)
+        x_range = floor(self.player.pos[0]-0.25), ceil(self.player.pos[0]+EngineConstants.PLAYER_HITBOX_X+0.25)
+        y_range = floor(self.player.pos[1]-0.25), ceil(self.player.pos[1]+EngineConstants.PLAYER_HITBOX_Y+0.25)
         
         # clip the y-values to the leveldata bounds. For example, we can't check below index 0 or y>len(leveldata)
-        y_range = max(y_range[0], 0), min(y_range[1], len(self.leveldata))
+        y_range = max(y_range[0], 0), min(y_range[1], self.level.height)
         #Logger.log(f"#2^: setting y_range=max({y_range[0]}, 0), min({y_range[1]}, {len(self.leveldata)})." )
         
         # useful variables
         player_left = self.player.pos[0]
-        player_right = self.player.pos[0]+CONSTANTS.PLAYER_HITBOX_X
+        player_right = self.player.pos[0]+EngineConstants.PLAYER_HITBOX_X
         player_bottom = self.player.pos[1]
-        player_top = self.player.pos[1]+CONSTANTS.PLAYER_HITBOX_Y
+        player_top = self.player.pos[1]+EngineConstants.PLAYER_HITBOX_Y
         
         #Logger.log(f"Collisions: y_range is {y_range}, x_range is {x_range}.")
         
         for y in range(*y_range):
             # clip x-values based on this row's length (technically all rows should be same len, but just in case)
-            curr_x_range = max(x_range[0], 0), min(x_range[1], len(self.leveldata[y]))
+            curr_x_range = max(x_range[0], 0), min(x_range[1], self.level.length)
             #Logger.log(f"Collisions: Entering xloop for y={y}, updated x_range is {curr_x_range}.")
             for x in range(*curr_x_range):
                 
-                # weird y-index since levels are 0,0 for bottomleft, and array indices are 0,0 for topleft
-                obj = self.leveldata[max(len(self.leveldata)-y-1, 0)][x]
+                obj = self.level.get_object_at(x, y)
                 
                 #Logger.log(f"[Game/generate_collisions]: obj at x,y={x},{y} is {obj}. btw, y_range was {y_range} and leveldata has len {len(self.leveldata)}")
                 #Logger.log(f"^^ Grabbed self.leveldata[{max(len(self.leveldata)-y-1, 0)}][{x}]")
                 
-                if obj.data is None: continue
+                if obj is None: continue
                 
                 # more useful variables
                 obj_left = x+obj.data["hitbox_xrange"][0]
@@ -486,8 +480,8 @@ class Game:
                 elif obj.data["hitbox_type"] == "solid":
                     
                     # useful variables
-                    object_top_leniency = obj_top-CONSTANTS.SOLID_SURFACE_LENIENCY
-                    object_bottom_leniency = obj_bottom+CONSTANTS.SOLID_SURFACE_LENIENCY
+                    object_top_leniency = obj_top-EngineConstants.SOLID_SURFACE_LENIENCY
+                    object_bottom_leniency = obj_bottom+EngineConstants.SOLID_SURFACE_LENIENCY
                     
                     # vert. collision (FOR SOLID OBJECTS ONLY):
                     # - if player's bottom is in the range [object_top - leniency, object_top]
@@ -533,7 +527,7 @@ class Game:
         # scan the two columns the player might be occupying
         
         left = floor(self.player.pos[0])
-        right = ceil(self.player.pos[0]+CONSTANTS.PLAYER_HITBOX_X)
+        right = ceil(self.player.pos[0]+EngineConstants.PLAYER_HITBOX_X)
         
         # TODO - will be easier with new leveldata format.
         raise NotImplementedError("This function is not yet implemented - waiting for JSON-based leveldata format.")

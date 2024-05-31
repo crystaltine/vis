@@ -2,18 +2,14 @@ from bottom_menu import *
 
 os.system('cls')
 
-levels=[{'level_name':'TEST LEVEL 1',
-         'level_description':'This is a random test level for demo purposes',
-         'color1':'blue',
-         'color2':'gray',
-         'path': 'test.level'}, 
-        
-        {'level_name':'TEST LEVEL 2',
-         'level_description':'This is a random test level for demo purposes version 2',
-         'color1':'red',
-         'color2':'gray',
-         'path':'test2.level'}
-    ]
+levels=[
+    {'level_name':'TEST LEVEL 1',
+        'level_description':'This is a random test level for demo purposes',
+        'color1':'blue',
+        'color2':'gray',
+        'path': './levels/v2/official1.json'
+    }, 
+]
     
 def draw_level(level_name:str, level_description:str, width:int, height:int, x:int, y:int, color1:str, color2:str):
 
@@ -26,11 +22,11 @@ def draw_level(level_name:str, level_description:str, width:int, height:int, x:i
 def draw_level_selector():
 
     test_level_description='This is a random test level for demo purposes'
-    draw_level('TEST LEVEL 1', test_level_description, int(GD.term.width*0.8), int(GD.term.height*0.6), int(GD.term.width*0.1), int(GD.term.height*0.3), 'blue', 'gray')
+    draw_level('TEST LEVEL 1', test_level_description, int(GDConstants.term.width*0.8), int(GDConstants.term.height*0.6), int(GDConstants.term.width*0.1), int(GDConstants.term.height*0.3), 'blue', 'gray')
     while True:
         draw_text('', 0, 0)
 
-def reset_level(width=int(GD.term.width*0.8), height=int(GD.term.height*0.6), x=int(GD.term.width*0.1), y=int(GD.term.height*0.3)):
+def reset_level(width=int(GDConstants.term.width*0.8), height=int(GDConstants.term.height*0.6), x=int(GDConstants.term.width*0.1), y=int(GDConstants.term.height*0.3)):
     draw_rect('black', Position.Relative(left=x, top=y), width, height)
 
 

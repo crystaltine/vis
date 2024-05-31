@@ -52,12 +52,12 @@ def draw_created_levels():
         color=random.choice(colors)
         level_name=level_path[0:level_path.index('.')]
         level_name=level_path[0].upper()+level_name[1:]
-        draw_created_level(level_name, int(GD.term.width*0.8), int(GD.term.height*0.6), int(GD.term.width*0.1), int(GD.term.height*0.3), color[0], color[1])
+        draw_created_level(level_name, int(GDConstants.term.width*0.8), int(GDConstants.term.height*0.6), int(GDConstants.term.width*0.1), int(GDConstants.term.height*0.3), color[0], color[1])
     
     while True:
         draw_text(text, int(terminal.width*0.4), int(terminal.height*0.5))
 
-def reset_level(width=int(GD.term.width*0.8), height=int(GD.term.height*0.6), x=int(GD.term.width*0.1), y=int(GD.term.height*0.3)):
+def reset_level(width=int(GDConstants.term.width*0.8), height=int(GDConstants.term.height*0.6), x=int(GDConstants.term.width*0.1), y=int(GDConstants.term.height*0.3)):
     draw_rect('black', Position.Relative(left=x, top=y), width, height)
 
 

@@ -2,16 +2,11 @@ from blessed import Terminal
 from typing import List, Tuple, Dict
 from enum import Enum
 
-class GD:
-    """
-    General class for broad game elements.
-    Currently used for holding THE terminal instance, accessible from all parts of the game.
-    """
+class GDConstants:
+    """ General constants for the game and stuff """
     
     term = Terminal()
     
-class GDConstants:
-    """ General constants for the game and stuff """
     class difficulties(Enum):
         na = "na"
         auto = "auto"

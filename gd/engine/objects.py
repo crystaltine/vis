@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 class OBJECTS:
     
     for i in range(12):

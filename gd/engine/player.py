@@ -20,7 +20,7 @@ class Player:
         (OPTIONAL) `start_settings` format (mainly used for startpos):
         ```python
         {
-            pos: [int, int], # [x, y] to start at, default [0, 0]
+            pos: [int, int], # [x, y] to start at, default [-10, 0]
             speed: "half", "normal", ... "quadruple" # see constants.SPEEDS
             gravity: int # set a starting gravity. EngineConstants.gravity for default, negative that for reverse
         }
@@ -36,8 +36,8 @@ class Player:
         self.gamemode = start_settings.get("gamemode") or "cube"
         """ One of "cube", "ship", "ball", "ufo", "wave", "robot", "spider" (swing maybe? idk)"""
         
-        self.ORIGINAL_START_POS = start_settings.get("pos") or [0, 0] # used for resetting
-        self.pos = start_settings.get("pos") or [0, 0]
+        self.ORIGINAL_START_POS = start_settings.get("pos") or [-10, 0] # used for resetting
+        self.pos = start_settings.get("pos") or [-10, 0]
         """ [x, y], where x is horiz (progress). BOTTOM LEFT of player. y=0 means on the ground, and y cannot be negative."""
 
         self.yvel = 0

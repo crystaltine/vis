@@ -1,5 +1,7 @@
 *logs
 *__pycache__
 *tests
-*/latest.log
+**/latest.log
 gd/latest.log
+*.ipynb
+**/test.*
