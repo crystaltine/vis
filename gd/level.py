@@ -37,7 +37,6 @@ class CreatedLevelMetadata(TypedDict):
     song_start_time: float
     created_timestamp: float
     modified_timestamp: float
-    autosave: bool
     total_attempts: int
     progress_normal: int # 100% = verified
     progress_practice: int
@@ -172,18 +171,21 @@ class Level:
         row_index_in_list = len(self.leveldata) - y - 1
         return self.leveldata[row_index_in_list][x]
     
-    def set_object_at(self, obj: "LevelObject", x: int, y: int) -> None:
+    def set_object_at(self, x: int, y: int, obj: "LevelObject | AbstractLevelObject | None") -> None:
         """
-        Sets the object at coordinates x, y to `obj`.
-        x and y must both be nonnegative.
+        x and y must both be nonnegative. If x or y are greater than level length/height, expands the level.
         
-        If out of range, expands the level.
+        If obj is None, sets the object at coordinates x, y to None (delete object at that position)
+        
+        Otherwise:        
+        Sets the object at coordinates x, y to a COPY of `obj`, converting
+        it into a `LevelObject` and correctly setting its internally saved coordinates.
         """
         # check for nonnegativitiy
         if x < 0 or y < 0:
             raise ValueError(f"Invalid position ({x},{y}) while trying to set object in level - both coordinates must be nonnegative.")
         
-        if x > self.length:
+        if x >= self.length:
             # expand level horizontally, add Nones as padding at the end of each row
             for row in self.leveldata:
                 row.extend([None] * (x - self.length + 1))
@@ -191,10 +193,10 @@ class Level:
             # update length field
             self.length += x - self.length + 1
         
-        if y > self.height:
+        if y >= self.height:
             # expand level vertically, add Nones as padding
             # note that to go higher, we add rows at the beginning
-            new_rows = [[None] * self.length] * (y - self.height + 1)
+            new_rows = [([None] * self.length) for _ in range(y - self.height + 1)]
             self.leveldata = new_rows + self.leveldata
             
             # update height field
@@ -202,7 +204,8 @@ class Level:
         
         # set the new object    
         row_index_in_list = self.height - y - 1
-        self.leveldata[row_index_in_list][x] = obj            
+        new_obj = LevelObject.copy_from(obj, x, y) if obj is not None else None
+        self.leveldata[row_index_in_list][x] = new_obj
     
     def get_row(self, y: int, start: int = 0, end: int = None) -> List["LevelObject"]:
         """ Return a list of LevelObjects in a specific row, based on y-coordinate (remember, 0 is bottom row)
@@ -263,6 +266,8 @@ class LevelObject:
         if len(diff) > 0:
             raise LevelParseError(f"Error while creating LevelObject@({x},{y}): Missing the following keys: {', '.join(diff)}")
         
+        self._ORIGINAL_DEFINITION = deepcopy(definition)
+        
         self.type = definition["type"]
         """ The type/name of this object. e.g. 'block0_0', 'spike', 'yellow_orb'"""
         
@@ -288,10 +293,72 @@ class LevelObject:
         """ flag for objects that can been activated by the player exactly once. """
 
     def __str__(self) -> str:
-        if self.data:
-            return f"LevelObject<{self.type}>(x={self.x},y={self.y})"
-        return f"LevelObject<None>(x={self.x},y={self.y})"
-        
-    def __getitem__(self, key):
-        return self.data[key]     
+        return f"LevelObject(type={self.type},x={self.x},y={self.y})"
     
+    def copy_from(other: "AbstractLevelObject | LevelObject", x: float, y: float) -> "LevelObject":
+        """ Creates a new LevelObject with the same data as another object, but at a different position. """
+        # can we use __dict__ here?
+        new = LevelObject(other._ORIGINAL_DEFINITION, x, y)
+        # set other fields in case they were changed after definition
+        new.type = other.type
+        new.data = other.data
+        new.rotation = other.rotation
+        new.reflection = other.reflection
+        new.color1_channel = other.color1_channel
+        new.color2_channel = other.color2_channel
+        new.has_been_activated = other.has_been_activated
+        
+        return new
+        
+    def abstract_copy(self) -> "AbstractLevelObject":
+        """ Returns a copy of this LevelObject as an AbstractLevelObject. (no specific position) """
+        new = AbstractLevelObject(self._ORIGINAL_DEFINITION)
+        # set other fields in case they were changed after definition
+        new.type = self.type
+        new.data = self.data
+        new.rotation = self.rotation
+        new.reflection = self.reflection
+        new.color1_channel = self.color1_channel
+        new.color2_channel = self.color2_channel
+        new.has_been_activated = self.has_been_activated
+        
+        return new
+
+class AbstractLevelObject: # not inheriting since all functions are different lol
+    """
+    Represents an abstract object, with no position. Object types must be found in the `engine.objects.OBJECTS` dict.
+    This is pretty much exactly the same as LevelObject, just missing x and y fields.
+    
+    Contains other data such as has_been_activated, position, (in the future, group, color, etc.)
+    """
+    def __init__(self, definition: LevelObjectDefSchema):
+        
+        # ensure all required keys are present
+        required_keys = LevelObjectDefSchema.__required_keys__
+        diff = required_keys.difference(definition.keys())
+        if len(diff) > 0:
+            raise LevelParseError(f"Error while creating AbstractLevelObject: Missing the following keys: {', '.join(diff)}")
+        
+        self._ORIGINAL_DEFINITION = deepcopy(definition)
+        
+        self.type = definition["type"]
+        """ The type/name of this object. e.g. 'block0_0', 'spike', 'yellow_orb'"""
+        
+        self.data: ObjectData = deepcopy(getattr(OBJECTS, self.type, None))
+        """ Built-in backend data about the object, such as hitbox, collision effect, etc. """
+        
+        self.rotation: CameraConstants.OBJECT_ROTATIONS = definition["rotation"]
+        """ Represents the rotation of the object, Can be 'up','right','down','left'. up = no rotation, right = 90deg to the right, etc. """
+        self.reflection: CameraConstants.OBJECT_REFLECTIONS = definition["reflection"]
+        """ Represents the reflection of the object. Can be 'none', 'horizontal', 'vertical', or 'both' """
+        
+        self.color1_channel: int | None = definition["color1_channel"]
+        """ the id of the color channel this object's color1 (replaces dark) conforms to. Can be None if the object cannot be recolored. """
+        self.color2_channel: int | None = definition["color2_channel"]
+        """ the id of the color channel this object's color2 (replaces bright) conforms to. Can be None if the object only has 1 color."""
+        
+        self.has_been_activated = False
+        """ flag for objects that can been activated by the player exactly once. """
+
+    def __str__(self) -> str:
+        return f"AbstractLevelObject(type={self.type})"

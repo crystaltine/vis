@@ -192,6 +192,10 @@ def blend_rgba_img_onto_rgb_img(original: np.ndarray, new: np.ndarray) -> np.nda
     # return as uint8 types since this returns floats
     return blended_rgb.astype(np.uint8)
 
+def blend_rgba_img_onto_rgb_img_inplace(original: np.ndarray, new: np.ndarray) -> None:
+    """ Same as `blend_rgba_img_onto_rgb_img`, but modifies the original array in place. """
+    original[:] = blend_rgba_img_onto_rgb_img(original, new)
+
 def blend_multiple_pixels(dstacked_pixels: np.ndarray) -> tuple | np.ndarray:
     """
     Blends multiple pixels together. 

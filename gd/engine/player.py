@@ -149,7 +149,7 @@ class Player:
         (this is because the player can activate orbs while in mid-air, but can't jump normally)
         
         For yellow orbs, should be ~player jump strength. For purple orbs, should be maybe 0.3*player jump strength?
-        For black orbs, should be -4*player jump strength.
+        For black orbs, should be smth like -4*player jump strength.
         """
         
         self.yvel = strength * self.sign_of_gravity()

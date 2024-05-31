@@ -8,13 +8,13 @@ from gd_constants import GDConstants
 from game import Game
 from level import Level
 from img2term.main import draw
-from GDMenu import draw_main_menu_buttons
-from level_selector import *
-from level_editor_menu import *
+from menus.GDMenu import draw_main_menu_buttons
+from menus.level_selector import *
+from menus.level_editor_menu import *
 #from run_level_editor import *
-from main_page import *
-from created_levels import *
-from online_levels import *
+from menus.main_page import *
+from menus.created_levels import *
+from menus.online_levels import *
 
 current_module = sys.modules[__name__]
 terminal = GDConstants.term

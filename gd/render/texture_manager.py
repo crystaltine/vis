@@ -2,13 +2,14 @@ from typing import Literal, TypedDict, TYPE_CHECKING
 from PIL import Image
 import numpy as np
 
+from gd_constants import GDConstants
 from logger import Logger
 from render.utils import mix_colors_opt as mco
 from render.font import Font
 from render.constants import CameraConstants
 
 if TYPE_CHECKING:
-    from level import Level, LevelObject
+    from level import Level, LevelObject, AbstractLevelObject
 
 ROTATION_VALUES = {
     CameraConstants.OBJECT_ROTATIONS.UP.value: 0,
@@ -199,16 +200,22 @@ class TextureManager:
         
         return colorized
     
-    def get_base_texture(object: "LevelObject") -> np.ndarray:
-        """ Returns the base texture (no options like rotations, reflections, colorization applied) for a given LevelObject. """
+    def set_transparency(pixels: np.ndarray, alpha: int) -> np.ndarray:
+        """ Sets the alpha channel of a texture to a specific value. `alpha` should be from 0 to 255 inclusive. """
+        pixels[:, :, 3] = alpha
+        #Logger.log_on_screen(GDConstants.term, f"[TextureManager/set_transparency] Set a={alpha}.")
+        return pixels
+    
+    def get_base_texture(object: "LevelObject | AbstractLevelObject") -> np.ndarray:
+        """ Returns the base texture (no options like rotations, reflections, colorization applied) for a given LevelObject | AbstractLevelObject. """
         if TextureManager.base_textures.get(object.type) is None:
             raise ValueError(f"Base texture for object {object.type} not found.")
         
         return TextureManager.base_textures[object.type]
     
-    def get_transformed_texture(level: "Level", object: "LevelObject") -> np.ndarray:
+    def get_transformed_texture(level: "Level", object: "LevelObject | AbstractLevelObject") -> np.ndarray:
         """
-        Given a `LevelObject`, attempts to search & return its specific texture in the cache.
+        Given a `LevelObject` or `AbstractLevelObject`, attempts to search & return its specific texture in the cache.
         If not found, calculates the transformed texture of the object,
         with the correct rotation, reflection, and color (based on the object's color channel
         and what that color channel is currently set to in the `Level` object.
@@ -220,8 +227,8 @@ class TextureManager:
         cached = TextureManager.texture_cache.get(transformed_key)
         
         if cached is not None: 
-            #Logger.log(f"[TextureManager/get_transformed_texture] Cache hit! key={transformed_key}")
-            return cached
+            #Logger.log(f"[TextureManager/get_transformed_texture] Cache hit! key={transformed_key}, object={object}")
+            return cached.copy()
         
         # else, construct texture, save to cache, and return it
         # get base texture
@@ -233,10 +240,10 @@ class TextureManager:
         transformed_texture = TextureManager.colorize_texture(transformed_texture, *level.get_colors_of(object))
         
         TextureManager.texture_cache[transformed_key] = transformed_texture
-        Logger.log(f"[TextureManager/get_transformed_texture] Saved new texture to cache: key={transformed_key}")
-        return transformed_texture
+        #Logger.log(f"[TextureManager/get_transformed_texture] Saved new texture to cache: key={transformed_key}")
+        return transformed_texture.copy()
     
-    def get_transformed_key(level: "Level", object: "LevelObject") -> str:
+    def get_transformed_key(level: "Level", object: "LevelObject | AbstractLevelObject") -> str:
         """
         Returns the "name" (key) that this object would have in the texture cache. 
         

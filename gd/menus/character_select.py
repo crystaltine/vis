@@ -1,6 +1,6 @@
 from draw_utils import draw_rect, cls, Position, convert_to_chars
-from gd_constants import GDConstantsfrom draw_utils import draw_rect, cls, Position, convert_to_chars
-from gd_constants import GDConstantsfrom logger import Logger
+from gd_constants import GDConstants
+from logger import Logger
 from img2term.main import draw
 import traceback
 from icons import draw_cube_icon, draw_colorized_cube_icon, COLORS
