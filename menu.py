@@ -121,5 +121,9 @@ def update_cursor_movement(val):
                 apps_text('main_menu_assets/app.png')
                 draw_apps(1)
 
+def update_pages_index(new_index):
+    global pages_index 
+    pages_index = new_index
+
 #function call 
 create_menu()

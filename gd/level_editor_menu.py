@@ -15,7 +15,7 @@ def draw_menu_title_level_editor():
     draw('gd/assets/level_editor_menu/level_menu_title_2.jpeg', Position.Relative(left=left_pos, top=top_pos), (None, None), 'crop')
 
 def _draw_create_level_button(outline:bool): 
-    draw(f"gdassets/main_menu/create_button{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(30% - 13ch)", bottom="calc(50% - 13ch)"))
+    draw(f"gd/assets/main_menu/create_button{'_outline' if outline else ''}.png", pos=Position.Relative(left="calc(30% - 13ch)", bottom="calc(50% - 13ch)"))
     #draw(f"assets/main_menu/create_button{'_outline' if outline else ''}.png", pos=Position.Relative(right="calc(50% - 46ch)", bottom="calc(50% - 13ch)"))
 
 def _draw_search_button(outline:bool): 

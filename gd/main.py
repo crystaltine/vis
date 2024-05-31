@@ -3,7 +3,6 @@ import traceback
 import os 
 import sys
 from cursor import hide, show
-
 from logger import Logger
 from GD import GD
 from game import Game
@@ -16,7 +15,6 @@ from run_level_editor import *
 from main_page import *
 from created_levels import *
 from online_levels import *
-
 current_module = sys.modules[__name__]
 terminal = GD.term
 
