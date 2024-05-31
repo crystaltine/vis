@@ -60,6 +60,27 @@ class CameraConstants:
 
         return term.height*2 / CameraConstants.BLOCK_HEIGHT
     
+    def get_screen_x(camera_left: int, x: float) -> int:
+        """ Returns the screen x-coordinate (relative to left of frame) 
+        of a given grid position based on a given camera position. """
+        
+        return round((x - camera_left) * CameraConstants.BLOCK_WIDTH)
+    
+    def get_screen_y(camera_bottom: int, camera_height: int, y: float) -> int:
+        """ Returns the screen y-coordinate (relative to bottom of frame) 
+        of a given grid position based on a given camera position. """
+        
+        return camera_height - round((1 + y - camera_bottom) * CameraConstants.BLOCK_HEIGHT)
+
+    def get_screen_coordinates(camera_left: int, camera_bottom: int, camera_height: int, x: float, y: float) -> Tuple[int, int]:
+        """ Returns the screen coordinates (relative to top left of camera) of the TOP LEFT corner
+        of a given grid position based on a given camera position. """
+        
+        return (
+            CameraConstants.get_screen_x(camera_left, x),
+            CameraConstants.get_screen_y(camera_bottom, camera_height, y)
+        )
+    
     def center_screen_coordinates(term: blessed.Terminal) -> list:
         """
         Returns the coordinates of the center of the screen in BLOCKS.

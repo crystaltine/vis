@@ -1,5 +1,5 @@
-from typing import TYPE_CHECKING, Literal
-from render.utils import fcode_opt as fco, blend_rgba_img_onto_rgb_img, first_diff_color, last_diff_color, lesser, greater, remove_ansi
+from typing import TYPE_CHECKING, Literal, Tuple
+from render.utils import fcode_opt as fco, blend_rgba_img_onto_rgb_img_inplace, first_diff_color, last_diff_color, lesser, greater, remove_ansi
 from draw_utils import Position, convert_to_chars as convert_to_px, print2
 from time import perf_counter
 from logger import Logger
@@ -18,29 +18,67 @@ class CameraFrame:
     printed to the screen will assume all alpha values are 255 (opaque).
     """
 
-    def __init__(self, term: "Terminal"):
+    def __init__(self, term: "Terminal", size: Tuple[int | None, int | None] = (None, None), pos: Tuple[int | None, int | None] = (0, 0)) -> None:
+        """ Optional params:
+        - `size`: tuple (width, height) in pixels. None values will default to the terminal's width/height.
+        - `pos`: tuple (x, y) in pixels, where the top left corner of the frame will be placed. Defaults to (0, 0) (top left of screen)
+        
+        NOTE: Height and y-position MUST both be even. Each character is 2 pixels tall, and we cant render half-characters.
+        """
+        
+        assert size[1] is None or size[1] % 2 == 0, f"[CameraFrame/__init__]: height must be even, instead got {size[1]}"
+        assert pos[1] is None or pos[1] % 2 == 0, f"[CameraFrame/__init__]: y position must be even, instead got {pos[1]}"
+        
         self.term = term
-        self.width = term.width
-        """ Width in pixels = terminal width """
-        self.height = term.height*2
-        """ Height in pixels (2 * terminal height since each character is 2 pixels tall) """
+        self.width = size[0] if size[0] is not None else term.width
+        """ Width in pixels (1px = width of 1 monospaced character) """
+        self.height = size[1] if size[1] is not None else term.height*2
+        """ Height in pixels (2px = height of 1 monospaced character) """
+        
+        self.pos = pos
         
         #self.chars: List[str] = []
         #""" array of strings. Each string is a row on the screen. """
         
         self.pixels: np.ndarray = np.zeros((self.height, self.width, 3), dtype=np.uint8)
-        """ 2d array of pixels. Each pixel is an rgb tuple. """
+        """ 2d array of pixels. Each pixel is an rgb tuple. (0, 0) is the top left of the frame, not the top left of the screen. """
 
     def render_raw(self) -> None:
         """ Simply prints the frame to the screen, without the need for a previous frame. 
         Keep in mind, this is quite slow and should only be used for rendering the first frame. """
-
-        for i in range(0, self.height, 2):
-            string = ""
+        
+        # handle odd starting y. NOTE - this wont happen for now, since we are requiring even starting y and height.
+        if self.pos[1] % 2 == 1:
+            # first line prints bottom half char (top half will be terminal default bg)
+            string1 = ""
             for j in range(self.width):
-                string += fco(self.pixels[i,j], self.pixels[i+1,j]) + '▀' # for quick copy: ▀
+                string1 += fco(self.pixels[self.pos[1],j], None) + '▀'
+            print2(self.term.move_xy(self.pos[0], self.pos[1]//2) + string1)
+            
+            # print middle rows
+            stop_at = (self.pos[1] + self.height - (self.pos[1] + self.height) % 2) - 1
+            # if height is even there will be an extra line at the end
+            # if odd, then we just go until the end right here, since there is no last isolated line
+            for i in range(self.pos[1]+1, stop_at):
+                string = ""
+                for j in range(self.width):
+                    string += fco(self.pixels[i,j], self.pixels[i+1,j]) + '▀'
+                print2(self.term.move_xy(self.pos[0], i//2) + string)
                 
-            print2(self.term.move_xy(0, i//2) + string)
+            # print last line if needed
+            if self.height % 2 == 0: # since y is odd, if height is even, then we have another case of a single line
+                string2 = ""
+                for j in range(self.width):
+                    string2 += fco(None, self.pixels[self.pos[1]+self.height-1,j]) + '▀'
+                print2(self.term.move_xy(self.pos[0], (self.pos[1]+self.height)//2 + 1) + string2)
+            
+        else:
+            for i in range(self.pos[1], self.pos[1] + self.height, 2):
+                string = ""
+                for j in range(self.width):
+                    string += fco(self.pixels[i,j], self.pixels[i+1,j]) + '▀' # for quick copy: ▀
+                    
+                print2(self.term.move_xy(self.pos[0], i//2) + string)
 
     def render(self, prev_frame: "CameraFrame") -> None:
         """ Prints the frame to the screen.
@@ -53,7 +91,7 @@ class CameraFrame:
         # compare the curr frame with the previous frame
         # for each pair of rows, find the first and last changed column
         # multiply term height by 2 since chars are 2 pixels tall
-        for top_row_index in range(0, self.term.height*2, 2):            
+        for top_row_index in range(0, self.height, 2):       
             first_diff_row1 = first_diff_color(self.pixels[top_row_index], prev_frame.pixels[top_row_index])
             first_diff_row2 = first_diff_color(self.pixels[top_row_index+1], prev_frame.pixels[top_row_index+1])
             
@@ -67,10 +105,6 @@ class CameraFrame:
             
         # printing the frame
         # for each pair of rows, convert the pixels from start to end into colored characters, then print.
-        #Logger.log(f"[CameraFrame/render]: len of indices to print: {len(indices_to_print)}")
-        start_time = perf_counter()
-        total_printing_time = 0
-        last_printing_time = 0
         for i in range(len(indices_to_print)-1):
             #Logger.log(f"[CameraFrame/render]: row {i} indices to print: {indices_to_print[i]}")
             start, end = indices_to_print[i]
@@ -87,12 +121,10 @@ class CameraFrame:
             
             # go to coordinates in terminal, and print the string
             # terminal coordinates: start, i
-            last_printing_time = perf_counter()
-            #Logger.log(f"[CameraFrame/render]: printing row {i} from {start} to {end}")
-                
-            print2(self.term.move_xy(int(start), int(i)) + string)
-            total_printing_time += perf_counter() - last_printing_time
-        #Logger.log(f"[CameraFrame/render]: took {perf_counter()-start_time} seconds to draw frame, {total_printing_time} seconds to print")
+            
+            #Logger.log_on_screen(self.term, f"[CameraFrame/render]: printing@{int(start) + self.pos[0]}, {i + self.pos[1]//2} for len {end-start+1}")
+            #Logger.log_on_screen(self.term, f"[CameraFrame/render]: printing@{int(start) + self.pos[0]},{i + self.pos[1]//2}: \x1b[0m[{string}\x1b[0m]")
+            print2(self.term.move_xy(int(start) + self.pos[0], i + self.pos[1]) + string)
 
     def fill(self, color: tuple) -> None:
         """ Fills the entire canvas with the given color. RGB (3-tuple) required. Should be pretty efficient because of numpy. """
@@ -100,53 +132,33 @@ class CameraFrame:
 
         self.pixels[:,:] = color
 
-    # IMPORTANT: dropped support for now, will fix later (hopefully)
-    def add_rect(self, color: tuple, position: Position.Relative, width: int | str | None = None, height: int | str | None = None) -> None:
-        """
-        Places a rectangle on the frame with the given color and position.
-        
-        `color` - rgba tuple
+    def add_rect(
+        self, 
+        color: CameraConstants.RGBTuple | CameraConstants.RGBATuple, 
+        x: int, y: int, 
+        width: int, height: int,
+        outline_width: int = 0,
+        outline_color: CameraConstants.RGBTuple | CameraConstants.RGBATuple = (0,0,0,0)
+        ) -> None:
+        """ Places a rectangle on the frame with the given RGBA color and position.
+        Optionally, can add an outline to the rectangle with the given width and color. """
 
-        ### Positioning
-        
-        Important: If two controlling values are provided in `position`, such as `top` and `bottom`, the `height` parameter will be ignored.
-        Basically, height and width params are only used if `position` only specifies one of the two dimensions, such as if `bottom` is None.
-        
-        If none of a dimension's controlling values are provided (`top` and `bottom` must not both be None, for example), an error will be thrown.
-        """
-        
-        # TODO - implement outlining (shouldnt be that hard with numpy)
-
-        conv_width = convert_to_px(self.width, width) if width is not None else self.width
-        conv_height = convert_to_px(self.height, height) if height is not None else self.height
-        
-        abs_pos = position.get_absolute(self.width, self.height)
-        
-        # assert that at least one of the two dimensions is specified
-        if position.top is None and position.bottom is None:
-            raise ValueError("[Framelayer/add_rect] At least one of top or bottom must be specified in position.")
-        
-        if position.left is None and position.right is None:
-            raise ValueError("[Framelayer/add_rect] At least one of left or right must be specified in position.")
-        
-        # find true top and left values
-        true_top = abs_pos.top if abs_pos.top is not None else self.height - abs_pos.bottom - conv_height
-        true_left = abs_pos.left if abs_pos.left is not None else self.width - abs_pos.right - conv_width
-        
-        # find true width and height
-        true_width = self.width - abs_pos.right - abs_pos.left if (abs_pos.left is not None and abs_pos.right is not None) else conv_width
-        true_height = self.height - abs_pos.bottom - abs_pos.top if (abs_pos.top is not None and abs_pos.bottom is not None) else conv_height
-        
-        Logger.log(f"FrameLayer/draw_rect position: {position}")
-        
-        # add rect onto the layer
-        if len(color) == 3: # make everything rgba. if no a specified, assume fully opaque
+        # add alpha to color if it's an rgb tuple
+        if len(color) == 3:
             color = (*color, 255)
-        self.pixels[true_top:true_top+true_height, true_left:true_left+true_width] = color
-
+            
+        rect_as_pixels = np.full((height+outline_width*2, width+outline_width*2, 4), outline_color, dtype=np.uint8)
+        
+        # set the middle of rect_as_pixels to the color
+        rect_as_pixels[outline_width:outline_width+height, outline_width:outline_width+width] = color
+        
+        blend_rgba_img_onto_rgb_img_inplace(self.pixels[y-outline_width:y+height+outline_width, x-outline_width:x+width+outline_width], rect_as_pixels)
+    
     # IMPORTANT: dropped support for now, will fix later (hopefully)
     def add_pixels(self, x: int, y: int, pixels: np.ndarray, anchor: Literal["top-left", "top-right", "bottom-left", "bottom-right", "center"] = "top-left") -> None:
         """ 
+        CURRENTLY UNSUPPORTED, PROBABLY DOESNT WORK
+        
         Adds a set of pixels to the frame, with the top left corner at the given position.
         If the pixels go off the edge of the frame, they will be clipped.
         """
@@ -168,9 +180,6 @@ class CameraFrame:
                 top -= pixels.shape[0] // 2
                 
         self.pixels[top:top+pixels.shape[0], left:left+pixels.shape[1]] = pixels
-        
-    def add_text(self, x: int, y: int, font: Font, text: str, anchor: Literal["top-left", "top-right", "bottom-left", "bottom-right", "center"] = "top-left") -> None:
-        ...
         
     def add_text_centered_at(self, x: int, y: int, font: Font, text: str, color: CameraConstants.RGBTuple | CameraConstants.RGBATuple = (255,255,255)) -> None:
         """       
@@ -197,15 +206,13 @@ class CameraFrame:
         # if completely offscreen, return
         if offset_top >= pixels.shape[0] or offset_left >= pixels.shape[1]:
             return
-        
-        # add text onto the layer, clipping if necessary
-        self.pixels[clipped_top:clipped_top+pixels.shape[0]-offset_top, clipped_left:clipped_left+pixels.shape[1]-offset_left] =\
-            blend_rgba_img_onto_rgb_img(self.pixels[
-                clipped_top:clipped_top+pixels.shape[0]-offset_top,
-                clipped_left:clipped_left+pixels.shape[1]-offset_left
-                ], pixels[offset_top:, offset_left:])
 
-    def add_pixels_topleft(self, x: int, y: int, pixels: np.ndarray) -> None:
+        blend_rgba_img_onto_rgb_img_inplace(
+            self.pixels[clipped_top:clipped_top+pixels.shape[0]-offset_top, clipped_left:clipped_left+pixels.shape[1]-offset_left],
+            pixels[offset_top:, offset_left:]
+        )
+
+    def add_pixels_topleft(self, x: int, y: int, pixels: np.ndarray, log=False) -> None:
         """ Same as add_pixels, but with the anchor set to top-left. mainly for optimization. """
         #Logger.log(f"[FrameLayer/add_pixels_topleft]: adding pixels at {x}, {y}, size {pixels.shape}")
 
@@ -225,11 +232,9 @@ class CameraFrame:
         if offset_x1 >= pixels.shape[1] or offset_y1 >= pixels.shape[0]:
             #Logger.log(f"[FrameLayer/add_pixels_topleft]: clipped off all pixels, returning")
             return
-        
-        # blend new pixels onto the layer
-        self.pixels[int(clipped_y1):int(clipped_y1+pixels.shape[0]-offset_y1), int(clipped_x1):int(clipped_x1+pixels.shape[1]-offset_x1)] =\
-            blend_rgba_img_onto_rgb_img(self.pixels[
-                    int(clipped_y1):int(clipped_y1+pixels.shape[0]-offset_y1),
-                    int(clipped_x1):int(clipped_x1+pixels.shape[1]-offset_x1)
-                ], pixels[int(offset_y1):self.height, int(offset_x1):self.width])
+
+        blend_rgba_img_onto_rgb_img_inplace(
+            self.pixels[int(clipped_y1):int(clipped_y1+pixels.shape[0]-offset_y1), int(clipped_x1):int(clipped_x1+pixels.shape[1]-offset_x1)],
+            pixels[int(offset_y1):self.height, int(offset_x1):self.width]
+        )
         

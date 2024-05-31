@@ -136,9 +136,11 @@ class Camera:
         visible_vert_range = max(0, floor(self.camera_bottom)), min(self.level.height, 1+ceil(self.camera_bottom + CameraConstants.screen_height_blocks(self.term)))
         # this should be smth like (5, 12) which is the range of y-pos of the grid that is visible on the screen. Exclusive of the second number.
 
-        # y-pos on screen (in pixels) to render the next row at. decrement by block_height_px after each row.
-        # start at term_height_px - ground_height_px (since we render bottom to top)
-        curr_screen_y_pos = self.px_height - CameraConstants.GROUND_HEIGHT*CameraConstants.BLOCK_HEIGHT - CameraConstants.BLOCK_HEIGHT
+        # first calc where the ground would be rendered
+        ground_screen_y_pos = camera_top * CameraConstants.BLOCK_HEIGHT
+        
+        # we start rendering the row at ground - (y+1)*block_height, and decrement by block_height after each row
+        curr_screen_y_pos = ground_screen_y_pos - CameraConstants.BLOCK_HEIGHT*(1+visible_vert_range[0])
 
         #Logger.log(f"[Camera/render] visible_vert_slice = {visible_vert_slice}, initial curr_screen_y_pos = {curr_screen_y_pos}")
         for row in range(*visible_vert_range):
@@ -171,7 +173,7 @@ class Camera:
         
         # draw ground. The top of the ground ground should be at physics y=0.
         # TODO - make ground recolorable
-        ground_screen_y_pos = camera_top * CameraConstants.BLOCK_HEIGHT
+        
         new_frame.add_pixels_topleft(0, ground_screen_y_pos, TextureManager.base_textures.get("ground"))
 
         # draw player
