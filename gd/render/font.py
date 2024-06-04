@@ -11,7 +11,7 @@ class Font:
     
     PARSER_FORMAT = [
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-        "abcdefghijklmnopqrstuvwxyz"
+        "abcdefghijklmnopqrstuvwxyz",
         "~`0123456789-_+=",
         "!@#$%^&*()[{]}|\\\;:'\",<.>/?",
     ]
