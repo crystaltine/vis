@@ -4,9 +4,9 @@ from typing import Tuple
 from enum import Enum
 
 class CameraConstants:
-    BLOCK_WIDTH = 6 
+    BLOCK_WIDTH = 8
     """ How wide a block is in pixels (half of a character: ▀) """
-    BLOCK_HEIGHT = 6 
+    BLOCK_HEIGHT = 8
     """ How tall a block is in pixels (half of a character: ▀) """
 
     CAMERA_LEFT_OFFSET = 10
@@ -20,7 +20,7 @@ class CameraConstants:
     """ The maximum proportion of the screen height the player should be from the top of the screen, at all times.
     For example, if =0.75, then the player should never be rendered in the bottom 25% of the screen - the camera would move down instead. """
 
-    GROUND_HEIGHT = 4
+    GROUND_HEIGHT = 3
     """ Max height of the ground in BLOCKS. This determines how much the rest of the level is "pushed up" """
     
     # for renderer only - physics runs at ~240

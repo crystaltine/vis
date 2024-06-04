@@ -8,7 +8,7 @@
             "speed": "normal",
             "gravity": "normal",
             "default_color_channels": {
-                "1": [0, 0, 0],
+                "1": [0, 0, 1],
                 "2": [255, 255, 255],
                 "3": [255, 0, 0],
                 "4": [0, 255, 0]
@@ -30,7 +30,7 @@
             null,
             null,
             {
-                "type": "yellow_orb",
+                "type": "mode_portal_ufo",
                 "rotation": "up",
                 "reflection": "none",
                 "color1_channel": null,
@@ -40,14 +40,14 @@
             null,
             null,
             {
-                "type": "spike",
+                "type": "spike0",
                 "rotation": "left",
                 "reflection": "none",
                 "color1_channel": 3,
                 "color2_channel": 2
             },
             {
-                "type": "spike",
+                "type": "spike0",
                 "rotation": "right",
                 "reflection": "none",
                 "color1_channel": 4,
@@ -64,7 +64,7 @@
             },
             null,
             {
-                "type": "spike",
+                "type": "spike0",
                 "rotation": "up",
                 "reflection": "none",
                 "color1_channel": 1,
@@ -74,14 +74,14 @@
             null,
             null,
             {
-                "type": "spike",
+                "type": "spike0",
                 "rotation": "left",
                 "reflection": "none",
                 "color1_channel": 3,
                 "color2_channel": 2
             },
             {
-                "type": "spike",
+                "type": "spike0",
                 "rotation": "right",
                 "reflection": "none",
                 "color1_channel": 4,
@@ -114,14 +114,14 @@
             null,
             null,
             {
-                "type": "spike",
+                "type": "spike0",
                 "rotation": "left",
                 "reflection": "none",
                 "color1_channel": 3,
                 "color2_channel": 2
             },
             {
-                "type": "spike",
+                "type": "spike0",
                 "rotation": "right",
                 "reflection": "none",
                 "color1_channel": 4,

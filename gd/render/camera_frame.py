@@ -138,10 +138,12 @@ class CameraFrame:
         x: int, y: int, 
         width: int, height: int,
         outline_width: int = 0,
-        outline_color: CameraConstants.RGBTuple | CameraConstants.RGBATuple = (0,0,0,0)
+        outline_color: CameraConstants.RGBTuple | CameraConstants.RGBATuple = (0,0,0,0),
+        anchor: Literal["top-left", "top-right", "bottom-left", "bottom-right", "center"] = "top-left",
         ) -> None:
         """ Places a rectangle on the frame with the given RGBA color and position.
-        Optionally, can add an outline to the rectangle with the given width and color. """
+        Optionally, can add an outline to the rectangle with the given width and color. 
+        Can also specify what part of the rectangle x and y refer to. (default is top left)"""
 
         # add alpha to color if it's an rgb tuple
         if len(color) == 3:
@@ -152,7 +154,30 @@ class CameraFrame:
         # set the middle of rect_as_pixels to the color
         rect_as_pixels[outline_width:outline_width+height, outline_width:outline_width+width] = color
         
-        blend_rgba_img_onto_rgb_img_inplace(self.pixels[y-outline_width:y+height+outline_width, x-outline_width:x+width+outline_width], rect_as_pixels)
+        y1 = y - outline_width
+        y2 = y + height + outline_width
+        x1 = x - outline_width
+        x2 = x + width + outline_width
+        
+        match(anchor):
+            case "top-right":
+                x1 -= width
+                x2 -= width
+            case "bottom-left":
+                y1 -= height
+                y2 -= height
+            case "bottom-right":
+                x1 -= width
+                x2 -= width
+                y1 -= height
+                y2 -= height
+            case "center":
+                x1 -= width // 2
+                x2 -= width // 2
+                y1 -= height // 2
+                y2 -= height // 2
+        
+        blend_rgba_img_onto_rgb_img_inplace(self.pixels[y1:y2, x1:x2], rect_as_pixels)
     
     # IMPORTANT: dropped support for now, will fix later (hopefully)
     def add_pixels(self, x: int, y: int, pixels: np.ndarray, anchor: Literal["top-left", "top-right", "bottom-left", "bottom-right", "center"] = "top-left") -> None:
@@ -181,9 +206,17 @@ class CameraFrame:
                 
         self.pixels[top:top+pixels.shape[0], left:left+pixels.shape[1]] = pixels
         
-    def add_text_centered_at(self, x: int, y: int, font: Font, text: str, color: CameraConstants.RGBTuple | CameraConstants.RGBATuple = (255,255,255)) -> None:
+    def add_text(
+        self, 
+        x: int, y: int, 
+        font: Font, 
+        text: str, 
+        anchor: Literal["left", "right", "center"] = "center",
+        color: CameraConstants.RGBTuple | CameraConstants.RGBATuple = (255,255,255)) -> None:
         """       
-        Draws a font to the pixel array at the specified x and y values, where (x,y) are the center of the text to be rendered.
+        Draws a font to the pixel array at the specified x and y values, where y is the vertical center of the text,
+        and x can be specified to correspond to either the left, center, or right edges of the text.
+        
         x and y should be relative to the top left corner of the frame.
         
         Note: Fonts SHOULD be monospaced.
@@ -192,8 +225,17 @@ class CameraFrame:
         pixels = font.assemble(text, color)
             
         # find the top left corner where the text should be placed
-        left = x - pixels.shape[1] // 2
+        left = ...
         top = y - pixels.shape[0] // 2
+        
+        # match to anchor
+        match(anchor):
+            case "right":
+                left = x - pixels.shape[1]
+            case "center":
+                left = x - pixels.shape[1] // 2
+            case "left":
+                left = x
         
         # clip to 0, 0
         clipped_left = max(0, left)
@@ -204,15 +246,15 @@ class CameraFrame:
         offset_left = clipped_left - left
         
         # if completely offscreen, return
-        if offset_top >= pixels.shape[0] or offset_left >= pixels.shape[1]:
-            return
+        #if offset_top >= pixels.shape[0] or offset_left >= pixels.shape[1]:
+        #    return
 
         blend_rgba_img_onto_rgb_img_inplace(
             self.pixels[clipped_top:clipped_top+pixels.shape[0]-offset_top, clipped_left:clipped_left+pixels.shape[1]-offset_left],
             pixels[offset_top:, offset_left:]
         )
 
-    def add_pixels_topleft(self, x: int, y: int, pixels: np.ndarray, log=False) -> None:
+    def add_pixels_topleft(self, x: int, y: int, pixels: np.ndarray) -> None:
         """ Same as add_pixels, but with the anchor set to top-left. mainly for optimization. """
         #Logger.log(f"[FrameLayer/add_pixels_topleft]: adding pixels at {x}, {y}, size {pixels.shape}")
 
@@ -237,4 +279,41 @@ class CameraFrame:
             self.pixels[int(clipped_y1):int(clipped_y1+pixels.shape[0]-offset_y1), int(clipped_x1):int(clipped_x1+pixels.shape[1]-offset_x1)],
             pixels[int(offset_y1):self.height, int(offset_x1):self.width]
         )
+    
+    def add_pixels_centered_at(self, x: int, y: int, pixels: np.ndarray) -> None:
+        """ Adds a set of pixels to the frame, with the center at the given position. """
+        # find the range that would actually be visible
+        # find true topleft
         
+        pixels_height_1 = pixels.shape[0] // 2
+        pixels_height_2 = pixels.shape[0] - pixels_height_1
+        pixels_width_1 = pixels.shape[1] // 2
+        pixels_width_2 = pixels.shape[1] - pixels_width_1
+        
+        left = x - pixels_width_1
+        top = y - pixels_height_1
+        
+        clipped_left = max(0, left)
+        clipped_top = max(0, top)
+        
+        offset_left = clipped_left - left
+        offset_top = clipped_top - top
+        
+        # ignore if fully offscreen
+        #if offset_left >= pixels_width_2 or offset_top >= pixels_height_2:
+        #    return
+        
+        #Logger.log(f"[CameraFrame/add_pixels_centered_at]: adding pixels at {x}, {y}, size {pixels.shape}, left={left}, top={top}, clipped_left={clipped_left}, clipped_top={clipped_top}, offset_left={offset_left}, offset_top={offset_top}")
+        #Logger.log(f"^^^ Final indices to use: self.pixels[{clipped_top}:{clipped_top+pixels.shape[0]-offset_top}, {clipped_left}:{clipped_left+pixels.shape[1]-offset_left}")
+        #Logger.log(f"^^^ Indices for pixels: pixels[{offset_top}:{pixels.shape[0]}, {offset_left}:{pixels.shape[1]}")
+        
+        blend_rgba_img_onto_rgb_img_inplace(
+            self.pixels[clipped_top:clipped_top+pixels.shape[0]-offset_top, clipped_left:clipped_left+pixels.shape[1]-offset_left],
+            pixels[int(offset_top):int(offset_top)+self.height, int(offset_left):int(offset_left)+self.width]
+        )
+        
+    def copy(self) -> "CameraFrame":
+        """ Returns a deep copy of this CameraFrame. (except for the terminal reference) """
+        new_frame = CameraFrame(self.term, (self.width, self.height), self.pos)
+        new_frame.pixels = np.copy(self.pixels)
+        return new_frame

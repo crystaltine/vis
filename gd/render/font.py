@@ -11,8 +11,9 @@ class Font:
     
     PARSER_FORMAT = [
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        "abcdefghijklmnopqrstuvwxyz"
         "~`0123456789-_+=",
-        "!@#$%^&*()[{]}|\;:'\",<.>/?",
+        "!@#$%^&*()[{]}|\\\;:'\",<.>/?",
     ]
     
     def __init__(self, path_to_font_png: str):
@@ -24,17 +25,17 @@ class Font:
         Padding of 1px between ALL symbols. No padding on the outlines
         
         Symbols must be in the following order (newlines matter)
-        (only one case supported as of now)
         ```
         ABCDEFGHIJKLMNOPQRSTUVWXYZ
+        abcdefghijklmnopqrstuvwxyz
         ~`0123456789-_+=
         !@#$%^&*()[{]}|\;:'",<.>/?
         ```
         
         Notes: This means font definition images should always be 25 + 26*font_width pixels wide, 
-        and 3*font_height + 2 pixels tall. The font size that this function looks for is auto-calculated
-        based on the image size. For example, if we find that the image is 155x20,
-        we determine that 25+26w=155 => w=5, and 3h+2=20 => h=6.
+        and 4*font_height + 3 pixels tall. The font size that this function looks for is auto-calculated
+        based on the image size. For example, if we find that the image is 155x27,
+        we determine that 25+26w=155 => w=5, and 4h+3=27 => h=6.
         
         If the dimensions of the image do not conform to these dimensional constraints, this constructor raises an error.
         """
@@ -46,15 +47,13 @@ class Font:
         # load image into np arr
         img = np.array(Image.open(path_to_font_png))
         
-        assert img.shape[0] % 3 == 2, "[Font/__init__]: Font image height must be 3n+2 (for some int n) pixels tall. Got: " + str(img.shape[0])
+        assert img.shape[0] % 4 == 3, "[Font/__init__]: Font image height must be 4n+3 (for some int n) pixels tall. Got: " + str(img.shape[0])
         assert img.shape[1] % 26 == 25, "[Font/__init__]: Font image width must be 26n+25 (for some int n) pixels wide. Got: " + str(img.shape[1])
         
         self.font_width = (img.shape[1] - 25) // 26
         """ Width of each character, in pixels """
-        self.font_height = (img.shape[0] - 2) // 3
+        self.font_height = (img.shape[0] - 3) // 4
         """ Height of each character, in pixels """
-        
-        #Logger.log(f"img shape was {img.shape}, font width is {self.font_width}, font height is {self.font_height}")
         
         for i in range(len(Font.PARSER_FORMAT)):
             
@@ -100,8 +99,8 @@ class Font:
         concat_pixels = np.empty((projected_height, projected_width, 4), dtype=np.uint8)
         
         for i in range(len(text)):
-            pixels = self.get(text[i].upper())
-            if pixels is None: raise ValueError(f"[FrameLayer/add_text_centered_at]: Can't render unsupported character '{text[i]}' for font @ {self.filepath}")
+            pixels = self.get(text[i])
+            if pixels is None: raise ValueError(f"[Font/assemble]: Can't render unsupported character '{text[i]}' for font @ {self.filepath}")
 
             # add spacing to the right of the character
             pixels = np.pad(pixels, ((0, 0), (0, spacing), (0, 0)), mode='constant', constant_values=0)
