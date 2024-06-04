@@ -3,6 +3,7 @@ import os, sys
 HOST = "0.0.0.0"
 HTTP_PORT = 5000
 SOCKET_PORT = 5001
+VOICE_PORT = 5002
 URI = f"http://{HOST}:{HTTP_PORT}"
 
 SSL_CONTEXT = None
