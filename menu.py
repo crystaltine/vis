@@ -15,7 +15,7 @@ def menu_bg(filename:str):
     draw(filename, Position.Relative(top=0, left=0), (terminal.width, terminal.height*2), 'scale')
 
 def menu_title(filename:str): 
-    left_pos = "calc(50% - 70)"
+    left_pos = "calc(50% - 90)"
     top_pos = 4 
     draw(filename, Position.Relative(left=left_pos, top=top_pos), (None, None), 'crop')
 
@@ -55,7 +55,7 @@ def draw_apps(num_button_index):
 def create_menu(): 
           
           menu_bg('main_menu_assets/menu_bg.png')
-          menu_title('main_menu_assets/main_menu_title_2_better.png')
+          menu_title('main_menu_assets/main_menu_title_2_updated.png')
           start_text('main_menu_assets/start.png')
           main_logo_bg('main_menu_assets/updated_logo_2.png')
 
@@ -108,7 +108,7 @@ def update_cursor_movement(val):
             if pages_index == 2: 
                 pages_index-=1 
                 menu_bg('main_menu_assets/menu_bg.png')
-                menu_title('main_menu_assets/main_menu_title_2_better.png')
+                menu_title('main_menu_assets/main_menu_title_2_updated.png')
                 start_text('main_menu_assets/start.png')
                 main_logo_bg('main_menu_assets/updated_logo_2.png')
 
