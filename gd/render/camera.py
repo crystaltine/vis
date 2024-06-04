@@ -157,11 +157,15 @@ class Camera:
                     xpos_on_screen = round((obj.x - self.camera_left) * CameraConstants.BLOCK_WIDTH)
                     ypos_on_screen = curr_screen_y_pos
                     
+                    # convert from topleft to center
+                    xpos_on_screen += CameraConstants.BLOCK_WIDTH // 2
+                    ypos_on_screen -= CameraConstants.BLOCK_HEIGHT // 2
+                    
                     # get transformed texture, with rotations, color, etc. (attempts to use cache for optimization)
                     obj_texture = TextureManager.get_transformed_texture(self.level, obj)
                     
                     #try:
-                    new_frame.add_pixels_topleft(xpos_on_screen, ypos_on_screen, obj_texture)
+                    new_frame.add_pixels_centered_at(xpos_on_screen, ypos_on_screen, obj_texture)
                     #except Exception as e:
                     #    Logger.log(f"error: {traceback.format_exc()}")
                     
@@ -278,7 +282,7 @@ class Camera:
         
         pos_on_screen = self.get_screen_coordinates(x, y)
         
-        frame.add_text_centered_at(*pos_on_screen, TextureManager.font_small1, f"Attempt {attempt}")
+        frame.add_tex(*pos_on_screen, TextureManager.font_small1, f"Attempt {attempt}")
 
         # Calculate player's topmost y-coordinate for positioning text
         #player_topmost_y = round((self.ground - y - 1) * CameraConstants.GRID_PX_Y)

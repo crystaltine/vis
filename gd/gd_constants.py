@@ -25,7 +25,7 @@ class GDConstants:
         wave = "wave"
         robot = "robot"
         spider = "spider"
-        swing = "swing"
+        #swing = "swing"
         
     class speeds(Enum):
         half = "half"

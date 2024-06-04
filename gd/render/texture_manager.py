@@ -54,6 +54,10 @@ class TextureManager:
     `{object name}_{rotation}_{reflection}_{color1|None}_{color2|None}`
     """
     
+    # load fonts
+    font_small1 = Font("./assets/fonts/small1.png")
+    font_title = Font("./assets/fonts/title.png")
+    
     DEFAULT_GRAYSCALE_TEXTURE_OPTIONS: GrayscaleTextureOptions = {
         "color1": (0, 0, 0),
         "color2": (255, 255, 255),
@@ -87,11 +91,13 @@ class TextureManager:
             if not isinstance(scale, int): raise ValueError("[render texture grayscale]: scale must be an integer")
             im = im.resize((im.width * scale, im.height * scale))
 
-        pixels = np.array(np.array(im))
+        pixels = np.array(im)
         colored_pixels: np.ndarray = np.zeros((len(pixels), len(pixels[0]), 4), dtype=np.uint8)
 
         for i in range(len(pixels)):
             for j in range(len(pixels[i])):
+                
+                # NOTE - this is slow, and there are vectorized ways to do this
                 
                 px_data = pixels[i][j] # should be a 4-long ndarray of the rgba values
                 alpha = px_data[3] if len(px_data) == 4 else 255
@@ -136,7 +142,7 @@ class TextureManager:
             if not isinstance(scale, int): raise ValueError("[render texture grayscale]: scale must be an integer")
             im = im.resize((im.width * scale, im.height * scale))
 
-        pixels = np.array(np.array(im))
+        pixels = np.array(im)
         
         # apply any changes
         
@@ -150,6 +156,11 @@ class TextureManager:
             final_pixels = np.flipud(np.fliplr(final_pixels))
         
         return final_pixels
+    
+    def compile_texture(filepath: str) -> np.ndarray:
+        """ Basically build_grayscale_texture_to_pixels or build_colorful_texture_to_pixels but without any options,
+        since those seem pretty useless lol """
+        return np.array(Image.open(filepath))
 
     def reflect_texture(pixels: np.ndarray, reflection: CameraConstants.OBJECT_REFLECTIONS) -> np.ndarray:
         """
@@ -169,7 +180,6 @@ class TextureManager:
         """
         Rotates a texture 0, 90, 180, or 270 degrees.
         """
-        
         return np.rot90(pixels, ROTATION_VALUES[rotation])
     
     def colorize_texture(pixels: np.ndarray, color1: CameraConstants.RGBTuple | None, color2: CameraConstants.RGBTuple | None) -> np.ndarray:
@@ -187,6 +197,10 @@ class TextureManager:
         if color1 is None: color1 = color2
 
         # create grayscale map, 0 ~ color1, 1 ~ color2
+        
+        # if pixels doesn't have an alpha channel, add one
+        if pixels.shape[2] == 3:
+            pixels = np.concatenate((pixels, np.full((pixels.shape[0], pixels.shape[1], 1), 255, dtype=np.uint8)), axis=2)
         
         alphas = pixels[:, :, 3]
         
@@ -260,36 +274,48 @@ class TextureManager:
 # preload all base textures
 # load objects
 TextureManager.base_textures.update({
-    "spike": TextureManager.build_grayscale_texture_to_pixels("./assets/objects/spike.png"),
-    "ground": TextureManager.build_colorful_texture_to_pixels("./assets/objects/ground.png"),
-    "checkpoint": TextureManager.build_colorful_texture_to_pixels("./assets/objects/checkpoint.png"),
-    "yellow_orb": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/orbs/orb_yellow.png"),
-    "purple_orb": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/orbs/orb_purple.png"),
-    "blue_orb": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/orbs/orb_blue.png"),
-    "green_orb": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/orbs/orb_green.png"),
-    "red_orb": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/orbs/orb_red.png"),
-    "black_orb": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/orbs/orb_black.png"),
-    "yellow_pad": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/pads/pad_yellow.png"),
-    "purple_pad": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/pads/pad_purple.png"),
-    "blue_pad": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/pads/pad_blue.png"),
-    "red_pad": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/pads/pad_red.png"),
-    "cube_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/mode_portals/mode_portal_cube.png"),
-    "ship_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/mode_portals/mode_portal_ship.png"),
-    "ball_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/mode_portals/mode_portal_ball.png"),
-    "ufo_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/mode_portals/mode_portal_ufo.png"),
-    "wave_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/mode_portals/mode_portal_wave.png"),
-    "robot_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/mode_portals/mode_portal_robot.png"),
-    "spider_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/mode_portals/mode_portal_spider.png"),
-    "normal_grav_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/grav_portals/grav_portal_normal.png"),
-    "reverse_grav_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/grav_portals/grav_portal_reverse.png"),
-    "half_speed_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/speed_portals/speed_portal_half.png"),
-    "normal_speed_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/speed_portals/speed_portal_normal.png"),
-    "double_speed_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/speed_portals/speed_portal_double.png"),
-    "triple_speed_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/speed_portals/speed_portal_triple.png"),
-    "quadruple_speed_portal": TextureManager.build_colorful_texture_to_pixels(f"./assets/objects/speed_portals/speed_portal_quadruple.png"),
+    "ground": TextureManager.compile_texture("./assets/objects/general/ground.png"),
+    "checkpoint": TextureManager.compile_texture("./assets/objects/general/checkpoint.png"),
+    
+    "yellow_orb": TextureManager.compile_texture(f"./assets/objects/effect/orbs/orb_yellow.png"),
+    "purple_orb": TextureManager.compile_texture(f"./assets/objects/effect/orbs/orb_purple.png"),
+    "blue_orb": TextureManager.compile_texture(f"./assets/objects/effect/orbs/orb_blue.png"),
+    "green_orb": TextureManager.compile_texture(f"./assets/objects/effect/orbs/orb_green.png"),
+    "red_orb": TextureManager.compile_texture(f"./assets/objects/effect/orbs/orb_red.png"),
+    "black_orb": TextureManager.compile_texture(f"./assets/objects/effect/orbs/orb_black.png"),
+    
+    "yellow_pad": TextureManager.compile_texture(f"./assets/objects/effect/pads/pad_yellow.png"),
+    "purple_pad": TextureManager.compile_texture(f"./assets/objects/effect/pads/pad_purple.png"),
+    "blue_pad": TextureManager.compile_texture(f"./assets/objects/effect/pads/pad_blue.png"),
+    "red_pad": TextureManager.compile_texture(f"./assets/objects/effect/pads/pad_red.png"),
+
+    "glow_edge": TextureManager.compile_texture(f"./assets/objects/deco/glow_edge.png"),
+    "glow_corner": TextureManager.compile_texture(f"./assets/objects/deco/glow_corner.png"),
 })
+
+# speed portals
 TextureManager.base_textures.update({
-    f"block0_{i}": TextureManager.build_grayscale_texture_to_pixels(f"./assets/objects/block0/{i}.png") for i in range(12)
+    f"speed_portal_{speed.value}": TextureManager.compile_texture(f"./assets/objects/effect/speed_portals/speed_portal_{speed.value}.png") for speed in GDConstants.speeds
+})
+
+# mode portals
+TextureManager.base_textures.update({
+    f"mode_portal_{gamemode.value}": TextureManager.compile_texture(f"./assets/objects/effect/mode_portals/mode_portal_{gamemode.value}.png") for gamemode in GDConstants.gamemodes
+})
+
+# grav portals
+TextureManager.base_textures.update({
+    f"grav_portal_{grav.value}": TextureManager.compile_texture(f"./assets/objects/effect/grav_portals/grav_portal_{grav.value}.png") for grav in GDConstants.gravities
+})
+
+# blocks
+TextureManager.base_textures.update({
+    f"block{j}_{i}": TextureManager.compile_texture(f"./assets/objects/block/block{j}/{i}.png") for i in range(12) for j in range(3)
+})
+
+# spikes
+TextureManager.base_textures.update({
+    f"spike{i}": TextureManager.compile_texture(f"./assets/objects/obstacle/spikes/spike{i}.png") for i in range(10)
 })
 
 # load player icons
@@ -297,7 +323,3 @@ TextureManager.player_icons = [
     TextureManager.build_grayscale_texture_to_pixels(f"./assets/icons/cubes/0/{i}.png", TextureManager.player_color1, TextureManager.player_color2)
     for i in range(4)
 ]
-
-# load fonts
-TextureManager.font_small1 = Font("./assets/fonts/small1.png")
-TextureManager.font_title = Font("./assets/fonts/title.png")

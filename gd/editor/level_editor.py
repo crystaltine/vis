@@ -1,9 +1,7 @@
-from typing import Tuple, Literal
+from typing import Tuple, Literal, TYPE_CHECKING
 from math import floor, ceil
 import time
 import traceback
-from random import randint
-from blessed.keyboard import Keystroke
 
 from logger import Logger
 from render.constants import CameraConstants
@@ -11,7 +9,12 @@ from render.camera_frame import CameraFrame
 from render.texture_manager import TextureManager
 from gd_constants import GDConstants
 from engine.objects import OBJECTS
-from level import Level, AbstractLevelObject
+from level import Level, LevelObject, AbstractLevelObject
+from editor.edit_object_popup import EditObjectPopup
+from editor.level_settings_popup import LevelSettingsPopup
+
+if TYPE_CHECKING:
+    from blessed.keyboard import Keystroke
 
 class LevelEditor:
     """ All level-editor related stuff. Instances represent LevelEditors open to specific levels. """
@@ -90,6 +93,8 @@ class LevelEditor:
             self.camera_height -= 1
         
         self.curr_frame: CameraFrame = None
+        self.focused_popup: "EditObjectPopup | LevelSettingsPopup | None" = None
+        """ If true, the editor is currently in a popup window; disable general keybinds & pause main editor rendering. """
         self.rerender_needed = True
         """ If True, the editor will rerender the frame on the next keylistener loop. Set to true when anything on the screen changes. """
         self.running = False
@@ -142,14 +147,14 @@ class LevelEditor:
                     xpos_on_screen = round((obj.x - self.camera_left) * CameraConstants.BLOCK_WIDTH)
                     ypos_on_screen = curr_screen_y_pos
                     
+                    # convert from topleft to center
+                    xpos_on_screen += CameraConstants.BLOCK_WIDTH // 2
+                    ypos_on_screen += CameraConstants.BLOCK_HEIGHT // 2
+                    
                     # get transformed texture, with rotations, color, etc. (attempts to use cache for optimization)
                     obj_texture = TextureManager.get_transformed_texture(self.level, obj)
                     
-                    #try:
-                    Logger.log(f"about to call add_px_topleft on texture for obj={obj}. btw, that texture's shape is {obj_texture.shape}")
-                    new_frame.add_pixels_topleft(xpos_on_screen, round(ypos_on_screen), obj_texture)
-                    #except Exception as e:
-                    #    Logger.log(f"error: {traceback.format_exc()}")
+                    new_frame.add_pixels_centered_at(xpos_on_screen, round(ypos_on_screen), obj_texture)
                     
             curr_screen_y_pos -= CameraConstants.BLOCK_HEIGHT
         
@@ -162,8 +167,11 @@ class LevelEditor:
             # draw cursor preview
             cursor_screen_pos = CameraConstants.get_screen_coordinates(self.camera_left, self.camera_bottom, self.camera_height, *self.cursor_position)
             cursor_texture = TextureManager.set_transparency(TextureManager.get_transformed_texture(self.level, self.selected_object), round(LevelEditor.BUILD_CURSOR_PREVIEW_OPACITY*255))
-            #Logger.log(f"drawing cursor at {cursor_screen_pos=}")
-            new_frame.add_pixels_topleft(*cursor_screen_pos, cursor_texture, True)
+            
+            # convert top left to center
+            cursor_screen_pos = (cursor_screen_pos[0] + CameraConstants.BLOCK_WIDTH // 2, cursor_screen_pos[1] + CameraConstants.BLOCK_HEIGHT // 2)
+            
+            new_frame.add_pixels_centered_at(*cursor_screen_pos, cursor_texture)
         elif self.mode == 'edit':
             # draw a green box around the cursor position. Also 1px outline.
             cursor_screen_pos = CameraConstants.get_screen_coordinates(self.camera_left, self.camera_bottom, self.camera_height, *self.cursor_position)
@@ -182,17 +190,14 @@ class LevelEditor:
             new_frame.render_raw()
             
         self.curr_frame = new_frame
-    
-    #def render_bottom_menu(self) -> None:
-    #    
-    
+        
     def run_editor(self):
         """ Begins keylistener loops and renders the level editor. """
         
         self.render_main_editor()
         self.rerender_needed = False
         
-        def key_handler_general(val: Keystroke) -> None:
+        def key_handler_general(val: "Keystroke") -> None:
             """ General keypress event handler for the editor in any mode """
             if val in LevelEditor.KEYBINDS["quit"]:
                 self.running = False
@@ -263,17 +268,20 @@ class LevelEditor:
                 self.camera_left = max(0, self.camera_left)
                 self.rerender_needed = True 
             
-        def key_handler_build_mode(val: Keystroke) -> None:
+        def key_handler_build_mode(val: "Keystroke") -> None:
             """ Event handler for keypresses SPECIFIC TO build mode. """
             if val in LevelEditor.KEYBINDS["place_object"]:
                 Logger.log_on_screen(GDConstants.term, f"placing object {self.selected_object} @{self.cursor_position=}")
                 self.level.set_object_at(*self.cursor_position, self.selected_object)
                 self.rerender_needed = True
         
-        def key_handler_edit_mode(val: Keystroke) -> None:
+        def key_handler_edit_mode(val: "Keystroke") -> None:
             """ Event handler for keypresses SPECIFIC TO edit mode. """
             if val in LevelEditor.KEYBINDS["edit_object"]:
-                pass # TODO, should open a menu or smth
+                hovered_obj = self.level.get_object_at(*self.cursor_position)
+                if hovered_obj is not None:
+                    self.focused_popup = EditObjectPopup(self.curr_frame, hovered_obj)
+                    self.focused_popup.render()
         
         self.running = True
         while self.running:
@@ -281,16 +289,26 @@ class LevelEditor:
                 in_val = GDConstants.term.inkey(0.01)
                 
                 if in_val:
-                    Logger.log(f"key pressed: {in_val}")
-                    try:
-                        key_handler_general(in_val)
-                        key_handler_build_mode(in_val) if self.mode == 'build' else key_handler_edit_mode(in_val)
-                    except:
-                        Logger.log(f"[LevelEditor/key handler]: {traceback.format_exc()}")
-                        print(f"[LevelEditor/key handler] ERROR: {traceback.format_exc()}")
-                        self.running = False
+                    if self.focused_popup is None:
+                        try:
+                            key_handler_general(in_val)
+                            key_handler_build_mode(in_val) if self.mode == 'build' else key_handler_edit_mode(in_val)
+                        except:
+                            Logger.log(f"[LevelEditor/key handler (not in popup)]: {traceback.format_exc()}")
+                            print(f"[LevelEditor/key handler (not in popup)] ERROR: {traceback.format_exc()}")
+                            self.running = False
+                    else:
+                        try:
+                            should_quit = self.focused_popup.handle_key(in_val)
+                            if should_quit:
+                                self.focused_popup = None
+                                self.rerender_needed = True
+                        except:
+                            Logger.log(f"[LevelEditor/key handler (IN POPUP)]: {traceback.format_exc()}")
+                            print(f"[LevelEditor/key handler (IN POPUP)] ERROR: {traceback.format_exc()}")
+                            self.running = False
                 else: continue
                 
-                if self.rerender_needed: # rerender if stuff changed
+                if self.rerender_needed and self.focused_popup is None: # rerender if stuff changed
                     self.render_main_editor()
                     self.rerender_needed = False
