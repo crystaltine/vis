@@ -112,7 +112,7 @@ class EditObjectPopup:
         curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
 
         # draw minus button
-        button = getattr(EditObjectPopup, f"minus_button{'_pressed' if self.selected_button_idx == 0 else ''}")
+        button = getattr(EditObjectPopup, f"minus_button{'_pressed' if self.selected_button_idx == 0 and self.selected_setting_idx == 0 else ''}")
         new_frame.add_pixels_centered_at(curr_x_pos, curr_y_pos, button)
         curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
 
@@ -147,7 +147,7 @@ class EditObjectPopup:
         curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
 
         # draw minus button
-        button = getattr(EditObjectPopup, f"minus_button{'_pressed' if self.selected_button_idx == 0 else ''}")
+        button = getattr(EditObjectPopup, f"minus_button{'_pressed' if self.selected_button_idx == 0 and self.selected_setting_idx == 1 else ''}")
         new_frame.add_pixels_centered_at(curr_x_pos, curr_y_pos, button)
         curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
 
@@ -251,6 +251,15 @@ class EditObjectPopup:
         elif key.name == "KEY_LEFT":
             self.selected_button_idx = (self.selected_button_idx - 1) % (self.available_settings[self.selected_setting_idx][1])
             self.edit_object_rotation_reflection(self.selected_button_idx)
+        elif key.name == "KEY_ENTER": # only for color settings
+            delta = self.selected_button_idx*2 - 1 # maps 0,1 -> -1, 1 (for adding or subtracting)
+            
+            if self.selected_setting_idx == 0: # color channel 1
+                self.obj.color1_channel += delta
+                self.obj.color1_channel = max(self.obj.color1_channel, 0)
+            elif self.selected_setting_idx == 1: # color channel 1
+                self.obj.color2_channel += delta
+                self.obj.color2_channel = max(self.obj.color2_channel, 0)
 
         self.render()
         return False

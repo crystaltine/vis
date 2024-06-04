@@ -9,7 +9,7 @@ with term.cbreak():
     while val.lower() != 'q':
         val = term.inkey()
         if val.is_sequence:
-           print(f"got sequence: {[str(val)]}, {val.name=}, {val.code=}")
+           print(f"got sequence: {[str(val)]}, name={val.name}, code={val.code}")
         elif val:
-           print(f"not seq: {[str(val)]} {val.code=} {val.name=}")
+           print(f"not seq: {[str(val)]} code={val.code} name={val.name}")
     print(f'bye! {term.normal}')
