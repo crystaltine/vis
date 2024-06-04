@@ -109,7 +109,7 @@ class LevelEditor:
     def redo(self) -> None:
         pass # TODO
     
-    def render_main_editor(self) -> None:
+    def render_main_editor(self, render_raw: bool = False) -> None:
         """ Draws a single frame of the editor to the screen. Should be overall similar to Camera.render. """
         
         #Logger.log_on_screen(GDConstants.term, f"Rendering frame, cam left,bottom={self.camera_left, self.camera_bottom}, cursor@{self.cursor_position=}")
@@ -182,12 +182,11 @@ class LevelEditor:
                 outline_color=LevelEditor.EDIT_CURSOR_OUTLINE_COLOR, outline_width=1
             )
             
-        
         # render the new frame
-        if self.curr_frame is not None:
-            new_frame.render(self.curr_frame)
-        else:
+        if self.curr_frame is None or render_raw:
             new_frame.render_raw()
+        else:
+            new_frame.render(self.curr_frame)
             
         self.curr_frame = new_frame
         
@@ -280,7 +279,7 @@ class LevelEditor:
             if val in LevelEditor.KEYBINDS["edit_object"]:
                 hovered_obj = self.level.get_object_at(*self.cursor_position)
                 if hovered_obj is not None:
-                    self.focused_popup = EditObjectPopup(self.curr_frame, hovered_obj)
+                    self.focused_popup = EditObjectPopup(self.curr_frame.copy(), hovered_obj, self.level)
                     self.focused_popup.render()
         
         self.running = True
@@ -302,7 +301,7 @@ class LevelEditor:
                             should_quit = self.focused_popup.handle_key(in_val)
                             if should_quit:
                                 self.focused_popup = None
-                                self.rerender_needed = True
+                                self.render_main_editor(render_raw=True)
                         except:
                             Logger.log(f"[LevelEditor/key handler (IN POPUP)]: {traceback.format_exc()}")
                             print(f"[LevelEditor/key handler (IN POPUP)] ERROR: {traceback.format_exc()}")
