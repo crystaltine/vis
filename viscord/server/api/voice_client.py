@@ -15,6 +15,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, VOICE_PORT))
 
 
+global channels, lifelines, connected_clients
 
 connected_clients = {
     # user id: {
@@ -29,6 +30,7 @@ lifelines = {}
 
 @app.route("/api/voice/join", methods=["POST"])
 def join_voice() -> Literal["success", "failure"]:
+    global channels, lifelines, connected_clients
     """
     Join a voice channel.
     """
@@ -69,6 +71,7 @@ def join_voice() -> Literal["success", "failure"]:
     return Response(json.dumps(return_data), status=200)
 
 def handle_client(conn, addr):
+    global channels, lifelines, connected_clients
     data = conn.recv(1024)
     data = json.loads(data.decode())
     
@@ -79,14 +82,14 @@ def handle_client(conn, addr):
         if target not in connected_clients: 
             connected_clients[target] = {}
         connected_clients[target][user_id] = conn
-        print(f"NEW RECEIVER: {target} -> {id}")
+        print(f"NEW RECEIVER: {target} -> {user_id}")
     elif role == "lifeline":
         lifelines[user_id] = conn
-        print(f"NEW LIFELINE: {id}")
+        print(f"NEW LIFELINE: {user_id}")
     elif role == "sender":
         if user_id not in connected_clients:
             connected_clients[user_id] = {}
-        print(f"SENDER ESTABLISHED: {id}")
+        print(f"SENDER ESTABLISHED: {user_id}")
     
     while True:
         try:
