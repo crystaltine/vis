@@ -325,6 +325,6 @@ TextureManager.base_textures.update({
 
 # load player icons
 TextureManager.player_icons = [
-    TextureManager.build_grayscale_texture_to_pixels(f"./assets/icons/cubes/0/{i}.png", TextureManager.player_color1, TextureManager.player_color2)
+    TextureManager.build_grayscale_texture_to_pixels(f"./assets/icons/cube/0/{i}.png", TextureManager.player_color1, TextureManager.player_color2)
     for i in range(4)
 ]

@@ -259,7 +259,7 @@ class LevelObjectDefSchema(TypedDict):
 
 class LevelObject:
     """
-    Represents a single object in a level. object types must be found in the `engine.objects.OBJECTS.masterlist` dict.
+    Represents a single object in a level. object types must be found in the `engine.objects.OBJECTS.MASTERLIST` dict.
     These should be created on level load, and NOT on every tick.
     
     Contains other data such as has_been_activated, position, (in the future, group, color, etc.)
@@ -355,7 +355,7 @@ class LevelObject:
 
 class AbstractLevelObject: # not inheriting since all functions are different lol
     """
-    Represents an abstract object, with no position. Object types must be found in the `engine.objects.OBJECTS.masterlist` dict.
+    Represents an abstract object, with no position. Object types must be found in the `engine.objects.OBJECTS.MASTERLIST` dict.
     This is pretty much exactly the same as LevelObject, just missing x and y fields.
     
     Contains other data such as has_been_activated, position, (in the future, group, color, etc.)

@@ -17,10 +17,18 @@ class EngineConstants:
     
     YELLOW_ORB_MULTIPLIER = 1
     """ The proportion of the player's jump strength that a yellow orb gives. """
+    YELLOW_PAD_MULTIPLIER = 2
+    """ The proportion of the player's jump strength that a yellow pad gives """
     PURPLE_ORB_MULTIPLIER = 0.7
     """ The proportion of the player's jump strength that a purple orb gives. """
-    RED_ORB_MULTIPLIER = 2.2
+    PURPLE_PAD_MULTIPLIER = 0.95
+    """ The proportion of the player's jump strength that a purple pad gives. """
+    RED_ORB_MULTIPLIER = 2
     """ The proportion of the player's jump strength that a red orb gives. """
+    RED_PAD_MULTIPLIER = 2.5
+    """ The proportion of the player's jump strength that a red pad gives."""
+    BLACK_ORB_VELOCITY = 20
+    """ What the player's y-vel gets set to when hitting a black orb (sign changes based on gravity) """
     
     BLUE_ORB_STARTING_VELOCITY = 3
     """ The yvel that the player gets when they hit a blue orb. (obviously the sign changes based on grav) """
