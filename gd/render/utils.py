@@ -185,7 +185,6 @@ def blend_rgba_img_onto_rgb_img(original: np.ndarray, new: np.ndarray) -> np.nda
 
     new_rgb = clipped_new[..., :3] # "img" without alpha
     new_alpha = clipped_new[..., 3] / 255.0 # array of just the alpha values
-
     # blend arrays in PARALLEL (yayyyyyyyy!!!!)
     blended_rgb = new_rgb*new_alpha[..., np.newaxis] + original*(1 - new_alpha[..., np.newaxis])
 

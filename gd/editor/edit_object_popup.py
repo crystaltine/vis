@@ -121,10 +121,10 @@ class EditObjectPopup:
         curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
 
         # draw plus button
-        button = getattr(EditObjectPopup, f"plus_button{'_pressed' if self.selected_button_idx == 0 and self.selected_setting_idx == 0 else ''}")
+        button = getattr(EditObjectPopup, f"plus_button{'_pressed' if self.selected_button_idx == 1 and self.selected_setting_idx == 0 else ''}")
         new_frame.add_pixels_centered_at(curr_x_pos, curr_y_pos, button)
 
-        curr_y_pos += TextureManager.font_small1.font_height + EditObjectPopup.GAP_Y
+        curr_y_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_Y
         
 
 
@@ -156,10 +156,10 @@ class EditObjectPopup:
         curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
         
         # draw plus button
-        button = getattr(EditObjectPopup, f"plus_button{'_pressed' if self.selected_button_idx == 0 and self.selected_setting_idx == 1 else ''}")
+        button = getattr(EditObjectPopup, f"plus_button{'_pressed' if self.selected_button_idx == 1 and self.selected_setting_idx == 1 else ''}")
         new_frame.add_pixels_centered_at(curr_x_pos, curr_y_pos, button)
 
-        curr_y_pos += TextureManager.font_small1.font_height + EditObjectPopup.GAP_Y
+        curr_y_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_Y
         
 
 

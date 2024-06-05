@@ -19,7 +19,9 @@ if TYPE_CHECKING:
 class LevelEditor:
     """ All level-editor related stuff. Instances represent LevelEditors open to specific levels. """
     
-    BOTTOM_MENU_HEIGHT = 0.25 # fraction of screen height
+    BOTTOM_MENU_HEIGHT = TextureManager.font_small1.font_height + 5 # height of the bottom menu bar in pixels
+    BOTTOM_MENU_BG_COLOR = (147, 120, 78, 255)
+    BOTTOM_MENU_SAVED_BG_COLOR = (14, 209, 69, 255)
     BUILD_CURSOR_PREVIEW_OPACITY = 0.5 # fraction of 255
     EDIT_CURSOR_FILL_COLOR = (0, 255, 0, 120) 
     EDIT_CURSOR_OUTLINE_COLOR = (180, 255, 150, 220)
@@ -46,6 +48,9 @@ class LevelEditor:
         "toggle_mode": ["\x05"], # ctrl e
         "place_object": ["\r", " "], # (enter, space), build mode only
         "edit_object": ["\r"], # (enter), edit mode only
+        "open_settings": ["\x0f"], # ctrl o
+        "cycle_object_forward": ["KEY_TAB"], # tab, build mode only
+        "cycle_object_backward": ["KEY_BTAB"], # shift tab, build mode only
     }
     
     def __init__(self, filepath: str) -> None:
@@ -85,29 +90,73 @@ class LevelEditor:
         """ The y-position of the bottom edge of the camera. """
         self.camera_width: int = GDConstants.term.width
         """ The width of the camera in pixels. For now, its just the terminal width. """
-        self.camera_height: int = int(GDConstants.term.height*2*(1-LevelEditor.BOTTOM_MENU_HEIGHT))
+        self.camera_height: int = int(GDConstants.term.height*2-LevelEditor.BOTTOM_MENU_HEIGHT)
         """ The height of the camera in pixels. Camera doesnt take up entire terminal height cuz we have a bottom menu. Will always be even. """
         
         # ensure that camera height is even
         if self.camera_height % 2 == 1:
             self.camera_height -= 1
         
-        self.curr_frame: CameraFrame = None
+        self.curr_main_frame: CameraFrame = None
+        self.curr_bottom_menu_frame: CameraFrame = None
         self.focused_popup: "EditObjectPopup | LevelSettingsPopup | None" = None
         """ If true, the editor is currently in a popup window; disable general keybinds & pause main editor rendering. """
         self.rerender_needed = True
         """ If True, the editor will rerender the frame on the next keylistener loop. Set to true when anything on the screen changes. """
+        self.showing_save_confirmation = False
+        """ Whether or not to render "saved changes!" in the bottom bar instead of build/edit mode. Should be set on save, and unset on the next keypress. """
         self.running = False
         
     def save(self) -> None:
         self.level.metadata["modified_timestamp"] = time.time()
         self.level.write_to_file(self.filepath)
+        self.showing_save_confirmation = True
+        self.render_bottom_menu()
         
     def undo(self) -> None:
         pass # TODO
     
     def redo(self) -> None:
         pass # TODO
+    
+    def render_bottom_menu(self) -> None:
+        """ Draws the bar at the bottom. It has a 1px border on the top. """
+        
+        new_frame = CameraFrame(
+            GDConstants.term, 
+            size=(self.camera_width, LevelEditor.BOTTOM_MENU_HEIGHT+1), # +1 for the border
+            pos=(0, self.camera_height) # +1 for the border
+        ) # +1 for the border
+        
+        # draw a 1px tall rectangle at the top to be the border
+        new_frame.add_rect((255, 255, 255, 255), 0, 0, self.camera_width, 1)
+        # bg
+        color_to_use = LevelEditor.BOTTOM_MENU_SAVED_BG_COLOR if self.showing_save_confirmation else LevelEditor.BOTTOM_MENU_BG_COLOR
+        new_frame.add_rect(color_to_use, 0,1, self.camera_width, LevelEditor.BOTTOM_MENU_HEIGHT)
+    
+        # add left-justified text to the bar at the bottom
+        # 2px padding on left
+        
+        status_text = ...
+        if self.showing_save_confirmation:
+            status_text = "Saved changes!"
+        elif self.mode == 'build':
+            status_text = "Build mode"
+        elif self.mode == 'edit':
+            status_text = "Edit mode"
+            
+        
+        # first, find the center of the bottom menu
+        center_y = LevelEditor.BOTTOM_MENU_HEIGHT // 2 + 1 # +1 to account for the border
+        new_frame.add_text(2, center_y, TextureManager.font_small1, status_text, 'left')
+    
+        # render the new frame
+        if self.curr_bottom_menu_frame is None:
+            new_frame.render_raw()
+        else:
+            new_frame.render(self.curr_bottom_menu_frame)
+            
+        self.curr_bottom_menu_frame = new_frame
     
     def render_main_editor(self, render_raw: bool = False) -> None:
         """ Draws a single frame of the editor to the screen. Should be overall similar to Camera.render. """
@@ -154,6 +203,7 @@ class LevelEditor:
                     # get transformed texture, with rotations, color, etc. (attempts to use cache for optimization)
                     obj_texture = TextureManager.get_transformed_texture(self.level, obj)
                     
+                    #Logger.log(f"[LevelEditor/render_main_editor] Adding texture w shape={obj_texture.shape} @ {xpos_on_screen, ypos_on_screen}")
                     new_frame.add_pixels_centered_at(xpos_on_screen, round(ypos_on_screen), obj_texture)
                     
             curr_screen_y_pos -= CameraConstants.BLOCK_HEIGHT
@@ -183,21 +233,24 @@ class LevelEditor:
             )
             
         # render the new frame
-        if self.curr_frame is None or render_raw:
+        if self.curr_main_frame is None or render_raw:
             new_frame.render_raw()
         else:
-            new_frame.render(self.curr_frame)
+            new_frame.render(self.curr_main_frame)
             
-        self.curr_frame = new_frame
+        self.curr_main_frame = new_frame
         
     def run_editor(self):
         """ Begins keylistener loops and renders the level editor. """
         
         self.render_main_editor()
+        self.render_bottom_menu()
         self.rerender_needed = False
         
         def key_handler_general(val: "Keystroke") -> None:
             """ General keypress event handler for the editor in any mode """
+            self.showing_save_confirmation = False # reset the "saved changes!" message on any keypress
+            
             if val in LevelEditor.KEYBINDS["quit"]:
                 self.running = False
             elif val in LevelEditor.KEYBINDS['save']:
@@ -273,13 +326,35 @@ class LevelEditor:
                 Logger.log_on_screen(GDConstants.term, f"placing object {self.selected_object} @{self.cursor_position=}")
                 self.level.set_object_at(*self.cursor_position, self.selected_object)
                 self.rerender_needed = True
+            elif val.name in LevelEditor.KEYBINDS["cycle_object_forward"]:
+                curr_obj_type = self.selected_object.data.get("name")
+                next_obj_type = OBJECTS.get_next_object_name(curr_obj_type)
+                self.selected_object = AbstractLevelObject({
+                    "type": next_obj_type,
+                    "rotation": CameraConstants.OBJECT_ROTATIONS.UP.value,
+                    "reflection": CameraConstants.OBJECT_REFLECTIONS.NONE.value,
+                    "color1_channel": 1,
+                    "color2_channel": 2,
+                })
+                self.render_main_editor()
+            elif val.name in LevelEditor.KEYBINDS["cycle_object_backward"]:
+                curr_obj_type = self.selected_object.data.get("name")
+                prev_obj_type = OBJECTS.get_prev_object_name(curr_obj_type)
+                self.selected_object = AbstractLevelObject({
+                    "type": prev_obj_type,
+                    "rotation": CameraConstants.OBJECT_ROTATIONS.UP.value,
+                    "reflection": CameraConstants.OBJECT_REFLECTIONS.NONE.value,
+                    "color1_channel": 1,
+                    "color2_channel": 2,
+                })
+                self.render_main_editor()
         
         def key_handler_edit_mode(val: "Keystroke") -> None:
             """ Event handler for keypresses SPECIFIC TO edit mode. """
             if val in LevelEditor.KEYBINDS["edit_object"]:
                 hovered_obj = self.level.get_object_at(*self.cursor_position)
                 if hovered_obj is not None:
-                    self.focused_popup = EditObjectPopup(self.curr_frame.copy(), hovered_obj, self.level)
+                    self.focused_popup = EditObjectPopup(self.curr_main_frame.copy(), hovered_obj, self.level)
                     self.focused_popup.render()
         
         self.running = True
@@ -302,6 +377,7 @@ class LevelEditor:
                             if should_quit:
                                 self.focused_popup = None
                                 self.render_main_editor(render_raw=True)
+                                self.render_bottom_menu()
                         except:
                             Logger.log(f"[LevelEditor/key handler (IN POPUP)]: {traceback.format_exc()}")
                             print(f"[LevelEditor/key handler (IN POPUP)] ERROR: {traceback.format_exc()}")
@@ -310,4 +386,5 @@ class LevelEditor:
                 
                 if self.rerender_needed and self.focused_popup is None: # rerender if stuff changed
                     self.render_main_editor()
+                    self.render_bottom_menu()
                     self.rerender_needed = False

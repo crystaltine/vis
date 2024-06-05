@@ -52,6 +52,8 @@ class Logger:
 
         if len(Logger.buffer) > 0:
             with open(f"latest.log", "w", encoding='utf-8') as log_f:
+                # first, write curr timestamp
+                log_f.write(f">>> LOG TIMESTAMP {time()}\n\n")
                 log_f.writelines('\n'.join(Logger.buffer))
                 log_f.close()
                 print(f"\x1b[0mLogged {Logger._count} messages to latest.log.")

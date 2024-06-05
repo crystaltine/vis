@@ -73,12 +73,12 @@ class CameraFrame:
                 print2(self.term.move_xy(self.pos[0], (self.pos[1]+self.height)//2 + 1) + string2)
             
         else:
-            for i in range(self.pos[1], self.pos[1] + self.height, 2):
+            for i in range(0, self.height, 2):
                 string = ""
                 for j in range(self.width):
                     string += fco(self.pixels[i,j], self.pixels[i+1,j]) + '▀' # for quick copy: ▀
                     
-                print2(self.term.move_xy(self.pos[0], i//2) + string)
+                print2(self.term.move_xy(self.pos[0], (i+self.pos[1])//2) + string)
 
     def render(self, prev_frame: "CameraFrame") -> None:
         """ Prints the frame to the screen.
@@ -101,11 +101,12 @@ class CameraFrame:
             print_start = lesser(first_diff_row1, first_diff_row2)
             print_end = greater(last_diff_row1, last_diff_row2)
             
+            #Logger.log(f"[CameraFrame/render]: Appending ({print_start}, {print_end}) to indices_to_print, which currently has {len(indices_to_print)} elements (b4 adding)")
             indices_to_print.append((print_start, print_end))
             
         # printing the frame
         # for each pair of rows, convert the pixels from start to end into colored characters, then print.
-        for i in range(len(indices_to_print)-1):
+        for i in range(len(indices_to_print)):
             #Logger.log(f"[CameraFrame/render]: row {i} indices to print: {indices_to_print[i]}")
             start, end = indices_to_print[i]
             
@@ -124,7 +125,7 @@ class CameraFrame:
             
             #Logger.log_on_screen(self.term, f"[CameraFrame/render]: printing@{int(start) + self.pos[0]}, {i + self.pos[1]//2} for len {end-start+1}")
             #Logger.log_on_screen(self.term, f"[CameraFrame/render]: printing@{int(start) + self.pos[0]},{i + self.pos[1]//2}: \x1b[0m[{string}\x1b[0m]")
-            print2(self.term.move_xy(int(start) + self.pos[0], i + self.pos[1]) + string)
+            print2(self.term.move_xy(int(start)+self.pos[0], i+self.pos[1]//2) + string)
 
     def fill(self, color: tuple) -> None:
         """ Fills the entire canvas with the given color. RGB (3-tuple) required. Should be pretty efficient because of numpy. """
@@ -304,8 +305,14 @@ class CameraFrame:
         #    return
         
         #Logger.log(f"[CameraFrame/add_pixels_centered_at]: adding pixels at {x}, {y}, size {pixels.shape}, left={left}, top={top}, clipped_left={clipped_left}, clipped_top={clipped_top}, offset_left={offset_left}, offset_top={offset_top}")
-        #Logger.log(f"^^^ Final indices to use: self.pixels[{clipped_top}:{clipped_top+pixels.shape[0]-offset_top}, {clipped_left}:{clipped_left+pixels.shape[1]-offset_left}")
-        #Logger.log(f"^^^ Indices for pixels: pixels[{offset_top}:{pixels.shape[0]}, {offset_left}:{pixels.shape[1]}")
+        #Logger.log(f"^^^ Final indices to use: self.pixels[{clipped_top}:{clipped_top+pixels.shape[0]-offset_top}, {clipped_left}:{clipped_left+pixels.shape[1]-offset_left}]")
+        #Logger.log(f"^^^ Indices for pixels: pixels[{offset_top}:{pixels.shape[0]}, {offset_left}:{pixels.shape[1]}]")
+        
+        if clipped_top+pixels.shape[0]-offset_top <= 0: # if the top is offscreen
+            return
+        
+        if clipped_left+pixels.shape[1]-offset_left <= 0: # if the left is offscreen
+            return
         
         blend_rgba_img_onto_rgb_img_inplace(
             self.pixels[clipped_top:clipped_top+pixels.shape[0]-offset_top, clipped_left:clipped_left+pixels.shape[1]-offset_left],
