@@ -151,7 +151,7 @@ class Camera:
 
             # add textures of all the visible objects in this row to the new frame
             for obj in self.level.get_row(row, *visible_horiz_range):
-                if obj is not None:
+                if obj is not None and not obj.data.get("invis"):
                     
                     # calculate where it will truly be rendered on the screen
                     xpos_on_screen = round((obj.x - self.camera_left) * CameraConstants.BLOCK_WIDTH)
@@ -195,6 +195,7 @@ class Camera:
         new_frame.render(self.curr_frame)
         self.curr_frame = new_frame
 
+    # DEPRECATED - OLD LEVEL EDITOR
     def level_editor_render(self, cursor_pos: tuple, screen_pos: tuple, cur_cursor_obj):
 
         self.camera_left = screen_pos[0] - CameraConstants.CAMERA_LEFT_OFFSET
@@ -293,7 +294,8 @@ class Camera:
         ## Draw the attempt text if it's within the camera's view
         #if camera_offset_chars > 0:
         #    draw_text(f"Attempt: {attempt}", camera_offset_chars, player_topmost_y, bg_color="#007eff")
-
+    
+    # DEPRECATED - OLD LEVEL EDITOR
     def draw_cursor(self, cur_pos: tuple, cursor_pos: tuple, cursor_texture, render_strips: list, obj, cur_cursor_obj):
         if obj.data is not None and (obj.data["name"].find("orb") != -1 or obj.data["name"].find("block") != -1):
             render_strips[1] += TextureManager.get_base_texture(obj.data["name"])()[0] + fcode(background=self.level.bg_color)
@@ -320,6 +322,7 @@ class Camera:
             render_strips = self.draw_l_edge(render_strips, cursor_texture, layer, obj)
         return render_strips
 
+    # DEPRECATED - OLD LEVEL EDITOR
     def draw_center(self, render_strips, cursor_texture, layer, obj):
         empty_block = " "*CameraConstants.BLOCK_WIDTH
         if obj.data is None:
@@ -342,6 +345,7 @@ class Camera:
                 render_strips[0] += TextureManager.get_raw_obj_text(obj.data["name"])[1]
         return render_strips
     
+    # DEPRECATED - OLD LEVEL EDITOR
     def draw_l_edge(self, render_strips, cursor_texture, layer, obj):
         empty_block = " "*(CameraConstants.BLOCK_WIDTH//2)
         if obj.data is None:
@@ -366,6 +370,7 @@ class Camera:
                 render_strips[0] += top
         return render_strips
     
+    # DEPRECATED - OLD LEVEL EDITOR
     def draw_r_edge(self, render_strips, cursor_texture,layer, obj):
         empty_block = " "*(CameraConstants.BLOCK_WIDTH//2)
         if obj.data is None:

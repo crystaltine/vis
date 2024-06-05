@@ -14,7 +14,7 @@ class CollisionHandler:
     """ Handles all collisions-related thingies, this class exists mainly to keep `Game` organized. """
     
     def __init__(self, game: "Game"):
-        self.game.game = game
+        self.game = game
         
     # IMPORTANT TODO - hitboxes rotate based on object rotation
     def generate_collisions(self) -> List[Collision]:
@@ -50,6 +50,8 @@ class CollisionHandler:
             for x in range(*curr_x_range):
                 
                 obj = self.game.level.get_object_at(x, y)
+                
+                if not obj.data["hitbox_type"]: continue # completely ignore objects with no hitbox type (non-solid objects)
                 
                 #Logger.log(f"[Game/generate_collisions]: obj at x,y={x},{y} is {obj}. btw, y_range was {y_range} and leveldata has len {len(self.game.leveldata)}")
                 #Logger.log(f"^^ Grabbed self.game.leveldata[{max(len(self.game.leveldata)-y-1, 0)}][{x}]")

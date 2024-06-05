@@ -154,10 +154,13 @@ class Level:
     def write_to_file(self, filepath: str) -> None:
         """ Writes the level in JSON format to a specified filepath, overwriting if the path already exists. """
         
+        # convert self.leveldata into List[List[dict]] so it can be written back to a json file
+        jsonized_leveldata = [[obj.to_json() if obj else None for obj in row] for row in self.leveldata]
+        
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump({
                 'metadata': self.metadata,
-                'leveldata': self.leveldata
+                'leveldata': jsonized_leveldata
             }, f)
     
     def get_object_at(self, x: int, y: int) -> "LevelObject | None":
@@ -233,15 +236,18 @@ class Level:
         curr_color1 = self.get_color_channel(object.color1_channel) if object.color1_channel is not None else None
         curr_color2 = self.get_color_channel(object.color2_channel) if object.color2_channel is not None else None 
         
+        #Logger.log(f"Level.get_colors_of: {object} has colors {curr_color1}, {curr_color2}")
         return curr_color1, curr_color2      
         
 class ObjectData(TypedDict):
     name: str
-    hitbox_xrange: List[float]
-    hitbox_yrange: List[float]
     hitbox_type: str
-    collide_effect: str
-    requires_click: bool
+    color_channels: int
+    invis: bool | None # optional
+    hitbox_xrange: List[float] | None # optional
+    hitbox_yrange: List[float] | None # optional
+    collide_effect: str | None # optional
+    requires_click: bool | None # optional
     
 class LevelObjectDefSchema(TypedDict):
     """ The schema for levelobjects in the JSON level format. """
@@ -253,7 +259,7 @@ class LevelObjectDefSchema(TypedDict):
 
 class LevelObject:
     """
-    Represents a single object in a level. object types must be found in the `engine.objects.OBJECTS` dict.
+    Represents a single object in a level. object types must be found in the `engine.objects.OBJECTS.masterlist` dict.
     These should be created on level load, and NOT on every tick.
     
     Contains other data such as has_been_activated, position, (in the future, group, color, etc.)
@@ -271,7 +277,7 @@ class LevelObject:
         self.type = definition["type"]
         """ The type/name of this object. e.g. 'block0_0', 'spike', 'yellow_orb'"""
         
-        self.data: ObjectData = deepcopy(getattr(OBJECTS, self.type, None))
+        self.data: ObjectData = deepcopy(OBJECTS.get(self.type))
         """ Built-in backend data about the object, such as hitbox, collision effect, etc. """
         
         self.x: float = x
@@ -284,9 +290,9 @@ class LevelObject:
         self.reflection: CameraConstants.OBJECT_REFLECTIONS = definition["reflection"]
         """ Represents the reflection of the object. Can be 'none', 'horizontal', 'vertical', or 'both' """
         
-        self.color1_channel: int | None = definition["color1_channel"]
+        self.color1_channel: int | None = definition["color1_channel"] if self.data["color_channels"] > 0 else None
         """ the id of the color channel this object's color1 (replaces dark) conforms to. Can be None if the object cannot be recolored. """
-        self.color2_channel: int | None = definition["color2_channel"]
+        self.color2_channel: int | None = definition["color2_channel"] if self.data["color_channels"] > 1 else None
         """ the id of the color channel this object's color2 (replaces bright) conforms to. Can be None if the object only has 1 color."""
         
         self.has_been_activated = False
@@ -323,10 +329,33 @@ class LevelObject:
         new.has_been_activated = self.has_been_activated
         
         return new
+    
+    def to_json(self) -> dict:
+        """ 
+        Converts this levelobject to a dict (json-like). Loses information about position, but
+        this format is compatible to be stored inside leveldata files. 
+        
+        Example LevelObject JSON:
+        ```json
+        {
+            "type": "mode_portal_ufo",
+            "rotation": "up",
+            "reflection": "none",
+            "color1_channel": null,
+            "color2_channel": null
+        }
+        """
+        return {
+            "type": self.type,
+            "rotation": self.rotation,
+            "reflection": self.reflection,
+            "color1_channel": self.color1_channel,
+            "color2_channel": self.color2_channel
+        }
 
 class AbstractLevelObject: # not inheriting since all functions are different lol
     """
-    Represents an abstract object, with no position. Object types must be found in the `engine.objects.OBJECTS` dict.
+    Represents an abstract object, with no position. Object types must be found in the `engine.objects.OBJECTS.masterlist` dict.
     This is pretty much exactly the same as LevelObject, just missing x and y fields.
     
     Contains other data such as has_been_activated, position, (in the future, group, color, etc.)
@@ -344,7 +373,7 @@ class AbstractLevelObject: # not inheriting since all functions are different lo
         self.type = definition["type"]
         """ The type/name of this object. e.g. 'block0_0', 'spike', 'yellow_orb'"""
         
-        self.data: ObjectData = deepcopy(getattr(OBJECTS, self.type, None))
+        self.data: ObjectData = deepcopy(OBJECTS.get(self.type))
         """ Built-in backend data about the object, such as hitbox, collision effect, etc. """
         
         self.rotation: CameraConstants.OBJECT_ROTATIONS = definition["rotation"]

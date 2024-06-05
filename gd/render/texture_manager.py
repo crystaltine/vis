@@ -187,14 +187,13 @@ class TextureManager:
         Given a texture, colorizes it with the two colors specified.
         Uses numpy vectorization so should be kinda fast.
         
-        If a texture only needs one color, color1 will be used.
+        If a texture only needs one color, color1 will be used. Please pass color2 = None in this case.
         If both colors are None, the texture will be returned as is.
         
         Color1 replaces darkness (black), color2 replaces brightness (white)
         """
         
         if color1 is None and color2 is None: return pixels
-        if color1 is None: color1 = color2
 
         # create grayscale map, 0 ~ color1, 1 ~ color2
         
@@ -204,10 +203,14 @@ class TextureManager:
         
         alphas = pixels[:, :, 3]
         
-        grayscale_weights = np.mean(pixels, axis=2) / 255
+        grayscale_weights = np.mean(pixels[:, :, :3], axis=2) / 255
         grayscale_weights = grayscale_weights[:, :, np.newaxis]
         
-        colorized = (1 - grayscale_weights) * color1 + grayscale_weights * color2
+        colorized = ...
+        if color2 == None: # single-colored objects
+            colorized = (1 - grayscale_weights) * color1
+        else:
+            colorized = (1 - grayscale_weights) * color1 + grayscale_weights * color2
         
         # place the alpha channel back in
         colorized = np.concatenate((colorized, alphas[:, :, np.newaxis]), axis=2)
@@ -291,6 +294,8 @@ TextureManager.base_textures.update({
 
     "glow_edge": TextureManager.compile_texture(f"./assets/objects/deco/glow_edge.png"),
     "glow_corner": TextureManager.compile_texture(f"./assets/objects/deco/glow_corner.png"),
+    
+    "color_trigger": TextureManager.compile_texture(f"./assets/objects/triggers/color_trigger.png"),
 })
 
 # speed portals
