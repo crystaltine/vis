@@ -6,8 +6,15 @@ if TYPE_CHECKING:
     from level import ObjectData
 
 class OBJECTS:
+    """
+    Class which stores backend object data for all objects in the game.
     
-    masterlist = {
+    An explicit order for elements is kept (mainly for level editor usage).
+    
+    Object dicts are stored in `OBJECTS.MASTERLIST`.
+    """
+    
+    MASTERLIST = {
         "yellow_orb": {
             "name": "yellow_orb",
             "hitbox_xrange": [-0.3, 1.3],
@@ -121,10 +128,12 @@ class OBJECTS:
             "color_channels": 1,
         },
     }
-        
+    """ A Dictionary mapping object types (names) to backend object data. 
+    Contains definitions for all objects in the game. """
+    
     for blocktype in range(3):
         for i in range(12):
-            locals()["masterlist"][f"block{blocktype}_{i}"] = {
+            locals()["MASTERLIST"][f"block{blocktype}_{i}"] = {
                 "name": f"block{blocktype}_{i}",
                 "hitbox_xrange": [0, 1],
                 "hitbox_yrange": [0, 1],
@@ -136,19 +145,19 @@ class OBJECTS:
             }
         
     for i in range(10): # TODO - some spikes have smaller hitboxes
-        locals()["masterlist"][f"spike{i}"] = {
+        locals()["MASTERLIST"][f"spike{i}"] = {
             "name": f"spike{i}",
             "hitbox_xrange": [0.3, 0.7],
             "hitbox_yrange": [0.2, 0.7],
             "hitbox_type": "any-touch", # activate on any hitbox touch.
-            "collide_effect": "crash-spike",
+            "collide_effect": "crash-obstacle",
             "requires_click": False, # if player needs to click to activate
             "multi_activate": False,
             "color_channels": 2,
         }
     
     for gravity in GDConstants.gravities:
-        locals()["masterlist"][f"grav_portal_{gravity.value}"] ={
+        locals()["MASTERLIST"][f"grav_portal_{gravity.value}"] ={
             "name": f"grav_portal_{gravity.value}",
             "hitbox_xrange": [0.1, 0.9],
             "hitbox_yrange": [-1.4, 1.4],
@@ -159,7 +168,7 @@ class OBJECTS:
         }
     
     for speed in GDConstants.speeds:
-        locals()["masterlist"][f"speed_portal_{speed.value}"] = {
+        locals()["MASTERLIST"][f"speed_portal_{speed.value}"] = {
             "name": f"speed_portal_{speed.value}",
             "hitbox_xrange": [0, 1],
             "hitbox_yrange": [-0.3, 0.3],
@@ -171,7 +180,7 @@ class OBJECTS:
         }
         
     for gamemode in GDConstants.gamemodes:
-        locals()["masterlist"][f"mode_portal_{gamemode.value}"] = {
+        locals()["MASTERLIST"][f"mode_portal_{gamemode.value}"] = {
             "name": f"mode_portal_{gamemode.value}",
             "hitbox_xrange": [0.1, 0.9],
             "hitbox_yrange": [-1.4, 1.4],
@@ -182,25 +191,26 @@ class OBJECTS:
             "color_channels": 0,
         }
         
-    all_obj_names = list(masterlist.keys())
+    OBJECT_NAMES = list(MASTERLIST)
+    """ An ordered list of the names (types) of all objects in the game. """
     
-    def get_next_object_name(obj_name: str) -> str:
+    def get_next_object_name(curr_obj_name: str) -> str:
         """ Returns the name of the next object in the master object list. 
         Wraps around if last element. If obj_name does not exist, raise a ValueError. """
-        curr_idx = OBJECTS.all_obj_names.index(obj_name)
-        next_idx = (curr_idx + 1) % len(OBJECTS.all_obj_names)
+        curr_idx = OBJECTS.OBJECT_NAMES.index(curr_obj_name)
+        next_idx = (curr_idx + 1) % len(OBJECTS.OBJECT_NAMES)
         
-        return OBJECTS.all_obj_names[next_idx]
+        return OBJECTS.OBJECT_NAMES[next_idx]
     
-    def get_prev_object_name(obj_name: str) -> str:
+    def get_prev_object_name(curr_obj_name: str) -> str:
         """ Returns the name of the prev object in the master object list. 
         Wraps around if last element. If obj_name does not exist, raise a ValueError. """
-        curr_idx = OBJECTS.all_obj_names.index(obj_name)
-        next_idx = (curr_idx - 1) % len(OBJECTS.all_obj_names)
+        curr_idx = OBJECTS.OBJECT_NAMES.index(curr_obj_name)
+        next_idx = (curr_idx - 1) % len(OBJECTS.OBJECT_NAMES)
         
-        return OBJECTS.all_obj_names[next_idx]
+        return OBJECTS.OBJECT_NAMES[next_idx]
     
     def get(key: str) -> "ObjectData":
         """ Get the ObjectData dict of the object with the given key (name), or None if not found. """
-        #Logger.log(f"[OBJECTS/get]: getting key={key} from masterlist, which has size={len(OBJECTS.masterlist)}")
-        return OBJECTS.masterlist.get(key, None)
+        #Logger.log(f"[OBJECTS/get]: getting key={key} from MASTERLIST, which has size={len(OBJECTS.MASTERLIST)}")
+        return OBJECTS.MASTERLIST.get(key, None)

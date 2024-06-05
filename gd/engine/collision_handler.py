@@ -138,30 +138,46 @@ class CollisionHandler:
                 self.game.crash_normal()
             return # don't run other effects if we are gliding
         
-        elif collision.obj.data["collide_effect"] == 'neg-gravity':
-            self.game.player.gravity = -EngineConstants.GRAVITY
-        elif collision.obj.data["collide_effect"]  == 'pos-gravity':
-            self.game.player.gravity = EngineConstants.GRAVITY
-        elif collision.obj.data["collide_effect"]  == 'crash-block':
-            Logger.log("Crashed into block")
-            self.game.crash_normal()
-        elif collision.obj.data["collide_effect"]  == 'crash-spike':
-            Logger.log(f"Crashed into spike, spike x is {collision.obj.x}, player x is {self.game.player.pos[0]}")
-            self.game.crash_normal()
-        elif collision.obj.data["collide_effect"]  == 'yellow-orb':
-            Logger.log("Hit yellow orb.")
-            self.game.player.activate_jump_orb(EngineConstants.PLAYER_JUMP_STRENGTH*EngineConstants.YELLOW_ORB_MULTIPLIER)
-        elif collision.obj.data["collide_effect"]  == 'purple-orb':
-            Logger.log("Hit purple orb.")
-            self.game.player.activate_jump_orb(EngineConstants.PLAYER_JUMP_STRENGTH*EngineConstants.PURPLE_ORB_MULTIPLIER)
-        elif collision.obj.data["collide_effect"]  == 'red-orb':
-            Logger.log("Hit purple orb.")
-            self.game.player.activate_jump_orb(EngineConstants.PLAYER_JUMP_STRENGTH*EngineConstants.RED_ORB_MULTIPLIER)
-        elif collision.obj.data["collide_effect"]  == 'blue-orb':
-            self.game.player.change_gravity()
+        effect: str = collision.obj.data["collide_effect"]
+        
+        if effect == "gravity-normal":
+                self.game.player.normal_gravity()
+        elif effect == "gravity-reverse":
+            self.game.player.reverse_gravity()
             
-            # change velocity to a modest amount, in the sign of the NEW direction of gravity
+        elif effect == 'crash-block':
+            self.game.crash_normal()
+        elif effect == 'crash-obstacle':
+            self.game.crash_normal()
+            
+        elif effect == 'yellow-orb':
+            self.game.player.set_yvel_magnitude(EngineConstants.PLAYER_JUMP_STRENGTH*EngineConstants.YELLOW_ORB_MULTIPLIER)
+        elif effect == 'yellow-pad':
+            self.game.player.set_yvel_magnitude(EngineConstants.PLAYER_JUMP_STRENGTH*EngineConstants.YELLOW_PAD_MULTIPLIER)
+        elif effect == 'purple-orb':
+            self.game.player.set_yvel_magnitude(EngineConstants.PLAYER_JUMP_STRENGTH*EngineConstants.PURPLE_ORB_MULTIPLIER)
+        elif effect == 'purple-pad':
+            self.game.player.set_yvel_magnitude(EngineConstants.PLAYER_JUMP_STRENGTH*EngineConstants.PURPLE_PAD_MULTIPLIER)
+        elif effect == 'red-orb':
+            self.game.player.set_yvel_magnitude(EngineConstants.PLAYER_JUMP_STRENGTH*EngineConstants.RED_ORB_MULTIPLIER)
+        elif effect == 'red-pad':
+            self.game.player.set_yvel_magnitude(EngineConstants.PLAYER_JUMP_STRENGTH*EngineConstants.RED_PAD_MULTIPLIER)
+        elif effect in ['blue-orb', 'blue-pad']:
             self.game.player.yvel = EngineConstants.BLUE_ORB_STARTING_VELOCITY * -self.game.player.sign_of_gravity()
+            self.game.player.change_gravity()
+        elif effect == 'green-orb':
+            self.game.player.change_gravity()
+            self.game.player.set_yvel_magnitude(EngineConstants.PLAYER_JUMP_STRENGTH*EngineConstants.YELLOW_ORB_MULTIPLIER)
+        elif effect == 'black-orb':
+            self.game.player.yvel = EngineConstants.BLACK_ORB_VELOCITY * self.game.player.sign_of_gravity()
+        
+        elif effect.startswith("gamemode-"):
+            gamemode = effect[9:]
+            self.game.player.change_gamemode(gamemode)
+        
+        elif effect.startswith("speed-"):
+            gamemode = effect[6:]
+            self.game.player.change_speed(gamemode)
 
     def highest_solid_object_beneath_player(self) -> "LevelObject | None":
         """

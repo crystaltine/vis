@@ -12,7 +12,7 @@ class Collision:
     
     def __init__(self, obj: 'LevelObject', vert_side: str = None, vert_coord: float = None): 
         """
-        `obj` must be a dict directly from the `engine.objects.OBJECTS.masterlist` dict.
+        `obj` must be a dict directly from the `engine.objects.OBJECTS.MASTERLIST` dict.
         
         `vert_side` - optional: which vertical edge of the hitbox the player is touching.
         This should be among the values `["top", "bottom"]`, we dont care about left or right.

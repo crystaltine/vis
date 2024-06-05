@@ -3,9 +3,9 @@ from time import time_ns
 from copy import deepcopy
 
 from logger import Logger
+from gd_constants import GDConstants
 from engine.constants import EngineConstants, SPEEDS
 from engine.collision import Collision
-
 from engine.gamemodes.cube import tick_cube, jump_cube
 from engine.gamemodes.ball import tick_ball, jump_ball
 from engine.gamemodes.ufo import tick_ufo, jump_ufo
@@ -31,9 +31,9 @@ class Player:
         """
         self.START_SETTINGS = start_settings
         
-        self.speed = SPEEDS.decode(start_settings.get("speed")) or SPEEDS.normal
+        self.speed: GDConstants.speeds = SPEEDS.decode(start_settings.get("speed")) or SPEEDS.normal
         
-        self.gamemode = start_settings.get("gamemode") or "cube"
+        self.gamemode: GDConstants.gamemodes = start_settings.get("gamemode") or "cube"
         """ One of "cube", "ship", "ball", "ufo", "wave", "robot", "spider" (swing maybe? idk)"""
         
         self.ORIGINAL_START_POS = start_settings.get("pos") or [-10, 0] # used for resetting
@@ -41,7 +41,7 @@ class Player:
         """ [x, y], where x is horiz (progress). BOTTOM LEFT of player. y=0 means on the ground, and y cannot be negative."""
 
         self.yvel = 0
-        self.gravity = start_settings.get("gravity") or EngineConstants.GRAVITY
+        self.gravity: GDConstants.gravities = start_settings.get("gravity") or EngineConstants.GRAVITY
         
         self.jump_requested = False
         """ variable to store when the player jumps before the next physics tick. """
@@ -141,7 +141,7 @@ class Player:
         
         return int(seconds_since_last_on_ground / 0.1) % 4
     
-    def activate_jump_orb(self, strength: float):
+    def set_yvel_magnitude(self, strength: float):
         """
         Activates a jump orb. Sets whatever velocity, and sets in_air to true.
         However,this function still has effects when in in_air, unlike regular jumping.
@@ -156,25 +156,26 @@ class Player:
         self.in_air = True # we are PROBABLY in the air. TODO - maybe remove?
         
     def sign_of_gravity(self) -> int:
-        """
-        Returns the sign of the gravity. 1 for normal, -1 for reverse.
-        """
+        """ Returns the sign of the gravity. 1 for normal, -1 for reverse. """
         return 1 if self.gravity > 0 else -1
         
     def normal_gravity(self):
-        """
-        Sets the gravity to normal.
-        """
+        """ Sets the gravity to normal. """
         self.gravity = EngineConstants.GRAVITY
         
     def reverse_gravity(self):
-        """
-        Sets the gravity to reverse.
-        """
+        """ Sets the gravity to reverse. """
         self.gravity = -EngineConstants.GRAVITY
         
     def change_gravity(self):
-        """
-        Flips the gravity to the negative of what it currently is.
-        """
+        """ Flips the gravity to the negative of what it currently is. """
         self.gravity *= -1
+        
+    def change_gamemode(self, new_gamemode: GDConstants.gamemodes) -> None:
+        """ Handles changing gamemode and any related logic """
+        self.gamemode = new_gamemode
+        
+    def change_speed(self, new_speed: GDConstants.speeds) -> None:
+        """ Handles changing speeds and any related logic """
+        self.speed = SPEEDS.decode(new_speed)
+        
