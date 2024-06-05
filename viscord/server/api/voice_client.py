@@ -16,21 +16,35 @@ s.bind((HOST, VOICE_PORT))
 
 class GlobalState:
     def __init__(self):
+        self._lock = threading.Lock()
         self._channels = {}
         self._lifelines = {}
         self._connected_clients = {}
 
     @property
     def channels(self):
-        return self._channels
+        with self._lock:
+            return self._channels.copy()
 
     @property
     def lifelines(self):
-        return self._lifelines
+        with self._lock:
+            return self._lifelines.copy()
 
     @property
     def connected_clients(self):
-        return self._connected_clients
+        with self._lock:
+            return self._connected_clients.copy()
+
+    def add_to_channels(self, chat_id, user_id):
+        with self._lock:
+            if chat_id not in self._channels:
+                self._channels[chat_id] = set()
+            self._channels[chat_id].add(user_id)
+
+    def add_to_lifelines(self, user_id, conn):
+        with self._lock:
+            self._lifelines[user_id] = conn
 
 global_state = GlobalState()
 
@@ -75,7 +89,6 @@ def join_voice() -> Literal["success", "failure"]:
         print(lifelines)
         for uid in channels[chat_id]:
             if uid != user_id:
-                print(hash(uid))
                 global_state.lifelines[uid].send(json.dumps(data).encode())
 
     return Response(json.dumps(return_data), status=200)
@@ -98,9 +111,9 @@ def handle_client(conn, addr):
         connected_clients[target][user_id] = conn
         print(f"NEW RECEIVER: {target} -> {user_id}")
     elif role == "lifeline":
-        global_state.lifelines[user_id] = conn
+        global_state.add_to_lifelines(user_id, conn)
         print(f"NEW LIFELINE: {user_id} ({hash(user_id)})")
-        print(lifelines)
+        print(global_state.lifelines)
     elif role == "sender":
         if user_id not in connected_clients:
             connected_clients[user_id] = {}
