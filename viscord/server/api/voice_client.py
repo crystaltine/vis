@@ -27,6 +27,8 @@ channels = {}
 
 lifelines = {}
 
+lock = threading.RLock()
+
 
 @app.route("/api/voice/join", methods=["POST"])
 def join_voice() -> Literal["success", "failure"]:
@@ -45,10 +47,6 @@ def join_voice() -> Literal["success", "failure"]:
     perms = chat_perms_wrapper(user_id, server_id, chat_id)
     if not perms["readable"]:
         return missing_permissions()
-    
-    ...
-    # TODO: figure out???
-
 
     if chat_id not in channels:
         channels[chat_id] = set()
@@ -66,7 +64,8 @@ def join_voice() -> Literal["success", "failure"]:
         data = {"msg": "join", "chat_id": chat_id, "id": user_id}
         for uid in channels[chat_id]:
             if uid != user_id:
-                lifelines[uid].send(json.dumps(data).encode())
+                with lock:
+                    lifelines[uid].send(json.dumps(data).encode())
 
     return Response(json.dumps(return_data), status=200)
 
@@ -84,7 +83,8 @@ def handle_client(conn, addr):
         connected_clients[target][user_id] = conn
         print(f"NEW RECEIVER: {target} -> {user_id}")
     elif role == "lifeline":
-        lifelines[user_id] = conn
+        with lock:
+            lifelines[user_id] = conn
         print(f"NEW LIFELINE: {user_id}")
     elif role == "sender":
         if user_id not in connected_clients:
