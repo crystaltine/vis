@@ -1,5 +1,5 @@
 from .db import cur
-from .roles import get_server_perms
+from .roles import chat_perms_wrapper
 from uuid import uuid4
 from flask import request, Response
 from .flask_app import app
@@ -38,7 +38,7 @@ def join_voice() -> Literal["success", "failure"]:
     server_id = request.json["server_id"]
     chat_id = request.json["chat_id"]
     
-    perms = get_server_perms(user_id, server_id)
+    perms = chat_perms_wrapper(user_id, server_id, chat_id)
     if not perms["readable"]:
         return missing_permissions()
     
