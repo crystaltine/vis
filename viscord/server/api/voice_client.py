@@ -34,7 +34,6 @@ class GlobalState:
 
 global_state = GlobalState()
 
-lock = threading.RLock()
 
 
 @app.route("/api/voice/join", methods=["POST"])
@@ -77,7 +76,7 @@ def join_voice() -> Literal["success", "failure"]:
         for uid in channels[chat_id]:
             if uid != user_id:
                 print(hash(uid))
-                lifelines[uid].send(json.dumps(data).encode())
+                global_state.lifelines[uid].send(json.dumps(data).encode())
 
     return Response(json.dumps(return_data), status=200)
 
@@ -99,9 +98,9 @@ def handle_client(conn, addr):
         connected_clients[target][user_id] = conn
         print(f"NEW RECEIVER: {target} -> {user_id}")
     elif role == "lifeline":
-        lifelines[user_id] = conn
+        global_state.lifelines[user_id] = conn
         print(f"NEW LIFELINE: {user_id} ({hash(user_id)})")
-        print()
+        print(lifelines)
     elif role == "sender":
         if user_id not in connected_clients:
             connected_clients[user_id] = {}
