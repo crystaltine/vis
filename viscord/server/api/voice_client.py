@@ -76,11 +76,14 @@ def handle_client(conn, addr):
         if target not in connected_clients: 
             connected_clients[target] = {}
         connected_clients[target][user_id] = conn
+        print(f"NEW RECEIVER: {target} -> {id}")
     elif role == "lifeline":
         lifelines[user_id] = conn
+        print(f"NEW LIFELINE: {id}")
     elif role == "sender":
         if user_id not in connected_clients:
             connected_clients[user_id] = {}
+        print(f"SENDER ESTABLISHED: {id}")
     
     while True:
         try:
