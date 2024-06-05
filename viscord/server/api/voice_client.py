@@ -14,20 +14,6 @@ import threading
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, VOICE_PORT))
 
-
-
-connected_clients = {
-    # user id: {
-    #    target id: connection
-    # }
-}
-
-channels = {}
-
-lifelines = {}
-
-
-
 class GlobalState:
     def __init__(self):
         self._channels = {}
@@ -87,6 +73,7 @@ def join_voice() -> Literal["success", "failure"]:
 
 
         data = {"msg": "join", "chat_id": chat_id, "id": user_id}
+        print(lifelines)
         for uid in channels[chat_id]:
             if uid != user_id:
                 print(hash(uid))
