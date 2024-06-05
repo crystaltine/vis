@@ -22,6 +22,8 @@ connected_clients = {
     # }
 }
 
+channels = {}
+
 lifelines = {}
 
 
@@ -46,12 +48,13 @@ def join_voice() -> Literal["success", "failure"]:
     # TODO: figure out???
 
 
-    if chat_id not in connected_clients:
-        connected_clients[chat_id] = {}
-        connected_clients[chat_id][user_id] = {}
+    if chat_id not in channels:
+        channels[chat_id] = set()
+        channels[chat_id].add(user_id)
         return_data = {"type": "callback", "connections": ["lifeline"]}
     else:
-        connections = list(connected_clients[chat_id].keys())
+        # connections = list(connected_clients[chat_id].keys())
+        connections = list(channels[chat_id])
         if len(connections) == 0:
             return_data = {"type": "callback", "connections": ["lifeline"]}
         else:
@@ -59,7 +62,7 @@ def join_voice() -> Literal["success", "failure"]:
 
 
         data = {"msg": "join", "chat_id": chat_id, "id": user_id}
-        for uid in lifelines:
+        for uid in channels[chat_id]:
             if uid != user_id:
                 lifelines[uid].send(json.dumps(data).encode())
 
