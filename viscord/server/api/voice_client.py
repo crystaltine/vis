@@ -73,9 +73,14 @@ def handle_client(conn, addr):
     role = data["role"]
     if role == "receiver":
         target = data["target"]
+        if target not in connected_clients: 
+            connected_clients[target] = {}
         connected_clients[target][user_id] = conn
     elif role == "lifeline":
         lifelines[user_id] = conn
+    elif role == "sender":
+        if user_id not in connected_clients:
+            connected_clients[user_id] = {}
     
     while True:
         try:
@@ -85,6 +90,7 @@ def handle_client(conn, addr):
             # TODO: handle disconnect - prioritize lifelines first
             return
         if role == "sender":
+            if user_id not in connected_clients: continue
             for target in connected_clients[user_id]:
                 try:
                     connected_clients[user_id][target].send(data)
