@@ -137,7 +137,7 @@ def handle_connection(conn: socket.socket, addr):
         else:
             if not data:
                 print(f"\x1b[31msocket {token=} {addr=} disconnected\x1b[0m")
-                if addr in connections: del connections[addr]
+                if token in connections: del connections[token]
                 print(f"connections is now {connections}")
                 return
 
