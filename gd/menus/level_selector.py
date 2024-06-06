@@ -7,7 +7,7 @@ levels=[
         'level_description':'This is a random test level for demo purposes',
         'color1':'blue',
         'color2':'gray',
-        'path': './levels/official1.json'
+        'path': './levels/created3.json'
     }, 
 ]
     

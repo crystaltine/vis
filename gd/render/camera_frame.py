@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Literal, Tuple
 from render.utils import fcode_opt as fco, blend_rgba_img_onto_rgb_img_inplace, first_diff_color, last_diff_color, lesser, greater, remove_ansi
 from draw_utils import Position, convert_to_chars as convert_to_px, print2
 from time import perf_counter
+from threading import Thread
 from logger import Logger
 import numpy as np
 from render.font import Font
@@ -73,12 +74,17 @@ class CameraFrame:
                 print2(self.term.move_xy(self.pos[0], (self.pos[1]+self.height)//2 + 1) + string2)
             
         else:
+            
+            #compiled_str = "" # try printing the whole thing at once
+            
             for i in range(0, self.height, 2):
                 string = ""
                 for j in range(self.width):
                     string += fco(self.pixels[i,j], self.pixels[i+1,j]) + '▀' # for quick copy: ▀
-                    
+                
+                #compiled_str += string + "\n"
                 print2(self.term.move_xy(self.pos[0], (i+self.pos[1])//2) + string)
+            #print2(self.term.move_xy(self.pos[0], self.pos[1]//2) + compiled_str)
 
     def render(self, prev_frame: "CameraFrame") -> None:
         """ Prints the frame to the screen.
@@ -294,11 +300,11 @@ class CameraFrame:
         left = x - pixels_width_1
         top = y - pixels_height_1
         
-        clipped_left = max(0, left)
-        clipped_top = max(0, top)
+        clipped_left = int(max(0, left))
+        clipped_top = int(max(0, top))
         
-        offset_left = clipped_left - left
-        offset_top = clipped_top - top
+        offset_left = int(clipped_left - left)
+        offset_top = int(clipped_top - top)
         
         # ignore if fully offscreen
         #if offset_left >= pixels_width_2 or offset_top >= pixels_height_2:
@@ -314,9 +320,11 @@ class CameraFrame:
         if clipped_left+pixels.shape[1]-offset_left <= 0: # if the left is offscreen
             return
         
+        #Logger.log(f"indices for self.pixels: self.pixels[{clipped_top}:{clipped_top+pixels.shape[0]-offset_top}, {clipped_left}:{clipped_left+pixels.shape[1]-offset_left}]")
+        
         blend_rgba_img_onto_rgb_img_inplace(
-            self.pixels[clipped_top:clipped_top+pixels.shape[0]-offset_top, clipped_left:clipped_left+pixels.shape[1]-offset_left],
-            pixels[int(offset_top):int(offset_top)+self.height, int(offset_left):int(offset_left)+self.width]
+            self.pixels[clipped_top:int(clipped_top+pixels.shape[0]-offset_top), clipped_left:int(clipped_left+pixels.shape[1]-offset_left)],
+            pixels[offset_top:, offset_left:]
         )
         
     def copy(self) -> "CameraFrame":

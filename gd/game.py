@@ -1,7 +1,6 @@
 from copy import deepcopy
 from time import time_ns, sleep
 from threading import Thread
-from multiprocessing import process
 from copy import deepcopy
 import traceback
 import time
@@ -16,6 +15,8 @@ from draw_utils import Position
 from img2term.main import draw
 from bottom_menu import draw_text
 from level import Level
+from keyboard.keyboard_listener import KeyboardListener
+from keyboard.key_event import KeyEvent
 
 class Game:
     """
@@ -34,6 +35,9 @@ class Game:
         self.is_crashed = False
         self.running = False
         self.last_tick = None
+        
+        self.activated_objects = []
+        """ Stores which objects had their activated properties set to true, so we can reset them on crash. """
 
         # wayyy too many of these variables, don't need them all - will come back later and clean this up
         self.paused = False
@@ -66,6 +70,7 @@ class Game:
                         Logger.log(f"[Game/render_thread] Rendering CRASHED frame, player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str}")
                     else:
                         Logger.log(f"[Game/render_thread] Rendering LIVE frame, player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str}")
+                    
                     self.camera.render(self)
                     # renders the most recent checkpoint if it exists
                     # note: this has been moved to Camera.render
@@ -75,7 +80,6 @@ class Game:
                     #Logger.log(f"Just rendered frame with player@{[f'{num:2f}' for num in self.player.pos]}. It has been {((curr_frame-last_frame)/1e9):2f}s since last f.")
                     last_frame = curr_frame
 
-                    # draws the attempt number given the players current and intial positions
                     sleep(1/CameraConstants.RENDER_FRAMERATE)
 
                     if not self.running:
@@ -101,9 +105,12 @@ class Game:
                     # apply collision effects
                     for collision in self.player.curr_collisions:                    
                         # don't auto-run effect here if it requires click. That's a job for the key input thread.
-                        #Logger.log(f"Running collision effect for: {collision}")
-                        if not collision.obj.data.get("requires_click"):
+                        
+                        # run effect if it doesn't require click, unless it's already been activated and not multi_activate
+                        if not collision.obj.data.get("requires_click") and not(collision.obj.has_been_activated and not collision.obj.data.get("multi_activate")):
                             self.collision_handler.run_collision_effect(collision)
+                            collision.obj.has_been_activated = True
+                            self.activated_objects.append(collision.obj)
                     
                     # after collisions is updated, tick physics.                
                     curr_time = time_ns()
@@ -128,64 +135,53 @@ class Game:
         start_time = time.time()
         
         # Main thread handles key input
-        with self.camera.term.cbreak():
+        def _handle_keydown(event: KeyEvent) -> None:
+            if str(event) in EngineConstants.QUIT_KEYS:
+                self.running = False
+                KeyboardListener.stop()
+                return
+            elif str(event) in EngineConstants.PAUSE_KEYS:
+                self.pause()
+                return
+            # place a checkpoint if a user attempts to
+            elif str(event) in EngineConstants.CHECKPOINT_KEYS and self.practice_mode:
+                self.last_checkpoint = deepcopy(self.player.pos)
+                self.checkpoints.append((self.last_checkpoint[0], self.last_checkpoint[1]))
+                # reset the checkpoint timer
+                start_time = time.time()
+            # remove the most recent checkpoint if a user attempts to
+            elif str(event) in EngineConstants.REMOVE_CHECKPOINT_KEYS and self.practice_mode and self.checkpoints:
+                self.checkpoints.pop()
+                self.last_checkpoint = self.checkpoints[-1] if self.checkpoints else None
+                # reset the checkpoint timer
+                start_time = time.time()
+            elif str(event) in EngineConstants.JUMP_KEYS:
+                
+                something_got_activated = False
+                
+                # also go through the player's current collisions and
+                # activate the first requires_click effect where "has_been_activated" is False
+                for collision in self.player.curr_collisions:
+                    if collision.obj.data.get("requires_click"):
+                        
+                        if collision.obj.data.get("multi_activate"): # always run effect if multi_activate
+                            self.collision_handler.run_collision_effect(collision)
+                            something_got_activated = True
+                            break # can only perform one action per jump
+                        
+                        if not collision.has_been_activated: # run effect if not multi_activate and not activated
+                            self.collision_handler.run_collision_effect(collision)
+                            something_got_activated = True
+                            collision.has_been_activated = True
+                            self.activated_objects.append(collision.obj)
+                            break # can only perform one action per jump
+                
+                # if nothing got activated, then jump
+                if not something_got_activated:
+                    self.player.request_jump()
 
-            while self.running:
-                # val = ''
-                # while val.lower() not in EngineConstants.ALL_KEYS:
-                val = self.camera.term.inkey(0.01)
-                if not self.running:
-                    return
-                # if a checkpoint has not been set for 2 seconds, set one at the players current position
-                if time.time() - start_time > 2 and self.practice_mode:
-                    self.last_checkpoint = deepcopy(self.player.pos)
-                    self.checkpoints.append((self.last_checkpoint[0], self.last_checkpoint[1]))
-                    # reset the timer
-                    start_time = time.time()
-
-                if val in EngineConstants.ALL_KEYS:
-                    if val in EngineConstants.QUIT_KEYS:
-                        self.running = False
-                        return
-                    elif val in EngineConstants.PAUSE_KEYS:
-                        self.pause()
-                        return
-                    # place a checkpoint if a user attempts to
-                    elif val in EngineConstants.CHECKPOINT_KEYS and self.practice_mode:
-                        self.last_checkpoint = deepcopy(self.player.pos)
-                        self.checkpoints.append((self.last_checkpoint[0], self.last_checkpoint[1]))
-                        # reset the checkpoint timer
-                        start_time = time.time()
-                    # remove the most recent checkpoint if a user attempts to
-                    elif val in EngineConstants.REMOVE_CHECKPOINT_KEYS and self.practice_mode and self.checkpoints:
-                        self.checkpoints.pop()
-                        self.last_checkpoint = self.checkpoints[-1] if self.checkpoints else None
-                        # reset the checkpoint timer
-                        start_time = time.time()
-                    elif val in EngineConstants.JUMP_KEYS:
-                        
-                        something_got_activated = False
-                        
-                        # also go through the player's current collisions and
-                        # activate the first requires_click effect where "has_been_activated" is False
-                        for collision in self.player.curr_collisions:
-                            if collision.obj.data.get("requires_click"):
-                                
-                                if collision.obj.data.get("multi_activate"): # always run effect if multi_activate
-                                    self.collision_handler.run_collision_effect(collision)
-                                    something_got_activated = True
-                                    break # can only perform one action per jump
-                                    
-                                elif not collision.has_been_activated: # run effect if not multi_activate and not activated
-                                    self.collision_handler.run_collision_effect(collision)
-                                    something_got_activated = True
-                                    collision.has_been_activated = True
-                                    break # can only perform one action per jump
-                        
-                        Logger.log(f"something_got_activated is {something_got_activated}")
-                        # if nothing got activated, then jump
-                        if not something_got_activated:
-                            self.player.jump()
+        KeyboardListener.on_press = _handle_keydown
+        KeyboardListener.start()
 
     def crash_normal(self, restart: bool = True):
         """
@@ -204,6 +200,8 @@ class Game:
         sleep(EngineConstants.COOLDOWN_BETWEEN_ATTEMPTS)
         self.is_crashed = False
         self.player.reset_physics()
+        for obj in self.activated_objects:
+            obj.has_been_activated = False
         self.last_tick = time_ns() # this is to prevent moving forward while we are dead lol
 
         # otherwise, restart the level by setting pos back to beginning 

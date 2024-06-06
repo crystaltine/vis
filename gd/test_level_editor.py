@@ -4,7 +4,7 @@ from draw_utils import cls
 from cursor import hide, show
 import traceback
 
-fp = "./levels/created1.json"
+fp = "./levels/created3.json"
 editor = LevelEditor(fp)
 
 def main():

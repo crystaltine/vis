@@ -51,12 +51,11 @@ class CollisionHandler:
                 
                 obj = self.game.level.get_object_at(x, y)
                 
+                if obj is None: continue
                 if not obj.data["hitbox_type"]: continue # completely ignore objects with no hitbox type (non-solid objects)
                 
                 #Logger.log(f"[Game/generate_collisions]: obj at x,y={x},{y} is {obj}. btw, y_range was {y_range} and leveldata has len {len(self.game.leveldata)}")
                 #Logger.log(f"^^ Grabbed self.game.leveldata[{max(len(self.game.leveldata)-y-1, 0)}][{x}]")
-                
-                if obj is None: continue
                 
                 # more useful variables
                 obj_left = x+obj.data["hitbox_xrange"][0]
@@ -174,6 +173,7 @@ class CollisionHandler:
         elif effect.startswith("gamemode-"):
             gamemode = effect[9:]
             self.game.player.change_gamemode(gamemode)
+            Logger.log(f"set player gameode to {gamemode}.")
         
         elif effect.startswith("speed-"):
             gamemode = effect[6:]

@@ -23,9 +23,9 @@ class GDConstants:
         ball = "ball"
         ufo = "ufo"
         wave = "wave"
-        robot = "robot"
         spider = "spider"
-        #swing = "swing"
+        
+    supports_jumping = [gamemodes.cube.value, gamemodes.ball.value, gamemodes.ufo.value, gamemodes.spider.value]
         
     class speeds(Enum):
         half = "half"

@@ -33,6 +33,9 @@ class EngineConstants:
     BLUE_ORB_STARTING_VELOCITY = 3
     """ The yvel that the player gets when they hit a blue orb. (obviously the sign changes based on grav) """
 
+    BALL_STARTING_VELOCITY = 4
+    """ The yvel the player gets when they switch gravity in ball mode. """
+
     SOLID_SURFACE_LENIENCY = 0.2
     """ How much we can "fall into/jump into" a solid object before we are considered to have crashed into it instead of gliding on top. kinda buggy when yvel changes a lot. """
     
