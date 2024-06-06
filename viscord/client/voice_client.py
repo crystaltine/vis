@@ -108,7 +108,7 @@ def create_sender(user_id, channel):
 
     while True:
         data = input_stream.read(CHUNK)
-        if data and len(data) == 2048:
+        if data:
             s.sendall(data)
 
 
@@ -131,7 +131,7 @@ def create_listener(user_id, target, chat_id):
 
     while True:
         data = s.recv(2048)
-        if data and len(data) == 2048:
+        if data:
             output_stream.write(data)
 
 def redraw_all():
@@ -164,6 +164,7 @@ def main(user_token, server_id, channel_id):
     
     
 
+
     callbacks = resp.json()["connections"]
     for target in callbacks:
         if target == "lifeline":
@@ -171,7 +172,10 @@ def main(user_token, server_id, channel_id):
         else:
             threading.Thread(target=create_listener, args=(user_id, target, channel_id)).start()
 
+
+    
     threading.Thread(target=create_sender, args=(user_id, channel_id)).start()
+
 
     redraw_all()
     with term.cbreak():
