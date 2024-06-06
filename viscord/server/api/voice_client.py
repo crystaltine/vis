@@ -46,6 +46,16 @@ class GlobalState:
         with self._lock:
             self._lifelines[user_id] = conn
 
+    def add_to_clients(self, user_id, target, conn, direction=1, blank_dict=False): # 1 for uid -> target, 2 for target -> uid
+        a = user_id
+        b = target
+        if direction == 2:
+            a, b = b, a
+        with self._lock:
+            if a not in self._connected_clients:
+                self._connected_clients[a] = {}
+            if not blank_dict: self._connected_clients[a][b] = conn
+
 global_state = GlobalState()
 
 
@@ -86,7 +96,6 @@ def join_voice() -> Literal["success", "failure"]:
 
 
         data = {"msg": "join", "chat_id": chat_id, "id": user_id}
-        print(lifelines)
         for uid in channels[chat_id]:
             if uid != user_id:
                 global_state.lifelines[uid].send(json.dumps(data).encode())
@@ -106,17 +115,15 @@ def handle_client(conn, addr):
     role = data["role"]
     if role == "receiver":
         target = data["target"]
-        if target not in connected_clients: 
-            connected_clients[target] = {}
-        connected_clients[target][user_id] = conn
+        global_state.add_to_clients(user_id, target, conn, direction=2)
         print(f"NEW RECEIVER: {target} -> {user_id}")
     elif role == "lifeline":
         global_state.add_to_lifelines(user_id, conn)
         print(f"NEW LIFELINE: {user_id} ({hash(user_id)})")
         print(global_state.lifelines)
     elif role == "sender":
-        if user_id not in connected_clients:
-            connected_clients[user_id] = {}
+        # TODO
+        global_state.add_to_clients(user_id, None, None, blank_dict=True)
         print(f"SENDER ESTABLISHED: {user_id}")
     
     while True:
@@ -128,11 +135,14 @@ def handle_client(conn, addr):
             print(e)
             return
         if role == "sender":
-            if user_id not in connected_clients: continue
-            for target in connected_clients[user_id]:
+            if user_id not in global_state.connected_clients:
+                print("a")
+                continue
+            for target in global_state.connected_clients[user_id]:
                 try:
-                    connected_clients[user_id][target].send(data)
-                except:
+                    global_state.connected_clients[user_id][target].send(data)
+                except Exception as e:
+                    print(e)
                     pass
     
 
