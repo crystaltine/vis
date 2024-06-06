@@ -11,8 +11,6 @@ def tick_ball(player: "Player", timedelta: float) -> None:
     Physics tick for the player in the ball gamemode
     (jump = change gravity)
     
-    (note, this is pretty much the exact same as cube, except gravity is a bit weaker)
-    
     Now in its own separate function so gamemodes can be organized.
     This function should be called by a generalized 'tick' function inside
     the player class if the player's current gamemode is ball.
@@ -27,7 +25,7 @@ def tick_ball(player: "Player", timedelta: float) -> None:
     # GLIDE HANDLING BELOW (setting y-values)
     
     # if y < 0, then we just hit ground and should just set y=0, yvel=0, in_air=False
-    if player.pos[1] <= 0 and player.yvel <= 0: # if we are going up, we shouldnt hit the ground
+    if player.pos[1] <= 0 and player.yvel < 0: # if we are going up, we shouldnt hit the ground
         #Logger.log(f"Hit ground. setting y-pos to 0 and in_air to False")
         player.pos[1] = 0
         player.yvel = 0
@@ -76,3 +74,7 @@ def tick_ball(player: "Player", timedelta: float) -> None:
     
 def jump_ball(player: "Player") -> None:
     player.change_gravity()
+    
+    # set the yvel to the starting velocity
+    player.yvel = EngineConstants.BALL_STARTING_VELOCITY * -player.sign_of_gravity()
+    

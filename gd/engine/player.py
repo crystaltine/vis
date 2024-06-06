@@ -9,6 +9,7 @@ from engine.collision import Collision
 from engine.gamemodes.cube import tick_cube, jump_cube
 from engine.gamemodes.ball import tick_ball, jump_ball
 from engine.gamemodes.ufo import tick_ufo, jump_ufo
+from engine.gamemodes.wave import tick_wave
 
 class Player:
     """
@@ -67,8 +68,10 @@ class Player:
                 tick_ball(self, timedelta)
             case "ufo":
                 tick_ufo(self, timedelta)
+            case "wave":
+                tick_wave(self, timedelta)
             case _:
-                raise Exception(f"[Player/tick] Error: gamemode {self.gamemode} does not exist.")
+                raise Exception(f"[Player/tick] gamemode {self.gamemode} not set up in Player.tick()")
 
     
     def reset_physics(self, new_pos = None) -> None:
@@ -88,7 +91,7 @@ class Player:
         self.gravity = self.START_SETTINGS.get("gravity") or EngineConstants.GRAVITY
         self.last_on_ground_time = time_ns()
     
-    def jump(self):
+    def request_jump(self):
         """
         Requests a jump for the next physics tick.
         """
@@ -98,8 +101,7 @@ class Player:
         #    #Logger.log(f"XXXXXXXX player tried to jump but cant. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}")
         #    return
         
-        #Logger.log(f"XXXXXXXX player jumped. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}, walking_on={self._walking_on:.2f}, names of colliding objs: {[collision.obj.data['name'] for collision in self.curr_collisions]}")
-        
+        #Logger.log(f"XXXXXXXX player jumped. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}, walking_on={self._walking_on:.2f}, names of colliding objs: {[collision.obj.data['name'] for collision in self.curr_collisions]}")        
         self.jump_requested = True
     
     def _jump(self):
@@ -108,7 +110,6 @@ class Player:
         and nowhere else. For external use, use `Player.jump()`.
         """
         
-        # TODO - make code better by keeping a list and using getattr?
         match self.gamemode:
             case "cube":
                 jump_cube(self)
@@ -117,29 +118,47 @@ class Player:
             case "ufo":
                 jump_ufo(self)
             case _:
-                raise Exception(f"[Player/_jump] Error: gamemode {self.gamemode} does not exist.")
+                pass # no jump for other gamemodes - they have their own holding-based handlers
     
     def get_animation_frame_index(self) -> int:
         """
-        Returns which rotation index to use for the player sprite.
-        As of 2:35AM May 29, 2024, 4 different frames are planned:
-        - 0: right side up
-        - 1: 22.5 degrees
-        - 2: 45 degrees
-        - 3: 67.5 degrees
+        Returns which index to use for the player sprite, based on current situation & gamemode
         
-        NOTE: we are assuming full rotational symmetry here, for simplicity. TODO: support asymmetric icons.
-        
+        For cube:
         Every 0.1 seconds that we are in the air, we rotate 22.5 degrees.
         If touching ground, always return 0
+        
+        For ball:
+        Every 0.25s switch the sprite (there are only two)
+        
+        For ufo:
+        same sprite all the time
+        
+        For wave:
+        0 (down) if yvel is negative
+        1 (up) if yvel is positive
+        2 (flat) if yvel is 0 (on ground, gliding)
         """
         
-        if not self.in_air:
-            return 0
-        
-        seconds_since_last_on_ground = (time_ns() - self.last_on_ground_time) / 1e9
-        
-        return int(seconds_since_last_on_ground / 0.1) % 4
+        match self.gamemode:
+            case "cube":
+                if not self.in_air:
+                    return 0
+                seconds_since_last_on_ground = (time_ns() - self.last_on_ground_time) / 1e9
+                return int(seconds_since_last_on_ground / 0.1) % 4
+    
+            case "ball":
+                return int(time_ns() / 1e8) % 2
+            
+            case "ufo":
+                return 0
+            
+            case "wave":
+                return (
+                    0 if self.yvel < 0 else 
+                    1 if self.yvel > 0
+                    else 2
+                )
     
     def set_yvel_magnitude(self, strength: float):
         """
@@ -170,6 +189,7 @@ class Player:
     def change_gravity(self):
         """ Flips the gravity to the negative of what it currently is. """
         self.gravity *= -1
+        Logger.log(f"gravity changed to {self.gravity}")
         
     def change_gamemode(self, new_gamemode: GDConstants.gamemodes) -> None:
         """ Handles changing gamemode and any related logic """

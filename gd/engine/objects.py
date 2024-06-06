@@ -147,8 +147,8 @@ class OBJECTS:
     for i in range(10): # TODO - some spikes have smaller hitboxes
         locals()["MASTERLIST"][f"spike{i}"] = {
             "name": f"spike{i}",
-            "hitbox_xrange": [0.3, 0.7],
-            "hitbox_yrange": [0.2, 0.7],
+            "hitbox_xrange": [0.25, 0.75],
+            "hitbox_yrange": [0.1, 0.9],
             "hitbox_type": "any-touch", # activate on any hitbox touch.
             "collide_effect": "crash-obstacle",
             "requires_click": False, # if player needs to click to activate

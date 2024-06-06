@@ -1,4 +1,4 @@
-from typing import Literal, TypedDict, TYPE_CHECKING
+from typing import Literal, Dict, List, TypedDict, TYPE_CHECKING
 from PIL import Image
 import numpy as np
 
@@ -10,6 +10,7 @@ from render.constants import CameraConstants
 
 if TYPE_CHECKING:
     from level import Level, LevelObject, AbstractLevelObject
+    from engine.player import Player
 
 ROTATION_VALUES = {
     CameraConstants.OBJECT_ROTATIONS.UP.value: 0,
@@ -39,10 +40,8 @@ class TextureManager:
     
     player_color1: CameraConstants.RGBTuple = (111, 255, 83)
     player_color2: CameraConstants.RGBTuple = (90, 250, 255)
-    player_icon_idx = 0
-    player_icons = []
-    """ A list of frames for the player icon. As of 2:43AM 29May2024, 
-    this should be 4 frames, with 0=0deg rotation, 1=22.5, and so on. Only supports 4-way symmetry for now. """
+    player_icons: Dict[str, List[np.ndarray]] = {}
+    """ A dict of gamemode : list of frames for player icon. Cube has 4 frames, ball has 2, ufo has 1. """
     
     base_textures = {}
     texture_cache = {}
@@ -274,7 +273,12 @@ class TextureManager:
         curr_color1, curr_color2 = level.get_colors_of(object)
         return f"{object.type}_{object.rotation}_{object.reflection}_{curr_color1}_{curr_color2}"
     
-# preload all base textures
+    def get_curr_player_icon(player: "Player") -> np.ndarray:
+        """ Returns the current player icon based on the player's current rotation. """
+        return TextureManager.player_icons[player.gamemode][player.get_animation_frame_index()]
+    
+####### preload all base textures
+
 # load objects
 TextureManager.base_textures.update({
     "ground": TextureManager.compile_texture("./assets/objects/general/ground.png"),
@@ -324,7 +328,31 @@ TextureManager.base_textures.update({
 })
 
 # load player icons
-TextureManager.player_icons = [
-    TextureManager.build_grayscale_texture_to_pixels(f"./assets/icons/cube/0/{i}.png", TextureManager.player_color1, TextureManager.player_color2)
-    for i in range(4)
+TextureManager.player_icons['cube'] = [
+    TextureManager.build_grayscale_texture_to_pixels(
+        f"./assets/icons/cube/0/{i}.png", 
+        TextureManager.player_color1, 
+        TextureManager.player_color2
+    ) for i in range(4)
+]
+TextureManager.player_icons['ball'] = [
+    TextureManager.build_grayscale_texture_to_pixels(
+        f"./assets/icons/ball/0/{i}.png", 
+        TextureManager.player_color1, 
+        TextureManager.player_color2
+    ) for i in range(2)
+]
+TextureManager.player_icons['ufo'] = [
+    TextureManager.build_grayscale_texture_to_pixels(
+        f"./assets/icons/ufo/0/0.png", 
+        TextureManager.player_color1, 
+        TextureManager.player_color2
+    )
+]
+TextureManager.player_icons['wave'] = [
+    TextureManager.build_grayscale_texture_to_pixels(
+        f"./assets/icons/wave/0/{i}.png", 
+        TextureManager.player_color1, 
+        TextureManager.player_color2
+    ) for i in range(3)
 ]

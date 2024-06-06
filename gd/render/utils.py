@@ -182,10 +182,15 @@ def blend_rgba_img_onto_rgb_img(original: np.ndarray, new: np.ndarray) -> np.nda
         return new
     
     clipped_new = new[:original.shape[0], :original.shape[1]]
+    
+    # if new image has 0 in any shape, return
+    if clipped_new.shape[0] == 0 or clipped_new.shape[1] == 0:
+        return original
 
     new_rgb = clipped_new[..., :3] # "img" without alpha
     new_alpha = clipped_new[..., 3] / 255.0 # array of just the alpha values
-    # blend arrays in PARALLEL (yayyyyyyyy!!!!)
+    # blend arrays in PARALLEL (yayyyyyyyy!!!!) 
+    #Logger.log(f"blend rgba into rgb: shapes of original, new: {original.shape}, {new.shape}")
     blended_rgb = new_rgb*new_alpha[..., np.newaxis] + original*(1 - new_alpha[..., np.newaxis])
 
     # return as uint8 types since this returns floats

@@ -81,7 +81,7 @@ class Level:
         self.leveldata: List[List["LevelObject"]] = leveldata
         """ The backend level data. SHOULD be rectangular - see level_parser """
         
-        self.length = len(leveldata[0])
+        self.length = len(leveldata[0]) if len(leveldata) > 0 else 0
         """ The length of the level in blocks. Equal to x-coord of the rightmost object + 1."""
         self.height = len(leveldata)
         """ The height of the level in blocks. Equal to y-coord of the highest object + 1. """
@@ -128,7 +128,7 @@ class Level:
             current_y_pos -= 1
         
         # pad leveldata to be rectangular (all rows the same length).
-        max_leveldata_row_length = len(leveldata[0])
+        max_leveldata_row_length = len(leveldata[0]) if len(leveldata) > 0 else 0
         for row in leveldata:
             max_leveldata_row_length = max(max_leveldata_row_length, len(row))
 
