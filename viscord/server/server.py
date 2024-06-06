@@ -111,6 +111,7 @@ def handle_message(data: dict):
             
     for token in marked_for_removal:
         del connections[token]
+    print(f"connections is now {connections}")
 
 def handle_connection(conn: socket.socket, addr):
     print(f"\x1b[33mHandling connection {addr=}\x1b[0m")
@@ -126,6 +127,7 @@ def handle_connection(conn: socket.socket, addr):
     print(f"\x1b[32msocket {addr=} {token=} completed init handshake (connected!)\x1b[0m")
     connections[token] = conn
 
+    print(f"connections is now {connections}")
     # receive loop
     while True:
         try:
@@ -136,6 +138,7 @@ def handle_connection(conn: socket.socket, addr):
             if not data:
                 print(f"\x1b[31msocket {token=} {addr=} disconnected\x1b[0m")
                 if addr in connections: del connections[addr]
+                print(f"connections is now {connections}")
                 return
 
             # data received - assume it's a sent message
