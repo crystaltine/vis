@@ -9,6 +9,9 @@ import config
 import registry
 import sys
 import random
+import importlib
+
+import messages
 
 global update_direction
 update_direction = 0
@@ -158,8 +161,9 @@ def main(server_data, user_token):
                 if selection >= len(data):
                     continue
                 channel = data[selection]
-                import messages
+                importlib.reload(messages)
                 messages.main(user_token, server["server_id"], channel["chat_id"])
+                importlib.reload(messages)
                 redraw_all()
 
             if val == "\x04": # control-d

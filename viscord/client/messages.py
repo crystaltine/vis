@@ -19,14 +19,14 @@ import socket
 global token
 token = None
 
-global s
-s = None
-
 global data
 data = {}
 
 global typed_message
 typed_message = ""
+
+global info_cache
+info_cache = {}
 
 def hex_to_rgb(hex):
     hex = hex.lstrip('#')
@@ -36,6 +36,11 @@ def hex_to_rgb(hex):
 def draw_typed_message():
     global typed_message
     #print(term.move(int(term.height * 0.9 - 2), int(term.width * 0.1) + 1) + term.on_color_rgb(*hex_to_rgb(colors.field)) + term.color_rgb(*hex_to_rgb(colors.text)) + " " * (int(term.width * 0.8 - 2)))
+
+
+    global getting_messages
+    if not getting_messages: return
+
 
     print(term.move(int(term.height * 0.9 - 4), int(term.width * 0.1)) + term.on_color_rgb(*hex_to_rgb(colors.div_shadow)) + term.color_rgb(*hex_to_rgb(colors.div_shadow)) + " " * (int(term.width * 0.8)))
 
@@ -59,12 +64,18 @@ def draw_typed_message():
 
 
 def draw_background():
+    global getting_messages
+    if not getting_messages: return
+
     print(term.home + term.clear, end=" ")
     for y in range(term.height):
         print(term.move(y, 0) + term.on_color_rgb(*hex_to_rgb(colors.background)) + ' ' * term.width, end="")
 
 
 def draw_menu():
+    global getting_messages
+    if not getting_messages: return
+
     tlx = int(term.width * 0.1)
     tly = int(term.height * 0.1)
 
@@ -77,35 +88,52 @@ def draw_menu():
         print(term.move(y, tlx-1) + term.on_color_rgb(*hex_to_rgb(colors.div_shadow)) + " ", end="")
         print(term.move(y, tlx + int(term.width * 0.8)) + term.on_color_rgb(*hex_to_rgb(colors.div_shadow)) + " ", end="")
 
-def socket_handler():
-    global s, data, getting_messages, token
+def socket_handler(s):
+    global data, getting_messages, token, info_cache
     while not s:
         pass
     try:
         while getting_messages:
-            receiveddata = s.recv(4096)
-            if not receiveddata:
-                break
-            message_data = json.loads(receiveddata.decode())
+            try:
+                receiveddata = s.recv(4096)
+                if not receiveddata:
+                    break
+                message_data = json.loads(receiveddata.decode())
+            except Exception as e:
+                pass
 
             msgdata_real = message_data["data"]
             user_id = msgdata_real["author"]
-            resp = requests.post(f"{config.API_URL}/api/users/user_info", json={
-                "user_id": user_id,
-                "user_token": token
-            })
 
-            msgdata_real["username"] = resp.json()["data"]["username"]
-            msgdata_real["color"] = resp.json()["data"]["color"]
-            msgdata_real["symbol"] = resp.json()["data"]["symbol"]
+
+            if user_id in info_cache:
+                user_id_data = info_cache[user_id]
+            else:
+
+                resp = requests.post(f"{config.API_URL}/api/users/user_info", json={
+                    "user_id": user_id,
+                    "user_token": token
+                })
+                if resp.status_code != 200:
+                    continue
+                user_id_data = resp.json()["data"]
+                info_cache.update({user_id: user_id_data})
+
+            msgdata_real["username"] = user_id_data["username"]
+            msgdata_real["color"] = user_id_data["color"]
+            msgdata_real["symbol"] = user_id_data["symbol"]
 
             data.insert(0, message_data["data"])
             show_recent_messages()
     except Exception as e:
+        s.close()
         print(e)
     
 
 def show_recent_messages():
+    global getting_messages
+    if not getting_messages: return
+
     tly = int(term.height * 0.1)
     tlx = int(term.width * 0.1)
 
@@ -146,6 +174,9 @@ def show_recent_messages():
 
 
 def redraw_all():
+    global getting_messages
+    if not getting_messages: return
+
     draw_background()
     draw_menu()
 
@@ -157,10 +188,11 @@ def redraw_all():
 
 
 def main(user_token, server_id, channel_id):
-    global s, data, getting_messages, typed_message, token
+    global data, getting_messages, typed_message, token
     import traceback
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         
         s.connect((config.HOST, config.SOCKET_PORT))
         s.send(user_token.encode())
@@ -190,9 +222,10 @@ def main(user_token, server_id, channel_id):
             data[i]["symbol"] = resp.json()["data"]["symbol"]
 
     except Exception as e:
+        print(e)
         return
 
-    threading.Thread(target=socket_handler).start()
+    threading.Thread(target=socket_handler, args=(s,)).start()
 
     redraw_all()
     with term.cbreak():
@@ -206,8 +239,9 @@ def main(user_token, server_id, channel_id):
                     redraw_all()
                 continue
             if val.code == term.KEY_ESCAPE:
-                s.close()
                 getting_messages = False
+                s.close()
+                del s
                 typed_message = ""
                 break
             elif val.code is None and val in keyshortcuts.typeable:
