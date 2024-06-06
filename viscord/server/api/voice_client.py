@@ -54,7 +54,8 @@ class GlobalState:
         with self._lock:
             if a not in self._connected_clients:
                 self._connected_clients[a] = {}
-            if not blank_dict: self._connected_clients[a][b] = conn
+            if not blank_dict: 
+                self._connected_clients[a][b] = conn
 
     def purge(self, user_id):
         with self._lock:
@@ -80,10 +81,6 @@ global_state = GlobalState()
 @app.route("/api/voice/join", methods=["POST"])
 def join_voice() -> Literal["success", "failure"]:
 
-    channels = global_state.channels
-    lifelines = global_state.lifelines
-    connected_clients = global_state.connected_clients
-
     """
     Join a voice channel.
     """
@@ -99,13 +96,12 @@ def join_voice() -> Literal["success", "failure"]:
     if not perms["readable"]:
         return missing_permissions()
 
-    if chat_id not in channels:
-        channels[chat_id] = set()
-        channels[chat_id].add(user_id)
+    if chat_id not in global_state.channels:
+        global_state.add_to_channels(chat_id, user_id)
         return_data = {"type": "callback", "connections": ["lifeline"]}
     else:
         # connections = list(connected_clients[chat_id].keys())
-        connections = list(channels[chat_id])
+        connections = list(global_state.channels[chat_id])
         if len(connections) == 0:
             return_data = {"type": "callback", "connections": ["lifeline"]}
         else:
@@ -113,7 +109,7 @@ def join_voice() -> Literal["success", "failure"]:
 
 
         data = {"msg": "join", "chat_id": chat_id, "id": user_id}
-        for uid in channels[chat_id]:
+        for uid in global_state.channels[chat_id]:
             if uid != user_id:
                 global_state.lifelines[uid].send(json.dumps(data).encode())
 
