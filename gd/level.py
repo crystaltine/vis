@@ -169,9 +169,17 @@ class Level:
         
         Remember that x=0,y=0 is the bottom left corner of a level, and that
         coordinates refer to the bottom left corner of a LevelObject.
+        
+        Returns None if coordinates are out of bounds/negative.
         """
         
         row_index_in_list = len(self.leveldata) - y - 1
+        
+        if x < 0 or y < 0:
+            return None
+        if row_index_in_list >= len(self.leveldata) or x >= len(self.leveldata[row_index_in_list]):
+            return None
+        
         return self.leveldata[row_index_in_list][x]
     
     def set_object_at(self, x: int, y: int, obj: "LevelObject | AbstractLevelObject | None") -> None:

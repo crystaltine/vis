@@ -12,6 +12,8 @@ class EngineConstants:
 
     PLAYER_HITBOX_X = 1
     PLAYER_HITBOX_Y = 1
+    PLAYER_WAVE_HITBOX_X = 0.4
+    PLAYER_WAVE_HITBOX_Y = 0.4
     
     COOLDOWN_BETWEEN_ATTEMPTS = 0.5
     

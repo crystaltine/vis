@@ -24,12 +24,13 @@ class CollisionHandler:
         """
         
         collisions = []
-        #Logger.log(f"----- New collision generation, using playerpos={self.game.player.pos[0]:.2f},{self.game.player.pos[1]:.2f}")
+        
+        hitbox_sizes = self.game.player.get_hitbox_size()
         
         # Check a 2x2 of lattice cells, centered around the player's hitbox
         # we pad the positions by 0.25 so when we are at integers, we still check the next block
-        x_range = floor(self.game.player.pos[0]-0.25), ceil(self.game.player.pos[0]+EngineConstants.PLAYER_HITBOX_X+0.25)
-        y_range = floor(self.game.player.pos[1]-0.25), ceil(self.game.player.pos[1]+EngineConstants.PLAYER_HITBOX_Y+0.25)
+        x_range = floor(self.game.player.pos[0]-0.25), ceil(self.game.player.pos[0]+hitbox_sizes[0]+0.25)
+        y_range = floor(self.game.player.pos[1]-0.25), ceil(self.game.player.pos[1]+hitbox_sizes[1]+0.25)
         
         # clip the y-values to the leveldata bounds. For example, we can't check below index 0 or y>len(leveldata)
         y_range = max(y_range[0], 0), min(y_range[1], self.game.level.height)
@@ -37,9 +38,9 @@ class CollisionHandler:
         
         # useful variables
         player_left = self.game.player.pos[0]
-        player_right = self.game.player.pos[0]+EngineConstants.PLAYER_HITBOX_X
+        player_right = self.game.player.pos[0]+hitbox_sizes[0]
         player_bottom = self.game.player.pos[1]
-        player_top = self.game.player.pos[1]+EngineConstants.PLAYER_HITBOX_Y
+        player_top = self.game.player.pos[1]+hitbox_sizes[1]
         
         #Logger.log(f"Collisions: y_range is {y_range}, x_range is {x_range}.")
         
@@ -181,20 +182,78 @@ class CollisionHandler:
 
     def highest_solid_object_beneath_player(self) -> "LevelObject | None":
         """
-        Returns the highest solid object beneath the player. None if none exist above y=0 (ground)
+        Returns the highest solid object beneath the player (y value is less).
+        
+        Only searches a distance of ceil(abs(player yvel)) beneath the player
+        in order to not search the entire column (this requires that the game run >1fps for it to work properly)
+        
         Solid is defined as objects whose crash_effect is `"crash-block"` (so for now, just blocks) 
         
         If the player is in between two "columns" of the level (say, at `(x,y)=(4.5,10)`), then attempts to return the
         higher block (e.g. if the highest block at x=4 is at y=6, and the highest block at x=5 is at y=7, this function
-        will return the block at x=5, y=7).
+        will return the block at x=5, y=7). (IF IN RANGE)
         
-        However, if the highest blocks under the player are at the same height, then it will return rightmost block (higher x-val)  
+        However, if the highest blocks under the player are at the same height, then it will return leftmost block (lower x-val)  
+        
+        Returns None if nothing in range.
         """
         
         # scan the two columns the player might be occupying
         
+        # calc. boundaries of check
         left = floor(self.game.player.pos[0])
-        right = ceil(self.game.player.pos[0]+EngineConstants.PLAYER_HITBOX_X)
+        right = ceil(self.game.player.pos[0]+self.game.player.get_hitbox_size()[0])
         
-        # TODO - will be easier with new leveldata format.
-        raise NotImplementedError("This function is not yet implemented - waiting for JSON-based leveldata format.")
+        top = floor(self.game.player.pos[1]) - 1 # only check BELOW the player
+        
+        # check ceil(player yvel) blocks below/above the player
+        # ^ this is so we dont check a huge number of blocks - we are assuming the game is running faster than 1fps lol
+        
+        num_rows_to_check = ceil(abs(self.game.player.yvel))
+        
+        for x in range(left, right+1):
+            for y in range(top, max(0, top-num_rows_to_check-1), -1):
+                if (obj := self.game.level.get_object_at(x, y)) is not None:
+                    return obj # return first object we find (since it is leftmost and highest)
+        
+        return None
+    
+    def lowest_solid_object_above_player(self) -> "LevelObject | None":
+        """
+        Returns the lowest solid object above the player (y value is more than player-top).
+        
+        Only searches a distance of ceil(abs(player yvel)) above the player
+        in order to not search the entire column (this requires that the game run >1fps for it to work properly)
+        
+        Solid is defined as objects whose crash_effect is `"crash-block"` (so for now, just blocks) 
+        
+        If the player is in between two "columns" of the level (say, at `(x,y)=(4.5,9.5)`), then attempts to return the
+        higher block (e.g. if the lowest block at x=4 is at y=11, and the lowest block at x=5 is at y=10, this function
+        will return the block at x=4, y=11) (x=5 block is not in range, since player top is at 9.5 + 1 (assuming 1-block height),
+        and y=10 is not above the player)). (IF IN RANGE)
+        
+        However, if the lowest blocks above the player are at the same height, then it will return leftmost block (lower x-val)  
+        
+        Returns None if nothing in range.
+        """
+        
+        # scan the two columns the player might be occupying
+        
+        # calc. boundaries of check
+        left = floor(self.game.player.pos[0])
+        right = ceil(self.game.player.pos[0]+self.game.player.get_hitbox_size()[0])
+        
+        bottom = ceil(self.game.player.pos[1] + 1) # only check ABOVE THE TOP of the player
+        
+        # check ceil(player yvel) blocks below/above the player
+        # ^ this is so we dont check a huge number of blocks - we are assuming the game is running faster than 1fps lol
+        
+        num_rows_to_check = ceil(abs(self.game.player.yvel))
+        
+        for x in range(left, right+1):
+            for y in range(bottom, bottom+num_rows_to_check+1):
+                if (obj := self.game.level.get_object_at(x, y)) is not None:
+                    return obj # return first object we find (since it is leftmost and highest)
+        
+        return None
+    

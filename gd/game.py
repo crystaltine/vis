@@ -28,9 +28,9 @@ class Game:
     def __init__(self, level: Level):
         self.level = level
 
-        self.player = Player()
         self.camera = Camera(self.level)
         self.collision_handler = CollisionHandler(self)
+        self.player = Player(self.collision_handler)
 
         self.is_crashed = False
         self.running = False

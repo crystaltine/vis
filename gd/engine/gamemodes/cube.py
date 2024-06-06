@@ -1,7 +1,10 @@
-from logger import Logger
+from math import floor
 from time import time_ns
 from typing import TYPE_CHECKING
+
+from logger import Logger
 from engine.constants import EngineConstants
+from engine.collision_handler import CollisionHandler
 
 if TYPE_CHECKING:
     from engine.player import Player
@@ -68,8 +71,32 @@ def tick_cube(player: "Player", timedelta: float) -> None:
     if not player.in_air:
         player.last_on_ground_time = time_ns()
     
-    #Logger.log(f"End of tick: updating pos[1] to {player.pos[1]:.4f} since yvel={player.yvel:.4f} and timedelta={timedelta:.4f}")
+    # if player is about to cross an integer y-value, check for ground/ceiling
+    new_y_pos = player.pos[1] + player.yvel * timedelta
+    if floor(player.pos[1]) != floor(new_y_pos): # crossing int. y val
+        if player.yvel < 0: # falling down, look for surface below
+            closest_surface = player.collision_handler.highest_solid_object_beneath_player()
+            if closest_surface is not None:
+                if new_y_pos < closest_surface.y + closest_surface.data.get("hitbox_yrange")[1]:
+                    # there is a ground below to catch us
+                    player.yvel = 0
+                    player.pos[1] = closest_surface.y + closest_surface.data.get("hitbox_yrange")[1]
+                #else:
+                    # ground is out of range, just update ypos normally
+        elif player.yvel > 0: # reverse grav, look for surface above
+            closest_surface = player.collision_handler.lowest_solid_object_above_player()
+            if closest_surface is not None:
+                if new_y_pos < closest_surface.y + closest_surface.data.get("hitbox_yrange")[0]:
+                    # there is a ground below to catch us
+                    player.yvel = 0
+                    player.pos[1] = closest_surface.y + closest_surface.data.get("hitbox_yrange")[0]
+
+            # TODO - verify above code
+            
     player.pos[1] += player.yvel * timedelta
+    
+    # addgroundcheck func here ased on grav
+    
     
 def jump_cube(player: "Player") -> None:
     player.yvel = EngineConstants.PLAYER_JUMP_STRENGTH * player.sign_of_gravity()

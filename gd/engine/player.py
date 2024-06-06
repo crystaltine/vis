@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple, TYPE_CHECKING
 from time import time_ns
 from copy import deepcopy
 
@@ -11,12 +11,22 @@ from engine.gamemodes.ball import tick_ball, jump_ball
 from engine.gamemodes.ufo import tick_ufo, jump_ufo
 from engine.gamemodes.wave import tick_wave
 
+if TYPE_CHECKING:
+    from engine.collision_handler import CollisionHandler
+
 class Player:
     """
     Represents the player inside a level and handles physics calculations.
     """
+    
+    tick_funcs = {
+        "cube": tick_cube,
+        "ball": tick_ball,
+        "ufo": tick_ufo,
+        "wave": tick_wave
+    }
 
-    def __init__(self, start_settings: dict = {}):
+    def __init__(self, collision_handler: "CollisionHandler", start_settings: dict = {}):
         """
         (OPTIONAL) `start_settings` format (mainly used for startpos):
         ```python
@@ -52,6 +62,7 @@ class Player:
         self.in_air = False
         """ If the player is currently jumping. can't double jump. Jump status is reset to false when the player hits a glidable hitbox. """
 
+        self.collision_handler = collision_handler
         self.curr_collisions: List[Collision] = []
         """ Maintains a list of objects the player is currently touching. Gets updated on every collision check (physics tick)"""
 
@@ -61,18 +72,12 @@ class Player:
         """
         
         # TODO - make code better by keeping a list and using getattr?
-        match self.gamemode:
-            case "cube":
-                tick_cube(self, timedelta)
-            case "ball":
-                tick_ball(self, timedelta)
-            case "ufo":
-                tick_ufo(self, timedelta)
-            case "wave":
-                tick_wave(self, timedelta)
-            case _:
-                raise Exception(f"[Player/tick] gamemode {self.gamemode} not set up in Player.tick()")
+        tickfunc = Player.tick_funcs.get(self.gamemode)
+        
+        if tickfunc is None:
+            raise Exception(f"[Player/tick] gamemode {self.gamemode} not set up in Player.tick()")
 
+        tickfunc(self, timedelta)
     
     def reset_physics(self, new_pos = None) -> None:
         """
@@ -159,6 +164,14 @@ class Player:
                     1 if self.yvel > 0
                     else 2
                 )
+                
+    def get_hitbox_size(self) -> Tuple[int, int]:
+        """Return the (x,y) hitbox size of the player. functionized
+        because hitbox size changes across gamemodes. """
+        return (
+            (EngineConstants.PLAYER_HITBOX_X, EngineConstants.PLAYER_HITBOX_Y) if not self.gamemode == 'wave'
+            else (EngineConstants.PLAYER_WAVE_HITBOX_X, EngineConstants.PLAYER_WAVE_HITBOX_Y)
+        ) 
     
     def set_yvel_magnitude(self, strength: float):
         """
@@ -194,6 +207,11 @@ class Player:
     def change_gamemode(self, new_gamemode: GDConstants.gamemodes) -> None:
         """ Handles changing gamemode and any related logic """
         self.gamemode = new_gamemode
+        
+        if new_gamemode == 'wave':
+            # wave hitbox is smaller, but to maintain center, move player pos up&right
+            self.pos[0] += (1 - EngineConstants.PLAYER_WAVE_HITBOX_X) / 2
+            self.pos[1] += (1 - EngineConstants.PLAYER_WAVE_HITBOX_Y) / 2
         
     def change_speed(self, new_speed: GDConstants.speeds) -> None:
         """ Handles changing speeds and any related logic """

@@ -41,5 +41,8 @@ def tick_wave(player: "Player", timedelta: float) -> None:
         
         player.yvel = EngineConstants.BLOCKS_PER_SECOND * player.speed * (1 if holding else -1)
     
-    Logger.log(f"wave yvel: {player.yvel:.2f}, pos={player.pos[0]:.2f},{player.pos[1]:.2f}")
+    #Logger.log(f"wave yvel: {player.yvel:.2f}, pos={player.pos[0]:.2f},{player.pos[1]:.2f}")
     player.pos[1] += player.yvel * timedelta
+    if player.pos[1] < 0: # catch spasming on ground (for animation function)
+        player.yvel = 0
+        player.pos[1] = 0
