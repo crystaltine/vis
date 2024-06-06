@@ -35,6 +35,9 @@ CHANNELS = 1  # Number of audio channels (1 for mono, 2 for stereo)
 RATE = 44100  # Sample rate (samples per second)
 CHUNK = 1024  # Number of frames per buffer
 
+global transmitting
+transmitting = True
+
 audio = pyaudio.PyAudio()
 
 def hex_to_rgb(hex):
@@ -72,6 +75,7 @@ def draw_all_text():
 
 
 def create_lifeline(user_id, chat_id):
+    global transmitting
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     s.connect((config.HOST, config.VOICE_PORT))
@@ -80,7 +84,7 @@ def create_lifeline(user_id, chat_id):
         "id": user_id,
     }).encode())
 
-    while True:
+    while transmitting:
         data = s.recv(2048)
         if not data:
             break
@@ -90,6 +94,8 @@ def create_lifeline(user_id, chat_id):
                 threading.Thread(target=create_listener, args=(user_id, data["id"], chat_id)).start()
         except:
             pass
+
+    s.close()
 
 def create_sender(user_id, channel):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -106,10 +112,14 @@ def create_sender(user_id, channel):
                     input=True,
                     frames_per_buffer=CHUNK)
 
-    while True:
-        data = input_stream.read(CHUNK)
-        if data:
-            s.sendall(data)
+    while transmitting:
+        try:
+            data = input_stream.read(CHUNK)
+            if data:
+                s.sendall(data)
+        except:
+            break
+    s.close()
 
 
 def create_listener(user_id, target, chat_id):
@@ -130,7 +140,11 @@ def create_listener(user_id, target, chat_id):
                     frames_per_buffer=CHUNK)
 
     while True:
-        data = s.recv(2048)
+        try:
+            data = s.recv(2048)
+        except:
+            s.close()
+            break
         if data:
             output_stream.write(data)
 
@@ -143,7 +157,7 @@ def redraw_all():
 
 
 def main(user_token, server_id, channel_id):
-    global token, server, channel
+    global token, server, channel, transmitting
     token = user_token
     server = server_id
     channel = channel_id
@@ -189,4 +203,5 @@ def main(user_token, server_id, channel_id):
                     redraw_all()
                 continue
             if val.code == term.KEY_ESCAPE:
+                transmitting = False
                 break

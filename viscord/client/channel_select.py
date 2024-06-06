@@ -169,3 +169,4 @@ def main(server_data, user_token):
             elif val == "\x0b":
                 import voice_client
                 voice_client.main(user_token, server["server_id"], data[selection]["chat_id"])
+                redraw_all()
