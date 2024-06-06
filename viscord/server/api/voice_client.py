@@ -56,6 +56,23 @@ class GlobalState:
                 self._connected_clients[a] = {}
             if not blank_dict: self._connected_clients[a][b] = conn
 
+    def purge(self, user_id):
+        with self._lock:
+            if user_id in self._lifelines:
+                self._lifelines[user_id].close()
+                del self._lifelines[user_id]
+            if user_id in self._connected_clients:
+                for target in self._connected_clients[user_id]:
+                    self._connected_clients[user_id][target].close()
+                del self._connected_clients[user_id]
+            for target in self._connected_clients:
+                if user_id in self._connected_clients[target]:
+                    self._connected_clients[target][user_id].close()
+                    del self._connected_clients[target][user_id]
+            for chat_id in self._channels:
+                if user_id in self._channels[chat_id]:
+                    self._channels[chat_id].remove(user_id)
+
 global_state = GlobalState()
 
 
@@ -130,10 +147,9 @@ def handle_client(conn, addr):
         try:
             data = conn.recv(2048)
         except Exception as e:
-            ...
-            # TODO: handle disconnect - prioritize lifelines first
-            print(e)
-            return
+            global_state.purge(user_id)
+        if not data and role == "lifeline":
+            global_state.purge(user_id)
         if role == "sender":
             if user_id not in global_state.connected_clients:
                 print("a")
