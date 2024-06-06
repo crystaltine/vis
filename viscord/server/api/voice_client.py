@@ -1,4 +1,5 @@
 from .db import cur
+import time
 from .roles import chat_perms_wrapper
 from uuid import uuid4
 from flask import request, Response
@@ -7,11 +8,13 @@ from .helpers import *
 import requests
 from .server_config import URI, VOICE_PORT, HOST
 from typing import *
+import ctypes
 
 import socket
 import threading
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind((HOST, VOICE_PORT))
 
 class GlobalState:
@@ -21,20 +24,21 @@ class GlobalState:
         self._lifelines = {}
         self._connected_clients = {}
 
+
     @property
     def channels(self):
         with self._lock:
-            return self._channels.copy()
+            return self._channels
 
     @property
     def lifelines(self):
         with self._lock:
-            return self._lifelines.copy()
+            return self._lifelines
 
     @property
     def connected_clients(self):
         with self._lock:
-            return self._connected_clients.copy()
+            return self._connected_clients
 
     def add_to_channels(self, chat_id, user_id):
         with self._lock:
@@ -54,8 +58,7 @@ class GlobalState:
         with self._lock:
             if a not in self._connected_clients:
                 self._connected_clients[a] = {}
-            if not blank_dict: 
-                self._connected_clients[a][b] = conn
+            if not blank_dict: self._connected_clients[a][b] = conn
 
     def purge(self, user_id):
         with self._lock:
@@ -74,28 +77,33 @@ class GlobalState:
                 if user_id in self._channels[chat_id]:
                     self._channels[chat_id].remove(user_id)
 
+global global_state
 global_state = GlobalState()
 
 
 
 @app.route("/api/voice/join", methods=["POST"])
 def join_voice() -> Literal["success", "failure"]:
+    global global_state
 
     """
     Join a voice channel.
     """
-    
+
     if not validate_fields(request.json, {"user_token": str, "server_id": str, "chat_id": str}):
         return invalid_fields()
-    
+
     user_id = get_user_id(request.json["user_token"])
     server_id = request.json["server_id"]
     chat_id = request.json["chat_id"]
-    
+
     perms = chat_perms_wrapper(user_id, server_id, chat_id)
     if not perms["readable"]:
         return missing_permissions()
 
+    print("CHANNELS:", global_state.channels)
+    print(id(global_state), id(global_state.lifelines))
+    print("LIFELINES:", global_state.lifelines)
     if chat_id not in global_state.channels:
         global_state.add_to_channels(chat_id, user_id)
         return_data = {"type": "callback", "connections": ["lifeline"]}
@@ -108,29 +116,42 @@ def join_voice() -> Literal["success", "failure"]:
             return_data = {"type": "callback", "connections": connections + ["lifeline"]}
 
 
-        data = {"msg": "join", "chat_id": chat_id, "id": user_id}
-        for uid in global_state.channels[chat_id]:
-            if uid != user_id:
-                global_state.lifelines[uid].send(json.dumps(data).encode())
+#        data = {"msg": "join", "chat_id": chat_id, "id": user_id}
+#        lifelines = ctypes.cast(global_state.lifelines_id, ctypes.py_object).value # i'm sorry :(
+#        print("SL:", lifelines)
+#        for uid in global_state.channels[chat_id]:
+#            if uid != user_id:
+#                lifelines[uid].send(json.dumps(data).encode())
 
     return Response(json.dumps(return_data), status=200)
 
 def handle_client(conn, addr):
+    global global_state
     channels = global_state.channels
     lifelines = global_state.lifelines
     connected_clients = global_state.connected_clients
-    
-    
+
+
     data = conn.recv(1024)
     data = json.loads(data.decode())
-    
+
     user_id = data["id"]
     role = data["role"]
     if role == "receiver":
         target = data["target"]
         global_state.add_to_clients(user_id, target, conn, direction=2)
         print(f"NEW RECEIVER: {target} -> {user_id}")
+        data = {"msg": "join", "chat_id": data["chat_id"], "id": user_id}
+        #lifelines = ctypes.cast(global_state.lifelines_id, ctypes.py_object).value # i'm sorry :(
+#        print(user_id)
+#        print("SL:", lifelines)
+#        for uid in global_state.channels[data["chat_id"]]:
+#            if uid != user_id:
+#                global_state.lifelines[uid].send(json.dumps(data).encode())
+        if target not in global_state.connected_clients[user_id]:
+            global_state.lifelines[target].sendall(json.dumps(data).encode())
     elif role == "lifeline":
+        print(id(global_state), id(global_state.lifelines))
         global_state.add_to_lifelines(user_id, conn)
         print(f"NEW LIFELINE: {user_id} ({hash(user_id)})")
         print(global_state.lifelines)
@@ -138,7 +159,7 @@ def handle_client(conn, addr):
         # TODO
         global_state.add_to_clients(user_id, None, None, blank_dict=True)
         print(f"SENDER ESTABLISHED: {user_id}")
-    
+
     while True:
         try:
             data = conn.recv(2048)
@@ -155,7 +176,7 @@ def handle_client(conn, addr):
                 except Exception as e:
                     print(e)
                     pass
-    
+    if TYPE == "lifeline": print("LIFELINE KILLED")
 
 
 def spawn_socket():
