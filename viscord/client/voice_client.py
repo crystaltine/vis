@@ -99,6 +99,7 @@ def create_lifeline(user_id, chat_id):
     s.close()
 
 def create_sender(user_id, channel):
+    global transmitting
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     s.connect((config.HOST, config.VOICE_PORT))
@@ -118,14 +119,16 @@ def create_sender(user_id, channel):
             data = input_stream.read(CHUNK)
             if data:
                 s.sendall(data)
+            else:
+                break
         except:
             break
     s.close()
 
 
 def create_listener(user_id, target, chat_id):
+    global transmitting
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print(f"Creating listener: {target} -> {user_id}") # REMOVE
     s.connect((config.HOST, config.VOICE_PORT))
     s.sendall(json.dumps({
         "role": "receiver",
@@ -140,7 +143,7 @@ def create_listener(user_id, target, chat_id):
                     output=True,
                     frames_per_buffer=CHUNK)
 
-    while True:
+    while transmitting:
         try:
             data = s.recv(2048)
         except:
@@ -148,6 +151,9 @@ def create_listener(user_id, target, chat_id):
             break
         if data:
             output_stream.write(data)
+        else:
+            break
+    s.close()
 
 def redraw_all():
     print(term.clear())
@@ -158,7 +164,6 @@ def redraw_all():
 
 
 def main(user_token, server_id, channel_id):
-    print(term.clear() + term.home + term.normal)
     global token, server, channel, transmitting
     token = user_token
     server = server_id
@@ -182,7 +187,6 @@ def main(user_token, server_id, channel_id):
 
 
     callbacks = resp.json()["connections"]
-    print(callbacks)
     for target in callbacks:
         if target == "lifeline":
             threading.Thread(target=create_lifeline, args=(user_id, channel_id)).start()
@@ -194,7 +198,7 @@ def main(user_token, server_id, channel_id):
     threading.Thread(target=create_sender, args=(user_id, channel_id)).start()
 
 
-    #redraw_all()
+    redraw_all()
     
     with term.cbreak():
         val = ""
@@ -205,7 +209,7 @@ def main(user_token, server_id, channel_id):
             if not val:
                 if term.width != sx or term.height != sy:
                     pass
-                    #redraw_all()
+                    redraw_all()
                 continue
             if val.code == term.KEY_ESCAPE:
                 transmitting = False
