@@ -110,7 +110,7 @@ def join_voice() -> Literal["success", "failure"]:
     else:
         global_state.add_to_channels(chat_id, user_id)
         # connections = list(connected_clients[chat_id].keys())
-        connections = list(global_state.channels[chat_id])
+        connections = list(c for c in global_state.channels[chat_id] if c != user_id)
         if len(connections) == 0:
             return_data = {"type": "callback", "connections": ["lifeline"]}
         else:
@@ -149,10 +149,9 @@ def handle_client(conn, addr):
 #        for uid in global_state.channels[data["chat_id"]]:
 #            if uid != user_id:
 #                global_state.lifelines[uid].send(json.dumps(data).encode())
-        if target not in global_state.connected_clients[user_id]:
+        if user_id not in global_state.connected_clients or target not in global_state.connected_clients[user_id]:
             global_state.lifelines[target].sendall(json.dumps(data).encode())
     elif role == "lifeline":
-        print(id(global_state), id(global_state.lifelines))
         global_state.add_to_lifelines(user_id, conn)
         print(f"NEW LIFELINE: {user_id} ({hash(user_id)})")
         print(global_state.lifelines)
