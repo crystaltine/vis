@@ -108,6 +108,7 @@ def join_voice() -> Literal["success", "failure"]:
         global_state.add_to_channels(chat_id, user_id)
         return_data = {"type": "callback", "connections": ["lifeline"]}
     else:
+        global_state.add_to_channels(chat_id, user_id)
         # connections = list(connected_clients[chat_id].keys())
         connections = list(global_state.channels[chat_id])
         if len(connections) == 0:
