@@ -152,8 +152,7 @@ def handle_client(conn, addr):
             global_state.purge(user_id)
         if role == "sender":
             if user_id not in global_state.connected_clients:
-                print("a")
-                continue
+                conn.close()
             for target in global_state.connected_clients[user_id]:
                 try:
                     global_state.connected_clients[user_id][target].send(data)
