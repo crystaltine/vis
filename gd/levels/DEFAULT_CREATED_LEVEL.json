@@ -8,18 +8,16 @@
       "speed": "normal",
       "gravity": "normal",
       "default_color_channels": {
-        "1": [0, 0, 1],
-        "2": [255, 255, 255],
-        "3": [255, 0, 0],
-        "4": [0, 255, 0]
+        "1": [0, 0, 0],
+        "2": [255, 255, 255]
       }
     },
     "type": "created",
-    "name": "my first leve",
-    "description": "Test level for new level editor",
+    "name": "Unnamed",
+    "description": "",
     "song_filepath": "./assets/audio/StereoMadness.ogg",
     "created_timestamp": 0,
-    "modified_timestamp": 1717577172.839157,
+    "modified_timestamp": 0,
     "song_start_time": 0,
     "total_attempts": 0,
     "progress_normal": 0,
