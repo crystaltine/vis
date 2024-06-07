@@ -4,7 +4,6 @@ from copy import deepcopy
 
 from logger import Logger
 from gd_constants import GDConstants
-from gd_constants import GDConstants
 from engine.constants import EngineConstants, SPEEDS
 from engine.collision import Collision
 from engine.gamemodes.cube import tick_cube, jump_cube
@@ -44,6 +43,9 @@ class Player:
         self.START_SETTINGS = start_settings
         
         self.speed: GDConstants.speeds = SPEEDS.decode(start_settings.get("speed")) or SPEEDS.normal
+        
+        self.wave_pivot_points: List[Tuple[int, int]] = []
+        """ A persistent list (reset upon crash) that keeps track of whenever the wave changes direction, in order to render the trail. """
         
         self.gamemode: GDConstants.gamemodes = start_settings.get("gamemode") or "cube"
         """ One of "cube", "ship", "ball", "ufo", "wave", "robot", "spider" (swing maybe? idk)"""
@@ -89,7 +91,8 @@ class Player:
         self.pos = new_pos or deepcopy(self.ORIGINAL_START_POS)
         self.in_air = False
         self.yvel = 0
-        self.jump_requested = False        
+        self.jump_requested = False
+        self.wave_pivot_points = []    
         self.curr_collisions.clear()
         self.gamemode = self.START_SETTINGS.get("gamemode") or "cube"
         self.speed = SPEEDS.decode(self.START_SETTINGS.get("speed")) or SPEEDS.normal
@@ -181,6 +184,15 @@ class Player:
     def change_gravity(self):
         """ Flips the gravity to the negative of what it currently is. """
         self.gravity *= -1
+        
+    def _create_wave_pivot(self) -> None
+        """ adds the current player position (center of hitbos) to self.wave_pivot_points """
+        
+        hb_size = self.get_hitbox_size()
+        center_x = self.pos[0] + hb_size / 2
+        center_y = self.pos[1] + hb_size / 2        
+        
+        self.wave_pivot_points.append((center_x, center_y))
         
     def get_hitbox_size(self) -> Tuple[float, float]:
         """

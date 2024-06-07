@@ -9,7 +9,7 @@ from render.utils import fcode, closest_quarter, len_no_ansi
 from render.texture_manager import TextureManager
 from render.camera_frame import CameraFrame
 from gd_constants import GDConstants
-from bottom_menu import draw_text
+from skimage.draw import line_aa
 
 if TYPE_CHECKING:
     from level import LevelObject, Level
@@ -197,6 +197,9 @@ class Camera:
         new_frame.render(self.curr_frame)
         self.curr_frame = new_frame
 
+    def render_wave_trail(self, game: "Game") -> None:
+        
+    
     # DEPRECATED - OLD LEVEL EDITOR
     def level_editor_render(self, cursor_pos: tuple, screen_pos: tuple, cur_cursor_obj):
 

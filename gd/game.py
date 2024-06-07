@@ -175,12 +175,22 @@ class Game:
                             collision.has_been_activated = True
                             self.activated_objects.append(collision.obj)
                             break # can only perform one action per jump
+                        
+                if self.player.gamemode == 'wave':
+                    # add to wave trail pivots if in wave gamemode
+                    self.player._create_wave_pivot()
                 
                 # if nothing got activated, then jump
                 if not something_got_activated:
                     self.player.request_jump()
+                    
+        def _handle_keyup(event: KeyEvent) -> None:
+            if str(event) in EngineConstants.JUMP_KEYS:
+                if self.player.gamemode == 'wave':
+                    self.player._create_wave_pivot()
 
-        KeyboardListener.on_press = _handle_keydown
+        KeyboardListener.on_presses.append(_handle_keydown)
+        KeyboardListener.on_releases.append(_handle_keyup)
         KeyboardListener.start()
 
     def crash_normal(self, reseting: bool = False, restart: bool = True):

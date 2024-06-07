@@ -27,7 +27,8 @@ def tick_wave(player: "Player", timedelta: float) -> None:
         #Logger.log(f"Hit ground. setting y-pos to 0 and in_air to False")
         player.pos[1] = 0
         player.yvel = 0
-        player.in_air = False     
+        player.in_air = False  
+        player._create_wave_pivot()
     
     # otherwise, apply yvel based on if jump key is held or not
     else:
