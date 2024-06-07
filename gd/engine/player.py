@@ -185,7 +185,7 @@ class Player:
         """ Flips the gravity to the negative of what it currently is. """
         self.gravity *= -1
         
-    def _create_wave_pivot(self) -> None:
+    def _create_wave_pivot(self) -> None
         """ adds the current player position (center of hitbos) to self.wave_pivot_points """
         
         hb_size = self.get_hitbox_size()
