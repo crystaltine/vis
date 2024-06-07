@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Literal, Tuple
-from render.utils import fcode_opt as fco, blend_rgba_img_onto_rgb_img_inplace, first_diff_color, last_diff_color, lesser, greater, remove_ansi
-from draw_utils import Position, convert_to_chars as convert_to_px, print2
+from render.utils import fcode_opt as fco, blend_rgba_img_onto_rgb_img_inplace, first_diff_color, last_diff_color, lesser, greater, draw_line
+from draw_utils import print2
 from time import perf_counter
 from threading import Thread
 from logger import Logger
@@ -185,33 +185,6 @@ class CameraFrame:
                 y2 -= height // 2
         
         blend_rgba_img_onto_rgb_img_inplace(self.pixels[y1:y2, x1:x2], rect_as_pixels)
-    
-    # IMPORTANT: dropped support for now, will fix later (hopefully)
-    def add_pixels(self, x: int, y: int, pixels: np.ndarray, anchor: Literal["top-left", "top-right", "bottom-left", "bottom-right", "center"] = "top-left") -> None:
-        """ 
-        CURRENTLY UNSUPPORTED, PROBABLY DOESNT WORK
-        
-        Adds a set of pixels to the frame, with the top left corner at the given position.
-        If the pixels go off the edge of the frame, they will be clipped.
-        """
-        left = x
-        top = y
-        
-        # TODO - handle overflow
-        
-        match(anchor):
-            case "top-right":
-                left -= pixels.shape[1]
-            case "bottom-left":
-                top -= pixels.shape[0]
-            case "bottom-right":
-                left -= pixels.shape[1]
-                top -= pixels.shape[0]
-            case "center":
-                left -= pixels.shape[1] // 2
-                top -= pixels.shape[0] // 2
-                
-        self.pixels[top:top+pixels.shape[0], left:left+pixels.shape[1]] = pixels
         
     def add_text(
         self, 
@@ -326,7 +299,11 @@ class CameraFrame:
             self.pixels[clipped_top:int(clipped_top+pixels.shape[0]-offset_top), clipped_left:int(clipped_left+pixels.shape[1]-offset_left)],
             pixels[offset_top:, offset_left:]
         )
-        
+    
+    def add_line(self, pos1: Tuple[int, int], pos2: Tuple[int, int], color: CameraConstants.RGBTuple) -> None:
+        """ Draws a non-antialiased, 1-wide line between two points on the frame. """
+        draw_line(self.pixels, pos1, pos2, color)
+    
     def copy(self) -> "CameraFrame":
         """ Returns a deep copy of this CameraFrame. (except for the terminal reference) """
         new_frame = CameraFrame(self.term, (self.width, self.height), self.pos)
