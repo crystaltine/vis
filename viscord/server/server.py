@@ -10,7 +10,7 @@ from multiprocessing import Process
 from api.flask_app import app
 
 # import so the modules are executed (defines endpoints for flask app)
-from api import login_flow, chats, friends, invites, members, messages, roles, servers, users
+from api import login_flow, chats, friends, invites, members, messages, roles, servers, users, voice_client
 from api import db, helpers
 
 from flask import request
@@ -111,6 +111,7 @@ def handle_message(data: dict):
             
     for token in marked_for_removal:
         del connections[token]
+    print(f"connections is now {connections}")
 
 def handle_connection(conn: socket.socket, addr):
     print(f"\x1b[33mHandling connection {addr=}\x1b[0m")
@@ -126,6 +127,7 @@ def handle_connection(conn: socket.socket, addr):
     print(f"\x1b[32msocket {addr=} {token=} completed init handshake (connected!)\x1b[0m")
     connections[token] = conn
 
+    print(f"connections is now {connections}")
     # receive loop
     while True:
         try:
@@ -135,7 +137,8 @@ def handle_connection(conn: socket.socket, addr):
         else:
             if not data:
                 print(f"\x1b[31msocket {token=} {addr=} disconnected\x1b[0m")
-                del connections[addr]
+                if token in connections: del connections[token]
+                print(f"connections is now {connections}")
                 return
 
             # data received - assume it's a sent message
