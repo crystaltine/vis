@@ -17,6 +17,7 @@ from bottom_menu import draw_text
 from level import Level
 from keyboard.keyboard_listener import KeyboardListener
 from keyboard.key_event import KeyEvent
+from practice_mode import PracticeMode
 
 class Game:
     """
@@ -39,11 +40,11 @@ class Game:
         self.activated_objects = []
         """ Stores which objects had their activated properties set to true, so we can reset them on crash. """
 
-        # wayyy too many of these variables, don't need them all - will come back later and clean this up
-        self.paused = False
+        self.paused = False #currently unused variable
         self.exiting = False
-        self.reseting = False
         self.practice_mode = False
+        # creating object that will handle practice mode functionality
+        self.practicemodeobj = PracticeMode(self)
         self.last_checkpoint = None
         self.checkpoints = []
         self.attempt_number = 1
@@ -71,6 +72,10 @@ class Game:
                     else:
                         Logger.log(f"[Game/render_thread] Rendering LIVE frame, player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str}")
                     
+                    # adds a checkpoint if its been over 2 seconds since the last checkpoint was added
+                    if self.practice_mode and self.practicemodeobj.is_checkpoint_time_over():
+                        self.practicemodeobj.add_checkpoint(self.player.pos)
+
                     self.camera.render(self)
                     # renders the most recent checkpoint if it exists
                     # note: this has been moved to Camera.render
@@ -131,8 +136,6 @@ class Game:
         self.last_tick = time_ns()
         Thread(target=render_thread).start()
         Thread(target=physics_thread).start()
-        # stores the start time of the level (for assigning checkpoint purposes)
-        start_time = time.time()
         
         # Main thread handles key input
         def _handle_keydown(event: KeyEvent) -> None:
@@ -145,16 +148,10 @@ class Game:
                 return
             # place a checkpoint if a user attempts to
             elif str(event) in EngineConstants.CHECKPOINT_KEYS and self.practice_mode:
-                self.last_checkpoint = deepcopy(self.player.pos)
-                self.checkpoints.append((self.last_checkpoint[0], self.last_checkpoint[1]))
-                # reset the checkpoint timer
-                start_time = time.time()
+                self.practicemodeobj.add_checkpoint(self.player.pos)
             # remove the most recent checkpoint if a user attempts to
-            elif str(event) in EngineConstants.REMOVE_CHECKPOINT_KEYS and self.practice_mode and self.checkpoints:
-                self.checkpoints.pop()
-                self.last_checkpoint = self.checkpoints[-1] if self.checkpoints else None
-                # reset the checkpoint timer
-                start_time = time.time()
+            elif str(event) in EngineConstants.REMOVE_CHECKPOINT_KEYS and self.practice_mode:
+                self.practicemodeobj.remove_checkpoint()
             elif str(event) in EngineConstants.JUMP_KEYS:
                 
                 something_got_activated = False
@@ -183,7 +180,7 @@ class Game:
         KeyboardListener.on_press = _handle_keydown
         KeyboardListener.start()
 
-    def crash_normal(self, restart: bool = True):
+    def crash_normal(self, reseting: bool = False, restart: bool = True):
         """
         The old function for crash handling. Might convert to normal mode crash later on.
         """
@@ -204,9 +201,27 @@ class Game:
             obj.has_been_activated = False
         self.last_tick = time_ns() # this is to prevent moving forward while we are dead lol
 
+        # if the player dies too quickly and is in practice mode, remove the most recent checkpoint
+        if time.time() - self.game_start_time < 1 and self.practice_mode:
+            self.practicemodeobj.remove_checkpoint()
+
+        # reset game start time and last checkpoint time
+        self.practicemodeobj.reset_checkpoint_time()
+        self.game_start_time = time.time()
+
+        # if player is in practice mode and there is a checkpoint, respawn the player at the checkpoint
+        if self.practice_mode and self.practicemodeobj.is_checkpoint():
+            # Logger.log(f"Last checkpoint is {self.practicemodeobj.last_checkpoint} so {self.practicemodeobj.is_checkpoint()}")
+            x, y = self.practicemodeobj.get_last_checkpoint()
+            self.player.pos = [x, y]
+
         # otherwise, restart the level by setting pos back to beginning 
         # also, NOTE: reset song if that is implemented
         self.attempt_number += 1
+
+        # if reseting, restart the level
+        if reseting:
+            self.start_level()
 
     def pause(self) -> None:
         """
@@ -222,11 +237,14 @@ class Game:
         progresspercent = round((self.player.pos[0] / self.level.length) * 100)
         # sets selected index to play button
         pausemenuselectindex = 1
+        Logger.log("drawing pause menu")
 
         # Draw pause menu background, progress bar, and buttons
         draw('assets/pausemenubg.png', Position.Relative(top=5, left=10), (self.camera.term.width - 20, self.camera.term.height * 2 - 20), 'scale')
-        draw_text(f"Progress: {progresspercent}%", (self.camera.term.width - 10) // 2, 10, bg_color='black')
+        draw_text(f"Progress: {progresspercent}%", (self.camera.term.width) // 2 - 8, 10, bg_color='black')
         self.draw_pause_menu_buttons(pausemenuselectindex)
+
+        Logger.log("pause menu drawn")
 
         # call method to handle interaction with pause menu
         self.handle_pause_menu_interaction(pausemenuselectindex)
@@ -269,6 +287,8 @@ class Game:
                             unpause = True
                         elif pausemenuselectindex == 2:
                             self.practice_mode = not self.practice_mode
+                            if not self.practice_mode:
+                                self.practicemodeobj.clear_checkpoints()
                             reset = True
                         elif pausemenuselectindex == 3:
                             self.exiting = True
@@ -316,8 +336,8 @@ class Game:
             draw(f"assets/pause_menu/{label}{suffix}.png", pos=Position.Relative(left=positions[i], bottom="calc(55% - 10ch)"))
 
         # Draw additional text labels for controls
-        draw_text("Add Checkpoint - Z", 12 + ((self.camera.term.width - 64) // 4) * 3, (self.camera.term.height + 20) // 2, bg_color='black')
-        draw_text("Remove Checkpoint - X", 10 + ((self.camera.term.width - 64) // 4) * 3, (self.camera.term.height + 25) // 2, bg_color='black')
+        draw_text("Add Checkpoint - Z", ((self.camera.term.width) // 5) * 3 - 6, (self.camera.term.height + 20) // 2, bg_color='black')
+        draw_text("Remove Checkpoint - X", ((self.camera.term.width) // 5) * 3 - 7, (self.camera.term.height + 25) // 2, bg_color='black')
 
     def unpause(self) -> None:
         """
@@ -345,7 +365,8 @@ class Game:
         """
         Resets the level.
         """
-        self.reseting = True
+        self.practicemodeobj.clear_checkpoints()
+        self.crash_normal(True)
 
         # OLD RESET CODE - ATTEMPT TO TERMINATE THE THREADS FAILED MISERABLY
         # self.running = False

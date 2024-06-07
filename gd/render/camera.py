@@ -188,8 +188,10 @@ class Camera:
         self.draw_attempt(new_frame, game.player.ORIGINAL_START_POS[0], game.attempt_number) # draw the attempt number
         
         # draw any checkpoints TODO - render multiple checkpoints, OOP-ize practice mode?
-        if game.last_checkpoint:
-            self.draw_checkpoint(new_frame, game.last_checkpoint[0], game.last_checkpoint[1])
+        # draw most recent checkpoint if the game is in practice mode and has a checkpoint
+        if game.practice_mode and game.practicemodeobj.is_checkpoint():
+            x, y = game.practicemodeobj.get_last_checkpoint()
+            self.draw_checkpoint(new_frame, x, y)
         
         # render the new frame
         new_frame.render(self.curr_frame)
@@ -263,8 +265,10 @@ class Camera:
             y (float): The y-coordinate of the checkpoint.
         """
 
-        pos_on_screen = self.get_screen_coordinates(x, y)
-        frame.add_pixels_topleft(*pos_on_screen, TextureManager.get_base_texture("checkpoint")())
+        x_pos, y_pos = self.get_screen_coordinates(x, y)
+        # weird issue where checkpoint is in ground if player is on ground level - move it up if it is
+        if y_pos == 78: y_pos = 70
+        frame.add_pixels_topleft(x_pos, y_pos, TextureManager.base_textures.get("checkpoint"))
         
     def draw_attempt(self, frame: CameraFrame, player_initial_x: float, attempt: int) -> None:
         """

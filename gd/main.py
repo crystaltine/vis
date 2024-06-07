@@ -55,8 +55,9 @@ def main():
                 os.system('cls')
                 break
             
-            if val.name=="KEY_ESCAPE" and current_page['current_screen']!='main':
-                
+            # if player presses escape or the game is exiting, then it will go back to the previous page
+            if (val.name=="KEY_ESCAPE" and current_page['current_screen']!='main' and current_page['current_screen']!="play_level") or (game != None and game.exiting and current_page['current_screen']=='play_level'):
+                # Logger.log(f"Current screen: {current_page['current_screen']}")
                 render_new_page(current_page['previous_page'])
 
             # The call_handle_page_function will call the corresponding function to handle all the specific key bindings for each page
@@ -231,6 +232,7 @@ def run_level(filepath: str, practice_mode: bool = False, checkpoints: list[tupl
     global attempt
 
     game = Game(Level.parse_from_file(filepath))
+    Logger.log(f"Running level: {filepath}")
     # increments the attempt number
     attempt += 1
     game.attempt = attempt
