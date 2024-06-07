@@ -1,4 +1,4 @@
-from typing import Literal, Callable, Dict, Set
+from typing import Literal, Callable, Dict, List
 import win32gui
 from uuid import uuid4
 import os
@@ -65,10 +65,10 @@ class KeyboardListener:
     """ Starting the listener will set the terminal window name to this, exactly once per start(). Used to check if key events are from the current window."""
     keys: Dict[NormalKey | SpecialKey, bool] = {}
     """ A dict mapping every key name to a boolean indicating whether or not it is currently held down. """
-    on_press: Callable[[KeyEvent], None] = None
-    """ settable handler for when a key is pressed down. """
-    on_release: Callable[[KeyEvent], None] = None
-    """ settable handler for when a key is released. """
+    on_presses: List[Callable[[KeyEvent], None]] = None
+    """ list of handlers for when a key is pressed down. All get run on event emit """
+    on_releases: List[Callable[[KeyEvent], None]] = None
+    """ list of handlers for when a key is released. All get run on event emit """
     
     def start():
         """ Starts a separate thread to start collecting keyboard info (updates `keys` dict continuously).
@@ -102,10 +102,10 @@ class KeyboardListener:
                 KeyEvent.update_modifiers(key, event)
                 ke = KeyEvent.create_from(key)
                 
-                if event == "keydown" and KeyboardListener.on_press is not None:
-                    KeyboardListener.on_press(ke)
-                elif event == "keyup" and KeyboardListener.on_release is not None:
-                    KeyboardListener.on_release(ke)
+                if event == "keydown":
+                    [func(ke) for func in KeyboardListener.on_presses]
+                elif event == "keyup":
+                    [func(ke) for func in KeyboardListener.on_releases]
                     
             return listener_inner
 
