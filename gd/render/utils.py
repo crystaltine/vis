@@ -3,6 +3,7 @@ from logger import Logger
 import re
 import os
 import numpy as np
+
 from skimage.draw import line
 
 if TYPE_CHECKING:
