@@ -11,10 +11,11 @@ from img2term.main import draw
 from menus.GDMenu import draw_main_menu_buttons
 from menus.level_selector import *
 from menus.level_editor_menu import *
-#from run_level_editor import *
+from run_level_editor import *
 from menus.main_page import *
 from menus.created_levels import *
 from menus.online_levels import *
+from test_level_editor import *
 
 current_module = sys.modules[__name__]
 terminal = GDConstants.term
@@ -42,6 +43,7 @@ def main():
             draw_text('LEVEL SELECTOR', int((terminal.width-len('LEVEL SELECTOR'))*0.5), int(terminal.height*0.1))
         elif current_page['current_screen']=='created_levels':
             draw_text('CREATED LEVELS', int((terminal.width-len('Created Levels'))*0.5), int(terminal.height*0.1))
+            Logger.log('drew created levels text')
         else:
             draw_text('', 0, 0)
 
@@ -56,7 +58,7 @@ def main():
                 break
             
             if val.name=="KEY_ESCAPE" and current_page['current_screen']!='main':
-                
+                draw_rect("#000000", Position.Relative(0, 0, 0, 0))
                 render_new_page(current_page['previous_page'])
 
             # The call_handle_page_function will call the corresponding function to handle all the specific key bindings for each page
@@ -202,20 +204,18 @@ def handle_created_levels_page(val):
     
     # Running test gd file if space is selected
 
-    if val=='p':
-        run_level(level_file_names[created_levels_index])
-        #render_new_page('play_level')
+    if val.name=='KEY_ENTER':
+        run_editor(level_file_names[created_levels_index])
+       
         
     # If a button has been pressed, reset the level, and regenerate the new level onto the screen
 
     if changed:
-
-        level_path=level_file_names[created_levels_index]
         reset_level()
+        level_path=level_file_names[created_levels_index]
         color=colors[0]
-        level_name=level_path[0:level_path.index('.')]
-        level_name=level_path[0].upper()+level_name[1:]
-        draw_created_level(level_name, int(terminal.width*0.8), int(terminal.height*0.6), 
+        
+        draw_created_level(level_path, int(terminal.width*0.8), int(terminal.height*0.6), 
                    int(terminal.width*0.1), int(terminal.height*0.3), color[0], color[1])
 
 # TODO - this function is rlly janky. practice mode should be OOP-ized.

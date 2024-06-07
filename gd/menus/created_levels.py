@@ -5,6 +5,8 @@ from bottom_menu import *
 import os
 import logging
 
+from logger import Logger
+
 terminal = blessed.Terminal()
 
 os.system('cls')
@@ -13,7 +15,7 @@ colors=[('blue', 'gray'), ('red', 'gray')]
 
 
 level_file_names=[]
-def update_list_of_level_files(file_type='.level'):
+def update_list_of_level_files(file_type='.json'):
     
     global level_file_names
 
@@ -24,8 +26,7 @@ def update_list_of_level_files(file_type='.level'):
             if file.endswith(file_type):
                 # print whole path of files
                 filename=os.path.join(root, file)
-                #logging.error('name   ' + filename)
-                filename=filename[filename.index('\\')+1:]
+                logging.error('name   ' + filename)
                 level_file_names.append(filename)
                 
 
@@ -50,9 +51,7 @@ def draw_created_levels():
         text=level_path
     else:
         color=random.choice(colors)
-        level_name=level_path[0:level_path.index('.')]
-        level_name=level_path[0].upper()+level_name[1:]
-        draw_created_level(level_name, int(GDConstants.term.width*0.8), int(GDConstants.term.height*0.6), int(GDConstants.term.width*0.1), int(GDConstants.term.height*0.3), color[0], color[1])
+        draw_created_level(level_path, int(GDConstants.term.width*0.8), int(GDConstants.term.height*0.6), int(GDConstants.term.width*0.1), int(GDConstants.term.height*0.3), color[0], color[1])
     
     while True:
         draw_text(text, int(terminal.width*0.4), int(terminal.height*0.5))
@@ -62,7 +61,8 @@ def reset_level(width=int(GDConstants.term.width*0.8), height=int(GDConstants.te
 
 
 def init_created_levels_page(terminal):
-    update_list_of_level_files('.level')
+    Logger.log(' in int created levels page ')
+    update_list_of_level_files('.json')
     # draw fullscreen bg
     draw_rect("#000000", Position.Relative(0, 0, 0, 0))
 
@@ -75,7 +75,6 @@ def init_created_levels_page(terminal):
         draw_text(selector_text, int(terminal.width*0.23), int(terminal.height*0.2))
         draw_spike(int(terminal.width*0.025), int(terminal.width*0.95), int(terminal.height*0.5), 'white', 'right')
         draw_spike(int(terminal.width*0.025), int(terminal.width*0.03), int(terminal.height*0.5), 'white', 'left')
-        level_name=level_path[0:level_path.index('.')]
-        level_name=level_path[0].upper()+level_name[1:]
-        draw_created_level(level_name, int(terminal.width*0.8), int(terminal.height*0.6), 
+        
+        draw_created_level(level_path, int(terminal.width*0.8), int(terminal.height*0.6), 
                    int(terminal.width*0.1), int(terminal.height*0.3), color[0], color[1])

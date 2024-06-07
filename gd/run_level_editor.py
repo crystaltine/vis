@@ -1,15 +1,10 @@
-from level_editor import LevelEditor
+from editor.level_editor import *
+
 from logger import Logger
 from draw_utils import cls
 
-test = LevelEditor()
 
-def run_editor():
-
-    try:
-        test.start_editor()
-    except Exception as e:
-        cls()
-        Logger.log(f"EXCEPTION [user_settings/main]: {e}")
-        print(f"\x1b[31mgd fatal: an error occurred, \x1b[33m{e}\x1b[0m")
-    Logger.write()
+def run_editor(path):
+    test = LevelEditor(path)
+    test.run_editor()
+   

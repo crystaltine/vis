@@ -4,10 +4,11 @@ from draw_utils import cls
 from cursor import hide, show
 import traceback
 
-fp = "./levels/created3.json"
-editor = LevelEditor(fp)
+fp = "./levels/created2.json"
 
-def main():
+
+def run_level_editor(path):
+    editor = LevelEditor(path)
     try:
         hide()
         editor.run_editor()
@@ -19,5 +20,5 @@ def main():
     Logger.write()
     show()
     
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

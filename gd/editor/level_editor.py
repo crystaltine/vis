@@ -385,6 +385,7 @@ class LevelEditor:
                 else: continue
                 
                 if self.rerender_needed and self.focused_popup is None: # rerender if stuff changed
+                    Logger.log('rendering in level editor file')
                     self.render_main_editor()
                     self.render_bottom_menu()
                     self.rerender_needed = False
