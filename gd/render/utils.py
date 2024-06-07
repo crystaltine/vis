@@ -171,21 +171,34 @@ def blend_rgba_onto_rgb(original: np.ndarray, new: np.ndarray) -> np.ndarray:
 def blend_rgba_img_onto_rgb_img(original: np.ndarray, new: np.ndarray) -> np.ndarray:
     """
     Blends two entire 2D arrays of pixels (so, techincally, 3D arrays) together, expecting
-    that the original image is fully opaque and the new image has transparency.
+    that the original image is fully opaque and the new image has transparency. If the new
+    image is RGB-based (no alpha, 3 channels), it will be treated as fully opaque.
     
     Will clip the new image to the size of the original image, anchoring the top left corner.
     """
     
+    # if the new image has no alpha, just return the new image
+    if new.shape[2] == 3:
+        return new
+    
     clipped_new = new[:original.shape[0], :original.shape[1]]
+    
+    # if new image has 0 in any shape, return
+    if clipped_new.shape[0] == 0 or clipped_new.shape[1] == 0:
+        return original
 
     new_rgb = clipped_new[..., :3] # "img" without alpha
     new_alpha = clipped_new[..., 3] / 255.0 # array of just the alpha values
-
-    # blend arrays in PARALLEL (yayyyyyyyy!!!!)
+    # blend arrays in PARALLEL (yayyyyyyyy!!!!) 
+    #Logger.log(f"blend rgba into rgb: shapes of original, new: {original.shape}, {new.shape}")
     blended_rgb = new_rgb*new_alpha[..., np.newaxis] + original*(1 - new_alpha[..., np.newaxis])
 
     # return as uint8 types since this returns floats
     return blended_rgb.astype(np.uint8)
+
+def blend_rgba_img_onto_rgb_img_inplace(original: np.ndarray, new: np.ndarray) -> None:
+    """ Same as `blend_rgba_img_onto_rgb_img`, but modifies the original array in place. """
+    original[:] = blend_rgba_img_onto_rgb_img(original, new)
 
 def blend_multiple_pixels(dstacked_pixels: np.ndarray) -> tuple | np.ndarray:
     """

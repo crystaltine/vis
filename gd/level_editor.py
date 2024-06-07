@@ -2,12 +2,9 @@ import blessed
 from threading import Thread, Timer
 from copy import deepcopy
 from render.camera import Camera
-from render.constants import CameraUtils
-from render.utils import fcode
-from parse_level import parse_level
+from render.constants import CameraConstants
 from logger import Logger
-from run_gd import run_level
-from engine.objects import OBJECTS, LevelObject
+from engine.objects import OBJECTS
 import time
 
 CURSOR_MOVEMENT_CHANGE = {"KEY_UP":[0, -1], "KEY_LEFT":[-1, 0], "KEY_DOWN":[0, 1], "KEY_RIGHT" :[1, 0]}
@@ -23,7 +20,7 @@ class LevelEditor:
         self.level_name = "" # We should use this later to specify name for saving and loading menu ui instead of manually specifying a name in backend
         self.term = blessed.Terminal()
         self.screen_pos = [0, 0]
-        self.cursor_pos = CameraUtils.center_screen_coordinates(self.term)
+        self.cursor_pos = CameraConstants.center_screen_coordinates(self.term)
         self.camera = Camera(self.level)
         self.cur_cursor_obj = None
         self.del_list = []
@@ -58,7 +55,7 @@ class LevelEditor:
         Logger.log(f"place_obj, {self.cur_cursor_obj=}")
         if self.cur_cursor_obj is not None:
             x, y = self.cursor_pos
-            grid_x, grid_y = x + self.screen_pos[0] - CameraUtils.CAMERA_LEFT_OFFSET, y + self.screen_pos[1]
+            grid_x, grid_y = x + self.screen_pos[0] - CameraConstants.CAMERA_LEFT_OFFSET, y + self.screen_pos[1]
             Logger.log(f"^ {self.cursor_pos=}, gridx/gridy:{grid_x}/{grid_y} len(level)={len(self.level)}")
             if 0 <= grid_y < len(self.level) and 0 <= grid_x < len(self.level[grid_y]):
                 # Store current state for undo
@@ -71,7 +68,7 @@ class LevelEditor:
 
     def delete_object(self):
         x, y = self.cursor_pos
-        grid_x, grid_y = x + self.screen_pos[0] - CameraUtils.CAMERA_LEFT_OFFSET, y + self.screen_pos[1]
+        grid_x, grid_y = x + self.screen_pos[0] - CameraConstants.CAMERA_LEFT_OFFSET, y + self.screen_pos[1]
         Logger.log(f"^ {self.cursor_pos=}, gridx/gridy:{grid_x}/{grid_y} len(level)={len(self.level)}")
         if 0 <= grid_y < len(self.level) and 0 <= grid_x < len(self.level[grid_y]):
             # Store current state for undo

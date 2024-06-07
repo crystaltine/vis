@@ -5,6 +5,54 @@ from .flask_app import app
 from .helpers import *
 from flask import request, Response
 
+
+def chat_perms_wrapper(user_id: str, server_id: str, chat_id: str, cursor=cur) -> Dict:
+    """
+    Given a user_token, server_id, and chat_id, this function will return a dict containing bools for all the different permissions in the db based on their role
+    """
+    try:
+        chat_query="""select read_perm_level, write_perm_level from "Discord"."ChatInfo" where chat_id = %s"""
+        cursor.execute(chat_query, (chat_id,))
+        perms= cursor.fetchall()[0]
+        minimum_reading_level, minimum_writing_level=perms[0], perms[1]
+
+        # Getting the user's roles from MemberInfo with the user_id and the server_id
+        
+        member_query="""select roles_list from "Discord"."MemberInfo" where user_id = %s and server_id= %s"""
+        cursor.execute(member_query, (user_id, server_id))
+        results = cursor.fetchall()
+        if len(results) == 0:
+            data = {"readable": False, "writeable": False}
+            return Response(json.dumps({"type": "success", "data": data}), status=200)
+
+        
+        roles_list= results[0][0]
+
+        # Getting the highest perm level for all the user's roles
+
+        highest_perm_level=0
+        for role_id in roles_list:
+            perm_query="""select permissions from "Discord"."RolesInfo" where role_id = %s"""
+            cursor.execute(perm_query, (role_id,))
+            perm_level=int(cursor.fetchall()[0][0])
+
+            if perm_level>highest_perm_level:
+                highest_perm_level=perm_level
+        
+        # Checking to see if user's highest perm level >= the needed perm level to read/write
+
+        readable=False
+        writeable=False
+        if highest_perm_level>=minimum_reading_level:
+            readable=True
+        if highest_perm_level>=minimum_writing_level:
+            writeable=True
+
+        data = {"readable":readable, "writeable":writeable}
+        return data
+    except Exception as e:
+        return {"readable": False, "writeable": False}
+
 # API
 @app.route("/api/roles/get_chat_perms", methods=["POST"])
 def get_chat_perms() -> Dict:
@@ -27,38 +75,7 @@ def get_chat_perms() -> Dict:
     
     # Using the chat_id to pull the perm info from ChatInfo
     try:
-        chat_query="""select read_perm_level, write_perm_level from "Discord"."ChatInfo" where chat_id = %s"""
-        cur.execute(chat_query, (chat_id,))
-        perms= cur.fetchall()[0]
-        minimum_reading_level, minimum_writing_level=perms[0], perms[1]
-
-        # Getting the user's roles from MemberInfo with the user_id and the server_id
-
-        member_query="""select roles_list from "Discord"."MemberInfo" where user_id = %s and server_id= %s"""
-        cur.execute(member_query, (user_id, server_id))
-        roles_list= cur.fetchall()[0][0]
-
-        # Getting the highest perm level for all the user's roles
-
-        highest_perm_level=0
-        for role_id in roles_list:
-            perm_query="""select permissions from "Discord"."RolesInfo" where role_id = %s"""
-            cur.execute(perm_query, (role_id,))
-            perm_level=int(cur.fetchall()[0][0])
-
-            if perm_level>highest_perm_level:
-                highest_perm_level=perm_level
-        
-        # Checking to see if user's highest perm level >= the needed perm level to read/write
-
-        readable=False
-        writeable=False
-        if highest_perm_level>=minimum_reading_level:
-            readable=True
-        if highest_perm_level>=minimum_writing_level:
-            writeable=True
-
-        data = {"readable":readable, "writeable":writeable}
+        data = chat_perms_wrapper(user_token, server_id, chat_id)
         return Response(json.dumps({"type": "success", "data": data}), status=200)
     except Exception as e:
         return return_error(e)

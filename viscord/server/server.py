@@ -10,12 +10,13 @@ from multiprocessing import Process
 from api.flask_app import app
 
 # import so the modules are executed (defines endpoints for flask app)
-from api import login_flow, chats, friends, invites, members, messages, roles, servers, users
-from api import db
+from api import login_flow, chats, friends, invites, members, messages, roles, servers, users, voice_client
+from api import db, helpers
 
 from flask import request
 import requests
 
+import psycopg2
 from api import server_config as sc
 from uuid import uuid4
 
@@ -44,11 +45,36 @@ connections: Dict[str, socket.socket] = {}
 """ map of `{token -> socket obj}` for all connected sockets """
 
 def handle_message(data: dict):
+
+    connection = psycopg2.connect(db.conn_uri)
+    cursor = connection.cursor()
+
+
+    message_id = data["message_id"]
+    query = """select user_id, chat_id, server_id, replied_to_id, message_content, message_timestamp, pinged_user_ids from "Discord"."MessageInfo" where message_id = %s"""
+    cursor.execute(query, (message_id,))
+    try:
+        author, channel, server, replied_to, content, timestamp, pinged = cursor.fetchone()
+    except:
+        return
+    
+    new_data = {
+            "message_id": message_id,
+            "author": author,
+            "chat_id": channel,
+            "server_id": server,
+            "replied_to_id": replied_to,
+            "message_content": content,
+            "timestamp": str(timestamp),
+            "pinged_user_ids": pinged
+        }
+    
     payload = json.dumps({
-        "author": data["author"],
-        "content": data['content'],
+        "type": "message",
+        "data": new_data
     }).encode()
-    print(f"[handle message] content={data['content']} author={data['author']}")
+
+    print(f"[handle message] content={new_data['message_content']} author={new_data['author']}")
     print(f"^ sending to {len(connections)} sockets (incl. author)")
     
     marked_for_removal = [] # sockets that were found to be dc'ed
@@ -60,14 +86,32 @@ def handle_message(data: dict):
         # ^^^ crystaltine -> trigtbh: im still sending the message to the author just for consistency;
         # the author's client will wait for the server's confirmation that the message was indeed sent;
         # it shouldnt render on the authors side until the server confirms it was sent to all other clients asw
+
+
+        query1 = "select chat_id, server_id from \"Discord\".\"ChatInfo\" where chat_id = %s"
+
+        cursor.execute(query1, (new_data['chat_id'],))
         try:
-            connections[other].sendall(payload)
-        except:
-            print(f"\x1b[31mError sending to socket with token={other}, marking as removed...\x1b[0m")
-            marked_for_removal.append(other)
+            chat_id, server_id = cursor.fetchone()
+        except Exception as e:
+            print(e)
+            return
+        
+    
+        perms = api.messages.chat_perms_wrapper(author, server_id, chat_id, cursor=cursor)
+
+        if perms["readable"]:
+            try:
+                connections[other].sendall(payload)
+            except:
+                print(f"\x1b[31mError sending to socket with token={other}, marking as removed...\x1b[0m")
+                marked_for_removal.append(other)
+            else:
+                print(f"sent to {other}")
             
     for token in marked_for_removal:
         del connections[token]
+    print(f"connections is now {connections}")
 
 def handle_connection(conn: socket.socket, addr):
     print(f"\x1b[33mHandling connection {addr=}\x1b[0m")
@@ -75,28 +119,39 @@ def handle_connection(conn: socket.socket, addr):
     try:
         data = conn.recv(1024)
         token = data.decode()
-    except:
+    except Exception as e:
         print(f"\x1b[31mjust kidding ({addr} disconnected during init handshake)\x1b[0m")
+        print(str(e))
+        return
         
     print(f"\x1b[32msocket {addr=} {token=} completed init handshake (connected!)\x1b[0m")
     connections[token] = conn
 
+    print(f"connections is now {connections}")
     # receive loop
     while True:
         try:
-            data = conn.recv(1024)
+            data = conn.recv(4096)
         except:
             pass
         else:
             if not data:
                 print(f"\x1b[31msocket {token=} {addr=} disconnected\x1b[0m")
-                del connections[addr]
+                if token in connections: del connections[token]
+                print(f"connections is now {connections}")
                 return
 
             # data received - assume it's a sent message
 
             parsed = json.loads(data.decode())
+
+            if not helpers.validate_fields(parsed, {
+                "token": str,
+                "message_id": str
+            }):
+                return
             
+
             print(f"socket \x1b[33m{addr=} {token=}\x1b[0m received data (assuming it's a message): \x1b[33m{parsed}\x1b[0m")
             handle_message(parsed)
             

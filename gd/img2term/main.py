@@ -1,5 +1,4 @@
-from GD import GD
-import numpy
+from gd_constants import GDConstants
 from PIL import Image
 from img2term.utils import fcode_opt
 from typing import List, Tuple, Literal
@@ -65,19 +64,19 @@ def draw(
     final_chars = np.array(final_chars)
     
     # draw image at specified pos
-    abs_pos = pos.get_absolute(GD.term.width, GD.term.height)
+    abs_pos = pos.get_absolute(GDConstants.term.width, GDConstants.term.height)
     
-    true_top = abs_pos.top if abs_pos.top is not None else GD.term.height - abs_pos.bottom - len(final_chars)
-    true_left = abs_pos.left if abs_pos.left is not None else GD.term.width - abs_pos.right - len(final_chars[0])
+    true_top = abs_pos.top if abs_pos.top is not None else GDConstants.term.height - abs_pos.bottom - len(final_chars)
+    true_left = abs_pos.left if abs_pos.left is not None else GDConstants.term.width - abs_pos.right - len(final_chars[0])
     
     #Logger.log(f"[draw] (path={img_path}) Drawing image at {true_left}, {true_top}")
     #Logger.log(f"[^draw] abs_pos is {abs_pos}")
     
     for row in range(len(final_chars)):
         # dont draw if out of bounds
-        if not 0 <= true_top+row < GD.term.height: continue
-        if not true_left < GD.term.width or true_left+len(final_chars[row]) < 0: continue
-        print2(GD.term.move_xy(true_left, true_top+row) + ''.join(final_chars[row]))
+        if not 0 <= true_top+row < GDConstants.term.height: continue
+        if not true_left < GDConstants.term.width or true_left+len(final_chars[row]) < 0: continue
+        print2(GDConstants.term.move_xy(true_left, true_top+row) + ''.join(final_chars[row]))
 
 def draw_from_pixel_array(
     _pixels: np.ndarray | List[List[List[int]]],
@@ -111,13 +110,13 @@ def draw_from_pixel_array(
     final_chars = np.array(final_chars)
     
     # draw image at specified pos
-    abs_pos = pos.get_absolute(GD.term.width, GD.term.height)
+    abs_pos = pos.get_absolute(GDConstants.term.width, GDConstants.term.height)
     #Logger.log(f"Drawing image at {abs_pos.left}, {abs_pos.top}")
     for row in range(len(final_chars)):
         # dont draw if out of bounds
-        if not 0 <= abs_pos.top+row < GD.term.height: continue
-        if not abs_pos.left < GD.term.width or abs_pos.left+len(final_chars[row]) < 0: continue
-        print2(GD.term.move_xy(abs_pos.left, abs_pos.top+row) + ''.join(final_chars[row]))
+        if not 0 <= abs_pos.top+row < GDConstants.term.height: continue
+        if not abs_pos.left < GDConstants.term.width or abs_pos.left+len(final_chars[row]) < 0: continue
+        print2(GDConstants.term.move_xy(abs_pos.left, abs_pos.top+row) + ''.join(final_chars[row]))
 
 # demo i guess
 # draw("demo.png", pos=(0, 0), maxsize=(200, 100), overflow_behavior="crop")

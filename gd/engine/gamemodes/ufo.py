@@ -1,7 +1,7 @@
 from logger import Logger
 from time import time_ns
 from typing import TYPE_CHECKING
-from engine.constants import CONSTANTS
+from engine.constants import EngineConstants
 
 if TYPE_CHECKING:
     from engine.player import Player
@@ -19,7 +19,7 @@ def tick_ufo(player: "Player", timedelta: float) -> None:
     #Logger.log(f"^^^: collisions: {[(collision.obj.data['name'], collision.vert_coord, collision.vert_side) for collision in player.curr_collisions]}")
     
     # always move right no matter what
-    player.pos[0] += player.speed * CONSTANTS.BLOCKS_PER_SECOND * timedelta
+    player.pos[0] += player.speed * EngineConstants.BLOCKS_PER_SECOND * timedelta
     
     # GLIDE HANDLING BELOW (setting y-values)
     
@@ -43,7 +43,7 @@ def tick_ufo(player: "Player", timedelta: float) -> None:
     elif (player.gravity < 0 and any(collision.vert_side == "bottom" for collision in player.curr_collisions)):
         if player.yvel > 0: # only hit ground if we are going up
             # we have to subtract the player hitbox yrange to get the top of the player
-            player.pos[1] = min([collision.vert_coord for collision in player.curr_collisions if collision.vert_side == "bottom"])-CONSTANTS.PLAYER_HITBOX_Y
+            player.pos[1] = min([collision.vert_coord for collision in player.curr_collisions if collision.vert_side == "bottom"])-EngineConstants.PLAYER_HITBOX_Y
             player.yvel = 0
             
             #Logger.log(f"rev gravity: setting y-pos to {player.pos[1]:.2f} and in_air to False")
@@ -54,8 +54,8 @@ def tick_ufo(player: "Player", timedelta: float) -> None:
         #Logger.log(f"seems like we are in the air, in_air -> true after this.")
         player.in_air = True
         
-        if not player.yvel <= -CONSTANTS.TERMINAL_VEL: # if we are not at terminal velocity, apply gravity
-            player.yvel -= player.gravity * CONSTANTS.UFO_GRAVITY_MULTIPLIER * timedelta
+        if not player.yvel <= -EngineConstants.TERMINAL_VEL: # if we are not at terminal velocity, apply gravity
+            player.yvel -= player.gravity * EngineConstants.UFO_GRAVITY_MULTIPLIER * timedelta
         
         # note that we can still fall faster than terminal velocity 
         # from sources other than gravity, such as black orbs.
@@ -72,5 +72,5 @@ def tick_ufo(player: "Player", timedelta: float) -> None:
     player.pos[1] += player.yvel * timedelta
     
 def jump_ufo(player: "Player") -> None:
-    player.yvel = CONSTANTS.PLAYER_JUMP_STRENGTH * player.sign_of_gravity()
+    player.yvel = EngineConstants.PLAYER_JUMP_STRENGTH * player.sign_of_gravity()
     player.in_air = True

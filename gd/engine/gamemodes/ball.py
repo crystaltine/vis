@@ -1,7 +1,8 @@
 from logger import Logger
 from time import time_ns
 from typing import TYPE_CHECKING
-from engine.constants import CONSTANTS
+from engine.constants import EngineConstants
+from engine.gamemodes.catch_player import catch_player
 
 if TYPE_CHECKING:
     from engine.player import Player
@@ -10,8 +11,6 @@ def tick_ball(player: "Player", timedelta: float) -> None:
     """ 
     Physics tick for the player in the ball gamemode
     (jump = change gravity)
-    
-    (note, this is pretty much the exact same as cube, except gravity is a bit weaker)
     
     Now in its own separate function so gamemodes can be organized.
     This function should be called by a generalized 'tick' function inside
@@ -22,12 +21,12 @@ def tick_ball(player: "Player", timedelta: float) -> None:
     #Logger.log(f"^^^: collisions: {[(collision.obj.data['name'], collision.vert_coord, collision.vert_side) for collision in player.curr_collisions]}")
     
     # always move right no matter what
-    player.pos[0] += player.speed * CONSTANTS.BLOCKS_PER_SECOND * timedelta
+    player.pos[0] += player.speed * EngineConstants.BLOCKS_PER_SECOND * timedelta
     
     # GLIDE HANDLING BELOW (setting y-values)
     
     # if y < 0, then we just hit ground and should just set y=0, yvel=0, in_air=False
-    if player.pos[1] <= 0 and player.yvel <= 0: # if we are going up, we shouldnt hit the ground
+    if player.pos[1] <= 0 and player.yvel < 0: # if we are going up, we shouldnt hit the ground
         #Logger.log(f"Hit ground. setting y-pos to 0 and in_air to False")
         player.pos[1] = 0
         player.yvel = 0
@@ -46,7 +45,7 @@ def tick_ball(player: "Player", timedelta: float) -> None:
     elif (player.gravity < 0 and any(collision.vert_side == "bottom" for collision in player.curr_collisions)):
         if player.yvel > 0: # only hit ground if we are going up
             # we have to subtract the player hitbox yrange to get the top of the player
-            player.pos[1] = min([collision.vert_coord for collision in player.curr_collisions if collision.vert_side == "bottom"])-CONSTANTS.PLAYER_HITBOX_Y
+            player.pos[1] = min([collision.vert_coord for collision in player.curr_collisions if collision.vert_side == "bottom"])-EngineConstants.PLAYER_HITBOX_Y
             player.yvel = 0
             
             #Logger.log(f"rev gravity: setting y-pos to {player.pos[1]:.2f} and in_air to False")
@@ -57,8 +56,8 @@ def tick_ball(player: "Player", timedelta: float) -> None:
         #Logger.log(f"seems like we are in the air, in_air -> true after this.")
         player.in_air = True
         
-        if not player.yvel <= -CONSTANTS.TERMINAL_VEL: # if we are not at terminal velocity, apply gravity
-            player.yvel -= player.gravity * CONSTANTS.BALL_GRAVITY_MULTIPLIER * timedelta
+        if not player.yvel <= -EngineConstants.TERMINAL_VEL: # if we are not at terminal velocity, apply gravity
+            player.yvel -= player.gravity * EngineConstants.BALL_GRAVITY_MULTIPLIER * timedelta
         
         # note that we can still fall faster than terminal velocity 
         # from sources other than gravity, such as black orbs.
@@ -71,8 +70,12 @@ def tick_ball(player: "Player", timedelta: float) -> None:
     if not player.in_air:
         player.last_on_ground_time = time_ns()
     
-    #Logger.log(f"End of tick: updating pos[1] to {player.pos[1]:.4f} since yvel={player.yvel:.4f} and timedelta={timedelta:.4f}")
+    catch_player(player, timedelta)
     player.pos[1] += player.yvel * timedelta
     
 def jump_ball(player: "Player") -> None:
     player.change_gravity()
+    
+    # set the yvel to the starting velocity
+    player.yvel = EngineConstants.BALL_STARTING_VELOCITY * -player.sign_of_gravity()
+    

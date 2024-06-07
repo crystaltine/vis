@@ -1,6 +1,9 @@
 import json
 from flask import Response
 from .login_flow import tokens
+import requests
+from .server_config import URI 
+
 
 def validate_fields(data, name_type):
     for name, type_ in name_type.items():
@@ -43,7 +46,7 @@ def is_valid_token(token: str) -> bool:
     return token in tokens
 
 def get_user_id(token: str) -> str:
-    name, _id = tokens.get_id(token)
+    name, _id = tokens[token]
     return _id
 
 def forbidden():

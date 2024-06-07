@@ -161,7 +161,7 @@ def handle_server_creation() -> None:
         }
 
         # handle_chat_creation(user_id, server_id, "general", "text chat", "General chat for the server", 0, 0, 0, False)
-        return return_success()
+        return Response(json.dumps(data), status=200)
     except Exception as e:
         return return_error(e)
 
@@ -268,6 +268,47 @@ def handle_server_color_update() -> None:
         return return_success()
     except Exception as e:
         return return_error(e)
+    
+@app.route("/api/servers/server_info", methods=["POST"])
+def get_server_info() -> Response:
+    """
+    Get information about a server given the server's id.
+
+    Parameters:
+        server_id (str): The id of the server whose information is to be retrieved.
+
+    Returns:
+        Response: A response containing the server's name, icon, color, and creation timestamp.
+    """
+
+    if not validate_fields(request.json, {"server_id": str}):
+        return invalid_fields()
+    
+    server_id = request.json["server_id"]
+
+    send_query = '''
+        SELECT server__name, server_icon, color, server_creation_timestamp
+        FROM "Discord"."ServerInfo"
+        WHERE server_id = %s
+    '''
+
+    try:
+        cur.execute(send_query, (server_id,))
+        server_info = cur.fetchone()
+        if server_info is None:
+            return return_error("Server not found")
+        resp = {
+            "server_name": server_info[0],
+            "server_icon": server_info[1],
+            "color": server_info[2],
+            "server_creation_timestamp": str(server_info[3])
+        }
+        return Response(json.dumps({
+            "type": "success",
+            "data": resp
+        }, default=str), status=200)
+    except Exception as e:
+        return return_error(e)
 
 @app.route("/api/servers/update_icon", methods=["POST"])
 def handle_server_icon_update() -> None:
@@ -320,7 +361,50 @@ def handle_server_icon_update() -> None:
         return return_error(e)
 
 
+@app.route("/api/servers/get_chats", methods=["POST"])
+def get_server_chats() -> Response:
+    """
+    Get all chats for a server given the server's id.
 
+    Parameters:
+        server_id (str): The id of the server whose chats are to be retrieved.
+
+    Returns:
+        Response: A response containing the server's chats.
+    """
+
+    if not validate_fields(request.json, {"server_id": str}):
+        return invalid_fields()
+    
+    server_id = request.json["server_id"]
+
+    send_query = '''
+        SELECT chat_id, chat_name, chat_type, chat_topic, chat_order, read_perm_level, write_perm_level, is_dm
+        FROM "Discord"."ChatInfo"
+        WHERE server_id = %s
+    '''
+
+    try:
+        cur.execute(send_query, (server_id,))
+        chats = cur.fetchall()
+        resp = []
+        for chat in chats:
+            resp.append({
+                "chat_id": chat[0],
+                "chat_name": chat[1],
+                "chat_type": chat[2],
+                "chat_topic": chat[3],
+                "chat_order": chat[4],
+                "read_perm_level": chat[5],
+                "write_perm_level": chat[6],
+                "is_dm": chat[7]
+            })
+        return Response(json.dumps({
+            "type": "success",
+            "data": resp
+        }, default=str), status=200)
+    except Exception as e:
+        return return_error(e)
 
 
 

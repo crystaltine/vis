@@ -1,3 +1,10 @@
+
+__pycache__*
+.vscode
 *logs
 *__pycache__
 *tests
+**/latest.log
+gd/latest.log
+*.ipynb
+**/test.*
