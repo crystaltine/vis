@@ -27,8 +27,8 @@ class LevelEditor:
     EDIT_CURSOR_OUTLINE_COLOR = (180, 255, 150, 220)
     KEYBINDS = {
         "quit": ["q", "\x1b"], # q, esc
-        "rotate_object_clockwise": ["r"],
-        "rotate_object_counterclockwise": ["R"],
+        "rotate_clockwise": ["e"],
+        "rotate_counterclockwise": ["E"],
         "flip_object_horizontal": ["h"],
         "flip_object_vertical": ["v"],
         "delete_object": ["\x7f", "\x1b[3~"], # del, backspace
@@ -217,6 +217,7 @@ class LevelEditor:
             # draw cursor preview
             cursor_screen_pos = CameraConstants.get_screen_coordinates(self.camera_left, self.camera_bottom, self.camera_height, *self.cursor_position)
             cursor_texture = TextureManager.set_transparency(TextureManager.get_transformed_texture(self.level, self.selected_object), round(LevelEditor.BUILD_CURSOR_PREVIEW_OPACITY*255))
+            #cursor_texture = TextureManager.get_transformed_texture(self.level, self.selected_object)
             
             # convert top left to center
             cursor_screen_pos = (cursor_screen_pos[0] + CameraConstants.BLOCK_WIDTH // 2, cursor_screen_pos[1] + CameraConstants.BLOCK_HEIGHT // 2)
@@ -255,14 +256,6 @@ class LevelEditor:
                 self.running = False
             elif val in LevelEditor.KEYBINDS['save']:
                 self.save()
-            elif val in LevelEditor.KEYBINDS['rotate_object_clockwise']:
-                pass # TODO
-            elif val in LevelEditor.KEYBINDS['rotate_object_counterclockwise']:
-                pass # TODO
-            elif val in LevelEditor.KEYBINDS['flip_object_horizontal']:
-                pass # TODO
-            elif val in LevelEditor.KEYBINDS['flip_object_vertical']:
-                pass # TODO
             elif val in LevelEditor.KEYBINDS['delete_object']:
                 self.level.set_object_at(*self.cursor_position, None)    
                 self.rerender_needed = True 
@@ -280,7 +273,7 @@ class LevelEditor:
                 
             elif val in LevelEditor.KEYBINDS['toggle_mode']:
                 self.mode = 'build' if self.mode == 'edit' else 'edit'
-                Logger.log_on_screen(GDConstants.term, f">>> Toggled leveleditor mode to {self.mode}")
+                #Logger.log_on_screen(GDConstants.term, f">>> Toggled leveleditor mode to {self.mode}")
                 self.rerender_needed = True
             
             # moving - i know this type of definition is inefficient, but it allows for custom keybinding
@@ -323,39 +316,72 @@ class LevelEditor:
         def key_handler_build_mode(val: "Keystroke") -> None:
             """ Event handler for keypresses SPECIFIC TO build mode. """
             if val in LevelEditor.KEYBINDS["place_object"]:
-                Logger.log_on_screen(GDConstants.term, f"placing object {self.selected_object} @{self.cursor_position=}")
+                #Logger.log_on_screen(GDConstants.term, f"placing object {self.selected_object} @{self.cursor_position=}")
                 self.level.set_object_at(*self.cursor_position, self.selected_object)
+                self.rerender_needed = True
+            elif val in LevelEditor.KEYBINDS['rotate_clockwise']: # rotate curr object at cursor
+                self.selected_object.rotate('clockwise')
+                self.rerender_needed = True
+            elif val in LevelEditor.KEYBINDS['rotate_counterclockwise']:
+                self.selected_object.rotate('counterclockwise')
+                self.rerender_needed = True
+            elif val in LevelEditor.KEYBINDS['flip_object_horizontal']:
+                self.selected_object.reflect('horizontal')
+                self.rerender_needed = True
+            elif val in LevelEditor.KEYBINDS['flip_object_vertical']:
+                self.selected_object.reflect('vertical')
                 self.rerender_needed = True
             elif val.name in LevelEditor.KEYBINDS["cycle_object_forward"]:
                 curr_obj_type = self.selected_object.data.get("name")
                 next_obj_type = OBJECTS.get_next_object_name(curr_obj_type)
+                
+                num_color_channels = OBJECTS.get_num_color_channels(next_obj_type)
+                
                 self.selected_object = AbstractLevelObject({
                     "type": next_obj_type,
                     "rotation": CameraConstants.OBJECT_ROTATIONS.UP.value,
                     "reflection": CameraConstants.OBJECT_REFLECTIONS.NONE.value,
-                    "color1_channel": 1,
-                    "color2_channel": 2,
+                    "color1_channel": 1 if num_color_channels >= 1 else None,
+                    "color2_channel": 2 if num_color_channels >= 2 else None
                 })
                 self.render_main_editor()
             elif val.name in LevelEditor.KEYBINDS["cycle_object_backward"]:
                 curr_obj_type = self.selected_object.data.get("name")
                 prev_obj_type = OBJECTS.get_prev_object_name(curr_obj_type)
+                
+                num_color_channels = OBJECTS.get_num_color_channels(prev_obj_type)
+                
                 self.selected_object = AbstractLevelObject({
                     "type": prev_obj_type,
                     "rotation": CameraConstants.OBJECT_ROTATIONS.UP.value,
                     "reflection": CameraConstants.OBJECT_REFLECTIONS.NONE.value,
-                    "color1_channel": 1,
-                    "color2_channel": 2,
+                    "color1_channel": 1 if num_color_channels >= 1 else None,
+                    "color2_channel": 2 if num_color_channels >= 2 else None
                 })
                 self.render_main_editor()
         
         def key_handler_edit_mode(val: "Keystroke") -> None:
             """ Event handler for keypresses SPECIFIC TO edit mode. """
+            
+            hovered_obj = self.level.get_object_at(*self.cursor_position)
+            if hovered_obj is None: return # no object to edit = edit mode will do nothing.
+            
             if val in LevelEditor.KEYBINDS["edit_object"]:
-                hovered_obj = self.level.get_object_at(*self.cursor_position)
                 if hovered_obj is not None:
                     self.focused_popup = EditObjectPopup(self.curr_main_frame.copy(), hovered_obj, self.level)
                     self.focused_popup.render()
+            elif val in LevelEditor.KEYBINDS['rotate_clockwise']: # rotate curr object at cursor
+                hovered_obj.rotate('clockwise')
+                self.rerender_needed = True
+            elif val in LevelEditor.KEYBINDS['rotate_counterclockwise']:
+                hovered_obj.rotate('counterclockwise')
+                self.rerender_needed = True
+            elif val in LevelEditor.KEYBINDS['flip_object_horizontal']:
+                hovered_obj.reflect('horizontal')
+                self.rerender_needed = True
+            elif val in LevelEditor.KEYBINDS['flip_object_vertical']:
+                hovered_obj.reflect('vertical')
+                self.rerender_needed = True
         
         self.running = True
         while self.running:
@@ -382,7 +408,7 @@ class LevelEditor:
                             Logger.log(f"[LevelEditor/key handler (IN POPUP)]: {traceback.format_exc()}")
                             print(f"[LevelEditor/key handler (IN POPUP)] ERROR: {traceback.format_exc()}")
                             self.running = False
-                else: continue
+                else: continue                
                 
                 if self.rerender_needed and self.focused_popup is None: # rerender if stuff changed
                     self.render_main_editor()

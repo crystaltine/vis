@@ -2,6 +2,7 @@ from logger import Logger
 from time import time_ns
 from typing import TYPE_CHECKING
 from engine.constants import EngineConstants
+from engine.gamemodes.catch_player import catch_player
 
 if TYPE_CHECKING:
     from engine.player import Player
@@ -69,7 +70,11 @@ def tick_ball(player: "Player", timedelta: float) -> None:
     if not player.in_air:
         player.last_on_ground_time = time_ns()
     
-    #Logger.log(f"End of tick: updating pos[1] to {player.pos[1]:.4f} since yvel={player.yvel:.4f} and timedelta={timedelta:.4f}")
+    special_yvel_case = catch_player(player, player.pos[1] + player.yvel * timedelta)
+    
+    #if not special_yvel_case:
+    #    player.pos[1] += player.yvel * timedelta
+        
     player.pos[1] += player.yvel * timedelta
     
 def jump_ball(player: "Player") -> None:

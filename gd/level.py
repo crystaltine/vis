@@ -67,6 +67,8 @@ LEVEL_TYPES: Dict[str, LevelMetadata] = {
     "online": OnlineLevelMetadata
 }
 
+
+
 class LevelParseError(Exception):
     pass
 
@@ -177,6 +179,7 @@ class Level:
         
         if x < 0 or y < 0:
             return None
+        
         if row_index_in_list >= len(self.leveldata) or x >= len(self.leveldata[row_index_in_list]):
             return None
         
@@ -338,6 +341,25 @@ class LevelObject:
         
         return new
     
+    def rotate(self, direction: Literal["clockwise", "counterclockwise"]) -> None:
+        """ Rotates the object 90 degrees clockwise or counterclockwise. """
+        # note: can clean this up if we use number-based rotation instead of strings
+        if direction == "clockwise":
+            self.rotation = CameraConstants.ROTATIONS_CLOCKWISE[self.rotation]
+        elif direction == "counterclockwise":
+            self.rotation = CameraConstants.ROTATIONS_COUNTERCLOCKWISE[self.rotation]
+            
+    def reflect(self, direction: Literal["horizontal", "vertical", "both"]) -> None:
+        """ Reflects the object across a certain axis. """
+        
+        match direction:
+            case "horizontal":
+                self.reflection = CameraConstants.REFLECTIONS_HORIZONTAL[self.reflection]
+            case "vertical":
+                self.reflection = CameraConstants.REFLECTIONS_VERTICAL[self.reflection]
+            case "both":
+                self.reflection = CameraConstants.REFLECTIONS_BOTH[self.reflection]
+    
     def to_json(self) -> dict:
         """ 
         Converts this levelobject to a dict (json-like). Loses information about position, but
@@ -399,3 +421,22 @@ class AbstractLevelObject: # not inheriting since all functions are different lo
 
     def __str__(self) -> str:
         return f"AbstractLevelObject(type={self.type})"
+    
+    def rotate(self, direction: Literal["clockwise", "counterclockwise"]) -> None:
+        """ Rotates the object 90 degrees clockwise or counterclockwise. """
+        # note: can clean this up if we use number-based rotation instead of strings
+        if direction == "clockwise":
+            self.rotation = CameraConstants.ROTATIONS_CLOCKWISE[self.rotation]
+        elif direction == "counterclockwise":
+            self.rotation = CameraConstants.ROTATIONS_COUNTERCLOCKWISE[self.rotation]
+            
+    def reflect(self, direction: Literal["horizontal", "vertical", "both"]) -> None:
+        """ Reflects the object across a certain axis. """
+        
+        match direction:
+            case "horizontal":
+                self.reflection = CameraConstants.REFLECTIONS_HORIZONTAL[self.reflection]
+            case "vertical":
+                self.reflection = CameraConstants.REFLECTIONS_VERTICAL[self.reflection]
+            case "both":
+                self.reflection = CameraConstants.REFLECTIONS_BOTH[self.reflection]

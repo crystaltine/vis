@@ -3,7 +3,6 @@ from math import floor, ceil
 
 from engine.constants import EngineConstants
 from engine.collision import Collision
-from engine.player import Player
 from level import LevelObject
 from logger import Logger
 
@@ -141,7 +140,7 @@ class CollisionHandler:
         effect: str = collision.obj.data["collide_effect"]
         
         if effect == "gravity-normal":
-                self.game.player.normal_gravity()
+            self.game.player.normal_gravity()
         elif effect == "gravity-reverse":
             self.game.player.reverse_gravity()
             

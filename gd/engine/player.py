@@ -57,7 +57,7 @@ class Player:
         self.jump_requested = False
         """ variable to store when the player jumps before the next physics tick. """
 
-        self.last_on_ground_time = None
+        self.last_on_ground_time = 0
         """ Stores the latest time when self.in_air was set to False. Used for calculating cube rotation as we are falling. """
         self.in_air = False
         """ If the player is currently jumping. can't double jump. Jump status is reset to false when the player hits a glidable hitbox. """
@@ -197,6 +197,7 @@ class Player:
         
     def reverse_gravity(self):
         """ Sets the gravity to reverse. """
+        Logger.log(f"reversing grav")
         self.gravity = -EngineConstants.GRAVITY
         
     def change_gravity(self):

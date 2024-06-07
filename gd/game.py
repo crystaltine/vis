@@ -17,6 +17,7 @@ from bottom_menu import draw_text
 from level import Level
 from keyboard.keyboard_listener import KeyboardListener
 from keyboard.key_event import KeyEvent
+from audio import AudioHandler
 
 class Game:
     """
@@ -38,6 +39,8 @@ class Game:
         
         self.activated_objects = []
         """ Stores which objects had their activated properties set to true, so we can reset them on crash. """
+
+        self.audio_handler = AudioHandler(level.metadata.get("song_filepath"), level.metadata.get("song_start_time"))
 
         # wayyy too many of these variables, don't need them all - will come back later and clean this up
         self.paused = False

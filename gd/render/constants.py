@@ -41,6 +41,38 @@ class CameraConstants:
         VERTICAL = "vertical"
         BOTH = "both"
         
+    ROTATIONS_CLOCKWISE = {
+        "up": "right",
+        "right": "down",
+        "down": "left",
+        "left": "up"
+    }
+    ROTATIONS_COUNTERCLOCKWISE = {
+        "up": "left",
+        "right": "up",
+        "down": "right",
+        "left": "down"
+    }
+
+    REFLECTIONS_HORIZONTAL = {
+        "none": "horizontal",
+        "horizontal": "none",
+        "vertical": "both",
+        "both": "vertical"
+    }
+    REFLECTIONS_VERTICAL = {
+        "none": "vertical",
+        "horizontal": "both",
+        "vertical": "none",
+        "both": "horizontal"
+    }
+    REFLECTIONS_BOTH = {
+        "none": "both",
+        "horizontal": "vertical",
+        "vertical": "horizontal",
+        "both": "none"
+    }
+        
     RGBTuple = Tuple[int, int, int]
     RGBATuple = Tuple[int, int, int, int]
 

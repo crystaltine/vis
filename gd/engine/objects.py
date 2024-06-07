@@ -132,7 +132,7 @@ class OBJECTS:
     Contains definitions for all objects in the game. """
     
     for blocktype in range(3):
-        for i in range(12):
+        for i in range(GDConstants.NUM_BLOCK_TEXTURES):
             locals()["MASTERLIST"][f"block{blocktype}_{i}"] = {
                 "name": f"block{blocktype}_{i}",
                 "hitbox_xrange": [0, 1],
@@ -144,11 +144,33 @@ class OBJECTS:
                 "color_channels": 2,
             }
         
-    for i in range(10): # TODO - some spikes have smaller hitboxes
-        locals()["MASTERLIST"][f"spike{i}"] = {
+    for i in range(GDConstants.NUM_SPIKE_TALL_TEXTURES):
+        locals()["MASTERLIST"][f"spike_tall{i}"] = {
             "name": f"spike{i}",
             "hitbox_xrange": [0.25, 0.75],
-            "hitbox_yrange": [0.1, 0.9],
+            "hitbox_yrange": [0.1, 0.7],
+            "hitbox_type": "any-touch", # activate on any hitbox touch.
+            "collide_effect": "crash-obstacle",
+            "requires_click": False, # if player needs to click to activate
+            "multi_activate": False,
+            "color_channels": 2,
+        }
+    for i in range(GDConstants.NUM_SPIKE_SHORT_TEXTURES):
+        locals()["MASTERLIST"][f"spike_short{i}"] = {
+            "name": f"spike{i}",
+            "hitbox_xrange": [0.25, 0.75],
+            "hitbox_yrange": [0.1, 0.35],
+            "hitbox_type": "any-touch", # activate on any hitbox touch.
+            "collide_effect": "crash-obstacle",
+            "requires_click": False, # if player needs to click to activate
+            "multi_activate": False,
+            "color_channels": 2,
+        }
+    for i in range(GDConstants.NUM_SPIKE_FLAT_TEXTURES):
+        locals()["MASTERLIST"][f"spike_flat{i}"] = {
+            "name": f"spike{i}",
+            "hitbox_xrange": [0.25, 0.75],
+            "hitbox_yrange": [0.1, 0.25],
             "hitbox_type": "any-touch", # activate on any hitbox touch.
             "collide_effect": "crash-obstacle",
             "requires_click": False, # if player needs to click to activate
@@ -164,6 +186,7 @@ class OBJECTS:
             "hitbox_type": "any-touch", # phase through,
             "collide_effect": f"gravity-{gravity.value}",
             "requires_click": False, # if player needs to click to activate
+            "multi_activate": False,
             "color_channels": 0,
         }
     
@@ -214,3 +237,7 @@ class OBJECTS:
         """ Get the ObjectData dict of the object with the given key (name), or None if not found. """
         #Logger.log(f"[OBJECTS/get]: getting key={key} from MASTERLIST, which has size={len(OBJECTS.MASTERLIST)}")
         return OBJECTS.MASTERLIST.get(key, None)
+    
+    def get_num_color_channels(key: str) -> int:
+        """ Get the number of color channels of the object with the given key (name). """
+        return OBJECTS.get(key)["color_channels"]

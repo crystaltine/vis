@@ -7,6 +7,11 @@ class GDConstants:
     
     term = Terminal()
     
+    NUM_BLOCK_TEXTURES = 13
+    NUM_SPIKE_TALL_TEXTURES = 3
+    NUM_SPIKE_SHORT_TEXTURES = 5
+    NUM_SPIKE_FLAT_TEXTURES = 2
+    
     class difficulties(Enum):
         na = "na"
         auto = "auto"

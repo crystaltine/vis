@@ -7,9 +7,9 @@ from logger import Logger
 from render.utils import mix_colors_opt as mco
 from render.font import Font
 from render.constants import CameraConstants
+from level import Level, LevelObject, AbstractLevelObject
 
 if TYPE_CHECKING:
-    from level import Level, LevelObject, AbstractLevelObject
     from engine.player import Player
 
 ROTATION_VALUES = {
@@ -217,8 +217,17 @@ class TextureManager:
         return colorized
     
     def set_transparency(pixels: np.ndarray, alpha: int) -> np.ndarray:
-        """ Sets the alpha channel of a texture to a specific value. `alpha` should be from 0 to 255 inclusive. """
-        pixels[:, :, 3] = alpha
+        """ Sets the alpha channel of a texture to a specific value. `alpha` should be from 0 to 255 inclusive.
+        Mixes alpha values if image is already transparent.
+        """
+        
+        # if pixels doesn't have an alpha channel, add one
+        if pixels.shape[2] == 3:
+            pixels = np.concatenate((pixels, np.full((pixels.shape[0], pixels.shape[1], 1), 255, dtype=np.uint8)), axis=2)
+            return
+        
+        orig_alpha = pixels[:, :, 3]
+        pixels[:, :, 3] = alpha * (orig_alpha / 255)
         #Logger.log_on_screen(GDConstants.term, f"[TextureManager/set_transparency] Set a={alpha}.")
         return pixels
     
@@ -249,6 +258,9 @@ class TextureManager:
         # else, construct texture, save to cache, and return it
         # get base texture
         base_texture = TextureManager.get_base_texture(object)
+        
+        #if isinstance(object, AbstractLevelObject):
+        #    return base_texture.copy()
         
         # apply all the stuff
         transformed_texture = TextureManager.reflect_texture(base_texture, object.reflection)
@@ -319,12 +331,18 @@ TextureManager.base_textures.update({
 
 # blocks
 TextureManager.base_textures.update({
-    f"block{j}_{i}": TextureManager.compile_texture(f"./assets/objects/block/block{j}/{i}.png") for i in range(12) for j in range(3)
+    f"block{j}_{i}": TextureManager.compile_texture(f"./assets/objects/block/block{j}/{i}.png") for i in range(GDConstants.NUM_BLOCK_TEXTURES) for j in range(3)
 })
 
 # spikes
 TextureManager.base_textures.update({
-    f"spike{i}": TextureManager.compile_texture(f"./assets/objects/obstacle/spikes/spike{i}.png") for i in range(10)
+    f"spike_tall{i}": TextureManager.compile_texture(f"./assets/objects/obstacle/spike_tall/spike_tall{i}.png") for i in range(GDConstants.NUM_SPIKE_TALL_TEXTURES)
+})
+TextureManager.base_textures.update({
+    f"spike_short{i}": TextureManager.compile_texture(f"./assets/objects/obstacle/spike_short/spike_short{i}.png") for i in range(GDConstants.NUM_SPIKE_SHORT_TEXTURES)
+})
+TextureManager.base_textures.update({
+    f"spike_flat{i}": TextureManager.compile_texture(f"./assets/objects/obstacle/spike_flat/spike_flat{i}.png") for i in range(GDConstants.NUM_SPIKE_FLAT_TEXTURES)
 })
 
 # load player icons
