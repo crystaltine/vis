@@ -5,6 +5,13 @@ from logger import Logger
 if TYPE_CHECKING:
     from level import ObjectData
 
+from typing import Any, TYPE_CHECKING
+from gd_constants import GDConstants
+from logger import Logger
+
+if TYPE_CHECKING:
+    from level import ObjectData
+
 class OBJECTS:
     """
     Class which stores backend object data for all objects in the game.
@@ -146,7 +153,7 @@ class OBJECTS:
         
     for i in range(GDConstants.NUM_SPIKE_TALL_TEXTURES):
         locals()["MASTERLIST"][f"spike_tall{i}"] = {
-            "name": f"spike{i}",
+            "name": f"spike_tall{i}",
             "hitbox_xrange": [0.25, 0.75],
             "hitbox_yrange": [0.1, 0.7],
             "hitbox_type": "any-touch", # activate on any hitbox touch.
@@ -157,7 +164,7 @@ class OBJECTS:
         }
     for i in range(GDConstants.NUM_SPIKE_SHORT_TEXTURES):
         locals()["MASTERLIST"][f"spike_short{i}"] = {
-            "name": f"spike{i}",
+            "name": f"spike_short{i}",
             "hitbox_xrange": [0.25, 0.75],
             "hitbox_yrange": [0.1, 0.35],
             "hitbox_type": "any-touch", # activate on any hitbox touch.
@@ -168,7 +175,7 @@ class OBJECTS:
         }
     for i in range(GDConstants.NUM_SPIKE_FLAT_TEXTURES):
         locals()["MASTERLIST"][f"spike_flat{i}"] = {
-            "name": f"spike{i}",
+            "name": f"spike_flat{i}",
             "hitbox_xrange": [0.25, 0.75],
             "hitbox_yrange": [0.1, 0.25],
             "hitbox_type": "any-touch", # activate on any hitbox touch.

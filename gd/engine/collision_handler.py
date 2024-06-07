@@ -179,7 +179,7 @@ class CollisionHandler:
             gamemode = effect[6:]
             self.game.player.change_speed(gamemode)
 
-    def highest_solid_object_beneath_player(self) -> "LevelObject | None":
+    def highest_solid_object_beneath_player(self, timedelta: float) -> "LevelObject | None":
         """
         Returns the highest solid object beneath the player (y value is less).
         
@@ -208,16 +208,19 @@ class CollisionHandler:
         # check ceil(player yvel) blocks below/above the player
         # ^ this is so we dont check a huge number of blocks - we are assuming the game is running faster than 1fps lol
         
-        num_rows_to_check = ceil(abs(self.game.player.yvel))
+        num_rows_to_check = ceil(abs(self.game.player.yvel) * timedelta)
+        
+        Logger.log(f"highest solid obj: player pos is {self.game.player.pos[0]:2f},{self.game.player.pos[1]:2f}, left->right is {left}->{right}, top is {top}, num_rows_to_check is {num_rows_to_check}.")
         
         for x in range(left, right+1):
-            for y in range(top, max(0, top-num_rows_to_check-1), -1):
+            for y in range(top, max(-1, top-num_rows_to_check-1), -1):
                 if (obj := self.game.level.get_object_at(x, y)) is not None:
-                    return obj # return first object we find (since it is leftmost and highest)
+                    if obj.data.get("hitbox_type") == "solid":
+                        return obj # return first SOLID object we find (since it is leftmost and highest)
         
         return None
     
-    def lowest_solid_object_above_player(self) -> "LevelObject | None":
+    def lowest_solid_object_above_player(self, timedelta: float) -> "LevelObject | None":
         """
         Returns the lowest solid object above the player (y value is more than player-top).
         
@@ -247,12 +250,13 @@ class CollisionHandler:
         # check ceil(player yvel) blocks below/above the player
         # ^ this is so we dont check a huge number of blocks - we are assuming the game is running faster than 1fps lol
         
-        num_rows_to_check = ceil(abs(self.game.player.yvel))
+        num_rows_to_check = ceil(abs(self.game.player.yvel) * timedelta)
         
         for x in range(left, right+1):
             for y in range(bottom, bottom+num_rows_to_check+1):
                 if (obj := self.game.level.get_object_at(x, y)) is not None:
-                    return obj # return first object we find (since it is leftmost and highest)
+                    if obj.data.get("hitbox_type") == "solid":
+                        return obj # return first SOLID object we find 
         
         return None
     

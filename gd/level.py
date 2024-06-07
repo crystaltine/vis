@@ -155,7 +155,7 @@ class Level:
     
     def write_to_file(self, filepath: str) -> None:
         """ Writes the level in JSON format to a specified filepath, overwriting if the path already exists. """
-        
+
         # convert self.leveldata into List[List[dict]] so it can be written back to a json file
         jsonized_leveldata = [[obj.to_json() if obj else None for obj in row] for row in self.leveldata]
         
@@ -220,7 +220,7 @@ class Level:
         row_index_in_list = self.height - y - 1
         new_obj = LevelObject.copy_from(obj, x, y) if obj is not None else None
         self.leveldata[row_index_in_list][x] = new_obj
-    
+        
     def get_row(self, y: int, start: int = 0, end: int = None) -> List["LevelObject"]:
         """ Return a list of LevelObjects in a specific row, based on y-coordinate (remember, 0 is bottom row)
         Optionally can specify a start and end index to slice the row. If end is None, will go till the end of the row. """

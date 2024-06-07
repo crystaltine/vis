@@ -344,7 +344,7 @@ class LevelEditor:
                     "color1_channel": 1 if num_color_channels >= 1 else None,
                     "color2_channel": 2 if num_color_channels >= 2 else None
                 })
-                self.render_main_editor()
+                self.rerender_needed = True
             elif val.name in LevelEditor.KEYBINDS["cycle_object_backward"]:
                 curr_obj_type = self.selected_object.data.get("name")
                 prev_obj_type = OBJECTS.get_prev_object_name(curr_obj_type)
@@ -358,7 +358,7 @@ class LevelEditor:
                     "color1_channel": 1 if num_color_channels >= 1 else None,
                     "color2_channel": 2 if num_color_channels >= 2 else None
                 })
-                self.render_main_editor()
+                self.rerender_needed = True
         
         def key_handler_edit_mode(val: "Keystroke") -> None:
             """ Event handler for keypresses SPECIFIC TO edit mode. """

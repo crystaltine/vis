@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 from logger import Logger
 from engine.constants import EngineConstants
-from engine.collision_handler import CollisionHandler
 from engine.gamemodes.catch_player import catch_player
 
 if TYPE_CHECKING:
@@ -28,11 +27,14 @@ def tick_cube(player: "Player", timedelta: float) -> None:
     # GLIDE HANDLING BELOW (setting y-values)
     
     # if y < 0, then we just hit ground and should just set y=0, yvel=0, in_air=False
-    if player.pos[1] <= 0 and player.yvel < 0: # if we are going up, we shouldnt hit the ground
-        #Logger.log(f"Hit ground. setting y-pos to 0 and in_air to False")
-        player.pos[1] = 0
-        player.yvel = 0
-        player.in_air = False            
+    if player.pos[1] <= 0:
+        if player.gravity > 0: # falling into ground
+            #Logger.log(f"Hit ground. setting y-pos to 0 and in_air to False")
+            player.pos[1] = 0
+            player.yvel = 0
+            player.in_air = False          
+        elif player.gravity < 0: # neg gravity, jumping into ceiling = die
+            player.game.crash_normal()
     
     # if gravity is + (down) and we have a "top" collision, adjust the y position to be on top of the block
     elif (player.gravity > 0 and any(collision.vert_side == "top" for collision in player.curr_collisions)):
@@ -75,11 +77,10 @@ def tick_cube(player: "Player", timedelta: float) -> None:
         player.last_on_ground_time = time_ns()
     
     Logger.log(f"[BEFORE CATCH] player ypos={player.pos[1]}, yvel = {player.yvel} grav={player.gravity}")
-    special_yvel_case = catch_player(player, player.pos[1] + player.yvel * timedelta)
+    special_yvel_case = catch_player(player, timedelta)
     Logger.log(f"[AFTER CATCH] player ypos={player.pos[1]}, yvel = {player.yvel} grav={player.gravity}")
     #if not special_yvel_case:
     player.pos[1] += player.yvel * timedelta
-    Logger.log(f"[after ypos update: ]")
     
 def jump_cube(player: "Player") -> None:
     player.yvel = EngineConstants.PLAYER_JUMP_STRENGTH * player.sign_of_gravity()

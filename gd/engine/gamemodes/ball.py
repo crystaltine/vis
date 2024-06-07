@@ -70,11 +70,7 @@ def tick_ball(player: "Player", timedelta: float) -> None:
     if not player.in_air:
         player.last_on_ground_time = time_ns()
     
-    special_yvel_case = catch_player(player, player.pos[1] + player.yvel * timedelta)
-    
-    #if not special_yvel_case:
-    #    player.pos[1] += player.yvel * timedelta
-        
+    catch_player(player, timedelta)
     player.pos[1] += player.yvel * timedelta
     
 def jump_ball(player: "Player") -> None:

@@ -4,6 +4,7 @@ from copy import deepcopy
 
 from logger import Logger
 from gd_constants import GDConstants
+from gd_constants import GDConstants
 from engine.constants import EngineConstants, SPEEDS
 from engine.collision import Collision
 from engine.gamemodes.cube import tick_cube, jump_cube
@@ -12,7 +13,7 @@ from engine.gamemodes.ufo import tick_ufo, jump_ufo
 from engine.gamemodes.wave import tick_wave
 
 if TYPE_CHECKING:
-    from engine.collision_handler import CollisionHandler
+    from game import Game
 
 class Player:
     """
@@ -26,7 +27,7 @@ class Player:
         "wave": tick_wave
     }
 
-    def __init__(self, collision_handler: "CollisionHandler", start_settings: dict = {}):
+    def __init__(self, game: "Game", start_settings: dict = {}):
         """
         (OPTIONAL) `start_settings` format (mainly used for startpos):
         ```python
@@ -62,7 +63,7 @@ class Player:
         self.in_air = False
         """ If the player is currently jumping. can't double jump. Jump status is reset to false when the player hits a glidable hitbox. """
 
-        self.collision_handler = collision_handler
+        self.game = game
         self.curr_collisions: List[Collision] = []
         """ Maintains a list of objects the player is currently touching. Gets updated on every collision check (physics tick)"""
 
@@ -71,7 +72,6 @@ class Player:
         General physics tick for the player. Calls the appropriate tick function based on the current gamemode.
         """
         
-        # TODO - make code better by keeping a list and using getattr?
         tickfunc = Player.tick_funcs.get(self.gamemode)
         
         if tickfunc is None:
@@ -106,6 +106,7 @@ class Player:
         #    #Logger.log(f"XXXXXXXX player tried to jump but cant. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}")
         #    return
         
+        #Logger.log(f"XXXXXXXX player jumped. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}, walking_on={self._walking_on:.2f}, names of colliding objs: {[collision.obj.data['name'] for collision in self.curr_collisions]}")        
         #Logger.log(f"XXXXXXXX player jumped. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}, walking_on={self._walking_on:.2f}, names of colliding objs: {[collision.obj.data['name'] for collision in self.curr_collisions]}")        
         self.jump_requested = True
     
@@ -152,36 +153,12 @@ class Player:
                 seconds_since_last_on_ground = (time_ns() - self.last_on_ground_time) / 1e9
                 return int(seconds_since_last_on_ground / 0.1) % 4
     
-            case "ball":
-                return int(time_ns() / 1e8) % 2
-            
-            case "ufo":
-                return 0
-            
-            case "wave":
-                return (
-                    0 if self.yvel < 0 else 
-                    1 if self.yvel > 0
-                    else 2
-                )
-                
-    def get_hitbox_size(self) -> Tuple[int, int]:
-        """Return the (x,y) hitbox size of the player. functionized
-        because hitbox size changes across gamemodes. """
-        return (
-            (EngineConstants.PLAYER_HITBOX_X, EngineConstants.PLAYER_HITBOX_Y) if not self.gamemode == 'wave'
-            else (EngineConstants.PLAYER_WAVE_HITBOX_X, EngineConstants.PLAYER_WAVE_HITBOX_Y)
-        ) 
-    
     def set_yvel_magnitude(self, strength: float):
         """
-        Activates a jump orb. Sets whatever velocity, and sets in_air to true.
-        However,this function still has effects when in in_air, unlike regular jumping.
+        Sets the y velocity to a certain strength, changing direction based on gravity.
+        Acts regardless of any other stuff, just straight up sets self.yvel.
         
         (this is because the player can activate orbs while in mid-air, but can't jump normally)
-        
-        For yellow orbs, should be ~player jump strength. For purple orbs, should be maybe 0.3*player jump strength?
-        For black orbs, should be smth like -4*player jump strength.
         """
         
         self.yvel = strength * self.sign_of_gravity()
@@ -196,25 +173,21 @@ class Player:
         self.gravity = EngineConstants.GRAVITY
         
     def reverse_gravity(self):
-        """ Sets the gravity to reverse. """
-        Logger.log(f"reversing grav")
+        """
+        Sets the gravity to reverse.
+        """
         self.gravity = -EngineConstants.GRAVITY
         
     def change_gravity(self):
         """ Flips the gravity to the negative of what it currently is. """
         self.gravity *= -1
-        Logger.log(f"gravity changed to {self.gravity}")
         
-    def change_gamemode(self, new_gamemode: GDConstants.gamemodes) -> None:
-        """ Handles changing gamemode and any related logic """
-        self.gamemode = new_gamemode
-        
-        if new_gamemode == 'wave':
-            # wave hitbox is smaller, but to maintain center, move player pos up&right
-            self.pos[0] += (1 - EngineConstants.PLAYER_WAVE_HITBOX_X) / 2
-            self.pos[1] += (1 - EngineConstants.PLAYER_WAVE_HITBOX_Y) / 2
-        
-    def change_speed(self, new_speed: GDConstants.speeds) -> None:
-        """ Handles changing speeds and any related logic """
-        self.speed = SPEEDS.decode(new_speed)
-        
+    def get_hitbox_size(self) -> Tuple[float, float]:
+        """
+        Returns the hitbox size of the player, as a tuple (x, y).
+        """
+        match self.gamemode:
+            case "wave":
+                return EngineConstants.PLAYER_WAVE_HITBOX_X, EngineConstants.PLAYER_WAVE_HITBOX_Y
+            case _:
+                return EngineConstants.PLAYER_HITBOX_X, EngineConstants.PLAYER_HITBOX_Y
