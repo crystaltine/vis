@@ -11,3 +11,4 @@ def connect_to_db():
     return cur
 
 cur = connect_to_db()
+

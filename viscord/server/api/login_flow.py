@@ -17,26 +17,21 @@ if not key:
 else:
     key = key.encode()
 
-class TokenCache:
-    def __init__(self):
-        self.tokens = {}
+base_path = os.path.basename(os.path.basename(os.path.realpath(__file__)))
 
-    def __contains__(self, token):
-        return token in self.tokens
-    
-    def get_id(self, token):
-        return self.tokens[token]
-    
-    def add_token(self, token, name, _id):
-        self.tokens[token] = (name, _id)
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
 
-tokens = TokenCache()
 
-from .helpers import *
+tokens = {}
+
 
 @app.route("/api/login", methods=["POST"])
 def handle_login():
-
     if not validate_fields(request.json, {"user": str, "password": str, "sys_uuid": str}): 
         return invalid_fields()
 
@@ -51,7 +46,7 @@ def handle_login():
         records = cur.fetchall()
         if len(records) > 0:
             token = str(uuid4())
-            tokens.add_token(token, user, records[0][0])
+            tokens[token] = (user, records[0][0])
             f = Fernet(key + str(sys_uuid).encode())
             cache = f.encrypt(token.encode("utf-8")).decode("utf-8")
 
@@ -77,7 +72,7 @@ def handle_token_bypass():
         f = Fernet(key + str(sys_uuid).encode())
         token = f.decrypt(cache.encode("utf-8")).decode("utf-8")
 
-        name, _id = tokens.get_id(token)
+        name, _id = tokens[token]
         query = """select user_id, user_name from "Discord"."UserInfo" where user_name = %s"""
         cur.execute(query, (name,))
         records = cur.fetchall()
@@ -87,3 +82,7 @@ def handle_token_bypass():
         return Response(json.dumps(d), status=200)
     except Exception as e:
         return Response(json.dumps({"type": "error", "message": str(e)}), status=500)
+    
+
+
+from .helpers import *

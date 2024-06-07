@@ -1,7 +1,15 @@
-from engine.constants import CONSTANTS, SPEEDS
-from logger import Logger
 from typing import List
+from time import time_ns
+from copy import deepcopy
+
+from logger import Logger
+from gd_constants import GDConstants
+from engine.constants import EngineConstants, SPEEDS
 from engine.collision import Collision
+from engine.gamemodes.cube import tick_cube, jump_cube
+from engine.gamemodes.ball import tick_ball, jump_ball
+from engine.gamemodes.ufo import tick_ufo, jump_ufo
+from engine.gamemodes.wave import tick_wave
 
 class Player:
     """
@@ -13,26 +21,35 @@ class Player:
         (OPTIONAL) `start_settings` format (mainly used for startpos):
         ```python
         {
-            pos: [int, int], # [x, y] to start at, default [0, 0]
-            speed: "slow", "normal", ... "quadruple" # see constants.SPEEDS
-            gravity: int # set a starting gravity. CONSTANTS.gravity for default, negative that for reverse
+            pos: [int, int], # [x, y] to start at, default [-10, 0]
+            speed: "half", "normal", ... "quadruple" # see constants.SPEEDS
+            gravity: int # set a starting gravity. EngineConstants.gravity for default, negative that for reverse
         }
         ```
 
         If a setting isn't provided, default values are used,
         which will spawn a cube at [0,0] with regular speed and gravity.
         """
-        self.speed = SPEEDS.decode(start_settings.get("speed")) or SPEEDS.normal
-        self.pos = start_settings.get("pos") or [10, 0]
-        """ [x, y], where x is horiz (progress). BOTTOM LEFT of player. """
+        self.START_SETTINGS = start_settings
+        
+        self.speed: GDConstants.speeds = SPEEDS.decode(start_settings.get("speed")) or SPEEDS.normal
+        
+        self.gamemode: GDConstants.gamemodes = start_settings.get("gamemode") or "cube"
+        """ One of "cube", "ship", "ball", "ufo", "wave", "robot", "spider" (swing maybe? idk)"""
+        
+        self.ORIGINAL_START_POS = start_settings.get("pos") or [-10, 0] # used for resetting
+        self.pos = start_settings.get("pos") or [-10, 0]
+        """ [x, y], where x is horiz (progress). BOTTOM LEFT of player. y=0 means on the ground, and y cannot be negative."""
 
         self.yvel = 0
-        self.gravity = start_settings.get("gravity") or CONSTANTS.GRAVITY
+        self.gravity: GDConstants.gravities = start_settings.get("gravity") or EngineConstants.GRAVITY
         
-        self._jump_requested = False
+        self.jump_requested = False
         """ variable to store when the player jumps before the next physics tick. """
 
-        self.mid_jump = False
+        self.last_on_ground_time = None
+        """ Stores the latest time when self.in_air was set to False. Used for calculating cube rotation as we are falling. """
+        self.in_air = False
         """ If the player is currently jumping. can't double jump. Jump status is reset to false when the player hits a glidable hitbox. """
 
         self.curr_collisions: List[Collision] = []
@@ -40,117 +57,145 @@ class Player:
 
     def tick(self, timedelta: float):
         """ 
-        Physics tick for the player.
-
-        Note Mar. 7, 2024 @2:14AM: this currently runs AFTER collisions are checked for the current position.
-
-        Timedelta should be in seconds and should represent the time since last tick.
-        If this is the first tick, then timedelta should be 0 (i think).
+        General physics tick for the player. Calls the appropriate tick function based on the current gamemode.
         """
         
-        Logger.log(f"Tick: td={timedelta}, pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}, jump_req={self._jump_requested}, mid_jump={self.mid_jump}, grav_dir={self.gravity}")
-        Logger.log(f"^^^: collisions: {[(collision.obj.data['name'], collision.vert_coord, collision.vert_side) for collision in self.curr_collisions]}")
+        # TODO - make code better by keeping a list and using getattr?
+        match self.gamemode:
+            case "cube":
+                tick_cube(self, timedelta)
+            case "ball":
+                tick_ball(self, timedelta)
+            case "ufo":
+                tick_ufo(self, timedelta)
+            case "wave":
+                tick_wave(self, timedelta)
+            case _:
+                raise Exception(f"[Player/tick] gamemode {self.gamemode} not set up in Player.tick()")
+
+    
+    def reset_physics(self, new_pos = None) -> None:
+        """
+        Reset to starting physics (yvel=0, in_air=False, etc.)
+        This should be used when the player dies or resets.
+        Optionally, can select a new position to reset to.
+        """
         
-        # always move right no matter what
-        self.pos[0] += self.speed * CONSTANTS.BLOCKS_PER_SECOND * timedelta
-        
-        # GLIDE HANDLING BELOW (setting y-values)
-        
-        # if y < 0, then we just hit ground and should just set y=0, yvel=0, mid_jump=False
-        if self.pos[1] <= 0 and self.yvel <= 0: # if we are going up, we shouldnt hit the ground
-            Logger.log(f"Hit ground. setting y-pos to 0 and mid_jump to False")
-            self.pos[1] = 0
-            self.yvel = 0
-            self.mid_jump = False            
-        
-        # if gravity is + (down) and we have a "top" collision, adjust the y position to be on top of the block
-        elif (self.gravity > 0 and any(collision.vert_side == "top" for collision in self.curr_collisions)):
-            if self.yvel < 0: # only hit ground if we are going down
-                self.pos[1] = max([collision.vert_coord for collision in self.curr_collisions if collision.vert_side == "top"])
-                self.yvel = 0
-                
-                Logger.log(f"reg gravity: setting y-pos to {self.pos[1]:.2f} and mid_jump to False")
-                self.mid_jump = False
-        
-        # if gravity is - (up) and we have a "bottom" collision, adjust the y position to be on top of the block
-        elif (self.gravity < 0 and any(collision.vert_side == "bottom" for collision in self.curr_collisions)):
-            if self.yvel > 0: # only hit ground if we are going up
-                # we have to subtract the player hitbox yrange to get the top of the player
-                self.pos[1] = min([collision.vert_coord for collision in self.curr_collisions if collision.vert_side == "bottom"])-CONSTANTS.PLAYER_HITBOX_Y
-                self.yvel = 0
-                
-                Logger.log(f"rev gravity: setting y-pos to {self.pos[1]:.2f} and mid_jump to False")
-                self.mid_jump = False
-        
-        # otherwise are in mid-air and should apply gravity
-        else:
-            Logger.log(f"seems like we are in the air, mid_jump -> true after this.")
-            self.mid_jump = True
-            self.yvel -= self.gravity * timedelta
-            self.yvel = max(min(self.yvel, CONSTANTS.TERMINAL_VEL), -CONSTANTS.TERMINAL_VEL) # clamp yvel to terminal velocity
-        
-        # if jump was requested, set the jump physics
-        if self._jump_requested:
-            self._jump()
-            self._jump_requested = False
-        
-        Logger.log(f"End of tick: updating pos[1] to {self.pos[1]:.4f} since yvel={self.yvel:.4f} and timedelta={timedelta:.4f}")
-        self.pos[1] += self.yvel * timedelta
-        
-    def jump(self):
+        self.pos = new_pos or deepcopy(self.ORIGINAL_START_POS)
+        self.in_air = False
+        self.yvel = 0
+        self.jump_requested = False        
+        self.curr_collisions.clear()
+        self.gamemode = self.START_SETTINGS.get("gamemode") or "cube"
+        self.speed = SPEEDS.decode(self.START_SETTINGS.get("speed")) or SPEEDS.normal
+        self.gravity = self.START_SETTINGS.get("gravity") or EngineConstants.GRAVITY
+        self.last_on_ground_time = time_ns()
+    
+    def request_jump(self):
         """
         Requests a jump for the next physics tick.
         """
-        if self.mid_jump: 
-            Logger.log(f"XXXXXXXX player tried to jump but cant. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}")
-            return
+        # NOTE: this is getting moved to each gamemmode's specific jump handler,
+        # since you can multi-input in some (such as ufo)
+        #if self.in_air: 
+        #    #Logger.log(f"XXXXXXXX player tried to jump but cant. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}")
+        #    return
         
-        #Logger.log(f"XXXXXXXX player jumped. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}, walking_on={self._walking_on:.2f}, names of colliding objs: {[collision.obj.data['name'] for collision in self.curr_collisions]}")
-        
-        self._jump_requested = True
+        #Logger.log(f"XXXXXXXX player jumped. pos={self.pos[0]:.2f},{self.pos[1]:.2f}, yvel={self.yvel:.2f}, walking_on={self._walking_on:.2f}, names of colliding objs: {[collision.obj.data['name'] for collision in self.curr_collisions]}")        
+        self.jump_requested = True
     
     def _jump(self):
         """
-        Sets the physics for jumping. Should only be used in `Player.tick()`
+        Sets the physics for jumping, depending on the gamemode. Should only be used in `Player.tick()`
         and nowhere else. For external use, use `Player.jump()`.
         """
-        self.yvel = CONSTANTS.PLAYER_JUMP_STRENGTH * self.sign_of_gravity()
-        self.mid_jump = True
+        
+        match self.gamemode:
+            case "cube":
+                jump_cube(self)
+            case "ball":
+                jump_ball(self)
+            case "ufo":
+                jump_ufo(self)
+            case _:
+                pass # no jump for other gamemodes - they have their own holding-based handlers
     
-    def activate_jump_orb(self, strength: float):
+    def get_animation_frame_index(self) -> int:
         """
-        Activates a jump orb. Sets whatever velocity, and sets mid_jump to true.
-        However,this function still has effects when in mid_jump, unlike regular jumping.
+        Returns which index to use for the player sprite, based on current situation & gamemode
+        
+        For cube:
+        Every 0.1 seconds that we are in the air, we rotate 22.5 degrees.
+        If touching ground, always return 0
+        
+        For ball:
+        Every 0.25s switch the sprite (there are only two)
+        
+        For ufo:
+        same sprite all the time
+        
+        For wave:
+        0 (down) if yvel is negative
+        1 (up) if yvel is positive
+        2 (flat) if yvel is 0 (on ground, gliding)
+        """
+        
+        match self.gamemode:
+            case "cube":
+                if not self.in_air:
+                    return 0
+                seconds_since_last_on_ground = (time_ns() - self.last_on_ground_time) / 1e9
+                return int(seconds_since_last_on_ground / 0.1) % 4
+    
+            case "ball":
+                return int(time_ns() / 1e8) % 2
+            
+            case "ufo":
+                return 0
+            
+            case "wave":
+                return (
+                    0 if self.yvel < 0 else 
+                    1 if self.yvel > 0
+                    else 2
+                )
+    
+    def set_yvel_magnitude(self, strength: float):
+        """
+        Activates a jump orb. Sets whatever velocity, and sets in_air to true.
+        However,this function still has effects when in in_air, unlike regular jumping.
         
         (this is because the player can activate orbs while in mid-air, but can't jump normally)
         
         For yellow orbs, should be ~player jump strength. For purple orbs, should be maybe 0.3*player jump strength?
-        For black orbs, should be -4*player jump strength.
+        For black orbs, should be smth like -4*player jump strength.
         """
         
-        self.yvel = strength
-        self.mid_jump = True
+        self.yvel = strength * self.sign_of_gravity()
+        self.in_air = True # we are PROBABLY in the air. TODO - maybe remove?
         
     def sign_of_gravity(self) -> int:
-        """
-        Returns the sign of the gravity. 1 for normal, -1 for reverse.
-        """
+        """ Returns the sign of the gravity. 1 for normal, -1 for reverse. """
         return 1 if self.gravity > 0 else -1
         
     def normal_gravity(self):
-        """
-        Sets the gravity to normal.
-        """
-        self.gravity = CONSTANTS.GRAVITY
+        """ Sets the gravity to normal. """
+        self.gravity = EngineConstants.GRAVITY
         
     def reverse_gravity(self):
-        """
-        Sets the gravity to reverse.
-        """
-        self.gravity = -CONSTANTS.GRAVITY
+        """ Sets the gravity to reverse. """
+        self.gravity = -EngineConstants.GRAVITY
         
     def change_gravity(self):
-        """
-        Flips the gravity to the negative of what it currently is.
-        """
+        """ Flips the gravity to the negative of what it currently is. """
         self.gravity *= -1
+        Logger.log(f"gravity changed to {self.gravity}")
+        
+    def change_gamemode(self, new_gamemode: GDConstants.gamemodes) -> None:
+        """ Handles changing gamemode and any related logic """
+        self.gamemode = new_gamemode
+        
+    def change_speed(self, new_speed: GDConstants.speeds) -> None:
+        """ Handles changing speeds and any related logic """
+        self.speed = SPEEDS.decode(new_speed)
+        

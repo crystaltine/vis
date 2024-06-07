@@ -29,7 +29,7 @@ def handle_invite_creation(user_id, server_id, invite_code):
             INSERT into "Discord"."InvitesInfo" (invite_id, server_id, invite_code, invite_creator_id) values (%s, %s, %s, %s)
         '''
 
-        cur.execute(send_query, (invite_id, user_id, server_id, invite_code))   
+        cur.execute(send_query, (invite_id, server_id, invite_code, user_id))   
         return True, invite_id
     except Exception as e:
         return False, str(e)
@@ -115,7 +115,7 @@ def handle_server_invite_request() -> str:
     resp = requests.post(URI + "/api/roles/get_server_perms", json=data)
     if resp.status_code != 200:
         return return_error("Failed to retrieve role permissions")
-    perms = resp.json()
+    perms = resp.json()["data"]
 
     if perms['manage_server'] == False:
         return missing_permissions()
@@ -174,21 +174,22 @@ def handle_user_joining_server():
             member_join_date = str(datetime.datetime.now())
 
             send_query = '''
-                INSERT into "Discord"."MemberInfo" (member_id, user_id, server_id, member_join_date) values (%s, %s, %s)
+                INSERT into "Discord"."MemberInfo" (member_id, user_id, server_id, member_join_date) values (%s, %s, %s, %s)
             '''
 
-            cur.execute(send_query, (uuid4(), user_id, server_id, member_join_date))
+            cur.execute(send_query, (str(uuid4()), user_id, server_id, member_join_date))
 
             data = {
                 "user_token": user_token,
-                "server_id": server_id,
-                "role_id": "everyone"
+                "server_id": str(server_id),
+                "role_id": str(server_id) + "_everyone"
             }
 
-            response = requests.post(URI + "/api/members/add_role", json={"data": data})
+            response = requests.post(URI + "/api/members/add_role", json=data)
             if response.status_code != 200:
                 return Response(json.dumps({"type": "failure", "message": "Joined server; failed to add base role"}), status=400)
-            return return_success()
+            data = {"type": "success", "server_id": server_id}
+            return Response(json.dumps(data), status=200)
             
         else:
             return Response(json.dumps({"type": "incorrect", "message": "Invalid invite code"}), status=400)

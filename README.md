@@ -1,21 +1,38 @@
 # Vis
-A framework for rendering HTML-like documents using monospace characters.
+A collection of app remakes in the terminal. This is a recreational project and it's probably best if you don't actually use these apps.
 
-**Objectives for Framework**
+Some Vis apps are based off a custom-built HTML-like rendering framework called [Visage (see repo here)](https://github.com/crystaltine/visage)
 
-* Component tree - move around components using arrow keys + press enter to click buttons or enter inputs
-* Implement key listener for commands- have set of every keybind we want (ex: cntrl q), every frame, see if any of them intersect
-* Each app has an command to open it- you type in the name of the app you want to openn and it opens
-* You can also install apps from the framework (similar to package manager or app store where you can install apps)
-* We need basic html components- panels/divs, inputs, buttons, dropdowns, hyperlinks, images (maybe, not a first priority), standard text tab. Each of them should have size and position attributes and a z dimension for layers
+### Visage
+A framework inspired by HTML for creating graphical user interfaces (GUIs) inside modern terminals.
 
-**Geometry Dash**
+**This project is currently work-in-progress** (dont use)
 
-General Bindings:
-- Arrow keys to hover over a different level
-- Enter to select
-- B to go back to previous screen
+#### Anticipated features (hopefully (maybe))
+- Basic HTML elements (div, input, button)
+- Dynamic updates and efficient rerendering
+- Event handler system (keyup, keydown, resize?, etc.)
+- Flexible CSS-like style definitions
+- React-like components
+- Automatically managed component tree which can be navigated with tab/arrow keys
 
+Usage/examples will maybe probably be added here as features get polished.# Vis
+A collection of app remakes in the terminal. This is a recreational project and it's probably best if you don't actually use these apps.
+
+Some Vis apps are based off a custom-built HTML-like rendering framework called [Visage (see repo here)](https://github.com/crystaltine/visage)
+
+### Discord Remake - "Viscord"?**
+The name is... in progress.
+
+This remake uses the Visage framework mentioned earlier to create a dynamic graphical user interface inside the terminal. Content is sorted into actual colored panels, with buttons, input boxes, and a lot of other HTML-reminiscent features. The app will also be fully navigable using the keyboard alone.
+
+This will feature a full account system as well as server/channel/profile functionality, friends, roles, permissions, etc. Since we can't have profile pictures, we've replaced them with symbols/emojis and custom colors users can select for their username.
+
+### Geometry Dash Remake
+Using ANSI color codes and block elements [listed here](https://en.wikipedia.org/wiki/Block_Elements) to make the screen look like an actual game.
+Surprisingly, with correct optimizations, the screen doesn't actually flicker and the game is kinda (sort of) (maybe) semi-playable!!!!!!
+
+Original docs: (Subject to change as development continues)
 Flow:
 1.	Home screen: play button, a level editor button, and a character customization button
 2.	Levels: Play button opens up a menu with some sample levels we have created- enter to select into a level + start playing
@@ -26,41 +43,27 @@ Flow:
 - Load button: Pulls up a separate page containing all the previous saves of the level, Players can navigate the saves with arrow keys + hit enter to revert back to that save, Upon hitting enter, a popup will appear asking if the player is sure that they want to revert back this version, Hitting yes one more time takes player back to the level editor with the previous save as the current state of the level, Hitting edit existing level opens up a different page containing all their saved levels, Enter to select into a level. Then same format as previous section
 4.	Player icon customization: No clue how this will work yet- TBD
 
-
-
-**Schedule**
-- 1 week for testing if windows in terminal can work (and making it work) AND a master-app ***(3/7)***
-- 2 weeks for discord de-make ***(3/21)***
-- 4 weeks for geometry dash de-make ***(4/18)***
-- 5 weeks for youtube? ***(5/23)***
-- any extra time? polishing apps, branching off into solo apps
-  
-**List of App Ideas:**
-* Discord
-  - text chat
-  - voice chat (***HARD MAYBE***)
-  - basic authentication
-  - server-side message storing
-* geometry dash
-  - level renderer
-  - physics
-  - level editor
-  - menus
-  - maybe server for levels
-* youtube
-  - getting videos
-  - decoding
-  - playing
-  - controls
-  - audio
-
-
+**Original List of App Ideas**
+* Discord remake
+  - Support for text chat
+  - Voice chat (will not be supported in initial release of project) (also we're probably gonna be too lazy to ever add this)
+  - Accounts/authentication stuff (typical)
+  - Yes yes messages will be stored permanently server-side.
+* Geometry Dash remake
+  - Use of colored characters to create a more immersive experience rather than just ASCII art
+  - Will have a built-in level editor
+  - A few prebuilt levels
+  - Online levels and publish feature
+* Youtube remake (not currently planned)
+  - Pulling videos from the actual site
+  - Decoding compressed video
+  - Converting to lower quality so it fits in the terminal, and also allows for decent performance (20fps?)
+  - Keyboard controls for page navigation
 * Chess
 * Paint
 * Calendar
 * Todolist
 * Doom
-* Geometry Dash
 * Email
 * Code Editor
 * Spotify 
