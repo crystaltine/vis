@@ -2,6 +2,8 @@ from typing import Union, Tuple
 from logger import Logger
 import re
 import numpy as np
+from skimage.draw import line
+from render.constants import CameraConstants
 import os
 
 def fcode(fg: Union[str, tuple] = None, bg: Union[str, tuple] = None) -> str:
@@ -199,6 +201,25 @@ def blend_rgba_img_onto_rgb_img(original: np.ndarray, new: np.ndarray) -> np.nda
 def blend_rgba_img_onto_rgb_img_inplace(original: np.ndarray, new: np.ndarray) -> None:
     """ Same as `blend_rgba_img_onto_rgb_img`, but modifies the original array in place. """
     original[:] = blend_rgba_img_onto_rgb_img(original, new)
+
+def draw_line(image: np.ndarray, pos1: tuple, pos2: tuple, color: CameraConstants.RGBTuple) -> None:
+    """
+    draw a fully opaque line of color `color` on the image from pos1= (x1, y1) to pos2= (x2, y2).
+    modifies `image` in place, does not return anything.
+    """
+    
+    x1, y1 = pos1
+    x2, y2 = pos2
+    
+    # Get the coordinates of the line
+    rr, cc = line(y1, x1, y2, x2)
+
+    # Clip the coordinates to be within the image dimensions
+    rr = np.clip(rr, 0, image.shape[0] - 1)
+    cc = np.clip(cc, 0, image.shape[1] - 1)
+
+    # Draw the white line (255, 255, 255) on the image
+    image[rr, cc] = color
 
 def blend_multiple_pixels(dstacked_pixels: np.ndarray) -> tuple | np.ndarray:
     """
