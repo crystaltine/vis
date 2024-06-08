@@ -1,4 +1,4 @@
-![image](https://github.com/crystaltine/vis/assets/114899328/b1327bb5-e791-4126-bfcb-4d656db853aa)# Vis
+# Vis
 A collection of app remakes in the terminal. This is a recreational project and these apps are only intended for casual use.
 
 ## Viscord
