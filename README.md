@@ -2,7 +2,15 @@
 A collection of app remakes in the terminal. This is a recreational project and these apps are only intended for casual use.
 
 ## Viscord
-[]
+Viscord is a small demake of the popular chatting app Discord. It uses our own backend and user accounts, and allows for text chatting, voice chatting, and video streaming.
+
+### Running
+```
+pip install -r requirements.txt
+cd viscord
+cd client
+py main.py
+```
 
 ## Untitled Geometry Dash Remake
 Using ANSI color codes and block elements [listed here](https://en.wikipedia.org/wiki/Block_Elements) to make the screen look like an actual game.
