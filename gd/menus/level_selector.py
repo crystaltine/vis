@@ -6,7 +6,6 @@ from render.texture_manager import TextureManager
 from draw_utils import print2
 from render.utils import fcode_opt as fco
 import os, json
-import pandas as pd
 
 os.system('cls')
 
