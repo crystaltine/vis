@@ -2,6 +2,7 @@ import traceback
 import os 
 import sys
 from cursor import hide, show
+import time
 
 from logger import Logger
 from gd_constants import GDConstants
@@ -23,6 +24,7 @@ level_select_index=0
 created_levels_index=0
 game = None
 attempt = 0
+entered_level_select_time = time.time()
 
 pages={
     'main': ['character_select', 'level_select', 'level_editor'], 
@@ -41,6 +43,7 @@ pages={
 current_page={'previous_page':'main', 'current_screen':'main', 'current_page':1}
 
 def main():
+    global game
 
     init_main_page(terminal)
 
@@ -72,6 +75,7 @@ def main():
 def render_new_page(new_page:str):
 
     global current_page
+    global entered_level_select_time
 
     # Here, the previous_page to the new_page is getting updated, along with the current_screen and current_page
 
@@ -90,6 +94,7 @@ def render_new_page(new_page:str):
         #run_editor()
         pass # level editor disabled for now
     elif new_page == "level_select":
+        entered_level_select_time = time.time()
         LevelSelector.draw_level(level_select_index)
     else:
         init_function=getattr(current_module, 'init_'+new_page+'_page')
@@ -174,7 +179,7 @@ def handle_level_select_page(val):
     
     # Running test gd file if space is selected
 
-    if val.name=='KEY_ENTER':
+    if val.name=='KEY_ENTER' and time.time() - entered_level_select_time > 1:
         render_new_page('play_level')
         
     # If a button has been pressed, reset the level, and regenerate the new level onto the screen

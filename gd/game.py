@@ -46,6 +46,8 @@ class Game:
         self.audio_handler = AudioHandler(level.metadata.get("song_filepath"), level.metadata.get("song_start_time"))
 
         self.paused = False #currently unused variable
+        self.pausemenuselectindex = 1
+        self.changed = False
         self.exiting = False
         self.practice_mode = False
         # creating object that will handle practice mode functionality
@@ -228,7 +230,7 @@ class Game:
         sleep(EngineConstants.COOLDOWN_BETWEEN_ATTEMPTS)
 
         # if the player dies too quickly and is in practice mode, remove the most recent checkpoint
-        if time.time() - self.game_start_time < 1 and self.practice_mode:
+        if time.time() - self.game_start_time < 2 and self.practice_mode:
             self.practicemodeobj.remove_checkpoint()
 
         # reset game start time and last checkpoint time
@@ -263,8 +265,16 @@ class Game:
         for obj in self.activated_objects:
             obj.has_been_activated = False
         self.last_tick = time_ns() # this is to prevent moving forward while we are dead lol
-        self.attempt_number += 1
 
+        # reset the player's position if a new position is given
+        if new_pos:
+            x, y = new_pos
+            self.player.pos = [x, y] 
+
+        # reset the game start time
+        self.game_start_time = time.time()
+
+        self.attempt_number += 1
         
         # start song again
         self.audio_handler.begin_playing_song() # TODO - verify wtf reseting does (why is it false)
@@ -299,78 +309,64 @@ class Game:
         # stops the game and sets paused to true
         self.running = False
         self.paused = True
-        
-        progresspercent=self.get_progress_percentage()
-
+        # calculates progress bar based on length of level and player position
+        progresspercent = round(((self.player.pos[0]+10) / self.level.length) * 100)
+        if progresspercent>100:
+            progresspercent=100
         # sets selected index to play button
-        pausemenuselectindex = 1
-        Logger.log("drawing pause menu")
-
+        self.pausemenuselectindex = 1
+        
         # Draw pause menu background, progress bar, and buttons
         draw('assets/pausemenubg.png', Position.Relative(top=5, left=10), (GDConstants.term.width - 20, GDConstants.term.height * 2 - 20), 'scale')
         draw_text(f"Progress: {progresspercent}%", (GDConstants.term.width) // 2 - 8, 10, bg_color='black')
-        self.draw_pause_menu_buttons(pausemenuselectindex)
-
-        Logger.log("pause menu drawn")
+        self.draw_pause_menu_buttons()
 
         # call method to handle interaction with pause menu
-        self.handle_pause_menu_interaction(pausemenuselectindex)
+        self.handle_pause_menu_interaction()
 
-    def handle_pause_menu_interaction(self, pausemenuselectindex: int) -> None:
+    def handle_pause_menu_interaction(self) -> None:
         """
         Handles the user interaction with the pause menu.
         Processes user input to navigate the pause menu and perform actions
         such as reset, unpause, toggle practice mode, or exit.
-        Args:
-            pausemenuselectindex (int): The current selected index in the pause menu.
+
         """
-        reset = False
-        unpause = False
 
-        while not self.running:
-            with GDConstants.term.cbreak():
-                val = GDConstants.term.inkey()
-                changed = False
+        KeyboardListener.on_presses.clear()
+        KeyboardListener.on_releases.clear()
 
-                if val:
-                    # move the selected index
-                    if val.name == 'KEY_LEFT':
-                        changed = True
-                        pausemenuselectindex -= 1
-                        if pausemenuselectindex < 0:
-                            pausemenuselectindex = 3
-                    # move the selected index
-                    elif val.name == 'KEY_RIGHT':
-                        changed = True
-                        pausemenuselectindex += 1
-                        if pausemenuselectindex > 3:
-                            pausemenuselectindex = 0
-                    # carry out functions based on selected index if enter is pressed, then break
-                    # out of the while loop
-                    elif val.name == 'KEY_ENTER':
-                        if pausemenuselectindex == 0:
-                            reset = True
-                        elif pausemenuselectindex == 1:
-                            unpause = True
-                        elif pausemenuselectindex == 2:
-                            self.practice_mode = not self.practice_mode
-                            if not self.practice_mode:
-                                self.practicemodeobj.clear_checkpoints()
-                            reset = True
-                        elif pausemenuselectindex == 3:
-                            self.exiting = True
-                        break
+        def _handle_pause_keydown(event: KeyEvent) -> None:
+            if str(event) == 'left':
+                self.pausemenuselectindex -= 1
+                if self.pausemenuselectindex < 0:
+                    self.pausemenuselectindex = 3
+                self.changed = True
+            elif str(event) == 'right':
+                self.pausemenuselectindex += 1
+                if self.pausemenuselectindex > 3:
+                    self.pausemenuselectindex = 0
+                self.changed = True
+            elif str(event) == 'enter':
+                if self.pausemenuselectindex == 0:
+                    self.restart()
+                elif self.pausemenuselectindex == 1:
+                    self.unpause()
+                elif self.pausemenuselectindex == 2:
+                    self.practice_mode = not self.practice_mode
+                    if not self.practice_mode:
+                        self.practicemodeobj.clear_checkpoints()
+                    self.restart()
+                elif self.pausemenuselectindex == 3:
+                    self.exiting = True
+            if self.changed:
+                self.draw_pause_menu_buttons()
+                self.changed = False
+            
+            
+        KeyboardListener.on_presses.append(_handle_pause_keydown)
+        KeyboardListener.start()
 
-                    # if the selected element is changed, redraw the pause buttons accordingly
-                    if changed:
-                        self.draw_pause_menu_buttons(pausemenuselectindex)
-
-        if reset:
-            self.reset()
-        elif unpause:
-            self.unpause()
-
-    def draw_pause_menu_buttons(self, index: int) -> None:
+    def draw_pause_menu_buttons(self) -> None:
         """
         Draws the pause menu buttons with highlights based on the selected index.
         Args:
@@ -398,7 +394,7 @@ class Game:
 
         # Draw each button, highlighting the selected one
         for i, label in enumerate(button_labels):
-            selected = '_selected' if index == i else ''
+            selected = '_selected' if self.pausemenuselectindex == i else ''
             suffix = practice_bg_color if label == "practice_button" and not selected else selected
             draw(f"assets/pause_menu/{label}{suffix}.png", pos=Position.Relative(left=positions[i], bottom="calc(55% - 10ch)"))
 
@@ -411,7 +407,6 @@ class Game:
             Unpauses the level.
         """
         self.start_level()
-        self.paused = False
 
     def restart(self) -> None:
         """
@@ -421,6 +416,7 @@ class Game:
         # in pract mode, dont clear checkpoints
         #self.practicemodeobj.clear_checkpoints()
         self.reset_level()
+        self.start_level()
 
         # OLD RESET CODE - ATTEMPT TO TERMINATE THE THREADS FAILED MISERABLY
         # self.running = False
