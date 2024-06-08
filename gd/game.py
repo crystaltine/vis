@@ -254,7 +254,9 @@ class Game:
         self.running = False
         self.paused = True
         # calculates progress bar based on length of level and player position
-        progresspercent = round((self.player.pos[0] / self.level.length) * 100)
+        progresspercent = round(((self.player.pos[0]+10) / self.level.length) * 100)
+        if progresspercent>100:
+            progresspercent=100
         # sets selected index to play button
         pausemenuselectindex = 1
         Logger.log("drawing pause menu")
@@ -282,7 +284,7 @@ class Game:
 
         while not self.running:
             with GDConstants.term.cbreak():
-                val = GDConstants.term.inkey(1)
+                val = GDConstants.term.inkey()
                 changed = False
 
                 if val:
