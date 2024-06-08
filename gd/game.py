@@ -1,4 +1,5 @@
 from typing import Tuple
+import json
 from time import time_ns, sleep
 from threading import Thread
 import traceback
@@ -99,7 +100,7 @@ class Game:
 
         def check_if_level_complete():
             if self.player.pos[0]-10>=self.level.length:
-                
+
                 # This means the player beat the level
 
                 self.running=False
@@ -109,6 +110,8 @@ class Game:
                 new_frame.add_text(int(new_frame.width*0.5), int(new_frame.height*0.1), TextureManager.font_title, 'Level Complete')
                 new_frame.add_text(int(new_frame.width*0.5), int(new_frame.height*0.5), TextureManager.font_small1, f"Total Attempts: {self.attempt_number}")
                 new_frame.render(self.camera.curr_frame)
+
+            self.get_progress_percentage(True)
 
         def physics_thread():
             try:
@@ -262,8 +265,29 @@ class Game:
         self.last_tick = time_ns() # this is to prevent moving forward while we are dead lol
         self.attempt_number += 1
 
-        # restart song
-        self.audio_handler.begin_playing_song()
+        
+        # start song again
+        self.audio_handler.begin_playing_song() # TODO - verify wtf reseting does (why is it false)
+        
+    
+    def get_progress_percentage(self, write_to_file:bool=False) -> int:
+
+        # calculates progress bar based on length of level and player position
+        progresspercent = round(((self.player.pos[0]+10) / self.level.length) * 100)
+        if progresspercent>100:
+            progresspercent=100
+        
+        if write_to_file:
+            f = open(self.level.filepath)
+            data = json.load(f)
+            if data['metadata']['progress_normal']<progresspercent/100:
+                data['metadata']['progress_normal']=progresspercent/100
+                json.dump(data,open(self.level.filepath, 'w'))
+                
+
+
+
+        return progresspercent
 
     def pause(self) -> None:
         """
@@ -275,10 +299,9 @@ class Game:
         # stops the game and sets paused to true
         self.running = False
         self.paused = True
-        # calculates progress bar based on length of level and player position
-        progresspercent = round(((self.player.pos[0]+10) / self.level.length) * 100)
-        if progresspercent>100:
-            progresspercent=100
+        
+        progresspercent=self.get_progress_percentage()
+
         # sets selected index to play button
         pausemenuselectindex = 1
         Logger.log("drawing pause menu")
