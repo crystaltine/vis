@@ -287,17 +287,22 @@ class Game:
         if progresspercent>100:
             progresspercent=100
         
+
         if write_to_file:
             f = open(self.level.filepath)
             data = json.load(f)
-            if data['metadata']['progress_normal']<progresspercent/100:
-                data['metadata']['progress_normal']=progresspercent/100
-                json.dump(data,open(self.level.filepath, 'w'))
-                
 
+            if not self.practice_mode:
 
+                if data['metadata']['progress_normal']<progresspercent/100:
+                    data['metadata']['progress_normal']=progresspercent/100
+                    json.dump(data,open(self.level.filepath, 'w'))
+            
+            else:
 
-        return progresspercent
+                if data['metadata']['progress_practice']<progresspercent/100:
+                    data['metadata']['progress_practice']=progresspercent/100
+                    json.dump(data,open(self.level.filepath, 'w'))
 
     def pause(self) -> None:
         """
