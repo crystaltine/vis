@@ -191,7 +191,7 @@ class Camera:
         # draw most recent checkpoint if the game is in practice mode and has a checkpoint
         if game.practice_mode and game.practicemodeobj.is_checkpoint():
             x, y = game.practicemodeobj.get_last_checkpoint()
-            self.draw_checkpoint(new_frame, x, y, game.practicemodeobj.last_checkpoint_in_air)
+            self.draw_checkpoint(new_frame, x, y)
         
         # render the new frame
         new_frame.render(self.curr_frame)
@@ -260,7 +260,7 @@ class Camera:
             print(GDConstants.term.move_yx(row_in_terminal, 0) + all_strips[i])
             row_in_terminal += 1
 
-    def draw_checkpoint(self, frame: CameraFrame, x: float, y: float, in_air: bool) -> None:
+    def draw_checkpoint(self, frame: CameraFrame, x: float, y: float) -> None:
         """
         Draws a checkpoint at the specified position relative to the given player position.
         Args:
@@ -270,7 +270,6 @@ class Camera:
 
         x_pos, y_pos = self.get_screen_coordinates(x, y)
         # weird issue where checkpoint is in ground if player is on ground level - move it up if it is
-        if in_air: y_pos -= CameraConstants.BLOCK_HEIGHT
         frame.add_pixels_topleft(x_pos, y_pos, TextureManager.base_textures.get("checkpoint"))
         
     def draw_attempt(self, frame: CameraFrame, player_initial_x: float, attempt: int) -> None:

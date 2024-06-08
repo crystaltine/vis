@@ -26,7 +26,6 @@ class PracticeMode:
         self.game = game
         self.checkpoints = [] # list of checkpoints
         self.last_checkpoint = None # last reached checkpoint
-        self.last_checkpoint_in_air = False
         self.last_checkpoint_time = time.time() # time last checkpoint was set at
 
     def add_checkpoint(self, checkpoint: tuple[float, float]) -> None:
@@ -43,8 +42,6 @@ class PracticeMode:
 
         # deep copy the checkpoint to avoid reference issues
         checkpoint = deepcopy(checkpoint)
-        if self.game.player.in_air:
-            self.last_checkpoint_in_air = True
         # add the checkpoint to the list of checkpoints
         self.checkpoints.append((checkpoint[0], checkpoint[1]))
         # set the last checkpoint to the most recent checkpoint and reset the last added checkpoint time
