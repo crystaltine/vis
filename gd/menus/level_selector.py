@@ -87,7 +87,7 @@ class LevelSelector:
     # ]
     """ List of OFFICIAL levels parsed from its directory, from which we render pages """
     
-    PADDING_Y = 0.1
+    PADDING_Y = 0.125
     PADDING_X = 0.15
     ARROW_BUTTON_PADDING_X_PX = 5 # IN PIXELS
     TOP_BOX_HEIGHT = 0.4

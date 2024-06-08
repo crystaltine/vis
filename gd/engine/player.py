@@ -81,7 +81,7 @@ class Player:
 
         tickfunc(self, timedelta)
     
-    def reset_physics(self, new_pos = None) -> None:
+    def reset_physics(self, new_pos: Tuple[int, int] = None) -> None:
         """
         Reset to starting physics (yvel=0, in_air=False, etc.)
         This should be used when the player dies or resets.

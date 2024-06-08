@@ -131,10 +131,10 @@ class CollisionHandler:
         if collision.vert_side is not None:
             if collision.vert_side == "bottom" and self.game.player.sign_of_gravity() == 1 and self.game.player.yvel > 0:
                 Logger.log("Crashed into top of block.")
-                self.game.crash_normal()
+                self.game.crash()
             elif collision.vert_side == "top" and self.game.player.sign_of_gravity() == -1 and self.game.player.yvel < 0:
                 Logger.log("Crashed into bottom of block.")
-                self.game.crash_normal()
+                self.game.crash()
             return # don't run other effects if we are gliding
         
         effect: str = collision.obj.data["collide_effect"]
@@ -145,9 +145,9 @@ class CollisionHandler:
             self.game.player.reverse_gravity()
             
         elif effect == 'crash-block':
-            self.game.crash_normal()
+            self.game.crash()
         elif effect == 'crash-obstacle':
-            self.game.crash_normal()
+            self.game.crash()
             
         elif effect == 'yellow-orb':
             self.game.player.set_yvel_magnitude(EngineConstants.PLAYER_JUMP_STRENGTH*EngineConstants.YELLOW_ORB_MULTIPLIER)
