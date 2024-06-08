@@ -141,7 +141,7 @@ class Level:
                 row.extend([None] * len_diff)
 
         level = Level(metadata, leveldata)
-
+        level.filepath=filepath
         # parse & set default color channels    
         default_color_channels = metadata["start_settings"]["default_color_channels"]
         # assign default color channels to the level
