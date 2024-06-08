@@ -9,7 +9,7 @@ from game import Game
 from level import Level
 from img2term.main import draw
 from menus.GDMenu import draw_main_menu_buttons
-from menus.level_selector import *
+from menus.level_selector import LevelSelector
 from menus.level_editor_menu import *
 #from run_level_editor import *
 from menus.main_page import *
@@ -24,9 +24,19 @@ created_levels_index=0
 game = None
 attempt = 0
 
-pages={'main':['character_select', 'level_select', 'level_editor'], 'character_select':[], 'level_select':['play_level'], 
-       'level_editor':['create_level', 'created_levels', 'online_levels'], 'play_level':[], 'create_level':[], 'created_levels':['play_created_level'], 
-       'online_levels':['search_levels', 'upload_levels'], 'play_created_level':[],'search_levels':[], 'upload_levels':[]}
+pages={
+    'main': ['character_select', 'level_select', 'level_editor'], 
+    'character_select':[],
+    'level_select': ['play_level'], 
+    'level_editor': ['create_level', 'created_levels', 'online_levels'], 
+    'play_level': [], 
+    'create_level':[], 
+    'created_levels': ['play_created_level'], 
+    'online_levels': ['search_levels', 'upload_levels'],
+    'play_created_level': [], 
+    'search_levels': [], 
+    'upload_levels':[]
+}
 
 current_page={'previous_page':'main', 'current_screen':'main', 'current_page':1}
 
@@ -38,19 +48,14 @@ def main():
 
         # The only page that needs text on the top of the screen is the level selector
 
-        if current_page['current_screen']=='level_select':
-            draw_text('LEVEL SELECTOR', int((terminal.width-len('LEVEL SELECTOR'))*0.5), int(terminal.height*0.1))
-        elif current_page['current_screen']=='created_levels':
+        if current_page['current_screen']=='created_levels':
             draw_text('CREATED LEVELS', int((terminal.width-len('Created Levels'))*0.5), int(terminal.height*0.1))
-        else:
-            draw_text('', 0, 0)
 
         with terminal.cbreak():
             
-            val = terminal.inkey(timeout=1)
+            val = terminal.inkey()
 
             # Quitting game if q is hit
-
             if val == "q":
                 os.system('cls')
                 break
@@ -80,10 +85,12 @@ def render_new_page(new_page:str):
     # Play_level is the only page that doesn't follow the generic "init_[page]" function structure as the other pages
 
     if new_page=='play_level':
-        run_level(levels[level_select_index]['path'])
+        run_level(LevelSelector.levels[level_select_index]["path"])
     elif new_page=='create_level':
         #run_editor()
         pass # level editor disabled for now
+    elif new_page == "level_select":
+        LevelSelector.draw_level(level_select_index)
     else:
         init_function=getattr(current_module, 'init_'+new_page+'_page')
         init_function(terminal)
@@ -157,12 +164,12 @@ def handle_level_select_page(val):
         
         level_select_index-=1
         if level_select_index<0:
-            level_select_index=len(levels)-1
+            level_select_index=len(LevelSelector.levels)-1
         
     if val.name=='KEY_RIGHT':
         changed=True
         level_select_index+=1
-        if level_select_index>len(levels)-1:
+        if level_select_index>len(LevelSelector.levels)-1:
             level_select_index=0
     
     # Running test gd file if space is selected
@@ -174,10 +181,11 @@ def handle_level_select_page(val):
 
     if changed:
 
-        level_info=levels[level_select_index]
-        reset_level()
-        draw_level(level_info['level_name'], level_info['level_description'], int(terminal.width*0.8), int(terminal.height*0.6), 
-                   int(terminal.width*0.1), int(terminal.height*0.3), level_info['color1'], level_info['color2'])
+        #level_info=LevelSelector.levels[level_select_index]
+        #reset_level()
+        #draw_level(level_info['level_name'], level_info['level_description'], int(terminal.width*0.8), int(terminal.height*0.6), 
+        #           int(terminal.width*0.1), int(terminal.height*0.3), level_info['color1'], level_info['color2'])
+        LevelSelector.draw_level(level_select_index)
         
 def handle_created_levels_page(val):
 
@@ -193,12 +201,12 @@ def handle_created_levels_page(val):
         
         created_levels_index-=1
         if created_levels_index<0:
-            created_levels_index=len(levels)-1
+            created_levels_index=len(LevelSelector.levels)-1
         
     if val.name=='KEY_RIGHT':
         changed=True
         created_levels_index+=1
-        if created_levels_index>len(levels)-1:
+        if created_levels_index>len(LevelSelector.levels)-1:
            created_levels_index=0
     
     # Running test gd file if space is selected
@@ -232,7 +240,7 @@ def run_level(filepath: str, practice_mode: bool = False, checkpoints: list[tupl
     global attempt
 
     game = Game(Level.parse_from_file(filepath))
-    Logger.log(f"Running level: {filepath}")
+    #Logger.log(f"Running level: {filepath}")
     # increments the attempt number
     attempt += 1
     game.attempt = attempt

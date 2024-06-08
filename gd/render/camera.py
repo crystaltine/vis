@@ -108,7 +108,7 @@ class Camera:
 
     def render_init(self) -> None:
         """ Initializes the screen with the background color, and sets self.curr_frame for the first time. """
-        self.curr_frame = CameraFrame(GDConstants.term)
+        self.curr_frame = CameraFrame()
         self.curr_frame.fill(self.level.bg_color)
         self.curr_frame.render_raw()
 
@@ -124,7 +124,7 @@ class Camera:
             # if crashed, don't render anything
             return
         
-        new_frame = CameraFrame(GDConstants.term)
+        new_frame = CameraFrame()
         new_frame.fill(self.level.bg_color)
         
         # move camera to player
@@ -198,7 +198,7 @@ class Camera:
         self.curr_frame = new_frame
 
     def render_wave_trail(self, game: "Game") -> None:
-        
+        pass # TODO
     
     # DEPRECATED - OLD LEVEL EDITOR
     def level_editor_render(self, cursor_pos: tuple, screen_pos: tuple, cur_cursor_obj):

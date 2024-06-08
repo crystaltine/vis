@@ -123,7 +123,6 @@ class LevelEditor:
         """ Draws the bar at the bottom. It has a 1px border on the top. """
         
         new_frame = CameraFrame(
-            GDConstants.term, 
             size=(self.camera_width, LevelEditor.BOTTOM_MENU_HEIGHT+1), # +1 for the border
             pos=(0, self.camera_height) # +1 for the border
         ) # +1 for the border
@@ -163,7 +162,7 @@ class LevelEditor:
         
         #Logger.log_on_screen(GDConstants.term, f"Rendering frame, cam left,bottom={self.camera_left, self.camera_bottom}, cursor@{self.cursor_position=}")
         
-        new_frame = CameraFrame(GDConstants.term, size=(self.camera_width, self.camera_height))
+        new_frame = CameraFrame(size=(self.camera_width, self.camera_height))
         new_frame.fill(self.level.bg_color)
         #new_frame.fill([randint(0, 255) for _ in range(3)])
 

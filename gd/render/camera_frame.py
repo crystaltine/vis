@@ -7,9 +7,7 @@ from logger import Logger
 import numpy as np
 from render.font import Font
 from render.constants import CameraConstants
-
-if TYPE_CHECKING:
-    from blessed import Terminal
+from gd_constants import GDConstants
 
 class CameraFrame:
     """
@@ -19,7 +17,7 @@ class CameraFrame:
     printed to the screen will assume all alpha values are 255 (opaque).
     """
 
-    def __init__(self, term: "Terminal", size: Tuple[int | None, int | None] = (None, None), pos: Tuple[int | None, int | None] = (0, 0)) -> None:
+    def __init__(self, size: Tuple[int | None, int | None] = (None, None), pos: Tuple[int | None, int | None] = (0, 0)) -> None:
         """ Optional params:
         - `size`: tuple (width, height) in pixels. None values will default to the terminal's width/height.
         - `pos`: tuple (x, y) in pixels, where the top left corner of the frame will be placed. Defaults to (0, 0) (top left of screen)
@@ -30,10 +28,9 @@ class CameraFrame:
         assert size[1] is None or size[1] % 2 == 0, f"[CameraFrame/__init__]: height must be even, instead got {size[1]}"
         assert pos[1] is None or pos[1] % 2 == 0, f"[CameraFrame/__init__]: y position must be even, instead got {pos[1]}"
         
-        self.term = term
-        self.width = size[0] if size[0] is not None else term.width
+        self.width = size[0] if size[0] is not None else GDConstants.term.width
         """ Width in pixels (1px = width of 1 monospaced character) """
-        self.height = size[1] if size[1] is not None else term.height*2
+        self.height = size[1] if size[1] is not None else GDConstants.term.height*2
         """ Height in pixels (2px = height of 1 monospaced character) """
         
         self.pos = pos
@@ -54,7 +51,7 @@ class CameraFrame:
             string1 = ""
             for j in range(self.width):
                 string1 += fco(self.pixels[self.pos[1],j], None) + '▀'
-            print2(self.term.move_xy(self.pos[0], self.pos[1]//2) + string1)
+            print2(GDConstants.term.move_xy(self.pos[0], self.pos[1]//2) + string1)
             
             # print middle rows
             stop_at = (self.pos[1] + self.height - (self.pos[1] + self.height) % 2) - 1
@@ -64,14 +61,14 @@ class CameraFrame:
                 string = ""
                 for j in range(self.width):
                     string += fco(self.pixels[i,j], self.pixels[i+1,j]) + '▀'
-                print2(self.term.move_xy(self.pos[0], i//2) + string)
+                print2(GDConstants.term.move_xy(self.pos[0], i//2) + string)
                 
             # print last line if needed
             if self.height % 2 == 0: # since y is odd, if height is even, then we have another case of a single line
                 string2 = ""
                 for j in range(self.width):
                     string2 += fco(None, self.pixels[self.pos[1]+self.height-1,j]) + '▀'
-                print2(self.term.move_xy(self.pos[0], (self.pos[1]+self.height)//2 + 1) + string2)
+                print2(GDConstants.term.move_xy(self.pos[0], (self.pos[1]+self.height)//2 + 1) + string2)
             
         else:
             
@@ -83,8 +80,8 @@ class CameraFrame:
                     string += fco(self.pixels[i,j], self.pixels[i+1,j]) + '▀' # for quick copy: ▀
                 
                 #compiled_str += string + "\n"
-                print2(self.term.move_xy(self.pos[0], (i+self.pos[1])//2) + string)
-            #print2(self.term.move_xy(self.pos[0], self.pos[1]//2) + compiled_str)
+                print2(GDConstants.term.move_xy(self.pos[0], (i+self.pos[1])//2) + string)
+            #print2(GDConstants.term.move_xy(self.pos[0], self.pos[1]//2) + compiled_str)
 
     def render(self, prev_frame: "CameraFrame") -> None:
         """ Prints the frame to the screen.
@@ -129,9 +126,9 @@ class CameraFrame:
             # go to coordinates in terminal, and print the string
             # terminal coordinates: start, i
             
-            #Logger.log_on_screen(self.term, f"[CameraFrame/render]: printing@{int(start) + self.pos[0]}, {i + self.pos[1]//2} for len {end-start+1}")
-            #Logger.log_on_screen(self.term, f"[CameraFrame/render]: printing@{int(start) + self.pos[0]},{i + self.pos[1]//2}: \x1b[0m[{string}\x1b[0m]")
-            print2(self.term.move_xy(int(start)+self.pos[0], i+self.pos[1]//2) + string)
+            #Logger.log_on_screen(GDConstants.term, f"[CameraFrame/render]: printing@{int(start) + self.pos[0]}, {i + self.pos[1]//2} for len {end-start+1}")
+            #Logger.log_on_screen(GDConstants.term, f"[CameraFrame/render]: printing@{int(start) + self.pos[0]},{i + self.pos[1]//2}: \x1b[0m[{string}\x1b[0m]")
+            print2(GDConstants.term.move_xy(int(start)+self.pos[0], i+self.pos[1]//2) + string)
 
     def fill(self, color: tuple) -> None:
         """ Fills the entire canvas with the given color. RGB (3-tuple) required. Should be pretty efficient because of numpy. """
@@ -306,6 +303,6 @@ class CameraFrame:
     
     def copy(self) -> "CameraFrame":
         """ Returns a deep copy of this CameraFrame. (except for the terminal reference) """
-        new_frame = CameraFrame(self.term, (self.width, self.height), self.pos)
+        new_frame = CameraFrame((self.width, self.height), self.pos)
         new_frame.pixels = np.copy(self.pixels)
         return new_frame

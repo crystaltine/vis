@@ -1,6 +1,6 @@
 class EngineConstants:
-    BLOCKS_PER_SECOND = 9
-    GRAVITY = 50
+    BLOCKS_PER_SECOND = 8.5
+    GRAVITY = 55
     PLAYER_JUMP_STRENGTH = 16
     """ How much the player's yvel is set to when they jump. """
     TERMINAL_VEL = 30
@@ -15,7 +15,7 @@ class EngineConstants:
     PLAYER_WAVE_HITBOX_X = 0.4
     PLAYER_WAVE_HITBOX_Y = 0.4
     
-    COOLDOWN_BETWEEN_ATTEMPTS = 0.5
+    COOLDOWN_BETWEEN_ATTEMPTS = 1
     
     YELLOW_ORB_MULTIPLIER = 1
     """ The proportion of the player's jump strength that a yellow orb gives. """
