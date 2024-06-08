@@ -65,9 +65,9 @@ class KeyboardListener:
     """ Starting the listener will set the terminal window name to this, exactly once per start(). Used to check if key events are from the current window."""
     keys: Dict[NormalKey | SpecialKey, bool] = {}
     """ A dict mapping every key name to a boolean indicating whether or not it is currently held down. """
-    on_presses: List[Callable[[KeyEvent], None]] = None
+    on_presses: List[Callable[[KeyEvent], None]] = []
     """ list of handlers for when a key is pressed down. All get run on event emit """
-    on_releases: List[Callable[[KeyEvent], None]] = None
+    on_releases: List[Callable[[KeyEvent], None]] = []
     """ list of handlers for when a key is released. All get run on event emit """
     
     def start():

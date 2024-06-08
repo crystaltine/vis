@@ -92,7 +92,7 @@ class Game:
 
                     if not self.running:
                         break     
-            except Exception as e:
+            except:
                 Logger.log(f"[Render Thread] ERROR: {traceback.format_exc()}")
                 self.running = False       
 
@@ -100,7 +100,9 @@ class Game:
             try:
                 while True:
                     #Logger.log(f"running physics tick. player pos is {self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, time_ns is {time_ns()}")
-                    if not self.running: break
+                    if not self.running: 
+                        self.audio_handler.stop_playing_song()
+                        break
                     if self.is_crashed:
                         Logger.log(f"[Physics Thread] Physics paused due to is_crashed being true. player@{[f'{num:2f}' for num in self.player.pos]}.")
                         sleep(0.01) # TODO - replace with continue or alternatively sleep until crash period ends
@@ -139,6 +141,7 @@ class Game:
         self.last_tick = time_ns()
         Thread(target=render_thread).start()
         Thread(target=physics_thread).start()
+        self.audio_handler.begin_playing_song()
         
         # Main thread handles key input
         def _handle_keydown(event: KeyEvent) -> None:
@@ -198,6 +201,7 @@ class Game:
         The old function for crash handling. Might convert to normal mode crash later on.
         """
         Logger.log(f"[Game/crash_normal]: Player crashed!")
+        self.audio_handler.stop_song_and_play_crash()
         self.is_crashed = True
         #self.running=True
         # self.player=Player()
@@ -233,6 +237,9 @@ class Game:
         self.attempt_number += 1
 
         # if reseting, restart the level
+        Logger.log(f"reseting = {reseting} also attempting to play song again (in start_level func)")
+        # start song again
+        self.audio_handler.begin_playing_song() # TODO - verify wtf reseting does (why is it false)
         if reseting:
             self.start_level()
 

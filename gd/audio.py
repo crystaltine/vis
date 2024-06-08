@@ -1,5 +1,6 @@
 from pygame import mixer
 from threading import Thread
+from gd_constants import GDConstants
 import time
 
 mixer.init()
@@ -17,7 +18,7 @@ class AudioHandler:
         self.thread: Thread = None
         """ The thread object the music is playing on. Is None until begin_playing_song is called at least once. """
         
-        mixer.music.set_volume(0.5)
+        mixer.music.set_volume(GDConstants.AUDIO_VOLUME)
 
     def begin_playing_song(self) -> None:
         """ Begins playing the song from the start offset using this instance's decicated thread. """
@@ -33,16 +34,19 @@ class AudioHandler:
                 time.sleep(0.01)
         
         self.thread = Thread(target=play)
+        self.thread.daemon = True
         self.thread.start()
         
     def stop_playing_song(self) -> None:
-        """ Stops playing the current song. """
+        """ Stops playing the current song. This also ends the thread. """
         mixer.music.stop()
         self.song_playing = False
         
-    def play_crash_sound(self) -> None:
+    def stop_song_and_play_crash(self) -> None:
         """ Stops this instance's song and plays the crash sound. 
-        This sound DOES NOT RUN ON A SEPARATE THREAD. """
+        Does not block the thread, so as soon as the play song func is called again, 
+        this sound cuts off and the song starts immediately. """
+        
         self.stop_playing_song()
 
         mixer.music.load(self.CRASH_SOUND_PATH)

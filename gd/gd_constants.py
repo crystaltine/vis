@@ -12,6 +12,8 @@ class GDConstants:
     NUM_SPIKE_SHORT_TEXTURES = 5
     NUM_SPIKE_FLAT_TEXTURES = 2
     
+    AUDIO_VOLUME = 0.3
+    
     class difficulties(Enum):
         na = "na"
         auto = "auto"
