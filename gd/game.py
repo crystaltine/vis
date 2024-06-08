@@ -218,16 +218,14 @@ class Game:
 
     def crash(self):
         """ Run when a player DIES (not when they click restart button) """
-        
-        Logger.log(f"[Game/crash_normal]: Player crashed! (died, not restarted)")
-        
+                
         self.audio_handler.stop_song_and_play_crash()
         self.is_crashed = True
 
         sleep(EngineConstants.COOLDOWN_BETWEEN_ATTEMPTS)
 
         # if the player dies too quickly and is in practice mode, remove the most recent checkpoint
-        if time.time() - self.game_start_time < 1 and self.practice_mode:
+        if time.time() - self.game_start_time < 2 and self.practice_mode:
             self.practicemodeobj.remove_checkpoint()
 
         # reset game start time and last checkpoint time
@@ -261,6 +259,13 @@ class Game:
         for obj in self.activated_objects:
             obj.has_been_activated = False
         self.last_tick = time_ns() # this is to prevent moving forward while we are dead lol
+
+        if new_pos:
+            x, y = new_pos
+            self.player.pos = [x, y] 
+        
+        self.game_start_time = time.time()
+
         self.attempt_number += 1
 
         # restart song
@@ -316,19 +321,16 @@ class Game:
                 self.changed = True
             elif str(event) == 'enter':
                 if self.pausemenuselectindex == 0:
-                    self.reset_level()
+                    self.restart()
                 elif self.pausemenuselectindex == 1:
                     self.unpause()
                 elif self.pausemenuselectindex == 2:
                     self.practice_mode = not self.practice_mode
                     if not self.practice_mode:
                         self.practicemodeobj.clear_checkpoints()
-                    self.reset_level()
+                    self.restart()
                 elif self.pausemenuselectindex == 3:
                     self.exiting = True
-                
-                KeyboardListener.on_presses.clear()
-                KeyboardListener.stop()
             if self.changed:
                 self.draw_pause_menu_buttons()
                 self.changed = False
@@ -388,6 +390,7 @@ class Game:
         # in pract mode, dont clear checkpoints
         #self.practicemodeobj.clear_checkpoints()
         self.reset_level()
+        self.start_level()
 
         # OLD RESET CODE - ATTEMPT TO TERMINATE THE THREADS FAILED MISERABLY
         # self.running = False
