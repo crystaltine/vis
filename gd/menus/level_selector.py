@@ -37,6 +37,7 @@ class LevelSelector:
             'progress_normal': 0.95,
             'progress_practice': 1,
         },
+
         {
             'name':'Back On Track',
             'color': (223, 45, 180),
