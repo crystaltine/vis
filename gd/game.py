@@ -10,7 +10,7 @@ from render.constants import CameraConstants
 from engine.constants import EngineConstants
 from engine.player import Player
 from engine.collision_handler import CollisionHandler
-from draw_utils import Position
+from draw_utils import Position, draw_rect
 from img2term.main import draw
 from bottom_menu import draw_text
 from level import Level
@@ -19,6 +19,7 @@ from keyboard.key_event import KeyEvent
 from practice_mode import PracticeMode
 from gd_constants import GDConstants
 from audio import AudioHandler
+from render.texture_manager import TextureManager
 
 class Game:
     """
@@ -96,6 +97,19 @@ class Game:
                 Logger.log(f"[Render Thread] ERROR: {traceback.format_exc()}")
                 self.running = False       
 
+        def check_if_level_complete():
+            if self.player.pos[0]-10>=self.level.length:
+                
+                # This means the player beat the level
+
+                self.running=False
+                
+                new_frame=self.camera.curr_frame.copy()
+                new_frame.add_rect((0,0,0), 0, 0, new_frame.width, new_frame.height)
+                new_frame.add_text(int(new_frame.width*0.5), int(new_frame.height*0.1), TextureManager.font_title, 'Level Complete')
+                new_frame.add_text(int(new_frame.width*0.5), int(new_frame.height*0.5), TextureManager.font_small1, f"Total Attempts: {self.attempt_number}")
+                new_frame.render(self.camera.curr_frame)
+
         def physics_thread():
             try:
                 while True:
@@ -108,7 +122,11 @@ class Game:
                         sleep(0.01) # TODO - replace with continue or alternatively sleep until crash period ends
                         # continuing here is a bad idea, because we need to sleep to prevent the thread from running too fast
                         # and slowing everything down.
-                    
+
+                    # Check if level is complete
+
+                    check_if_level_complete()
+
                     # check collisions
                     self.player.curr_collisions = self.collision_handler.generate_collisions()
                     
