@@ -13,7 +13,7 @@ class Font:
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
         "abcdefghijklmnopqrstuvwxyz",
         "~`0123456789-_+=",
-        "!@#$%^&*()[{]}|\\\;:'\",<.>/?",
+        "!@#$%^&*()[{]}|\\;:'\",<.>/?",
     ]
     
     def __init__(self, path_to_font_png: str):

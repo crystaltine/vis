@@ -1,4 +1,4 @@
-from copy import deepcopy
+from typing import Tuple
 from time import time_ns, sleep
 from threading import Thread
 import traceback
@@ -196,27 +196,15 @@ class Game:
         KeyboardListener.on_releases.append(_handle_keyup)
         KeyboardListener.start()
 
-    def crash_normal(self, reseting: bool = False, restart: bool = True):
-        """
-        The old function for crash handling. Might convert to normal mode crash later on.
-        """
-        Logger.log(f"[Game/crash_normal]: Player crashed!")
+    def crash(self):
+        """ Run when a player DIES (not when they click restart button) """
+        
+        Logger.log(f"[Game/crash_normal]: Player crashed! (died, not restarted)")
+        
         self.audio_handler.stop_song_and_play_crash()
         self.is_crashed = True
-        #self.running=True
-        # self.player=Player()
-        #self.start_level()
-        #self.running = False
-        if not restart:
-            self.running = False
-            return
 
         sleep(EngineConstants.COOLDOWN_BETWEEN_ATTEMPTS)
-        self.is_crashed = False
-        self.player.reset_physics()
-        for obj in self.activated_objects:
-            obj.has_been_activated = False
-        self.last_tick = time_ns() # this is to prevent moving forward while we are dead lol
 
         # if the player dies too quickly and is in practice mode, remove the most recent checkpoint
         if time.time() - self.game_start_time < 1 and self.practice_mode:
@@ -225,23 +213,39 @@ class Game:
         # reset game start time and last checkpoint time
         self.practicemodeobj.reset_checkpoint_time()
         self.game_start_time = time.time()
-
+        
         # if player is in practice mode and there is a checkpoint, respawn the player at the checkpoint
         if self.practice_mode and self.practicemodeobj.is_checkpoint():
-            # Logger.log(f"Last checkpoint is {self.practicemodeobj.last_checkpoint} so {self.practicemodeobj.is_checkpoint()}")
-            x, y = self.practicemodeobj.get_last_checkpoint()
-            self.player.pos = [x, y]
 
-        # otherwise, restart the level by setting pos back to beginning 
-        # also, NOTE: reset song if that is implemented
+            self.reset_level(self.practicemodeobj.get_last_checkpoint())
+        else: # restart at beginning of level
+            self.reset_level()
+        
+    def reset_level(self, new_pos: Tuple[int, int] = None) -> None:
+        """ 
+        Runs logic for resetting the level, but doesnt do anything about crash logic (playing sound, etc.) 
+        
+        Here's what this func does:
+        - Stops the song if its playing
+        - Sets self.is_crashed to False
+        - Resets the player's physics
+        - Resets the activated objects (sets their has_been_activated to False)
+        - Resets the last tick time to now (prevent moving forward while not alive)
+        - adds 1 to the attempt number
+        - begins playing the song again
+        """
+        
+        self.audio_handler.stop_playing_song()
+        self.is_crashed = False
+        
+        self.player.reset_physics(new_pos)
+        for obj in self.activated_objects:
+            obj.has_been_activated = False
+        self.last_tick = time_ns() # this is to prevent moving forward while we are dead lol
         self.attempt_number += 1
 
-        # if reseting, restart the level
-        Logger.log(f"reseting = {reseting} also attempting to play song again (in start_level func)")
-        # start song again
-        self.audio_handler.begin_playing_song() # TODO - verify wtf reseting does (why is it false)
-        if reseting:
-            self.start_level()
+        # restart song
+        self.audio_handler.begin_playing_song()
 
     def pause(self) -> None:
         """
@@ -368,27 +372,14 @@ class Game:
         self.start_level()
         self.paused = False
 
-    def crash(self) -> None:
+    def restart(self) -> None:
         """
-        Handles the game crash event.
-        First, stops the game. If the played died within 0.4 seconds of starting and
-        is in practice mode, it removes the last checkpoint assuming it will lead
-        to an infinite death loop. Finally, it then resets the game.
+        Run when the player clicks the restart button. (similar to crash except they didnt die)
         """
-        self.running = False
 
-        if time.time() - self.game_start_time < 0.4 and self.practice_mode and self.checkpoints:
-            self.checkpoints.pop()
-            self.last_checkpoint = self.checkpoints[-1] if self.checkpoints else None
-
-        self.reset()
-
-    def reset(self) -> None:
-        """
-        Resets the level.
-        """
-        self.practicemodeobj.clear_checkpoints()
-        self.crash_normal(True)
+        # in pract mode, dont clear checkpoints
+        #self.practicemodeobj.clear_checkpoints()
+        self.reset_level()
 
         # OLD RESET CODE - ATTEMPT TO TERMINATE THE THREADS FAILED MISERABLY
         # self.running = False

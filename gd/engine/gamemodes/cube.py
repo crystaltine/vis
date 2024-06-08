@@ -34,7 +34,7 @@ def tick_cube(player: "Player", timedelta: float) -> None:
             player.yvel = 0
             player.in_air = False          
         elif player.gravity < 0: # neg gravity, jumping into ceiling = die
-            player.game.crash_normal()
+            player.game.crash()
     
     # if gravity is + (down) and we have a "top" collision, adjust the y position to be on top of the block
     elif (player.gravity > 0 and any(collision.vert_side == "top" for collision in player.curr_collisions)):
