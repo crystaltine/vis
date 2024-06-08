@@ -136,6 +136,17 @@ class CameraFrame:
 
         self.pixels[:,:] = color
 
+    type Anchor = Literal[
+        "top-left", 
+        "top-right", 
+        "bottom-left", 
+        "bottom-right", 
+        "center",
+        "top",
+        "bottom",
+        "left",
+        "right"
+    ]
     def add_rect(
         self, 
         color: CameraConstants.RGBTuple | CameraConstants.RGBATuple, 
@@ -143,7 +154,7 @@ class CameraFrame:
         width: int, height: int,
         outline_width: int = 0,
         outline_color: CameraConstants.RGBTuple | CameraConstants.RGBATuple = (0,0,0,0),
-        anchor: Literal["top-left", "top-right", "bottom-left", "bottom-right", "center"] = "top-left",
+        anchor: Anchor = "top-left",
         ) -> None:
         """ Places a rectangle on the frame with the given RGBA color and position.
         Optionally, can add an outline to the rectangle with the given width and color. 
@@ -180,6 +191,22 @@ class CameraFrame:
                 x2 -= width // 2
                 y1 -= height // 2
                 y2 -= height // 2
+            case "top":
+                x1 -= width // 2
+                x2 -= width // 2
+            case "bottom":
+                x1 -= width // 2
+                x2 -= width // 2
+                y1 -= height
+                y2 -= height
+            case "left":
+                y1 -= height // 2
+                y2 -= height // 2
+            case "right":
+                y1 -= height // 2
+                y2 -= height // 2
+                x1 -= width
+                x2 -= width
         
         blend_rgba_img_onto_rgb_img_inplace(self.pixels[y1:y2, x1:x2], rect_as_pixels)
         

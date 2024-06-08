@@ -93,6 +93,9 @@ class Level:
         
         self.bg_color = metadata["start_settings"]["bg_color"]
         self.ground_color = metadata["start_settings"]["ground_color"]
+        
+        self.filepath: str = ...
+        """ Stores the filepath of the level. ONLY SET IF parse_from_file IS USED. """
     
     @staticmethod
     def parse_from_file(filepath: str) -> "Level":
@@ -141,6 +144,7 @@ class Level:
                 row.extend([None] * len_diff)
 
         level = Level(metadata, leveldata)
+        level.filepath = filepath
 
         # parse & set default color channels    
         default_color_channels = metadata["start_settings"]["default_color_channels"]
@@ -226,12 +230,26 @@ class Level:
         Optionally can specify a start and end index to slice the row. If end is None, will go till the end of the row. """
         return self.leveldata[self.height - y - 1][start:end]
     
-    def set_color_channel(self, id: int, new_color: CameraConstants.RGBTuple):
-        """ Update the color of a color channel. Creates a new channel if it doesn't exist. """
-        self.color_channels[id] = new_color
+    def set_color_channel(self, id: Literal["bg", "grnd"] | int, new_color: CameraConstants.RGBTuple):
+        """ Update the color of a color channel. id must be int, "bg", or "grnd"
+        Creates a new channel if it doesn't exist. """
         
-    def get_color_channel(self, id: int) -> CameraConstants.RGBTuple:
+        if id == "bg":
+            self.bg_color = new_color
+        elif id == "grnd":
+            self.ground_color = new_color
+        else:
+            self.color_channels[id] = new_color
+        
+    def get_color_channel(self, id: Literal["bg", "grnd"] | int) -> CameraConstants.RGBTuple:
         """ Get the current color of a color channel. If the channel was never set, sets it to `(255, 255, 255)` (white) and returns that. """
+        
+        if id == "bg":
+            return self.bg_color
+        elif id == "grnd":
+            return self.ground_color
+        
+        # else, assume numeric
         self.color_channels.setdefault(id, (255, 255, 255))
         return self.color_channels[id]
     

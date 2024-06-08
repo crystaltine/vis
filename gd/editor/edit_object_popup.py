@@ -233,10 +233,10 @@ class EditObjectPopup:
 
         raise ValueError(f"[EditObjectPopup/get_selected_button_index]: Could not find matching enum member for obj property {property_to_use} in {enum_to_use} (self.selected_setting_idx={self.selected_setting_idx})")
 
-    def handle_key(self, key: "Keystroke") -> bool:
+    def handle_key(self, key: "Keystroke") -> Literal["close"] | None:
         """ Performs actions on this instance based on key pressed. Returns True if popup closed, False otherwise. """
         if key == "\x1b":
-            return True
+            return "close"
         elif key.name in ["KEY_TAB", "KEY_DOWN"]: # go down (forward) one row
             self.selected_setting_idx = (self.selected_setting_idx + 1) % 4
             self.selected_button_idx = self.get_selected_button_index()
@@ -262,4 +262,5 @@ class EditObjectPopup:
                 self.obj.color2_channel = max(self.obj.color2_channel, 0)
 
         self.render()
-        return False
+        
+        

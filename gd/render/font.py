@@ -67,7 +67,11 @@ class Font:
                 
         # lastly, define space as just an empty (0,0,0,0) array of same shape as the other symbols
         self.symbols[' '] = np.zeros_like(self.symbols['A'])
-                
+    
+    def get_width_of(self, num_chars: int) -> int:
+        """ Returns the pixel width of a string of len `num_chars` if it were to be drawn in this font. """
+        return num_chars*self.font_width + (num_chars-1) # add spacing between characters
+       
     def __getitem__(self, key: str) -> np.ndarray:
         """
         Returns the image of the symbol specified. KeyError if the symbol does not exist.

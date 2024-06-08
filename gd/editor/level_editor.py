@@ -11,6 +11,7 @@ from gd_constants import GDConstants
 from engine.objects import OBJECTS
 from level import Level, LevelObject, AbstractLevelObject
 from editor.edit_object_popup import EditObjectPopup
+from editor.edit_color_popup import EditColorPopup
 from editor.level_settings_popup import LevelSettingsPopup
 
 if TYPE_CHECKING:
@@ -99,7 +100,7 @@ class LevelEditor:
         
         self.curr_main_frame: CameraFrame = None
         self.curr_bottom_menu_frame: CameraFrame = None
-        self.focused_popup: "EditObjectPopup | LevelSettingsPopup | None" = None
+        self.focused_popup: "EditObjectPopup | EditColorPopup | LevelSettingsPopup | None" = None
         """ If true, the editor is currently in a popup window; disable general keybinds & pause main editor rendering. """
         self.rerender_needed = True
         """ If True, the editor will rerender the frame on the next keylistener loop. Set to true when anything on the screen changes. """
@@ -274,6 +275,10 @@ class LevelEditor:
                 self.mode = 'build' if self.mode == 'edit' else 'edit'
                 #Logger.log_on_screen(GDConstants.term, f">>> Toggled leveleditor mode to {self.mode}")
                 self.rerender_needed = True
+                
+            elif val in LevelEditor.KEYBINDS['open_settings']:
+                self.focused_popup = LevelSettingsPopup(self.curr_main_frame.copy(), self.level)
+                self.focused_popup.render()
             
             # moving - i know this type of definition is inefficient, but it allows for custom keybinding
             elif val in LevelEditor.KEYBINDS['move_cursor_up']:
@@ -366,9 +371,9 @@ class LevelEditor:
             if hovered_obj is None: return # no object to edit = edit mode will do nothing.
             
             if val in LevelEditor.KEYBINDS["edit_object"]:
-                if hovered_obj is not None:
-                    self.focused_popup = EditObjectPopup(self.curr_main_frame.copy(), hovered_obj, self.level)
-                    self.focused_popup.render()
+                self.focused_popup = EditObjectPopup(self.curr_main_frame.copy(), hovered_obj, self.level)
+                self.focused_popup.render()
+                    
             elif val in LevelEditor.KEYBINDS['rotate_clockwise']: # rotate curr object at cursor
                 hovered_obj.rotate('clockwise')
                 self.rerender_needed = True
@@ -398,15 +403,28 @@ class LevelEditor:
                             self.running = False
                     else:
                         try:
-                            should_quit = self.focused_popup.handle_key(in_val)
-                            if should_quit:
-                                self.focused_popup = None
-                                self.render_main_editor(render_raw=True)
-                                self.render_bottom_menu()
+                            returncode = self.focused_popup.handle_key(in_val)
+                            match returncode:
+                                case "close":
+                                    self.focused_popup = None
+                                    self.render_main_editor(render_raw=True)
+                                    self.render_bottom_menu()
+                                case "open-colors": # close popup, open color popup
+                                    self.focused_popup = None
+                                    self.render_main_editor(render_raw=True)
+                                    self.render_bottom_menu()
+                                    self.focused_popup = EditColorPopup(self.curr_main_frame.copy(), self.level, "bg")
+                                    self.focused_popup.render()
+                                case "save-quit": # quit editor
+                                    self.save()
+                                    self.running = False
+                                    break
+                            
                         except:
                             Logger.log(f"[LevelEditor/key handler (IN POPUP)]: {traceback.format_exc()}")
                             print(f"[LevelEditor/key handler (IN POPUP)] ERROR: {traceback.format_exc()}")
                             self.running = False
+                            
                 else: continue                
                 
                 if self.rerender_needed and self.focused_popup is None: # rerender if stuff changed
