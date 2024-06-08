@@ -310,9 +310,7 @@ class Game:
         self.running = False
         self.paused = True
         # calculates progress bar based on length of level and player position
-        progresspercent = round(((self.player.pos[0]+10) / self.level.length) * 100)
-        if progresspercent>100:
-            progresspercent=100
+        progresspercent = self.get_progress_percentage()
         # sets selected index to play button
         self.pausemenuselectindex = 1
         
