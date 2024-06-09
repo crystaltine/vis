@@ -70,6 +70,12 @@ class MainMenu(GenericMenu):
             MainMenu.editor_button if MainMenu.selected_option != 2 else MainMenu.editor_button_outline
         )
         
+        # draw version at bottom left lol (padding 2px, 2px)
+        version_text_left = 2
+        version_text_center = round(new_frame.height - 2 - TextureManager.font_small1.font_height/2)
+        
+        new_frame.add_text(version_text_left, version_text_center, TextureManager.font_small1, f"ver {GDConstants._VERSION}", anchor="left")
+        
         if MainMenu.curr_frame is not None:
             new_frame.render(MainMenu.curr_frame)
         else: 

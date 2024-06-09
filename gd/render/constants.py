@@ -24,6 +24,9 @@ class CameraConstants:
     GROUND_HEIGHT = 3
     """ Max height of the ground in BLOCKS. This determines how much the rest of the level is "pushed up" """
     
+    GROUND_TEXTURE_PERIOD = 22
+    """ How many blocks the ground texture repeats every. THIS IS DEPENDENT ON THE ACTUAL ASSET"""
+    
     PROGRESS_BAR_MARGIN_TOP_PX = 3 # px
     PROGRESS_BAR_PADDING_PX = 1 # px
     PROGRESS_BAR_HEIGHT_PX = 1 # px

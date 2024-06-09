@@ -128,8 +128,6 @@ class Camera:
         new_frame = CameraFrame()
         new_frame.fill(self.level.bg_color)
         
-        Logger.log(f"logging smth")
-        
         # move camera to player
         #Logger.log(f"[1] screen pos for playher: {self.player_y_info['screen_pos']}")
         self.update_camera_y_pos(game.player.pos)
@@ -184,7 +182,7 @@ class Camera:
         
         # draw ground. The top of the ground ground should be at physics y=0.
         # TODO - make ground recolorable/move
-        new_frame.add_pixels_topleft(0, ground_screen_y_pos, TextureManager.base_textures.get("ground"))
+        new_frame.add_pixels_topleft(0, ground_screen_y_pos, TextureManager.get_curr_ground_texture(self.level, game.player.get_dist_from_start()))
 
         # draw player
         player_xpos_on_screen = CameraConstants.CAMERA_LEFT_OFFSET * CameraConstants.BLOCK_WIDTH

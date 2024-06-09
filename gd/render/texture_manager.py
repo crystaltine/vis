@@ -48,6 +48,11 @@ class TextureManager:
     `{object name}_{rotation}_{reflection}_{color1|None}_{color2|None}`
     """
     
+    # currently unused
+    ground_texture_cache = {}
+    """ Cache for ground textures.
+    Key is color, value is a list of CameraConstants.GROUND_TEXTURE_PERIOD textures that correspond to the different offsets."""
+    
     # load fonts
     font_small1 = Font("./assets/fonts/small1.png")
     font_title = Font("./assets/fonts/title.png")
@@ -283,6 +288,37 @@ class TextureManager:
     def get_curr_player_icon(player: "Player") -> np.ndarray:
         """ Returns the current player icon based on the player's current rotation. """
         return TextureManager.player_icons[player.gamemode][player.get_animation_frame_index()]
+    
+    def get_curr_ground_texture(level: "Level", player_x: float) -> np.ndarray:
+        """ Returns current ground texture, recolored and offset based on the player's position and level colors. """
+        
+        ground_offset = round(player_x*CameraConstants.BLOCK_WIDTH)%CameraConstants.GROUND_TEXTURE_PERIOD
+        
+        # ground texture cache system, disabled cuz it wasnt working and not using a cache is fine cuz its numpy...
+        #Logger.log(f"player dist from start={player.get_dist_from_start()}: offset={ground_offset}")
+        
+        #ground_color = tuple(level.ground_color)
+        
+        # try to find in cache
+        #cached_list = TextureManager.ground_texture_cache.get(ground_color)
+        #if cached_list is None:
+        #    TextureManager.ground_texture_cache[ground_color] = [] # init cache list
+        #else: # cache list exists, but index might not
+        #    if ground_offset < len(cached_list):
+        #        # cache hit!
+        #        Logger.log(f"ground offset: {ground_offset}, len: {len(cached_list)}")
+        #        return cached_list[ground_offset].copy()
+            
+        # not found in cache, calculate and save
+        
+        recolored_ground = TextureManager.colorize_texture(TextureManager.base_textures["ground"].copy(), level.ground_color, None)
+    
+        # the ground texture is periodic with period CameraConstants.GROUND_TEXTURE_PERIOD px. 
+        # calculate player position in px, mod ^^, and offset the texture by that amount
+        recolored_ground = np.roll(recolored_ground, -ground_offset, axis=1)
+        #TextureManager.ground_texture_cache[ground_color].append(recolored_ground)
+        
+        return recolored_ground
     
 ####### preload all base textures
 
