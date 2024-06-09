@@ -1,6 +1,7 @@
 from typing import List, Tuple, Dict, TYPE_CHECKING, Literal, TypedDict
 from copy import deepcopy
 import json
+from time import time
 
 from logger import Logger
 from gd_constants import GDConstants
@@ -66,8 +67,6 @@ LEVEL_TYPES: Dict[str, LevelMetadata] = {
     "created": CreatedLevelMetadata,
     "online": OnlineLevelMetadata
 }
-
-
 
 class LevelParseError(Exception):
     pass
@@ -267,7 +266,23 @@ class Level:
         
         #Logger.log(f"Level.get_colors_of: {object} has colors {curr_color1}, {curr_color2}")
         return curr_color1, curr_color2      
+    
+    def create_new_file(self, name: str) -> None:
+        """ Creates a new (created-type) level file with the specified name, default metadata for everything else. """
+    
+        # default created level template is in ./levels/DEFAULT_CREATED_LEVEL.json
+        default_data = json.load(f:=open("./levels/DEFAULT_CREATED_LEVEL.json", 'r'))
+        f.close()
         
+        default_data["metadata"]["name"] = name
+        default_data["metadata"]["created_timestamp"] = time()
+        default_data["metadata"]["modified_timestamp"] = time()
+        
+        # save it as a new file at ./levels/created/name.json
+        new_filepath = f"./levels/created/{name}.json"
+        json.dump(default_data, f2:=open(new_filepath, 'w'))
+        f2.close()
+    
 class ObjectData(TypedDict):
     name: str
     hitbox_type: str

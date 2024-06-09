@@ -109,6 +109,12 @@ class MenuHandler:
                         MenuHandler.run_level(CreatedLevelsMenu.get_selected_level_filepath())
                     case "edit_current_level":
                         MenuHandler.edit_level(CreatedLevelsMenu.get_selected_level_filepath())
+                        
+                    ### CREATE NEW LEVEL PAGE
+                    case "goto_custom_levels_menu":
+                        MenuHandler._render_page("custom_levels")
+                    case "goto_created_levels_menu":
+                        MenuHandler._render_page("created_levels")
     
     def run_level(filepath: str) -> None:
         
@@ -153,8 +159,9 @@ class MenuHandler:
     
     
 
-    def _render_page(page_name: str):
-        """ Renders the specified menu page and updates the current page field """
+    def _render_page(page_name: str, *args, **kwargs) -> None:
+        """ Renders the specified menu page and updates the current page field, 
+        optionally allowing extra params for the render() method """
         MenuHandler.current_page = page_name
-        MenuHandler.MENU_LIST[MenuHandler.current_page].render()
+        MenuHandler.MENU_LIST[MenuHandler.current_page].render(*args, **kwargs)
         
