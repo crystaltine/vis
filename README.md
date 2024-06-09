@@ -1,6 +1,8 @@
 # Vis
 A collection of app remakes in the terminal. This is a recreational project and these apps are only intended for casual use.
 
+Design Doc (Incomplete as of 1:43 AM, Jun 9): https://docs.google.com/document/d/13SuaRq5GfgQj59z0zWa9jua5XY7AGnjDIIRWVS-Cgh4/edit?usp=sharing
+
 ## Viscord
 Viscord is a small demake of the popular chatting app Discord. It uses our own backend and user accounts, and allows for text chatting, voice chatting, and video streaming.
 
@@ -24,7 +26,7 @@ python main.py
 ```
 This should take you to the homescreen, from which the entire game is accessible.
 
-[]
+### More documentation coming soon. For now, check out [our design doc](https://docs.google.com/document/d/13SuaRq5GfgQj59z0zWa9jua5XY7AGnjDIIRWVS-Cgh4/edit?usp=sharing)
 
 ### Visage
 A scrapped framework inspired by HTML for creating graphical user interfaces (GUIs) inside modern terminals.
