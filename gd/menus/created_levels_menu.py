@@ -64,7 +64,7 @@ class CreatedLevelsMenu(GenericMenu):
     NORMAL_BAR_COLOR = (123, 255, 0)
     PRACTICE_BAR_COLOR = (140, 255, 251)
 
-    def parse_created_levels_file() -> List:
+    def parse_created_levels_files() -> List:
 
         created_levels=[]
 
@@ -80,7 +80,14 @@ class CreatedLevelsMenu(GenericMenu):
         Logger.log(created_levels)
         return created_levels
     
-    created_levels=parse_created_levels_file()
+    def indexof_level_with_name(name: str) -> int:
+        """ Return the index of the level with the given name in the created_levels list, or -1 if not found """
+        for i, level in enumerate(CreatedLevelsMenu.created_levels):
+            if level['name'] == name:
+                return i
+        return -1
+    
+    created_levels=parse_created_levels_files()
     
     @classmethod
     def render(c):
