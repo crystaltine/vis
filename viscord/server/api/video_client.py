@@ -134,6 +134,7 @@ def handle_client(conn, addr):
 
 
     data = conn.recv(1024)
+    data = json.loads(data.decode())
     
     user_id = data["id"]
     role = data["role"]
