@@ -183,9 +183,11 @@ class CameraFrame:
         Optionally, can add an outline to the rectangle with the given width and color. 
         Can also specify what part of the rectangle x and y refer to. (default is top left)"""
 
-        # add alpha to color if it's an rgb tuple
+        # add alpha to color/outline if it's an rgb tuple
         if len(color) == 3:
             color = (*color, 255)
+        if len(outline_color) == 3:
+            outline_color = (*outline_color, 255)
             
         rect_as_pixels = np.full((height+outline_width*2, width+outline_width*2, 4), outline_color, dtype=np.uint8)
         
@@ -231,7 +233,29 @@ class CameraFrame:
                 x1 -= width
                 x2 -= width
         
-        blend_rgba_img_onto_rgb_img_inplace(self.pixels[y1:y2, x1:x2], rect_as_pixels)
+        # if any coords go out of bounds, set it to the edge of the frame and clip the rect_as_pixels
+        clipped_y1 = max(0, y1)
+        clipped_y2 = min(self.height, y2)
+        clipped_x1 = max(0, x1)
+        clipped_x2 = min(self.width, x2)
+        
+        offset_y1 = clipped_y1 - y1
+        offset_y2 = clipped_y2 - y2
+        offset_x1 = clipped_x1 - x1
+        offset_x2 = clipped_x2 - x2
+        
+        # clip the rect_as_pixels
+        clipped_rect_as_pixels = rect_as_pixels[
+            int(offset_y1):int(rect_as_pixels.shape[0]-offset_y2), 
+            int(offset_x1):int(rect_as_pixels.shape[1]-offset_x2)
+        ]
+        
+        blend_rgba_img_onto_rgb_img_inplace(
+            self.pixels[
+                clipped_y1:clipped_y2,
+                clipped_x1:clipped_x2
+            ], clipped_rect_as_pixels
+        )
         
     def add_text(
         self, 
