@@ -159,7 +159,7 @@ def handle_client(conn, addr):
         # TODO
         global_state.add_to_clients(user_id, None, None, blank_dict=True)
         print(f"SENDER ESTABLISHED: {user_id}")
-        s.sendall(b"ack")
+        conn.sendall(b"ack")
 
     while True:
         try:
