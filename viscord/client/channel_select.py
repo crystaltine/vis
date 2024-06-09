@@ -12,6 +12,7 @@ import random
 import importlib
 
 import messages
+import voice_client
 
 global update_direction
 update_direction = 0
@@ -171,6 +172,6 @@ def main(server_data, user_token):
                 create_invite.main(user_token, server["server_id"])
                 redraw_all()
             elif val == "\x0b":
-                import voice_client
+                importlib.reload(voice_client)
                 voice_client.main(user_token, server["server_id"], data[selection]["chat_id"])
                 redraw_all()

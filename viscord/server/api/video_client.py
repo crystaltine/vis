@@ -159,10 +159,11 @@ def handle_client(conn, addr):
         # TODO
         global_state.add_to_clients(user_id, None, None, blank_dict=True)
         print(f"SENDER ESTABLISHED: {user_id}")
+        s.sendall(b"ack")
 
     while True:
         try:
-            data = conn.recv(1024 * 10)
+            data = conn.recv(9000)
         except Exception as e:
             global_state.purge(user_id)
             break

@@ -71,12 +71,10 @@ def encode_video(int_array):
 
 
 def decode_video(byte_array):
-    int_array = []
-    
+    ints = []
     for i in range(0, len(byte_array), 2):
-        num = (byte_array[i] << 8) | byte_array[i+1]
-        int_array.append(num)
-    return int_array
+        ints.append((byte_array[i] << 8) | byte_array[i+1])
+    return ints
 
 def draw_menu():
     tlx = int(term.width * 0.3)
@@ -218,6 +216,8 @@ def create_video_sender(user_id, channel):
         "chat_id": channel
         }).encode())
     
+    s.recv(1024)
+    
     vidcap = cv2.VideoCapture(0)
 
     while transmitting:
@@ -246,12 +246,13 @@ def create_video_sender(user_id, channel):
 
             
             temp = bytes(encode_video(pixels))
-
+            print(f"sending: {len(temp)} bytes")
             s.sendall(temp)
 
         except:
             break
     s.close()
+    vidcap.release()
 
 
 def create_video_listener(user_id, target, chat_id):
@@ -265,20 +266,41 @@ def create_video_listener(user_id, target, chat_id):
         "target": target
     }).encode())
 
-    output_stream = audio.open(format=FORMAT,
-                    channels=CHANNELS,
-                    rate=RATE,
-                    output=True,
-                    frames_per_buffer=CHUNK)
-
     while transmitting:
         try:
-            data = s.recv(2048)
+            data = s.recv(1024 * 10)
         except:
             s.close()
             break
         if data:
-            output_stream.write(data)
+            video_data = decode_video(data)
+            print(len(video_data))
+
+            printed = term.move_yx((term.height - height) // 2, (term.width - width) // 2)
+
+            for y in range(0, height, 2):
+                for x in range(width):
+                    
+                    p1 = video_data[y * width + x]
+                    p2 = video_data[(y + 1) * width + x]
+
+                    b1 = p1 >> 8
+                    g1 = (p1 >> 4) & 0xf
+                    r1 = p1 & 0xf
+
+                    b2 = p2 >> 8
+                    g2 = (p2 >> 4) & 0xf
+                    r2 = p2 & 0xf
+
+
+
+
+                    char = "▀"
+                    printed = printed + (term.on_color_rgb(r2 * 16, g2 * 16, b2 * 16) + term.color_rgb(r1 * 16, g1 * 16, b1 * 16) + char + term.normal)
+                printed = printed + term.move_yx((term.height - height + y) // 2, (term.width - width) // 2)
+            print(printed, end="", flush=True)
+
+
         else:
             break
     s.close()
@@ -324,7 +346,6 @@ def main(user_token, server_id, channel_id):
 
 
     # VIDEO CONNECTIONS
-
     try:
         resp = requests.post(f"https://{config.HOST}:{config.PORT}/api/video/join", json={"user_token": user_token, "server_id": server_id, "chat_id": channel_id})
     except Exception as e:
@@ -340,6 +361,7 @@ def main(user_token, server_id, channel_id):
         else:
             threading.Thread(target=create_video_listener, args=(user_id, target, channel_id)).start()
 
+    threading.Thread(target=create_video_listener, args=(user_id, user_id, channel_id)).start()
     threading.Thread(target=create_video_sender, args=(user_id, channel_id)).start()
 
 
