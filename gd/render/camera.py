@@ -65,6 +65,7 @@ class Camera:
         
         # find delta from most recent physics pos
         delta_y = player_pos[1] - self.player_y_info["physics_pos"]
+        #Logger.log(f"update pos: delta_y = {delta_y} = {player_pos[1]} - {self.player_y_info["physics_pos"]}")
         delta_y_px = delta_y * CameraConstants.BLOCK_HEIGHT
         
         # if adding that would bring us over the 75% mark, then we need to adjust the ground down,
@@ -128,10 +129,14 @@ class Camera:
         new_frame.fill(self.level.bg_color)
         
         # move camera to player
+        #Logger.log(f"[1] screen pos for playher: {self.player_y_info['screen_pos']}")
         self.update_camera_y_pos(game.player.pos)
+        #Logger.log(f"[2] screen pos for playher: {self.player_y_info['screen_pos']}")
         self.camera_left = game.player.pos[0] - CameraConstants.CAMERA_LEFT_OFFSET
         camera_right = self.camera_left + CameraConstants.screen_width_blocks(GDConstants.term)
         camera_top = self.camera_bottom + CameraConstants.screen_height_blocks(GDConstants.term)
+
+        #Logger.log(f"[Camera/render] {self.camera_bottom=:2f}, {self.player_y_info['screen_pos']=:4f}, {game.player.pos=}")
 
         visible_vert_range = max(0, floor(self.camera_bottom)), min(self.level.height, 1+ceil(self.camera_bottom + CameraConstants.screen_height_blocks(GDConstants.term)))
         # this should be smth like (5, 12) which is the range of y-pos of the grid that is visible on the screen. Exclusive of the second number.

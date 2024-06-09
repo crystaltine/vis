@@ -21,6 +21,7 @@ from practice_mode import PracticeMode
 from gd_constants import GDConstants
 from audio import AudioHandler
 from render.texture_manager import TextureManager
+from copy import copy, deepcopy
 
 class Game:
     """
@@ -289,9 +290,18 @@ class Game:
         if new_pos:
             x, y = new_pos
             self.player.pos = [x, y] 
+            
+        new_y = self.player.ORIGINAL_START_POS[1]
+        if new_pos is not None:
+            new_y = new_pos[1]
 
         # reset camera bottom back to ground
         self.camera.camera_bottom = -CameraConstants.GROUND_HEIGHT
+        self.camera.player_y_info = {
+            "physics_pos": new_y,
+            "screen_pos": self.camera.px_height - CameraConstants.GROUND_HEIGHT*CameraConstants.BLOCK_HEIGHT - CameraConstants.BLOCK_HEIGHT
+        }
+        #Logger.log(f">>>>>>> [RESETTING] screen pos to {self.player_y_info['screen_pos']}, physics pos to {self.player_y_info['physics_pos']}")
 
         # reset the game start time
         self.game_start_time = time.time()
