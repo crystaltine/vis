@@ -9,6 +9,7 @@ from menus.custom_levels_menu import CustomLevelsMenu
 from menus.create_level_menu import CreateLevelMenu
 from menus.created_levels_menu import CreatedLevelsMenu
 from menus.online_levels_menu import OnlineLevelsMenu
+from editor.level_editor import LevelEditor
 
 from game import Game
 from level import Level
@@ -24,6 +25,7 @@ class MenuHandler:
         'create_new': CreateLevelMenu,
         'created_levels': CreatedLevelsMenu,
         'online_levels': OnlineLevelsMenu,
+        
     }
     
     PREV_PAGES = {
@@ -91,7 +93,7 @@ class MenuHandler:
                     case "editor":
                         MenuHandler._render_page("custom_levels")  
                     case "play_level":
-                        MenuHandler.in_level = True
+                        
                         MenuHandler.run_level(OfficialLevelsMenu.get_selected_level_filepath())
                     
                     ### CUSTOM LEVELS PAGE
@@ -101,20 +103,55 @@ class MenuHandler:
                         MenuHandler._render_page("created_levels")
                     case "open_online_levels":
                         MenuHandler._render_page("online_levels")
+
+                    ### CREATED LEVELS PAGE
+                    case "play_created_level":
+                        MenuHandler.run_level(CreatedLevelsMenu.get_selected_level_filepath())
+                    case "edit_current_level":
+                        MenuHandler.edit_level(CreatedLevelsMenu.get_selected_level_filepath())
     
     def run_level(filepath: str) -> None:
+        
         """ Enters into the actual level loop, running the specified level file """
+
+        MenuHandler.in_level = True
+
         game = Game(Level.parse_from_file(filepath))
         game.start_level()
         #Logger.log(f"game start level ended (in MenuHandler/run_level)")
         
         MenuHandler.in_level = False
-        MenuHandler._render_page("official_levels")
+        if "official" in game.level.filepath:
+            MenuHandler._render_page("official_levels")
+        else:
+            MenuHandler._render_page("created_levels")
         
         # clear terminal inkey buffer
         with GDConstants.term.cbreak():
             while GDConstants.term.inkey(timeout=0.01):
                 pass
+    
+    def edit_level(filepath: str) -> None:
+        
+        """ Enters into the actual level loop, running the specified level file """
+
+        MenuHandler.in_level = True
+
+        editor=LevelEditor(filepath)
+        editor.run_editor()
+
+        #Logger.log(f"game start level ended (in MenuHandler/run_level)")
+        
+        MenuHandler.in_level = False
+        
+        MenuHandler._render_page("created_levels")
+        
+        # clear terminal inkey buffer
+        with GDConstants.term.cbreak():
+            while GDConstants.term.inkey(timeout=0.01):
+                pass
+    
+    
 
     def _render_page(page_name: str):
         """ Renders the specified menu page and updates the current page field """
