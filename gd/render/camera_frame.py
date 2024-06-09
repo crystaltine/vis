@@ -135,6 +135,29 @@ class CameraFrame:
         assert len(color) == 3, f"[FrameLayer/fill]: color must be an rgb (3 ints) tuple, instead got {color}"
 
         self.pixels[:,:] = color
+        
+    def fill_with_gradient(
+        self, 
+        color1: CameraConstants.RGBTuple, 
+        color2: CameraConstants.RGBTuple, 
+        direction: Literal["horizontal", "vertical"] = "horizontal"
+        ) -> None:
+        """ Fills the entire canvas with a gradient from color1 to color2.
+        The gradient can be either horizontal or vertical. """
+        
+        # create a gradient
+        if direction == "horizontal":
+            gradient = np.linspace(color1, color2, self.width)
+            
+            # fill each row with the gradient
+            for i in range(self.height):
+                self.pixels[i] = gradient
+            
+        elif direction == "vertical":
+            gradient = np.linspace(color1, color2, self.height)
+            
+            for i in range(self.width):
+                self.pixels[:,i] = gradient
 
     type Anchor = Literal[
         "top-left", 

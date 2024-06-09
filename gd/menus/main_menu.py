@@ -4,8 +4,9 @@ from render.camera_frame import CameraFrame
 from render.texture_manager import TextureManager
 from gd_constants import GDConstants
 from blessed.keyboard import Keystroke
+from menus.MENU_GENERIC import GenericMenu
 
-class MainMenu:
+class MainMenu(GenericMenu):
     
     curr_frame: CameraFrame | None = None
     
@@ -22,6 +23,7 @@ class MainMenu:
     
     # style constants
     BG_COLOR = (63, 72, 204)
+    BG_COLOR_2 = (29, 37, 143)
     GROUND_COLOR = (29, 37, 143)
     TITLE_COLOR = (129, 255, 90)
     GROUND_MARGIN_TOP = 0.7 # ground at 70% of the screen
@@ -32,7 +34,7 @@ class MainMenu:
     
     def render():
         new_frame = CameraFrame()
-        new_frame.fill((MainMenu.BG_COLOR))
+        new_frame.fill_with_gradient(MainMenu.BG_COLOR_2, MainMenu.BG_COLOR, "vertical")
         
         # add rectangle for ground
         new_frame.add_rect(

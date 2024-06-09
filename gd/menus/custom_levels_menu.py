@@ -4,13 +4,14 @@ from render.camera_frame import CameraFrame
 from render.texture_manager import TextureManager
 from gd_constants import GDConstants
 from blessed.keyboard import Keystroke
+from menus.MENU_GENERIC import GenericMenu
 
 corner_deco_BL = TextureManager.compile_texture("./assets/menus/corner_deco.png")
 corner_deco_BR = TextureManager.reflect_texture(corner_deco_BL, 'horizontal')
 corner_deco_TL = TextureManager.reflect_texture(corner_deco_BL, 'vertical')
 corner_deco_TR = TextureManager.reflect_texture(corner_deco_BL, 'both')
 
-class CustomLevelsMenu:
+class CustomLevelsMenu(GenericMenu):
     
     curr_frame: CameraFrame | None = None
     
@@ -27,6 +28,7 @@ class CustomLevelsMenu:
     
     # style constants
     BG_COLOR = (63, 72, 204)
+    BG_COLOR_2 = (29, 37, 143)
     TITLE_COLOR = (129, 255, 90)
     GROUND_MARGIN_TOP = 0.7 # ground at 70% of the screen
     TITLE_MARGIN_TOP = 0.25
@@ -37,7 +39,7 @@ class CustomLevelsMenu:
     
     def render():
         new_frame = CameraFrame()
-        new_frame.fill((CustomLevelsMenu.BG_COLOR))
+        new_frame.fill_with_gradient(CustomLevelsMenu.BG_COLOR_2, CustomLevelsMenu.BG_COLOR, "vertical")
 
         horiz_center = int(0.5 * new_frame.width)
         title_center = int(CustomLevelsMenu.TITLE_MARGIN_TOP * new_frame.height + TextureManager.font_title.font_height/2)
@@ -93,6 +95,3 @@ class CustomLevelsMenu:
                 return 'open_created_levels'
             elif CustomLevelsMenu.selected_option == 2:
                 return 'open_online_levels'
-
-        
-        

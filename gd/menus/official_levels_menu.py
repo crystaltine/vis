@@ -7,6 +7,7 @@ from draw_utils import print2
 from render.utils import fcode_opt as fco
 from blessed.keyboard import Keystroke
 import os, json
+from menus.MENU_GENERIC import GenericMenu
 
 class LevelPreviewData(TypedDict):
     name: str
@@ -22,72 +23,15 @@ corner_deco_BR = TextureManager.reflect_texture(corner_deco_BL, 'horizontal')
 corner_deco_TL = TextureManager.reflect_texture(corner_deco_BL, 'vertical')
 corner_deco_TR = TextureManager.reflect_texture(corner_deco_BL, 'both')
 
-class OfficialLevelsMenu:
-    """ Level selector page for the MAIN levels menu """
+class OfficialLevelsMenu(GenericMenu):
+    """ Level selector page for the OFFICIAL levels menu """
     
     frame: CameraFrame = None
     """ The frame that the level selector is drawn on. None until the init_level_selector is called at least once """
     
     selected_level_idx = 0
     """ Index of the currently selected level """
-    
-    # NOTE - this should eventually be autoloaded from the levels directory, this is just for tests
-   
-    
-    # levels = [
-    #     {
-    #         'name':'Stereo Madness',
-    #         'color': (63, 72, 210),
-    #         'path': './levels/official/stereo_madness.json',
-    #         'progress_normal': 0.95,
-    #         'progress_practice': 1,
-    #     },
 
-    #     {
-    #         'name':'Back On Track',
-    #         'color': (223, 45, 180),
-    #         'path': './levels/created3.json',
-    #         'progress_normal': 0.58,
-    #         'progress_practice': 0.26,
-    #     }, 
-    #     {
-    #         'name':'Polargeist',
-    #         'color': (92, 215, 62),
-    #         'path': './levels/created3.json',
-    #         'progress_normal': 1,
-    #         'progress_practice': 1,
-    #     }, 
-    #     {
-    #         'name':'Dry Out',
-    #         'color': (154, 73, 19),
-    #         'path': './levels/created3.json',
-    #         'progress_normal': 0.36,
-    #         'progress_practice': 1,
-    #     }, 
-    #     {
-    #         'name':'Base After Base',
-    #         'color': (225, 184, 71),
-    #         'path': './levels/created3.json',
-    #         'progress_normal': 0.05,
-    #         'progress_practice': 0.78,
-    #     }, 
-    #     {
-    #         'name':'Cant Let Go',
-    #         'color': (254, 246, 29),
-    #         'path': './levels/created3.json',
-    #         'progress_normal': 0,
-    #         'progress_practice': 0,
-    #     }, 
-    #     {
-    #         'name':'Jumper',
-    #         'color': (97, 241, 14),
-    #         'path': './levels/created3.json',
-    #         'progress_normal': 0,
-    #         'progress_practice': 0,
-    #     }, 
-    # ]
-    """ List of OFFICIAL levels parsed from its directory, from which we render pages """
-    
     PADDING_Y = 0.125
     PADDING_X = 0.15
     ARROW_BUTTON_PADDING_X_PX = 5 # IN PIXELS

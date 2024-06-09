@@ -51,18 +51,12 @@ class MenuHandler:
         """
         
         MenuHandler.running = True
-        Logger.log(f"setting running to {MenuHandler.running}, time={time()}")
-        
-        # render the main menu
         MenuHandler._render_page(MenuHandler.current_page)
         
         while True:
             
-            #Logger.log(f"[MenuHandler] running loop, running: {MenuHandler.running}, in_level: {MenuHandler.in_level}, in_level_editor: {MenuHandler.in_level_editor}, page: {MenuHandler.current_page}")
-            #Logger.log(f"^^^^ running is {MenuHandler.running}, time={time()}")
             if not MenuHandler.running:
                 break
-            
             if MenuHandler.in_level or MenuHandler.in_level_editor:
                 sleep(0.01) # do nothing if in level or editor, they have their own loops
                 continue
@@ -72,14 +66,10 @@ class MenuHandler:
                 val = GDConstants.term.inkey()
                 
             # return to prev editor/quit game if q or escape is hit
-            #Logger.log(f"({val} or {val.name}) => ({val or val.name}), QUIT_KEYS={GDConstants.QUIT_KEYS}")
             if (val or val.name) in GDConstants.QUIT_KEYS:
                 if MenuHandler.current_page == 'main':
-                    
                     MenuHandler.running = False
-                    #Logger.log(f"running is now {MenuHandler.running}, time={time()}")
                     break
-                
                 else:
                     prev_page = MenuHandler.PREV_PAGES[MenuHandler.current_page]
                     MenuHandler._render_page(prev_page)

@@ -4,13 +4,14 @@ from render.camera_frame import CameraFrame
 from render.texture_manager import TextureManager
 from gd_constants import GDConstants
 from blessed.keyboard import Keystroke
+from menus.MENU_GENERIC import GenericMenu
 
 corner_deco_BL = TextureManager.compile_texture("./assets/menus/corner_deco.png")
 corner_deco_BR = TextureManager.reflect_texture(corner_deco_BL, 'horizontal')
 corner_deco_TL = TextureManager.reflect_texture(corner_deco_BL, 'vertical')
 corner_deco_TR = TextureManager.reflect_texture(corner_deco_BL, 'both')
 
-class CreateLevelMenu:
+class CreateLevelMenu(GenericMenu):
     
     curr_frame: CameraFrame | None = None
     

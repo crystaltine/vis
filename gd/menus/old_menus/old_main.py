@@ -11,7 +11,7 @@ from level import Level
 from img2term.main import draw
 from menus.GDMenu import draw_main_menu_buttons
 from gd.menus.official_levels_menu import LevelSelector
-from menus.level_editor_menu import *
+from gd.menus.old_menus.level_editor_menu import *
 #from run_level_editor import *
 from menus.main_page import *
 from menus.created_levels import *
