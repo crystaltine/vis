@@ -159,7 +159,7 @@ class CameraFrame:
             for i in range(self.width):
                 self.pixels[:,i] = gradient
 
-    type Anchor = Literal[
+    Anchor = Literal[
         "top-left", 
         "top-right", 
         "bottom-left", 
