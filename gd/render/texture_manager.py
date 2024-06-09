@@ -33,11 +33,6 @@ class ColorfulTextureOptions(TypedDict):
 
 class TextureManager:
     
-    bg_color: tuple = (24, 67, 240)
-    """ Can change throughout the level using triggers. keep as rgb tuple. """
-    ground_color: tuple = (8, 32, 170)
-    """ Can change throughout the level using triggers. keep as rgb tuple. """
-    
     player_color1: CameraConstants.RGBTuple = (111, 255, 83)
     player_color2: CameraConstants.RGBTuple = (90, 250, 255)
     player_icons: Dict[str, List[np.ndarray]] = {}

@@ -9,6 +9,9 @@ class EngineConstants:
     CUBE_GRAVITY_MULTIPLIER = 1
     BALL_GRAVITY_MULTIPLIER = 0.8
     UFO_GRAVITY_MULTIPLIER = 0.7
+    
+    END_OF_LEVEL_PADDING = 10
+    """ The distance in blocks from the last object in a level to when the player is considered to have finished the level. """
 
     PLAYER_HITBOX_X = 1
     PLAYER_HITBOX_Y = 1

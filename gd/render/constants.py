@@ -24,6 +24,11 @@ class CameraConstants:
     GROUND_HEIGHT = 3
     """ Max height of the ground in BLOCKS. This determines how much the rest of the level is "pushed up" """
     
+    PROGRESS_BAR_MARGIN_TOP_PX = 3 # px
+    PROGRESS_BAR_PADDING_PX = 1 # px
+    PROGRESS_BAR_HEIGHT_PX = 1 # px
+    PROGRESS_BAR_WIDTH = 0.4 # proportion of screen width
+    
     # for renderer only - physics runs at ~240
     # also, this is a target rate only.
     # I've tested, it still runs at ~30fps.

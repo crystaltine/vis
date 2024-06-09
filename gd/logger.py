@@ -12,7 +12,7 @@ class Logger:
     def log(msg: str):
         Logger.buffer.append(str(msg))
         Logger._count += 1
-    
+
     @staticmethod
     def log_on_screen(term, msg: str):
         """
@@ -60,6 +60,6 @@ class Logger:
 
                 if not dont_clear_buffer:
                     Logger.buffer.clear()
-                    
+
         else:
             print(f"\x1b[0mLogger buffer is empty, did not write to file.")

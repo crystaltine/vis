@@ -128,6 +128,8 @@ class Camera:
         new_frame = CameraFrame()
         new_frame.fill(self.level.bg_color)
         
+        Logger.log(f"logging smth")
+        
         # move camera to player
         #Logger.log(f"[1] screen pos for playher: {self.player_y_info['screen_pos']}")
         self.update_camera_y_pos(game.player.pos)
@@ -181,8 +183,7 @@ class Camera:
         #Logger.log(f"slice: {visible_vert_slice}, range: {visible_vert_range}")
         
         # draw ground. The top of the ground ground should be at physics y=0.
-        # TODO - make ground recolorable
-        
+        # TODO - make ground recolorable/move
         new_frame.add_pixels_topleft(0, ground_screen_y_pos, TextureManager.base_textures.get("ground"))
 
         # draw player
@@ -191,6 +192,9 @@ class Camera:
         
         # draw attempt number
         self.draw_attempt(new_frame, game.player.ORIGINAL_START_POS[0], game.attempt_number) # draw the attempt number
+        
+        # draw progress bar
+        self.render_progress_bar(new_frame, game.get_progress_percentage())
         
         # draw any checkpoints TODO - render multiple checkpoints, OOP-ize practice mode?
         # draw most recent checkpoint if the game is in practice mode and has a checkpoint
@@ -208,6 +212,32 @@ class Camera:
 
     def render_wave_trail(self, game: "Game") -> None:
         pass # TODO
+    
+    def render_progress_bar(self, frame: CameraFrame, percent: float) -> None:
+        """ Adds rectangles that represent the progress bar to the top of the screen """
+        
+        pbar_outline_left = round((0.5 - CameraConstants.PROGRESS_BAR_WIDTH/2) * frame.width - CameraConstants.PROGRESS_BAR_PADDING_PX)
+        pbar_outline_top = CameraConstants.PROGRESS_BAR_MARGIN_TOP_PX - CameraConstants.PROGRESS_BAR_PADDING_PX
+        
+        # draw a transparent rectangle with a white outline for the border
+        frame.add_rect(
+            (0, 0, 0, 0),
+            pbar_outline_left, pbar_outline_top,
+            round(CameraConstants.PROGRESS_BAR_WIDTH * frame.width), CameraConstants.PROGRESS_BAR_HEIGHT_PX+2*CameraConstants.PROGRESS_BAR_PADDING_PX,
+            outline_width=1,
+            outline_color=(255, 255, 255)
+        )
+        
+        # draw filled rectangle for the progress bar
+        pbar_left = pbar_outline_left + CameraConstants.PROGRESS_BAR_PADDING_PX
+        pbar_top = pbar_outline_top + CameraConstants.PROGRESS_BAR_PADDING_PX
+        
+        # use player color 1 for fill color
+        frame.add_rect(
+            TextureManager.player_color1,
+            pbar_left, pbar_top,
+            round(percent/100 * CameraConstants.PROGRESS_BAR_WIDTH * frame.width), CameraConstants.PROGRESS_BAR_HEIGHT_PX
+        )            
     
     # DEPRECATED - OLD LEVEL EDITOR
     def level_editor_render(self, cursor_pos: tuple, screen_pos: tuple, cur_cursor_obj):

@@ -133,7 +133,6 @@ class CameraFrame:
     def fill(self, color: CameraConstants.RGBTuple) -> None:
         """ Fills the entire canvas with the given color. RGB (3-tuple) required. Should be pretty efficient because of numpy. """
         assert len(color) == 3, f"[FrameLayer/fill]: color must be an rgb (3 ints) tuple, instead got {color}"
-
         self.pixels[:,:] = color
         
     def fill_with_gradient(
@@ -188,6 +187,11 @@ class CameraFrame:
             color = (*color, 255)
         if len(outline_color) == 3:
             outline_color = (*outline_color, 255)
+            
+        x = round(x)
+        y = round(y)
+        width = round(width)
+        height = round(height)
             
         rect_as_pixels = np.full((height+outline_width*2, width+outline_width*2, 4), outline_color, dtype=np.uint8)
         

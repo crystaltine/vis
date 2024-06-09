@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Literal
 import json
 from time import time_ns, sleep
 from threading import Thread
@@ -64,6 +64,9 @@ class Game:
         self.checkpoints = []
         self.attempt_number = 1
         self.game_start_time = time.time()
+        
+        self.highest_percent_this_session = 0
+        """ Stores the highest percentage achieved in this session. Resets upon changing between practice/normal mode. """
 
     def _main_keydown_handler(self, event: KeyEvent) -> None:
         if str(event) in GDConstants.KILL_KEYS:
@@ -165,7 +168,7 @@ class Game:
                 self.exiting = True    
 
         def check_if_level_complete():
-            if self.player.pos[0]-10>=self.level.length:
+            if self.player.pos[0]-EngineConstants.END_OF_LEVEL_PADDING>=self.level.length:
 
                 self.running = False
                 
@@ -175,11 +178,12 @@ class Game:
                 new_frame.add_text(int(new_frame.width*0.5), int(new_frame.height*0.5), TextureManager.font_small1, f"Total Attempts: {self.attempt_number}")
                 new_frame.render(self.camera.curr_frame)
 
-            self.get_progress_percentage(True)
+                self.highest_percent_this_session = 100
+                self.write_highest_progress_to_file()
 
         def physics_thread():
-            try:
-                while True:
+            while True:
+                try:
                     #Logger.log(f"running physics tick. player pos is {self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, time_ns is {time_ns()}")
                     if self.exiting:
                         self.audio_handler.stop_playing_song()
@@ -192,9 +196,11 @@ class Game:
                         continue
                         # continuing here is a bad idea, because we need to sleep to prevent the thread from running too fast
                         # and slowing everything down.
-
-                    # Check if level is complete
-
+                    #try:
+                    self.highest_percent_this_session = max(self.highest_percent_this_session, self.get_progress_percentage())
+                    #except:
+                    #    Logger.log(f"[Physics Thread] ERROR: {traceback.format_exc()}")
+                    # check if the level is complete
                     check_if_level_complete()
 
                     # check collisions
@@ -222,9 +228,10 @@ class Game:
                     # even if the physics fps is like 389429 it still speeds things up a lot
                     # to have this sleep here. DONT ASK ME WHY IDK EITHER
                     sleep(1/EngineConstants.PHYSICS_FRAMERATE)
-            except Exception as e:
-                Logger.log(f"[Physics Thread] ERROR: {traceback.format_exc()}")
-                self.exiting = True
+                except Exception as e:
+                    Logger.log(f"[Physics Thread] ERROR: {traceback.format_exc()}")
+                    self.exiting = True
+                    break
         
         self.last_tick = time_ns()
         Thread(target=render_thread).start()
@@ -311,29 +318,33 @@ class Game:
         # start song again
         self.audio_handler.begin_playing_song()
         
-    def get_progress_percentage(self, write_to_file:bool=False) -> int:
+    def get_progress_percentage(self) -> int:
+        #return 1# test
 
         # calculates progress bar based on length of level and player position
-        progresspercent = round(((self.player.pos[0]+10) / self.level.length) * 100)
-        if progresspercent>100:
-            progresspercent=100
+        dist_from_start = self.player.pos[0]-self.level.metadata["start_settings"]["position"][0]
+        true_level_len = self.level.length+EngineConstants.END_OF_LEVEL_PADDING-self.level.metadata["start_settings"]["position"][0]
+        progresspercent = round(min(100, (dist_from_start/true_level_len)*100))
+                    
+        return progresspercent
+    
+    def write_highest_progress_to_file(self, mode_override: Literal["practice", "normal"] = None) -> None:
+        """ Writes the highest progress percentage achieved in this session to the level file.
+        changes which mode based on self.practice_mode = True or not.
         
-
-        if write_to_file:
-            f = open(self.level.filepath)
-            data = json.load(f)
-
-            if not self.practice_mode:
-
-                if data['metadata']['progress_normal']<progresspercent/100:
-                    data['metadata']['progress_normal']=progresspercent/100
-                    json.dump(data,open(self.level.filepath, 'w'))
-            
-            else:
-
-                if data['metadata']['progress_practice']<progresspercent/100:
-                    data['metadata']['progress_practice']=progresspercent/100
-                    json.dump(data,open(self.level.filepath, 'w'))
+        Can override which mode to save to by passing in mode_override.
+        """
+        f = open(self.level.filepath)
+        data = json.load(f)
+        
+        
+        key = 'progress_practice' if (self.practice_mode or mode_override == "practice") else 'progress_normal'
+        if mode_override is not None:
+            key = f"progress_{mode_override}"
+        
+        if data['metadata'][key]<self.highest_percent_this_session:
+            data['metadata'][key]=self.highest_percent_this_session
+            json.dump(data,open(self.level.filepath, 'w'))
 
     def pause(self) -> None:
         """
@@ -391,9 +402,18 @@ class Game:
                 return
             elif self.pausemenuselectindex == 2:
                 self.practice_mode = not self.practice_mode
-                if not self.practice_mode:
+                if not self.practice_mode: # if changing back to normal mode
+                    
+                    # save the highest percent achieved in this session to practice, then reset to 0
+                    self.write_highest_progress_to_file("practice")
+                    self.highest_percent_this_session = 0
+                    
                     self.practicemodeobj.clear_checkpoints()
-                self.restart()
+                    self.restart() # restart the level if changing to normal mode
+                else:
+                    # save highest progress to normal, then dont reset
+                    self.write_highest_progress_to_file("normal")
+                    
             elif self.pausemenuselectindex == 3:
                 self.exiting = True
                 KeyboardListener.remove_on_press(self._pause_menu_keydown_handler)
@@ -465,6 +485,7 @@ class Game:
         #self.practicemodeobj.clear_checkpoints()
         self.unpause()
         self.reset_level()
+        
         #self.start_level()
 
         # OLD RESET CODE - ATTEMPT TO TERMINATE THE THREADS FAILED MISERABLY
