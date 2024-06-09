@@ -134,8 +134,7 @@ def handle_client(conn, addr):
 
 
     data = conn.recv(1024)
-    data = json.loads(data.decode())
-
+    
     user_id = data["id"]
     role = data["role"]
     if role == "receiver":
@@ -159,8 +158,7 @@ def handle_client(conn, addr):
         # TODO
         global_state.add_to_clients(user_id, None, None, blank_dict=True)
         print(f"SENDER ESTABLISHED: {user_id}")
-        conn.sendall(b"ack")
-
+        
     while True:
         try:
             data = conn.recv(9000)

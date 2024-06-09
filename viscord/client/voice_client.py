@@ -216,7 +216,6 @@ def create_video_sender(user_id, channel):
         "chat_id": channel
         }).encode())
     
-    s.recv(1024)
     
     vidcap = cv2.VideoCapture(0)
 
