@@ -290,6 +290,9 @@ class Game:
             x, y = new_pos
             self.player.pos = [x, y] 
 
+        # reset camera bottom back to ground
+        self.camera.camera_bottom = -CameraConstants.GROUND_HEIGHT
+
         # reset the game start time
         self.game_start_time = time.time()
 

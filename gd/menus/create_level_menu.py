@@ -140,6 +140,8 @@ class CreateLevelMenu(GenericMenu):
                     CreatedLevelsMenu.created_levels = CreatedLevelsMenu.parse_created_levels_files()
                     CreatedLevelsMenu.created_levels_index = CreatedLevelsMenu.indexof_level_with_name(CreateLevelMenu.curr_input)
                     
+                    # reset text input
+                    CreateLevelMenu.curr_input = "Untitled"
                     return "goto_created_levels_menu"
                 # else, do nothing (button is disabled)
             elif CreateLevelMenu.selected_option_idx == 2:
