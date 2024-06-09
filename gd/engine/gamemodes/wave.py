@@ -3,6 +3,7 @@ from time import time_ns
 from typing import TYPE_CHECKING
 from keyboard.keyboard_listener import KeyboardListener
 from engine.constants import EngineConstants
+from gd_constants import GDConstants
 
 if TYPE_CHECKING:
     from engine.player import Player
@@ -35,7 +36,7 @@ def tick_wave(player: "Player", timedelta: float) -> None:
         player.in_air = True
         
         holding = False
-        for jump_key in EngineConstants.JUMP_KEYS:
+        for jump_key in GDConstants.JUMP_KEYS:
             if KeyboardListener.is_held(jump_key):
                 holding = True
                 break

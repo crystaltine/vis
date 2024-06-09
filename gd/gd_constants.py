@@ -7,6 +7,13 @@ class GDConstants:
     
     term = Terminal()
     
+    KILL_KEYS = ['\x03']
+    QUIT_KEYS = ['q', '\x1b', 'esc', "KEY_ESCAPE"] # active on menus
+    JUMP_KEYS = [' ', 'up', 'w', 'KEY_UP', "W"]
+    PAUSE_KEYS = ['p', 'KEY_ESCAPE', 'esc'] # active in levels
+    CHECKPOINT_KEYS = ['z']
+    REMOVE_CHECKPOINT_KEYS = ['x']
+    
     NUM_BLOCK_TEXTURES = 13
     NUM_SPIKE_TALL_TEXTURES = 3
     NUM_SPIKE_SHORT_TEXTURES = 5

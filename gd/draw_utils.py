@@ -216,9 +216,9 @@ def cls() -> None:
 
 def print2(*args, **kwargs) -> None:
     """
-    Wrapper for builtin print that always has end="\\r"
+    Wrapper for builtin print that always has end="\\r\\x1b[0m"
     """
-    print(*args, **kwargs, end='\r')
+    print(*args, **kwargs, end='\r\x1b[0m')
 
 def convert_to_chars(container_dim: int, dimvalue: int | str | None) -> int | None:
     """

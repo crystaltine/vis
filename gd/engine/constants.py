@@ -42,13 +42,6 @@ class EngineConstants:
     """ How much we can "fall into/jump into" a solid object before we are considered to have crashed into it instead of gliding on top. kinda buggy when yvel changes a lot. """
     
     PHYSICS_FRAMERATE = 60
-    
-    QUIT_KEYS = ['q', 'ctrl+c']
-    JUMP_KEYS = [' ', 'up', 'w']
-    PAUSE_KEYS = ['p', '', 'esc']
-    CHECKPOINT_KEYS = ['z']
-    REMOVE_CHECKPOINT_KEYS = ['x']
-    ALL_KEYS = set(QUIT_KEYS + JUMP_KEYS + PAUSE_KEYS + CHECKPOINT_KEYS + REMOVE_CHECKPOINT_KEYS)
 
 class SPEEDS:
     half = 0.8

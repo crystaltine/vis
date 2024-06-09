@@ -130,7 +130,7 @@ class CameraFrame:
             #Logger.log_on_screen(GDConstants.term, f"[CameraFrame/render]: printing@{int(start) + self.pos[0]},{i + self.pos[1]//2}: \x1b[0m[{string}\x1b[0m]")
             print2(GDConstants.term.move_xy(int(start)+self.pos[0], i+self.pos[1]//2) + string)
 
-    def fill(self, color: tuple) -> None:
+    def fill(self, color: CameraConstants.RGBTuple) -> None:
         """ Fills the entire canvas with the given color. RGB (3-tuple) required. Should be pretty efficient because of numpy. """
         assert len(color) == 3, f"[FrameLayer/fill]: color must be an rgb (3 ints) tuple, instead got {color}"
 

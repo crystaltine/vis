@@ -2,6 +2,7 @@ import blessed
 from render.utils import nearest_quarter
 from typing import Tuple
 from enum import Enum
+from gd_constants import GDConstants
 
 class CameraConstants:
     BLOCK_WIDTH = 8
@@ -9,7 +10,7 @@ class CameraConstants:
     BLOCK_HEIGHT = 8
     """ How tall a block is in pixels (half of a character: ▀) """
 
-    CAMERA_LEFT_OFFSET = 10
+    CAMERA_LEFT_OFFSET = int(GDConstants.term.width * 0.3 / BLOCK_WIDTH)
     """ Amount of BLOCKS the camera_left is behind the player x position """
 
     MIN_PLAYER_SCREEN_OFFSET = 0.25

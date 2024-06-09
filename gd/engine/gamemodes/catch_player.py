@@ -15,12 +15,12 @@ def catch_player(player: "Player", timedelta: float) -> bool:
     
     new_y_pos = player.pos[1] + player.yvel * timedelta
     
-    Logger.log(f"[catch_player], curr y is {player.pos[1]}, new y is {new_y_pos}")
+    #Logger.log(f"[catch_player], curr y is {player.pos[1]}, new y is {new_y_pos}")
     
     if floor(player.pos[1]) != floor(new_y_pos): # crossing int. y val
         if player.gravity > 0: # falling down, look for surface below
             closest_surface = player.game.collision_handler.highest_solid_object_beneath_player(timedelta)
-            Logger.log(f"[catch_player], grav>0: closest surface is {closest_surface}")
+            #Logger.log(f"[catch_player], grav>0: closest surface is {closest_surface}")
             if closest_surface is not None:
                 if new_y_pos <= closest_surface.y + closest_surface.data.get("hitbox_yrange")[1]:
                     # there is a ground below to catch us

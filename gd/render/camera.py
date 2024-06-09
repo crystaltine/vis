@@ -112,7 +112,7 @@ class Camera:
         self.curr_frame.fill(self.level.bg_color)
         self.curr_frame.render_raw()
 
-    def render(self, game: "Game") -> None:
+    def render(self, game: "Game", render_raw = False) -> None:
         """
         Renders a new frame based on where the player is.
         Handles ground/camera repositioning, etc.
@@ -194,7 +194,11 @@ class Camera:
             self.draw_checkpoint(new_frame, x, y)
         
         # render the new frame
-        new_frame.render(self.curr_frame)
+        if not render_raw:
+            new_frame.render(self.curr_frame)
+        else: 
+            new_frame.render_raw()
+            
         self.curr_frame = new_frame
 
     def render_wave_trail(self, game: "Game") -> None:
