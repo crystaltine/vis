@@ -14,9 +14,11 @@ cd client
 py main.py
 ```
 
+### More README info coming soon. For now, check out [our design doc](https://docs.google.com/document/d/13SuaRq5GfgQj59z0zWa9jua5XY7AGnjDIIRWVS-Cgh4/edit?usp=sharing)
+
 ## Untitled Geometry Dash Remake
 Using ANSI color codes and block elements [listed here](https://en.wikipedia.org/wiki/Block_Elements) to make the screen look like an actual game.
-Surprisingly, with correct optimizations, we have achieved framerates of around 30 per second.
+Surprisingly, with correct optimizations, we have achieved framerates of around 30 per second (in most cases - but further optimizing the renderer is high priority)
 
 ### Running
 ```
@@ -26,7 +28,14 @@ python main.py
 ```
 This should take you to the homescreen, from which the entire game is accessible.
 
-### More documentation coming soon. For now, check out [our design doc](https://docs.google.com/document/d/13SuaRq5GfgQj59z0zWa9jua5XY7AGnjDIIRWVS-Cgh4/edit?usp=sharing)
+### Demo video
+https://github.com/crystaltine/vis/assets/114899328/f9b28906-b2b6-49e3-9c6a-caaf476c83d6
+
+(Note: this does not showcase the edit object functionality in the level editor, which allows you to change the color channels that a block uses)
+
+Some functional objects are also not demonstrated, like portals, orbs, pads, etc.
+
+### More README info coming soon. For now, check out [our design doc](https://docs.google.com/document/d/13SuaRq5GfgQj59z0zWa9jua5XY7AGnjDIIRWVS-Cgh4/edit?usp=sharing)
 
 ### Visage
 A scrapped framework inspired by HTML for creating graphical user interfaces (GUIs) inside modern terminals.
