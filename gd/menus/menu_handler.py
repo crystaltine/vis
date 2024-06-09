@@ -69,12 +69,8 @@ class MenuHandler:
             
             val = ...
             with GDConstants.term.cbreak():
-                b4_inkey = time_ns()
                 val = GDConstants.term.inkey()
-                after_inkey = time_ns()
                 
-                #Logger.log(f'val is {val.name} ({val}), started checking@{b4_inkey}, ended@{after_inkey}, diff={after_inkey-b4_inkey}')
-            
             # return to prev editor/quit game if q or escape is hit
             #Logger.log(f"({val} or {val.name}) => ({val or val.name}), QUIT_KEYS={GDConstants.QUIT_KEYS}")
             if (val or val.name) in GDConstants.QUIT_KEYS:
