@@ -156,9 +156,7 @@ class MenuHandler:
         with GDConstants.term.cbreak():
             while GDConstants.term.inkey(timeout=0.01):
                 pass
-    
-    
-
+            
     def _render_page(page_name: str, *args, **kwargs) -> None:
         """ Renders the specified menu page and updates the current page field, 
         optionally allowing extra params for the render() method """
