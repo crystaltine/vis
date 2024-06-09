@@ -7,6 +7,8 @@ class GDConstants:
     
     term = Terminal()
     
+    _VERSION = "b1.2"
+    
     KILL_KEYS = ['\x03']
     QUIT_KEYS = ['q', '\x1b', 'esc', "KEY_ESCAPE"] # active on menus
     JUMP_KEYS = [' ', 'up', 'w', 'KEY_UP', "W"]

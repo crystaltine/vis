@@ -80,6 +80,10 @@ class Player:
             raise Exception(f"[Player/tick] gamemode {self.gamemode} not set up in Player.tick()")
 
         tickfunc(self, timedelta)
+        
+    def get_dist_from_start(self) -> float:
+        """ Get the TRUE distance from the player's starting position, since we start at a negative x. """
+        return self.pos[0] - self.ORIGINAL_START_POS[0]
     
     def reset_physics(self, new_pos: Tuple[int, int] = None) -> None:
         """

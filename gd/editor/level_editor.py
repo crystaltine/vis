@@ -211,7 +211,7 @@ class LevelEditor:
         
         # draw ground. The top of the ground ground should be at physics y=0.
         # TODO - make ground recolorable/move
-        new_frame.add_pixels_topleft(0, round(ground_screen_y_pos), TextureManager.base_textures.get("ground"))
+        new_frame.add_pixels_topleft(0, round(ground_screen_y_pos), TextureManager.get_curr_ground_texture(self.level, self.camera_left))
         
         # draw cursor
         if self.mode == 'build':
