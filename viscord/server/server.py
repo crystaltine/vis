@@ -10,7 +10,7 @@ from multiprocessing import Process
 from api.flask_app import app
 
 # import so the modules are executed (defines endpoints for flask app)
-from api import login_flow, chats, friends, invites, members, messages, roles, servers, users, voice_client
+from api import login_flow, chats, friends, invites, members, messages, roles, servers, users, voice_client, video_client
 from api import db, helpers
 
 from flask import request

@@ -6,7 +6,7 @@ from flask import request, Response
 from .flask_app import app
 from .helpers import *
 import requests
-from .server_config import URI, VOICE_PORT, HOST
+from .server_config import URI, VIDEO_PORT, HOST
 from typing import *
 import ctypes
 
@@ -15,7 +15,7 @@ import threading
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-s.bind((HOST, VOICE_PORT))
+s.bind((HOST, VIDEO_PORT))
 
 class GlobalState:
     def __init__(self):
@@ -83,7 +83,7 @@ global_state = GlobalState()
 
 
 @app.route("/api/video/join", methods=["POST"])
-def join_voice() -> Literal["success", "failure"]:
+def join_video() -> Literal["success", "failure"]:
     global global_state
 
     """
