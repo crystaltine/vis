@@ -14,6 +14,9 @@ import socket
 import json
 import pyaudio
 import threading
+import cv2
+from PIL import Image
+
 
 global selection
 selection = 0
@@ -40,6 +43,15 @@ transmitting = True
 
 audio = pyaudio.PyAudio()
 
+
+width = 90
+height = 50
+
+def split_large(n):
+    byte1 = n & 0xFF
+    byte2 = n >> 8
+    return byte1, byte2
+
 def hex_to_rgb(hex):
     hex = hex.lstrip('#')
     return tuple(int(hex[i:i+2], 16) for i in (0, 2, 4))
@@ -49,6 +61,22 @@ def draw_background():
     for y in range(term.height):
         print(term.move(y, 0) + term.on_color_rgb(*hex_to_rgb(colors.background)) + ' ' * term.width, end="")
 
+
+def encode_video(int_array):
+    byte_array = []
+    for num in int_array:
+        byte_array.append((num >> 8) & 0xFF)  
+        byte_array.append(num & 0xFF)         
+    return byte_array
+
+
+def decode_video(byte_array):
+    int_array = []
+    
+    for i in range(0, len(byte_array), 2):
+        num = (byte_array[i] << 8) | byte_array[i+1]
+        int_array.append(num)
+    return int_array
 
 def draw_menu():
     tlx = int(term.width * 0.3)
@@ -155,6 +183,107 @@ def create_listener(user_id, target, chat_id):
             break
     s.close()
 
+def create_video_lifeline(user_id, chat_id):
+    global transmitting
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    s.connect((config.HOST, config.VIDEO_PORT))
+    s.sendall(json.dumps({
+        "role": "lifeline",
+        "id": user_id,
+        "chat_id": chat_id
+    }).encode())
+
+    while transmitting:
+        data = s.recv(2048)
+        if not data:
+            break
+        try:
+            data = json.loads(data.decode())
+            if data["msg"] == "join":
+                threading.Thread(target=create_listener, args=(user_id, data["id"], chat_id)).start()
+        except:
+            pass
+
+    s.close()
+
+def create_video_sender(user_id, channel):
+    global transmitting
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    s.connect((config.HOST, config.VIDEO_PORT))
+    s.sendall(json.dumps({
+        "role": "sender",
+        "id": user_id,
+        "chat_id": channel
+        }).encode())
+    
+    vidcap = cv2.VideoCapture(0)
+
+    while transmitting:
+        try:
+            success, image = vidcap.read()
+            if not success:
+                break
+            # s.sendall(data)
+            # TODO
+            im = Image.fromarray(image)
+            im = im.resize((width, height))
+
+
+            pixels = im.load()
+            pixels = [[pixels[x, y] for x in range(width)] for y in range(height)]
+            pixels = [[
+                (r // 16, g // 16, b // 16)
+                for r, g, b in row
+            ] for row in pixels]
+
+            pixels = [
+                r << 8 | g << 4 | b
+                for row in pixels
+                for r, g, b in row
+            ]
+
+            
+            temp = bytes(encode_video(pixels))
+
+            s.sendall(temp)
+
+        except:
+            break
+    s.close()
+
+
+def create_video_listener(user_id, target, chat_id):
+    global transmitting
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((config.HOST, config.VIDEO_PORT))
+    s.sendall(json.dumps({
+        "role": "receiver",
+        "id": user_id,
+        "chat_id": chat_id,
+        "target": target
+    }).encode())
+
+    output_stream = audio.open(format=FORMAT,
+                    channels=CHANNELS,
+                    rate=RATE,
+                    output=True,
+                    frames_per_buffer=CHUNK)
+
+    while transmitting:
+        try:
+            data = s.recv(2048)
+        except:
+            s.close()
+            break
+        if data:
+            output_stream.write(data)
+        else:
+            break
+    s.close()
+
+
 def redraw_all():
     print(term.clear())
     draw_background()
@@ -173,8 +302,8 @@ def main(user_token, server_id, channel_id):
     if user_info.status_code != 200:
         return None
     user_id = user_info.json()["user_id"]
-    
-    
+
+    # VOICE CONNECTIONS
     try:
         resp = requests.post(f"https://{config.HOST}:{config.PORT}/api/voice/join", json={"user_token": user_token, "server_id": server_id, "chat_id": channel_id})
     except Exception as e:
@@ -182,9 +311,6 @@ def main(user_token, server_id, channel_id):
     
     if resp.status_code != 200:
         return None
-    
-    
-
 
     callbacks = resp.json()["connections"]
     for target in callbacks:
@@ -193,9 +319,29 @@ def main(user_token, server_id, channel_id):
         else:
             threading.Thread(target=create_listener, args=(user_id, target, channel_id)).start()
 
-
-    
     threading.Thread(target=create_sender, args=(user_id, channel_id)).start()
+
+
+
+    # VIDEO CONNECTIONS
+
+    try:
+        resp = requests.post(f"https://{config.HOST}:{config.PORT}/api/video/join", json={"user_token": user_token, "server_id": server_id, "chat_id": channel_id})
+    except Exception as e:
+        return None
+    
+    if resp.status_code != 200:
+        return None
+
+    callbacks = resp.json()["connections"]
+    for target in callbacks:
+        if target == "lifeline":
+            threading.Thread(target=create_video_lifeline, args=(user_id, channel_id)).start()
+        else:
+            threading.Thread(target=create_video_listener, args=(user_id, target, channel_id)).start()
+
+    threading.Thread(target=create_video_sender, args=(user_id, channel_id)).start()
+
 
 
     redraw_all()

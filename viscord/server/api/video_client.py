@@ -82,7 +82,7 @@ global_state = GlobalState()
 
 
 
-@app.route("/api/voice/join", methods=["POST"])
+@app.route("/api/video/join", methods=["POST"])
 def join_voice() -> Literal["success", "failure"]:
     global global_state
 
@@ -162,7 +162,7 @@ def handle_client(conn, addr):
 
     while True:
         try:
-            data = conn.recv(2048)
+            data = conn.recv(1024 * 10)
         except Exception as e:
             global_state.purge(user_id)
             break
