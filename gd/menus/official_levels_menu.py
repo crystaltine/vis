@@ -5,9 +5,8 @@ from render.camera_frame import CameraFrame
 from render.texture_manager import TextureManager
 from draw_utils import print2
 from render.utils import fcode_opt as fco
+from blessed.keyboard import Keystroke
 import os, json
-
-os.system('cls')
 
 class LevelPreviewData(TypedDict):
     name: str
@@ -23,11 +22,14 @@ corner_deco_BR = TextureManager.reflect_texture(corner_deco_BL, 'horizontal')
 corner_deco_TL = TextureManager.reflect_texture(corner_deco_BL, 'vertical')
 corner_deco_TR = TextureManager.reflect_texture(corner_deco_BL, 'both')
 
-class LevelSelector:
+class OfficialLevelsMenu:
     """ Level selector page for the MAIN levels menu """
     
     frame: CameraFrame = None
     """ The frame that the level selector is drawn on. None until the init_level_selector is called at least once """
+    
+    selected_level_idx = 0
+    """ Index of the currently selected level """
     
     # NOTE - this should eventually be autoloaded from the levels directory, this is just for tests
    
@@ -116,8 +118,11 @@ class LevelSelector:
         Logger.log(levels)
         return levels
     
-    levels=parse_level_file()
-
+    levels = parse_level_file()
+    
+    @classmethod
+    def render(cls):
+        cls.draw_level(cls.selected_level_idx)
 
     @classmethod
     def draw_level(c, idx: int):
@@ -220,14 +225,20 @@ class LevelSelector:
         text_fcode = fco((255, 255, 255), halfdark_level_color)
         print2(GDConstants.term.move_xy(center - len(normal_text)//2, (normalbar_top - 4)//2) + text_fcode+normal_text)
         print2(GDConstants.term.move_xy(center - len(practice_text)//2, (practicebar_top - 4)//2) + text_fcode+practice_text)
-
     
-
-    #         name: str
-    # color: Tuple[int, int, int]
-    # path: str
-    # progress_normal: float
-    # progress_practice: float
-
+    def get_selected_level_filepath():
+        return OfficialLevelsMenu.levels[OfficialLevelsMenu.selected_level_idx]['path']
     
+    def on_key(val: Keystroke) -> Literal["play_level"] | None:
+        if val.name in ["KEY_LEFT", "KEY_BTAB"]:
+            OfficialLevelsMenu.selected_level_idx = (OfficialLevelsMenu.selected_level_idx - 1) % len(OfficialLevelsMenu.levels)
+            
+        elif val.name in ["KEY_RIGHT", "KEY_TAB"]:
+            OfficialLevelsMenu.selected_level_idx = (OfficialLevelsMenu.selected_level_idx + 1) % len(OfficialLevelsMenu.levels)
+            
+        elif val.name == "KEY_ENTER":
+            return 'play_level' # menuhandler can use cls.selected_level_idx to get the level to play
+
+        
+        
     

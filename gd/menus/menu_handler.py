@@ -1,0 +1,137 @@
+from typing import Literal
+from time import sleep, time_ns, time
+from gd_constants import GDConstants
+
+from logger import Logger
+from menus.main_menu import MainMenu
+from menus.official_levels_menu import OfficialLevelsMenu
+from menus.custom_levels_menu import CustomLevelsMenu
+from menus.create_level_menu import CreateLevelMenu
+from menus.created_levels_menu import CreatedLevelsMenu
+from menus.online_levels_menu import OnlineLevelsMenu
+
+from game import Game
+from level import Level
+
+class MenuHandler:
+    """ General class that manages the game's menu flow 
+    (i.e. which menu is currently being displayed, moving between menus, etc.) """
+    
+    MENU_LIST = {
+        'main': MainMenu,
+        'custom_levels': CustomLevelsMenu,
+        'official_levels': OfficialLevelsMenu,
+        'create_new': CreateLevelMenu,
+        'created_levels': CreatedLevelsMenu,
+        'online_levels': OnlineLevelsMenu,
+    }
+    
+    PREV_PAGES = {
+        "custom_levels": "main",
+        "official_levels": "main",
+        "create_new": "custom_levels",
+        "created_levels": "custom_levels",
+        "online_levels": "custom_levels",
+    }
+    """ Guide for which page to go back to when the escape key is pressed """
+    
+    current_page: str = 'main'
+    """ should be a value from MenuHandler.MENU_LIST, represents the current menu being displayed """
+    
+    running = False
+    
+    in_level = False
+    in_level_editor = False
+    
+    def run():
+        """ 
+        Initializes the game menu system, rendering the main menu and beginning the key input loop 
+        
+        Since this function leads into the gameloop and level editor loop, it is BLOCKING.
+        """
+        
+        MenuHandler.running = True
+        Logger.log(f"setting running to {MenuHandler.running}, time={time()}")
+        
+        # render the main menu
+        MenuHandler._render_page(MenuHandler.current_page)
+        
+        while True:
+            
+            #Logger.log(f"[MenuHandler] running loop, running: {MenuHandler.running}, in_level: {MenuHandler.in_level}, in_level_editor: {MenuHandler.in_level_editor}, page: {MenuHandler.current_page}")
+            #Logger.log(f"^^^^ running is {MenuHandler.running}, time={time()}")
+            if not MenuHandler.running:
+                break
+            
+            if MenuHandler.in_level or MenuHandler.in_level_editor:
+                sleep(0.01) # do nothing if in level or editor, they have their own loops
+                continue
+            
+            val = ...
+            with GDConstants.term.cbreak():
+                b4_inkey = time_ns()
+                val = GDConstants.term.inkey()
+                after_inkey = time_ns()
+                
+                #Logger.log(f'val is {val.name} ({val}), started checking@{b4_inkey}, ended@{after_inkey}, diff={after_inkey-b4_inkey}')
+            
+            # return to prev editor/quit game if q or escape is hit
+            #Logger.log(f"({val} or {val.name}) => ({val or val.name}), QUIT_KEYS={GDConstants.QUIT_KEYS}")
+            if (val or val.name) in GDConstants.QUIT_KEYS:
+                if MenuHandler.current_page == 'main':
+                    
+                    MenuHandler.running = False
+                    #Logger.log(f"running is now {MenuHandler.running}, time={time()}")
+                    break
+                
+                else:
+                    prev_page = MenuHandler.PREV_PAGES[MenuHandler.current_page]
+                    MenuHandler._render_page(prev_page)
+            
+            # otherwise, pass the key input to the current menu
+            else:
+                #Logger.log(f"[MenuHandler] sending key {val.name} to {MenuHandler.current_page}")
+                action = MenuHandler.MENU_LIST[MenuHandler.current_page].on_key(val)
+                #Logger.log(f"[MenuHandler] action: {action}")
+                match action:
+                    
+                    ### MAIN MENU PAGE
+                    case "quit":
+                        #Logger.log("[MenuHandler] quitting game")
+                        MenuHandler.running = False
+                        return
+                    case "play":
+                        MenuHandler._render_page("official_levels")
+                    case "editor":
+                        MenuHandler._render_page("custom_levels")  
+                    case "play_level":
+                        MenuHandler.in_level = True
+                        MenuHandler.run_level(OfficialLevelsMenu.get_selected_level_filepath())
+                    
+                    ### CUSTOM LEVELS PAGE
+                    case "create_new_level":
+                        MenuHandler._render_page("create_new")
+                    case "open_created_levels":
+                        MenuHandler._render_page("created_levels")
+                    case "open_online_levels":
+                        MenuHandler._render_page("online_levels")
+    
+    def run_level(filepath: str) -> None:
+        """ Enters into the actual level loop, running the specified level file """
+        game = Game(Level.parse_from_file(filepath))
+        game.start_level()
+        #Logger.log(f"game start level ended (in MenuHandler/run_level)")
+        
+        MenuHandler.in_level = False
+        MenuHandler._render_page("official_levels")
+        
+        # clear terminal inkey buffer
+        with GDConstants.term.cbreak():
+            while GDConstants.term.inkey(timeout=0.01):
+                pass
+
+    def _render_page(page_name: str):
+        """ Renders the specified menu page and updates the current page field """
+        MenuHandler.current_page = page_name
+        MenuHandler.MENU_LIST[MenuHandler.current_page].render()
+        

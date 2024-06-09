@@ -26,7 +26,7 @@ class Game:
     """
     Represents a level "world" and contains a player object.
 
-    Coordinates keyboard, render, physics threads. 
+    Coordinates keyboard, render, physics threads, etc.
     """
 
     def __init__(self, level: Level):
@@ -34,21 +34,28 @@ class Game:
 
         self.camera = Camera(self.level)
         self.collision_handler = CollisionHandler(self)
+        self.audio_handler = AudioHandler(level.metadata.get("song_filepath"), level.metadata.get("song_start_time"))
         self.player = Player(self)
 
         self.is_crashed = False
+        """ Special flag for when the player has crashed. (kinda like a pause)"""
+        
         self.running = False
+        """ Pause-switch. Render & physics threads pause if this is False. """
+        
+        self.exiting = False
+        """ kill-switch for all game threads. """
+        
+        self.need_to_render_raw = False
+        """ Set to True upon unpausing, so that the next frame completely removes the pause menu. """
+        
         self.last_tick = None
         
         self.activated_objects = []
-        """ Stores which objects had their activated properties set to true, so we can reset them on crash. """
+        """ Stores which objects had their activated properties set to true, so we can reset them on crash. """        
 
-        self.audio_handler = AudioHandler(level.metadata.get("song_filepath"), level.metadata.get("song_start_time"))
-
-        self.paused = False #currently unused variable
         self.pausemenuselectindex = 1
         self.changed = False
-        self.exiting = False
         self.practice_mode = False
         # creating object that will handle practice mode functionality
         self.practicemodeobj = PracticeMode(self)
@@ -57,13 +64,60 @@ class Game:
         self.attempt_number = 1
         self.game_start_time = time.time()
 
+    def _main_keydown_handler(self, event: KeyEvent) -> None:
+        if str(event) in GDConstants.KILL_KEYS:
+            self.exiting = True
+            KeyboardListener.stop()
+            return
+        elif str(event) in GDConstants.PAUSE_KEYS and not self.is_crashed:
+            self.pause()
+            return
+        # place a checkpoint if a user attempts to
+        elif str(event) in GDConstants.CHECKPOINT_KEYS and self.practice_mode:
+            self.practicemodeobj.add_checkpoint(self.player.pos)
+        # remove the most recent checkpoint if a user attempts to
+        elif str(event) in GDConstants.REMOVE_CHECKPOINT_KEYS and self.practice_mode:
+            self.practicemodeobj.remove_checkpoint()
+        elif str(event) in GDConstants.JUMP_KEYS:
+            
+            something_got_activated = False
+            
+            # also go through the player's current collisions and
+            # activate the first requires_click effect where "has_been_activated" is False
+            for collision in self.player.curr_collisions:
+                if collision.obj.data.get("requires_click"):
+                    
+                    if collision.obj.data.get("multi_activate"): # always run effect if multi_activate
+                        self.collision_handler.run_collision_effect(collision)
+                        something_got_activated = True
+                        break # can only perform one action per jump
+                    
+                    if not collision.has_been_activated: # run effect if not multi_activate and not activated
+                        self.collision_handler.run_collision_effect(collision)
+                        something_got_activated = True
+                        collision.has_been_activated = True
+                        self.activated_objects.append(collision.obj)
+                        break # can only perform one action per jump
+                    
+            if self.player.gamemode == 'wave':
+                # add to wave trail pivots if in wave gamemode
+                self.player._create_wave_pivot()
+            
+            # if nothing got activated, then jump
+            if not something_got_activated:
+                self.player.request_jump()
+    
+    def _main_keyup_handler(self, event: KeyEvent) -> None:
+        if str(event) in GDConstants.JUMP_KEYS:
+            if self.player.gamemode == 'wave':
+                self.player._create_wave_pivot()
+
     def start_level(self) -> None:
         """
         Begin a separate thread to run level physics/animation ticks
         """
 
         self.running = True
-        self.paused = False
         
         self.camera.render_init()
         def render_thread():
@@ -71,19 +125,31 @@ class Game:
                 last_frame = time_ns()
                 while True:
                     
+                    if self.exiting:
+                        break 
+                    
+                    if not self.running:
+                        sleep(0.01)
+                        continue
+                    
                     curr_frame = time_ns()
-
+                    
                     fps_str = f"{(1e9/(curr_frame-last_frame)):2f}" if (curr_frame-last_frame != 0) else "inf"
-                    if self.is_crashed:
-                        Logger.log(f"[Game/render_thread] Rendering CRASHED frame, player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str}")
-                    else:
-                        Logger.log(f"[Game/render_thread] Rendering LIVE frame, player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str}")
+                    #if self.is_crashed:
+                    #    Logger.log(f"[Game/render_thread] Rendering CRASHED frame, player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str}")
+                    #else:
+                    #    Logger.log(f"[Game/render_thread] Rendering LIVE frame, player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str}")
                     
                     # adds a checkpoint if its been over 2 seconds since the last checkpoint was added
                     if self.practice_mode and self.practicemodeobj.is_checkpoint_time_over():
                         self.practicemodeobj.add_checkpoint(self.player.pos)
 
-                    self.camera.render(self)
+                    if self.need_to_render_raw:
+                        self.camera.render(self, render_raw=True)
+                        self.need_to_render_raw = False
+                    else:
+                        self.camera.render(self)
+                    
                     # renders the most recent checkpoint if it exists
                     # note: this has been moved to Camera.render
                     # if self.last_checkpoint:
@@ -93,19 +159,14 @@ class Game:
                     last_frame = curr_frame
 
                     sleep(1/CameraConstants.RENDER_FRAMERATE)
-
-                    if not self.running:
-                        break     
             except:
                 Logger.log(f"[Render Thread] ERROR: {traceback.format_exc()}")
-                self.running = False       
+                self.exiting = True    
 
         def check_if_level_complete():
             if self.player.pos[0]-10>=self.level.length:
 
-                # This means the player beat the level
-
-                self.running=False
+                self.running = False
                 
                 new_frame=self.camera.curr_frame.copy()
                 new_frame.add_rect((0,0,0), 0, 0, new_frame.width, new_frame.height)
@@ -119,12 +180,15 @@ class Game:
             try:
                 while True:
                     #Logger.log(f"running physics tick. player pos is {self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, time_ns is {time_ns()}")
-                    if not self.running: 
+                    if self.exiting:
                         self.audio_handler.stop_playing_song()
+                        KeyboardListener.stop()
                         break
-                    if self.is_crashed:
-                        Logger.log(f"[Physics Thread] Physics paused due to is_crashed being true. player@{[f'{num:2f}' for num in self.player.pos]}.")
+                    
+                    if self.is_crashed or not self.running:
+                        #Logger.log(f"[Physics Thread] Physics paused due to is_crashed being true. player@{[f'{num:2f}' for num in self.player.pos]}.")
                         sleep(0.01) # TODO - replace with continue or alternatively sleep until crash period ends
+                        continue
                         # continuing here is a bad idea, because we need to sleep to prevent the thread from running too fast
                         # and slowing everything down.
 
@@ -150,7 +214,7 @@ class Game:
                     self.player.tick((curr_time - self.last_tick)/1e9)
                     
                     _tps_str = f"{1e9/((curr_time-self.last_tick)):.2f}" if (curr_time-self.last_tick != 0) else "inf"
-                    Logger.log(f"[Physics Thread] Player ticked. pos={self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, yvel={self.player.yvel:.2f}, TPS: {_tps_str}")
+                    #Logger.log(f"[Physics Thread] Player ticked. pos={self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, yvel={self.player.yvel:.2f}, TPS: {_tps_str}")
                     self.last_tick = curr_time
                     
                     # DO NOT REMOVE. removing this slows down the renderer by A LOT
@@ -159,65 +223,20 @@ class Game:
                     sleep(1/EngineConstants.PHYSICS_FRAMERATE)
             except Exception as e:
                 Logger.log(f"[Physics Thread] ERROR: {traceback.format_exc()}")
-                self.running = False
+                self.exiting = True
         
         self.last_tick = time_ns()
         Thread(target=render_thread).start()
         Thread(target=physics_thread).start()
         self.audio_handler.begin_playing_song()
-        
-        # Main thread handles key input
-        def _handle_keydown(event: KeyEvent) -> None:
-            if str(event) in EngineConstants.QUIT_KEYS:
-                self.running = False
-                KeyboardListener.stop()
-                return
-            elif str(event) in EngineConstants.PAUSE_KEYS:
-                self.pause()
-                return
-            # place a checkpoint if a user attempts to
-            elif str(event) in EngineConstants.CHECKPOINT_KEYS and self.practice_mode:
-                self.practicemodeobj.add_checkpoint(self.player.pos)
-            # remove the most recent checkpoint if a user attempts to
-            elif str(event) in EngineConstants.REMOVE_CHECKPOINT_KEYS and self.practice_mode:
-                self.practicemodeobj.remove_checkpoint()
-            elif str(event) in EngineConstants.JUMP_KEYS:
-                
-                something_got_activated = False
-                
-                # also go through the player's current collisions and
-                # activate the first requires_click effect where "has_been_activated" is False
-                for collision in self.player.curr_collisions:
-                    if collision.obj.data.get("requires_click"):
-                        
-                        if collision.obj.data.get("multi_activate"): # always run effect if multi_activate
-                            self.collision_handler.run_collision_effect(collision)
-                            something_got_activated = True
-                            break # can only perform one action per jump
-                        
-                        if not collision.has_been_activated: # run effect if not multi_activate and not activated
-                            self.collision_handler.run_collision_effect(collision)
-                            something_got_activated = True
-                            collision.has_been_activated = True
-                            self.activated_objects.append(collision.obj)
-                            break # can only perform one action per jump
-                        
-                if self.player.gamemode == 'wave':
-                    # add to wave trail pivots if in wave gamemode
-                    self.player._create_wave_pivot()
-                
-                # if nothing got activated, then jump
-                if not something_got_activated:
-                    self.player.request_jump()
-                    
-        def _handle_keyup(event: KeyEvent) -> None:
-            if str(event) in EngineConstants.JUMP_KEYS:
-                if self.player.gamemode == 'wave':
-                    self.player._create_wave_pivot()
 
-        KeyboardListener.on_presses.append(_handle_keydown)
-        KeyboardListener.on_releases.append(_handle_keyup)
+        KeyboardListener.add_on_press(self._main_keydown_handler)
+        KeyboardListener.add_on_release(self._main_keyup_handler)
         KeyboardListener.start()
+        
+        KeyboardListener.listener.join()
+        
+        Logger.log(f"[Game/start_level]: func reached end.")
 
     def crash(self):
         """ Run when a player DIES (not when they click restart button) """
@@ -277,9 +296,8 @@ class Game:
         self.attempt_number += 1
         
         # start song again
-        self.audio_handler.begin_playing_song() # TODO - verify wtf reseting does (why is it false)
+        self.audio_handler.begin_playing_song()
         
-    
     def get_progress_percentage(self, write_to_file:bool=False) -> int:
 
         # calculates progress bar based on length of level and player position
@@ -311,63 +329,65 @@ class Game:
         Then passes off handling user interaction with the pause menu.
         Also sets initial selected index to the play button.
         """
+        
+        #Logger.log(f"pause")
         # stops the game and sets paused to true
         self.running = False
-        self.paused = True
         # calculates progress bar based on length of level and player position
         progresspercent = self.get_progress_percentage()
         # sets selected index to play button
         self.pausemenuselectindex = 1
         
+        self.audio_handler.pause_playing_song()
+        
+        # temporarily remove physics key handlers
+        # and replace them with the pause menu key handler
+        KeyboardListener.remove_on_press(self._main_keydown_handler)
+        KeyboardListener.remove_on_release(self._main_keyup_handler)
+        KeyboardListener.add_on_press(self._pause_menu_keydown_handler)
+        
+        #Logger.log(f"pause(): handlers changed!!, press/rel now has size {len(KeyboardListener.on_presses)}/{len(KeyboardListener.on_releases)}")
+        
         # Draw pause menu background, progress bar, and buttons
         draw('assets/pausemenubg.png', Position.Relative(top=5, left=10), (GDConstants.term.width - 20, GDConstants.term.height * 2 - 20), 'scale')
         draw_text(f"Progress: {progresspercent}%", (GDConstants.term.width) // 2 - 8, 10, bg_color='black')
         self.draw_pause_menu_buttons()
+        
+        Logger.log(f"reached end of pause func")
 
-        # call method to handle interaction with pause menu
-        self.handle_pause_menu_interaction()
-
-    def handle_pause_menu_interaction(self) -> None:
-        """
-        Handles the user interaction with the pause menu.
-        Processes user input to navigate the pause menu and perform actions
-        such as reset, unpause, toggle practice mode, or exit.
-
-        """
-
-        KeyboardListener.on_presses.clear()
-        KeyboardListener.on_releases.clear()
-
-        def _handle_pause_keydown(event: KeyEvent) -> None:
-            if str(event) == 'left':
-                self.pausemenuselectindex -= 1
-                if self.pausemenuselectindex < 0:
-                    self.pausemenuselectindex = 3
-                self.changed = True
-            elif str(event) == 'right':
-                self.pausemenuselectindex += 1
-                if self.pausemenuselectindex > 3:
-                    self.pausemenuselectindex = 0
-                self.changed = True
-            elif str(event) == 'enter':
-                if self.pausemenuselectindex == 0:
-                    self.restart()
-                elif self.pausemenuselectindex == 1:
-                    self.unpause()
-                elif self.pausemenuselectindex == 2:
-                    self.practice_mode = not self.practice_mode
-                    if not self.practice_mode:
-                        self.practicemodeobj.clear_checkpoints()
-                    self.restart()
-                elif self.pausemenuselectindex == 3:
-                    self.exiting = True
-            if self.changed:
-                self.draw_pause_menu_buttons()
-                self.changed = False
+    def _pause_menu_keydown_handler(self, event: KeyEvent) -> None:
+        if str(event) == 'left':
+            self.pausemenuselectindex = (self.pausemenuselectindex - 1) % 4
+            self.changed = True
             
-            
-        KeyboardListener.on_presses.append(_handle_pause_keydown)
-        KeyboardListener.start()
+        elif str(event) == 'right':
+            self.pausemenuselectindex = (self.pausemenuselectindex + 1) % 4
+            self.changed = True
+        
+        elif str(event) in GDConstants.PAUSE_KEYS and self.running == False:
+            #Logger.log(f"unpausing cuz pause_keys")
+            self.unpause()
+            return
+        
+        elif str(event) == 'enter':
+            if self.pausemenuselectindex == 0:
+                self.restart()
+            elif self.pausemenuselectindex == 1:
+                #Logger.log(f"unpausing cuz hit button")
+                self.unpause()
+                return
+            elif self.pausemenuselectindex == 2:
+                self.practice_mode = not self.practice_mode
+                if not self.practice_mode:
+                    self.practicemodeobj.clear_checkpoints()
+                self.restart()
+            elif self.pausemenuselectindex == 3:
+                self.exiting = True
+                KeyboardListener.remove_on_press(self._pause_menu_keydown_handler)
+                
+        if self.changed and not self.exiting:
+            self.draw_pause_menu_buttons()
+            self.changed = False 
 
     def draw_pause_menu_buttons(self) -> None:
         """
@@ -375,6 +395,8 @@ class Game:
         Args:
             index (int): The index of the currently selected menu button.
         """
+
+        #Logger.log(f"drawing pause menu buttons with index {self.pausemenuselectindex}")
 
         # OLD TEXT BASED RENDERING OF BUTTONS
         # draw_text("Reset", 10 + ((GDConstants.term.width - 50) // 4), (GDConstants.term.height) // 2, bg_color='white' if index == 0 else 'black')
@@ -406,10 +428,20 @@ class Game:
         draw_text("Remove Checkpoint - X", ((GDConstants.term.width) // 5) * 3 - 7, (GDConstants.term.height + 25) // 2, bg_color='black')
 
     def unpause(self) -> None:
-        """
-            Unpauses the level.
-        """
-        self.start_level()
+        """ Unpauses the level. """
+        self.running = True
+        self.need_to_render_raw = True
+        self.last_tick = time_ns()
+        
+        # exchange key handlers again
+        KeyboardListener.add_on_press(self._main_keydown_handler)
+        KeyboardListener.add_on_release(self._main_keyup_handler)
+        KeyboardListener.remove_on_press(self._pause_menu_keydown_handler)
+        
+        #Logger.log(f"UNpause(): handlers changed!, press/release now has size {len(KeyboardListener.on_presses)}/{len(KeyboardListener.on_releases)}")
+        
+        self.audio_handler.resume_playing_song()
+        #self.start_level()
 
     def restart(self) -> None:
         """
@@ -418,8 +450,9 @@ class Game:
 
         # in pract mode, dont clear checkpoints
         #self.practicemodeobj.clear_checkpoints()
+        self.unpause()
         self.reset_level()
-        self.start_level()
+        #self.start_level()
 
         # OLD RESET CODE - ATTEMPT TO TERMINATE THE THREADS FAILED MISERABLY
         # self.running = False

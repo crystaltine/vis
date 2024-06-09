@@ -34,13 +34,20 @@ class AudioHandler:
                 time.sleep(0.01)
         
         self.thread = Thread(target=play)
-        self.thread.daemon = True
         self.thread.start()
         
     def stop_playing_song(self) -> None:
         """ Stops playing the current song. This also ends the thread. """
         mixer.music.stop()
         self.song_playing = False
+        
+    def pause_playing_song(self) -> None:
+        """ Pauses the current song. """
+        mixer.music.pause()
+        
+    def resume_playing_song(self) -> None:
+        """ Resumes the current song. """
+        mixer.music.unpause()
         
     def stop_song_and_play_crash(self) -> None:
         """ Stops this instance's song and plays the crash sound. 

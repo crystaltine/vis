@@ -4,5 +4,3 @@ blessed
 numpy
 pynput
 scikit-image
-pywin32; platform_system == "Windows"
-win32gui; platform_system == "Windows"
