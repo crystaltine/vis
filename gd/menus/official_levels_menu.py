@@ -63,15 +63,11 @@ class OfficialLevelsMenu(GenericMenu):
         return levels
     
     levels = parse_level_file()
-    
-    @classmethod
-    def render(cls):
-        cls.draw_level(cls.selected_level_idx)
 
     @classmethod
-    def draw_level(c, idx: int):
+    def render(c):
         
-        level_data = c.levels[idx]
+        level_data = c.levels[c.selected_level_idx]
         
         c.frame = CameraFrame()
         c.frame.fill(level_data['color'])
@@ -173,13 +169,16 @@ class OfficialLevelsMenu(GenericMenu):
     def get_selected_level_filepath():
         return OfficialLevelsMenu.levels[OfficialLevelsMenu.selected_level_idx]['path']
     
-    def on_key(val: Keystroke) -> Literal["play_level"] | None:
+    @classmethod
+    def on_key(c, val: Keystroke) -> Literal["play_level"] | None:
         if val.name in ["KEY_LEFT", "KEY_BTAB"]:
             OfficialLevelsMenu.selected_level_idx = (OfficialLevelsMenu.selected_level_idx - 1) % len(OfficialLevelsMenu.levels)
+            c.render()
             
         elif val.name in ["KEY_RIGHT", "KEY_TAB"]:
             OfficialLevelsMenu.selected_level_idx = (OfficialLevelsMenu.selected_level_idx + 1) % len(OfficialLevelsMenu.levels)
-            
+            c.render()
+
         elif val.name == "KEY_ENTER":
             return 'play_level' # menuhandler can use cls.selected_level_idx to get the level to play
 

@@ -5,6 +5,7 @@ from render.texture_manager import TextureManager
 from gd_constants import GDConstants
 from blessed.keyboard import Keystroke
 from menus.MENU_GENERIC import GenericMenu
+from menus.created_levels_menu import CreatedLevelsMenu
 from level import Level
 import os
 
@@ -134,6 +135,11 @@ class CreateLevelMenu(GenericMenu):
             elif CreateLevelMenu.selected_option_idx == 1:
                 if not CreateLevelMenu.levelname_taken:
                     Level.create_new_file(CreateLevelMenu.curr_input)
+                    
+                    # make changes on the CreatedLevelsMenu class
+                    CreatedLevelsMenu.created_levels = CreatedLevelsMenu.parse_created_levels_files()
+                    CreatedLevelsMenu.created_levels_index = CreatedLevelsMenu.indexof_level_with_name(CreateLevelMenu.curr_input)
+                    
                     return "goto_created_levels_menu"
                 # else, do nothing (button is disabled)
             elif CreateLevelMenu.selected_option_idx == 2:

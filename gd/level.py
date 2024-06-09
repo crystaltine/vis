@@ -235,10 +235,15 @@ class Level:
         
         if id == "bg":
             self.bg_color = new_color
+            self.metadata["start_settings"]["bg_color"] = new_color
+            
         elif id == "grnd":
             self.ground_color = new_color
+            self.metadata["start_settings"]["ground_color"] = new_color
+            
         else:
             self.color_channels[id] = new_color
+            self.metadata["start_settings"]["default_color_channels"][id] = new_color
         
     def get_color_channel(self, id: Literal["bg", "grnd"] | int) -> CameraConstants.RGBTuple:
         """ Get the current color of a color channel. If the channel was never set, sets it to `(255, 255, 255)` (white) and returns that. """
@@ -267,7 +272,7 @@ class Level:
         #Logger.log(f"Level.get_colors_of: {object} has colors {curr_color1}, {curr_color2}")
         return curr_color1, curr_color2      
     
-    def create_new_file(self, name: str) -> None:
+    def create_new_file(name: str) -> None:
         """ Creates a new (created-type) level file with the specified name, default metadata for everything else. """
     
         # default created level template is in ./levels/DEFAULT_CREATED_LEVEL.json

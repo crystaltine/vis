@@ -109,6 +109,7 @@ class LevelEditor:
         self.running = False
         
     def save(self) -> None:
+        Logger.log(f"saving")
         self.level.metadata["modified_timestamp"] = time.time()
         self.level.write_to_file(self.filepath)
         self.showing_save_confirmation = True
@@ -242,7 +243,7 @@ class LevelEditor:
         self.curr_main_frame = new_frame
         
     def run_editor(self):
-        """ Begins keylistener loops and renders the level editor. """
+        """ Begins keylistener loops and renders the level editor. this is a BLOCKING call """
         
         self.render_main_editor()
         self.render_bottom_menu()
@@ -252,8 +253,10 @@ class LevelEditor:
             """ General keypress event handler for the editor in any mode """
             self.showing_save_confirmation = False # reset the "saved changes!" message on any keypress
             
-            if val in LevelEditor.KEYBINDS["quit"]:
-                self.running = False
+            if val in LevelEditor.KEYBINDS["quit"] or val in LevelEditor.KEYBINDS['open_settings']:
+                self.focused_popup = LevelSettingsPopup(self.curr_main_frame.copy(), self.level)
+                self.focused_popup.render()
+                
             elif val in LevelEditor.KEYBINDS['save']:
                 self.save()
             elif val in LevelEditor.KEYBINDS['delete_object']:
@@ -275,11 +278,7 @@ class LevelEditor:
                 self.mode = 'build' if self.mode == 'edit' else 'edit'
                 #Logger.log_on_screen(GDConstants.term, f">>> Toggled leveleditor mode to {self.mode}")
                 self.rerender_needed = True
-                
-            elif val in LevelEditor.KEYBINDS['open_settings']:
-                self.focused_popup = LevelSettingsPopup(self.curr_main_frame.copy(), self.level)
-                self.focused_popup.render()
-            
+
             # moving - i know this type of definition is inefficient, but it allows for custom keybinding
             elif val in LevelEditor.KEYBINDS['move_cursor_up']:
                 self.cursor_position = (self.cursor_position[0], self.cursor_position[1]+1)
