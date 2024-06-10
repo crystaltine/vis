@@ -19,7 +19,7 @@ Using ANSI color codes and block elements [listed here](https://en.wikipedia.org
 Surprisingly, with correct optimizations, we have achieved framerates of around 30 per second (in most cases - but further optimizing the renderer is high priority)
 
 ### Demo video
-https://github.com/crystaltine/vis/assets/114899328/f9b28906-b2b6-49e3-9c6a-caaf476c83d6
+![](https://youtu.be/vEKwefz2E6A)
 
 (Note: this does not showcase the edit object functionality in the level editor, which allows you to change the color channels that a block uses)
 
