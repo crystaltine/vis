@@ -267,7 +267,7 @@ def create_video_listener(user_id, target, chat_id):
 
     while transmitting:
         try:
-            data = s.recv(1024 * 10)
+            data = s.recv(9000)
         except:
             s.close()
             break
