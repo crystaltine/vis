@@ -6,7 +6,7 @@ Design Doc (Incomplete as of 1:43 AM, Jun 9): https://docs.google.com/document/d
 ## Instructions for Running
 ```
 pip install -r requirements.txt
-python launcher.py
+python main.py
 ```
 
 ## Viscord
