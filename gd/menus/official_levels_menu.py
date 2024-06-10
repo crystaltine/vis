@@ -44,9 +44,8 @@ class OfficialLevelsMenu(GenericMenu):
     NORMAL_BAR_COLOR = (123, 255, 0)
     PRACTICE_BAR_COLOR = (140, 255, 251)
     
-    def parse_level_file():
+    def parse_level_files():
 
-        
         levels=[]
 
         path_to_json = 'levels/official'
@@ -55,19 +54,26 @@ class OfficialLevelsMenu(GenericMenu):
         for file in json_files:
             f = open('levels/official/'+file)
             data = json.load(f)['metadata']
-            levels.append({'name':data['name'], 'color':data['start_settings']['bg_color'], 
-                        'path':'./levels/official/'+file, 'progress_normal':data['progress_normal'],
-                        'progress_practice':data['progress_practice']})
+            levels.append(
+                {
+                    'name':data['name'], 
+                    'color':data['start_settings']['bg_color'], 
+                    'path':'./levels/official/'+file, 
+                    'progress_normal':data['progress_normal'],
+                    'progress_practice':data['progress_practice']
+                }
+            )
 
-        Logger.log(levels)
         return levels
     
-    levels = parse_level_file()
+    levels = parse_level_files()
 
     @classmethod
     def render(c):
         
         level_data = c.levels[c.selected_level_idx]
+        
+        Logger.log(f"rendering officl level menu, selected idx: {c.selected_level_idx}, level_data: {level_data}")
         
         c.frame = CameraFrame()
         c.frame.fill(level_data['color'])
@@ -165,6 +171,17 @@ class OfficialLevelsMenu(GenericMenu):
         text_fcode = fco((255, 255, 255), halfdark_level_color)
         print2(GDConstants.term.move_xy(center - len(normal_text)//2, (normalbar_top - 4)//2) + text_fcode+normal_text)
         print2(GDConstants.term.move_xy(center - len(practice_text)//2, (practicebar_top - 4)//2) + text_fcode+practice_text)
+    
+    def update_level_progress(filepath: str, new_value: float, key: Literal["normal", "practice"]):
+        """ Update the progress field of the metadata in the levels field of this class (not the file, thats handled in game.py) """
+    
+        Logger.log("Updating level progress in mem, filepath: "+filepath+" key: "+key+" new_value: "+str(new_value))
+    
+        for level in OfficialLevelsMenu.levels:
+            if level['path'] == filepath:
+                Logger.log(f"ladies and gentlemen, we got him: {level['name']}")
+                level[key] = new_value
+                break
     
     def get_selected_level_filepath():
         return OfficialLevelsMenu.levels[OfficialLevelsMenu.selected_level_idx]['path']

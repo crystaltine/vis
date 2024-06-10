@@ -77,7 +77,6 @@ class CreatedLevelsMenu(GenericMenu):
             created_levels.append({'name':data['name'], 'color':data['start_settings']['bg_color'], 
                         'path':'./'+path_to_json+'/'+file})
 
-        Logger.log(created_levels)
         return created_levels
     
     def indexof_level_with_name(name: str) -> int:

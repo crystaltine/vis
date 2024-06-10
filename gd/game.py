@@ -21,7 +21,7 @@ from practice_mode import PracticeMode
 from gd_constants import GDConstants
 from audio import AudioHandler
 from render.texture_manager import TextureManager
-from copy import copy, deepcopy
+from menus.official_levels_menu import OfficialLevelsMenu
 
 class Game:
     """
@@ -187,6 +187,9 @@ class Game:
                     #Logger.log(f"running physics tick. player pos is {self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, time_ns is {time_ns()}")
                     if self.exiting:
                         self.audio_handler.stop_playing_song()
+                        self.write_highest_progress_to_file() # IMPORTANT - must do this before stopping listener,
+                        # otherwise menuhandler wont render the new progress since it starts rendering the next
+                        # menu right as soon as keyboard listener stops.
                         KeyboardListener.stop()
                         break
                     
@@ -245,8 +248,6 @@ class Game:
         KeyboardListener.start()
         
         KeyboardListener.listener.join()
-        
-        Logger.log(f"[Game/start_level]: func reached end.")
 
     def crash(self):
         """ Run when a player DIES (not when they click restart button) """
@@ -338,17 +339,23 @@ class Game:
         
         Can override which mode to save to by passing in mode_override.
         """
+        
         f = open(self.level.filepath)
         data = json.load(f)
-        
         
         key = 'progress_practice' if (self.practice_mode or mode_override == "practice") else 'progress_normal'
         if mode_override is not None:
             key = f"progress_{mode_override}"
+            
+        Logger.log(f"writing highest progress to {key}, progress is {self.highest_percent_this_session}")
         
         if data['metadata'][key]<self.highest_percent_this_session:
             data['metadata'][key]=self.highest_percent_this_session/100
             json.dump(data,open(self.level.filepath, 'w'))
+            
+        # update the level menu
+        OfficialLevelsMenu.update_level_progress(self.level.filepath, self.highest_percent_this_session/100, key)
+        
 
     def pause(self) -> None:
         """
