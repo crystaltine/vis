@@ -12,6 +12,7 @@ from engine.objects import OBJECTS
 from level import Level, LevelObject, AbstractLevelObject
 from editor.edit_object_popup import EditObjectPopup
 from editor.edit_color_popup import EditColorPopup
+from editor.edit_color_trigger_popup import EditColorTriggerPopup
 from editor.level_settings_popup import LevelSettingsPopup
 
 if TYPE_CHECKING:
@@ -109,7 +110,6 @@ class LevelEditor:
         self.running = False
         
     def save(self) -> None:
-        Logger.log(f"saving")
         self.level.metadata["modified_timestamp"] = time.time()
         self.level.write_to_file(self.filepath)
         self.showing_save_confirmation = True
@@ -217,6 +217,11 @@ class LevelEditor:
         if self.mode == 'build':
             # draw cursor preview
             cursor_screen_pos = CameraConstants.get_screen_coordinates(self.camera_left, self.camera_bottom, self.camera_height, *self.cursor_position)
+            
+            # if trigger, dont transform
+            #if self.selected_object.type == "color_trigger":
+            #    cursor_texture = TextureManager.get_base_texture(self.selected_object)
+            #else:
             cursor_texture = TextureManager.set_transparency(TextureManager.get_transformed_texture(self.level, self.selected_object), round(LevelEditor.BUILD_CURSOR_PREVIEW_OPACITY*255))
             #cursor_texture = TextureManager.get_transformed_texture(self.level, self.selected_object)
             
@@ -370,8 +375,12 @@ class LevelEditor:
             if hovered_obj is None: return # no object to edit = edit mode will do nothing.
             
             if val in LevelEditor.KEYBINDS["edit_object"]:
-                self.focused_popup = EditObjectPopup(self.curr_main_frame.copy(), hovered_obj, self.level)
-                self.focused_popup.render()
+                if hovered_obj.type == "color_trigger":
+                    self.focused_popup = EditColorTriggerPopup(self.curr_main_frame.copy(), hovered_obj, self.level)
+                    self.focused_popup.render()
+                else:
+                    self.focused_popup = EditObjectPopup(self.curr_main_frame.copy(), hovered_obj, self.level)
+                    self.focused_popup.render()
                     
             elif val in LevelEditor.KEYBINDS['rotate_clockwise']: # rotate curr object at cursor
                 hovered_obj.rotate('clockwise')
