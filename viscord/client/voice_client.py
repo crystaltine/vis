@@ -245,7 +245,6 @@ def create_video_sender(user_id, channel):
 
             
             temp = bytes(encode_video(pixels))
-            print(f"sending: {len(temp)} bytes")
             for byte in temp:
                 s.sendall(byte.to_bytes(1, byteorder="big"))
 
@@ -269,11 +268,12 @@ def create_video_listener(user_id, target, chat_id):
     full_bytes = bytes()
     while transmitting:
         try:
-            data = s.recv(9000)
+            data = s.recv(1)
             full_bytes += data
         except:
             s.close()
             break
+        print(len(full_bytes))
         if data and len(full_bytes) >= 9000:
             data = full_bytes[:9000]
             full_bytes = full_bytes[9000:]
