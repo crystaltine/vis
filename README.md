@@ -19,11 +19,7 @@ Using ANSI color codes and block elements [listed here](https://en.wikipedia.org
 Surprisingly, with correct optimizations, we have achieved framerates of around 30 per second (in most cases - but further optimizing the renderer is high priority)
 
 ### Demo video
-![](https://youtu.be/vEKwefz2E6A)
-
-(Note: this does not showcase the edit object functionality in the level editor, which allows you to change the color channels that a block uses)
-
-Some functional objects are also not demonstrated, like portals, orbs, pads, etc.
+https://github.com/crystaltine/vis/assets/114899328/9152d696-dd3b-4cfa-87c2-2a35898a1ae2
 
 ### More README info coming soon. For now, check out [our design doc](https://docs.google.com/document/d/13SuaRq5GfgQj59z0zWa9jua5XY7AGnjDIIRWVS-Cgh4/edit?usp=sharing)
 
