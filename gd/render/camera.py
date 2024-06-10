@@ -1,5 +1,5 @@
 import blessed
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Tuple
 from math import floor, ceil
 import traceback
 
@@ -11,6 +11,7 @@ from render.texture_manager import TextureManager
 from render.camera_frame import CameraFrame
 from gd_constants import GDConstants
 from skimage.draw import line_aa
+from engine.player import Player
 
 if TYPE_CHECKING:
     from level import LevelObject, Level
@@ -134,12 +135,12 @@ class Camera:
         self.update_camera_y_pos(game.player.pos)
         #Logger.log(f"[2] screen pos for playher: {self.player_y_info['screen_pos']}")
         self.camera_left = game.player.pos[0] - CameraConstants.CAMERA_LEFT_OFFSET
-        camera_right = self.camera_left + CameraConstants.screen_width_blocks(GDConstants.term)
-        camera_top = self.camera_bottom + CameraConstants.screen_height_blocks(GDConstants.term)
+        camera_right = self.camera_left + CameraConstants.screen_width_blocks()
+        camera_top = self.camera_bottom + CameraConstants.screen_height_blocks()
 
         #Logger.log(f"[Camera/render] {self.camera_bottom=:2f}, {self.player_y_info['screen_pos']=:4f}, {game.player.pos=}")
 
-        visible_vert_range = max(0, floor(self.camera_bottom)), min(self.level.height, 1+ceil(self.camera_bottom + CameraConstants.screen_height_blocks(GDConstants.term)))
+        visible_vert_range = max(0, floor(self.camera_bottom)), min(self.level.height, 1+ceil(self.camera_bottom + CameraConstants.screen_height_blocks()))
         # this should be smth like (5, 12) which is the range of y-pos of the grid that is visible on the screen. Exclusive of the second number.
 
         # first calc where the ground would be rendered
@@ -192,6 +193,10 @@ class Camera:
         # draw attempt number
         self.draw_attempt(new_frame, game.player.ORIGINAL_START_POS[0], game.attempt_number) # draw the attempt number
         
+        # draw wave trail
+        if game.player.gamemode == "wave":
+            self.render_wave_trail(new_frame, game)
+        
         # draw progress bar
         self.render_progress_bar(new_frame, game.get_progress_percentage())
         
@@ -209,8 +214,59 @@ class Camera:
             
         self.curr_frame = new_frame
 
-    def render_wave_trail(self, game: "Game") -> None:
-        pass # TODO
+    def render_wave_trail(self, frame: CameraFrame, game: "Game") -> None:
+        "draws a line between all the wave pivots that are on the screen"
+        
+        onscreen_pivots = self._get_wave_pivots_in_range(game.player)
+        for i in range(1, len(onscreen_pivots)):
+            x1, y1 = self.get_screen_coordinates(onscreen_pivots[i-1][0], onscreen_pivots[i-1][1])
+            x2, y2 = self.get_screen_coordinates(onscreen_pivots[i][0], onscreen_pivots[i][1])
+            
+            frame.add_line((x1, y1), (x2, y2), (255, 255, 255))
+            
+        # draw line from last pivot to player center
+        last_pivot = onscreen_pivots[-1]
+        player_center = (game.player.pos[0] + game.player.get_hitbox_size()[0]/2, game.player.pos[1] + game.player.get_hitbox_size()[1]/2)
+        
+        frame.add_line(
+            self.get_screen_coordinates(last_pivot[0], last_pivot[1]),
+            self.get_screen_coordinates(player_center[0], player_center[1]),
+            (255, 255, 255)
+        )
+    
+    def _get_wave_pivots_in_range(self, player: "Player") -> List[Tuple[int, int]]:
+        """ Returns all the wave pivots whose x-values are "in range" of the screen. 
+        This means all the ones whose x values are in range of camera_left -> camera_right, as
+        well as a padding of one extra pivot on either side (so lines can be drawn)
+        """
+
+        leftmost_pivot_idx = None
+        # binary search for the leftmost pivot that is less than the camera_left
+        start, end = 0, len(player.wave_pivot_points) - 1
+        while start <= end:
+            leftmost_pivot_idx = (start + end) // 2
+            if player.wave_pivot_points[leftmost_pivot_idx][0] < self.camera_left:
+                start = leftmost_pivot_idx + 1
+            else:
+                end = leftmost_pivot_idx - 1
+
+        rightmost_pivot_idx = None
+        # binary search for the rightmost pivot that is greater than the camera_right
+        start, end = 0, len(player.wave_pivot_points) - 1
+        while start <= end:
+            rightmost_pivot_idx = (start + end) // 2
+            if player.wave_pivot_points[rightmost_pivot_idx][0] > (self.camera_left + CameraConstants.screen_width_blocks()):
+                end = rightmost_pivot_idx - 1
+            else:
+                start = rightmost_pivot_idx + 1
+                
+        if leftmost_pivot_idx is None: leftmost_pivot_idx = 0
+        if rightmost_pivot_idx is None: rightmost_pivot_idx = len(player.wave_pivot_points)-1
+        
+        Logger.log(f"camera left: {self.camera_left}, camera right: {self.camera_left + CameraConstants.screen_width_blocks()}")
+        Logger.log(f"xpos of leftmost pivot: {player.wave_pivot_points[leftmost_pivot_idx][0]}, 2nd leftmost: {player.wave_pivot_points[leftmost_pivot_idx+1][0] if len(player.wave_pivot_points) > leftmost_pivot_idx+1 else None}")
+
+        return player.wave_pivot_points[leftmost_pivot_idx:rightmost_pivot_idx+1]
     
     def render_progress_bar(self, frame: CameraFrame, percent: float) -> None:
         """ Adds rectangles that represent the progress bar to the top of the screen """
@@ -264,7 +320,7 @@ class Camera:
             render_strip_1 += empty_block
             render_strip_2 += empty_block
             
-            for obj in row[floor(self.camera_left)+1 : min(len(row), floor(self.camera_left + CameraConstants.screen_width_blocks(GDConstants.term)))]:
+            for obj in row[floor(self.camera_left)+1 : min(len(row), floor(self.camera_left + CameraConstants.screen_width_blocks()))]:
                 if cursor_pos[1] in {cur_y+1, cur_y-1, cur_y}:
                     if cursor_pos[0] in {cur_x+1, cur_x-1, cur_x}:
                         render_strips = self.draw_cursor((cur_x, cur_y), cursor_pos, cursor_texture, [render_strip_1, render_strip_2], obj, cur_cursor_obj)

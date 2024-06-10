@@ -3,7 +3,9 @@ from logger import Logger
 import re
 import os
 import numpy as np
-from skimage.draw import line
+from skimage.draw import line, disk
+from gd_constants import GDConstants
+from draw_utils import print2
 
 if TYPE_CHECKING:
     from render.constants import CameraConstants
@@ -205,7 +207,7 @@ def blend_rgba_img_onto_rgb_img_inplace(original: np.ndarray, new: np.ndarray) -
     """ Same as `blend_rgba_img_onto_rgb_img`, but modifies the original array in place. """
     original[:] = blend_rgba_img_onto_rgb_img(original, new)
 
-def draw_line(image: np.ndarray, pos1: tuple, pos2: tuple, color: "CameraConstants.RGCameraBTuple") -> None:
+def draw_line(image: np.ndarray, pos1: tuple, pos2: tuple, color: "CameraConstants.RGCameraBTuple", width: int = 1) -> None:
     """
     draw a fully opaque line of color `color` on the image from pos1= (x1, y1) to pos2= (x2, y2).
     modifies `image` in place, does not return anything.
@@ -218,11 +220,25 @@ def draw_line(image: np.ndarray, pos1: tuple, pos2: tuple, color: "CameraConstan
     rr, cc = line(y1, x1, y2, x2)
 
     # Clip the coordinates to be within the image dimensions
-    rr = np.clip(rr, 0, image.shape[0] - 1)
-    cc = np.clip(cc, 0, image.shape[1] - 1)
+    rr_clipped = np.clip(rr, 0, image.shape[0]-1)
+    cc_clipped = np.clip(cc, 0, image.shape[1]-1)
+    
+    # for all the rrs that were clipped off, remove the corresponding ccs, otherwise it creates a flat line at the edge
+    rr_diffs = rr - rr_clipped
+    cc_clipped = cc_clipped[rr_diffs == 0]
+    
+    #cc_diffs = cc - cc_clipped
+    #rr_clipped = rr_clipped[cc_diffs == 0]
 
-    # Draw the white line (255, 255, 255) on the image
-    image[rr, cc] = color
+    for r, c in zip(rr, cc):
+        rr_disk, cc_disk = disk((r, c), radius=width)
+        
+        # Clip the coordinates to be within the image dimensions
+        rr_disk = np.clip(rr_disk, 0, image.shape[0] - 1)
+        cc_disk = np.clip(cc_disk, 0, image.shape[1] - 1)
+        
+        image[rr_disk, cc_disk] = color
+    
 
 def blend_multiple_pixels(dstacked_pixels: np.ndarray) -> tuple | np.ndarray:
     """
@@ -250,6 +266,16 @@ def cls():
     @TODO - uh i forgot how to check for OS names, idk if cls works everywhere. works on ps win11 tho.
     """
     os.system('cls')
+
+def draw_text(text:str, x:int, y:int, bold=False, underline=False, color: str | tuple = "#ffffff", bg_color: str | tuple = None):
+    line=GDConstants.term.move_xy(x, y)
+    if bold:
+        line+=GDConstants.term.bold
+    if underline:
+        line+=GDConstants.term.underline
+    
+    line += fcode(color, bg_color) + text + GDConstants.term.normal
+    print2(line)
 
 def len_no_ansi(string: str) -> str:
     """

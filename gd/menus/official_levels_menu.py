@@ -1,12 +1,13 @@
-from typing import TypedDict, Tuple
+from typing import TypedDict, Tuple, Literal
 from logger import Logger
-from bottom_menu import *
+#from bottom_menu import *
 from render.camera_frame import CameraFrame
 from render.texture_manager import TextureManager
 from draw_utils import print2
 from render.utils import fcode_opt as fco
 from blessed.keyboard import Keystroke
 import os, json
+from gd_constants import GDConstants
 from menus.MENU_GENERIC import GenericMenu
 
 class LevelPreviewData(TypedDict):

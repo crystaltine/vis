@@ -85,21 +85,21 @@ class CameraConstants:
     RGBTuple = Tuple[int, int, int]
     RGBATuple = Tuple[int, int, int, int]
 
-    def screen_width_blocks(term: blessed.Terminal) -> float:
+    def screen_width_blocks() -> float:
         """
         Returns the width of the screen in BLOCKS. does NOT round.
         See `CameraConstants.BLOCK_WIDTH` for pixel width of each block.
         """
 
-        return term.width / CameraConstants.BLOCK_WIDTH
+        return GDConstants.term.width / CameraConstants.BLOCK_WIDTH
 
-    def screen_height_blocks(term: blessed.Terminal) -> float:
+    def screen_height_blocks() -> float:
         """
         Returns the height of the screen in BLOCKS. Does NOT round.
         See `CameraConstants.BLOCK_HEIGHT` for character width of each block.
         """
 
-        return term.height*2 / CameraConstants.BLOCK_HEIGHT
+        return GDConstants.term.height*2 / CameraConstants.BLOCK_HEIGHT
     
     def get_screen_x(camera_left: int, x: float) -> int:
         """ Returns the screen x-coordinate (relative to left of frame) 
