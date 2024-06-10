@@ -35,7 +35,7 @@ class OBJECTS:
             "texture_path": "./assets/objects/deco/glow_edge.png"
         },
         "chain_base": {
-            "name": "chain_bottom",
+            "name": "chain_base",
             "hitbox_type": None, # deco
             "color_channels": 1,
             "texture_path": "./assets/objects/deco/chain_base.png"

@@ -7,13 +7,13 @@ import time
 
 from logger import Logger
 from render.camera import Camera
+from render.utils import draw_text, draw_line
 from render.constants import CameraConstants
 from engine.constants import EngineConstants
 from engine.player import Player
 from engine.collision_handler import CollisionHandler
 from draw_utils import Position, draw_rect
 from img2term.main import draw
-from bottom_menu import draw_text
 from level import Level
 from keyboard.keyboard_listener import KeyboardListener
 from keyboard.key_event import KeyEvent
@@ -105,7 +105,7 @@ class Game:
                     
             if self.player.gamemode == 'wave':
                 # add to wave trail pivots if in wave gamemode
-                self.player._create_wave_pivot()
+                self.player.create_wave_pivot()
             
             # if nothing got activated, then jump
             if not something_got_activated:
@@ -114,7 +114,7 @@ class Game:
     def _main_keyup_handler(self, event: KeyEvent) -> None:
         if str(event) in GDConstants.JUMP_KEYS:
             if self.player.gamemode == 'wave':
-                self.player._create_wave_pivot()
+                self.player.create_wave_pivot()
 
     def start_level(self) -> None:
         """
@@ -296,6 +296,8 @@ class Game:
             obj.has_been_activated = False
         self.last_tick = time_ns() # this is to prevent moving forward while we are dead lol
 
+        self.player.clear_wave_pivots()
+
         # reset the player's position if a new position is given
         if new_pos:
             x, y = new_pos
@@ -385,7 +387,7 @@ class Game:
         
         # Draw pause menu background, progress bar, and buttons
         draw('assets/pausemenubg.png', Position.Relative(top=5, left=10), (GDConstants.term.width - 20, GDConstants.term.height * 2 - 20), 'scale')
-        draw_text(f"Progress: {progresspercent}%", (GDConstants.term.width) // 2 - 8, 10, bg_color='black')
+        #draw_text(f"Progress: {progresspercent}%", (GDConstants.term.width) // 2 - 8, 10, bg_color='#000000')
         self.draw_pause_menu_buttons()
         
         Logger.log(f"reached end of pause func")
@@ -468,8 +470,8 @@ class Game:
             draw(f"assets/pause_menu/{label}{suffix}.png", pos=Position.Relative(left=positions[i], bottom="calc(55% - 10ch)"))
 
         # Draw additional text labels for controls
-        draw_text("Add Checkpoint - Z", ((GDConstants.term.width) // 5) * 3 - 6, (GDConstants.term.height + 20) // 2, bg_color='black')
-        draw_text("Remove Checkpoint - X", ((GDConstants.term.width) // 5) * 3 - 7, (GDConstants.term.height + 25) // 2, bg_color='black')
+        draw_text("Add Checkpoint - Z", ((GDConstants.term.width) // 5) * 3 - 6, (GDConstants.term.height + 20) // 2, bg_color='#000000')
+        draw_text("Remove Checkpoint - X", ((GDConstants.term.width) // 5) * 3 - 7, (GDConstants.term.height + 25) // 2, bg_color='#000000')
 
     def unpause(self) -> None:
         """ Unpauses the level. """
