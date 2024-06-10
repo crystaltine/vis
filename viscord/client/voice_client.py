@@ -16,7 +16,9 @@ import pyaudio
 import threading
 import cv2
 from PIL import Image
+import time
 
+FPS = 10
 
 global selection
 selection = 0
@@ -218,9 +220,11 @@ def create_video_sender(user_id, channel):
     
     
     vidcap = cv2.VideoCapture(0)
+    frame_count = 0
 
     while transmitting:
         try:
+            start = time.time()
             success, image = vidcap.read()
             if not success:
                 break
@@ -248,6 +252,14 @@ def create_video_sender(user_id, channel):
             for byte in temp:
                 s.sendall(byte.to_bytes(1, byteorder="big"))
 
+            dt = time.time() - start
+            if dt < 1 / FPS:
+                time.sleep(1 / FPS - dt)
+            frame_count += 1
+            if frame_count == FPS * 5:
+                frame_count = 0
+                redraw_all()
+
         except:
             break
     s.close()
@@ -270,39 +282,40 @@ def create_video_listener(user_id, target, chat_id):
         try:
             data = s.recv(1)
             full_bytes += data
-        except:
+        except Exception as e:
             s.close()
             break
-        print(len(full_bytes))
-        if data and len(full_bytes) >= 9000:
-            data = full_bytes[:9000]
-            full_bytes = full_bytes[9000:]
-            video_data = decode_video(data)
-            print(len(video_data))
+        # print("A")
+        # print(len(full_bytes))
+        if data:
+            if len(full_bytes) >= 9000:
+                data = full_bytes[:9000]
+                full_bytes = full_bytes[9000:]
+                video_data = decode_video(data)
 
-            printed = term.move_yx((term.height - height) // 2, (term.width - width) // 2)
+                printed = term.move_yx((term.height - height) // 2, (term.width - width) // 2)
 
-            for y in range(0, height, 2):
-                for x in range(width):
-                    
-                    p1 = video_data[y * width + x]
-                    p2 = video_data[(y + 1) * width + x]
+                for y in range(0, height, 2):
+                    for x in range(width):
+                        
+                        p1 = video_data[y * width + x]
+                        p2 = video_data[(y + 1) * width + x]
 
-                    b1 = p1 >> 8
-                    g1 = (p1 >> 4) & 0xf
-                    r1 = p1 & 0xf
+                        b1 = p1 >> 8
+                        g1 = (p1 >> 4) & 0xf
+                        r1 = p1 & 0xf
 
-                    b2 = p2 >> 8
-                    g2 = (p2 >> 4) & 0xf
-                    r2 = p2 & 0xf
-
-
+                        b2 = p2 >> 8
+                        g2 = (p2 >> 4) & 0xf
+                        r2 = p2 & 0xf
 
 
-                    char = "▀"
-                    printed = printed + (term.on_color_rgb(r2 * 16, g2 * 16, b2 * 16) + term.color_rgb(r1 * 16, g1 * 16, b1 * 16) + char + term.normal)
-                printed = printed + term.move_yx((term.height - height + y) // 2, (term.width - width) // 2)
-            print(printed, end="", flush=True)
+
+
+                        char = "▀"
+                        printed = printed + (term.on_color_rgb(r2 * 16, g2 * 16, b2 * 16) + term.color_rgb(r1 * 16, g1 * 16, b1 * 16) + char + term.normal)
+                    printed = printed + term.move_yx(term.height // 2 - height // 2 + y // 2, (term.width - width) // 2)
+                print(printed, end="", flush=True)
 
         else:
             break
@@ -363,6 +376,8 @@ def main(user_token, server_id, channel_id):
             threading.Thread(target=create_video_lifeline, args=(user_id, channel_id)).start()
         else:
             threading.Thread(target=create_video_listener, args=(user_id, target, channel_id)).start()
+
+    threading.Thread(target=create_video_listener, args=(user_id, user_id, channel_id)).start()
 
     threading.Thread(target=create_video_sender, args=(user_id, channel_id)).start()
 
