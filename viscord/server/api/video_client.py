@@ -160,11 +160,9 @@ def handle_client(conn, addr):
         global_state.add_to_clients(user_id, None, None, blank_dict=True)
         print(f"SENDER ESTABLISHED: {user_id}")
         
-    full_bytes = bytes()
     while True:
         try:
-            data = conn.recv(9000)
-            full_bytes += data
+            data = conn.recv(1024)
         except Exception as e:
             global_state.purge(user_id)
             break
@@ -174,16 +172,12 @@ def handle_client(conn, addr):
         if role == "sender":
             if user_id not in global_state.connected_clients:
                 conn.close()
-            if len(full_bytes) == 9000:
-                for target in global_state.connected_clients[user_id]:
-                    try:
-                        global_state.connected_clients[user_id][target].sendall(data)
-                    except Exception as e:
-                        print(e)
-                        pass
-                full_bytes = bytes()
-            elif len(full_bytes) > 9000:
-                full_bytes = bytes()
+            for target in global_state.connected_clients[user_id]:
+                try:
+                    global_state.connected_clients[user_id][target].sendall(data)
+                except Exception as e:
+                    print(e)
+                    pass
     if role == "lifeline": print("LIFELINE KILLED")
 
 
