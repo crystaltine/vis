@@ -66,7 +66,7 @@ def main():
     elif command=='run geometry_dash':
         
         print_text(f'{fcode('#12A1ED')}Launching Geometry Dash... \n \n {fcode('#ED125F')}')
-        draw_loading_animation(4)
+        draw_loading_animation(2)
         print_text(f'{fcode('#12A1ED')} \n \nDone... \n \n')
         time.sleep(1)
                 
