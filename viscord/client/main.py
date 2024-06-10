@@ -8,6 +8,8 @@ import requests
 import blessed
 import colors
 import keyshortcuts
+sys.path.append("../..")
+import launcher
 
 term = blessed.Terminal()
 
@@ -136,6 +138,7 @@ def main():
                 print(term.clear, end="")
                 print(term.normal, end="")
                 cursor.show()
+                #launcher.run_apps_command()
                 break
 
             if val.code == term.KEY_ENTER:

@@ -4,15 +4,12 @@ from draw_utils import *
 from blessed import Terminal
 import os
 import sys
-import subprocess
 
-
-term=Terminal()
 
 
 
 def print_text(text):
-    #words=f'{fcode(fcode_color)}{text}{'\033[0m'}'
+    
     for char in text:
         sleep(0.030)
         print(char, end='', flush=True)
@@ -30,7 +27,8 @@ def draw_loading_animation(time_limit):
             sys.stdout.flush()
             break
 
-def main():
+
+def init_starting_info():
     sys.stdin.reconfigure(encoding="utf-8")
     sys.stdout.reconfigure(encoding="utf-8")
     os.system('cls')
@@ -40,6 +38,10 @@ def main():
     print_text(f'{fcode('#12A1ED')}To run {fcode('#2FEF15')}Discord, {fcode('#12A1ED')}please type {fcode('#2FEF15')}"run discord".{STYLE_CODES['reset']} \n \n')
     print_text(f'{fcode('#12A1ED')}To run {fcode('#F98C10')}Geometry Dash, {fcode('#12A1ED')}please type {fcode('#F98C10')}"run geometry_dash".{STYLE_CODES['reset']} \n \n')
 
+
+def run_apps_command():
+    term=Terminal()
+    init_starting_info()
     print_text(f'{fcode('#F15FDD')}...Awaiting command... \n \n')
     command=input(f'{fcode('#0953FC')}')
     print('\n')
@@ -79,7 +81,5 @@ def main():
         time.sleep(1)
         sys.exit()
 
-
-main()
 
 
