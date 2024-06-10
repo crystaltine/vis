@@ -170,7 +170,7 @@ class Camera:
                     ypos_on_screen += CameraConstants.BLOCK_HEIGHT // 2
                     
                     # get transformed texture, with rotations, color, etc. (attempts to use cache for optimization)
-                    obj_texture = TextureManager.get_transformed_texture(self.level, obj)
+                    obj_texture = TextureManager.get_transformed_texture(self.level, obj, hide_invis=True)
                     
                     #Logger.log(f"[LevelEditor/render_main_editor] Adding texture w shape={obj_texture.shape} @ {xpos_on_screen, ypos_on_screen}")
                     new_frame.add_pixels_centered_at(xpos_on_screen, round(ypos_on_screen), obj_texture)

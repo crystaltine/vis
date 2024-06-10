@@ -202,6 +202,8 @@ class Game:
                     #    Logger.log(f"[Physics Thread] ERROR: {traceback.format_exc()}")
                     # check if the level is complete
                     check_if_level_complete()
+                    
+                    self.level.check_color_triggers(self.player.pos[0])
 
                     # check collisions
                     self.player.curr_collisions = self.collision_handler.generate_collisions()
@@ -308,7 +310,9 @@ class Game:
             "physics_pos": new_y,
             "screen_pos": self.camera.px_height - CameraConstants.GROUND_HEIGHT*CameraConstants.BLOCK_HEIGHT - CameraConstants.BLOCK_HEIGHT
         }
-        #Logger.log(f">>>>>>> [RESETTING] screen pos to {self.player_y_info['screen_pos']}, physics pos to {self.player_y_info['physics_pos']}")
+
+        self.level.reset_colors()
+        self.level.reset_color_trigger_cache()
 
         # reset the game start time
         self.game_start_time = time.time()
@@ -343,7 +347,7 @@ class Game:
             key = f"progress_{mode_override}"
         
         if data['metadata'][key]<self.highest_percent_this_session:
-            data['metadata'][key]=self.highest_percent_this_session
+            data['metadata'][key]=self.highest_percent_this_session/100
             json.dump(data,open(self.level.filepath, 'w'))
 
     def pause(self) -> None:
