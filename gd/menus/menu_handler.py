@@ -11,6 +11,7 @@ from menus.create_level_menu import CreateLevelMenu
 from menus.created_levels_menu import CreatedLevelsMenu
 from menus.online_levels_menu import OnlineLevelsMenu
 from editor.level_editor import LevelEditor
+from audio import AudioHandler
 
 from game import Game
 from level import Level
@@ -45,6 +46,8 @@ class MenuHandler:
     
     in_level = False
     in_level_editor = False
+    # loads in main menu music
+    audio_handler = AudioHandler("./assets/audio/mainmenu.mp3")
 
     
     def run():
@@ -56,6 +59,9 @@ class MenuHandler:
         
         MenuHandler.running = True
         MenuHandler._render_page(MenuHandler.current_page)
+
+        # start playing main menu music
+        MenuHandler.audio_handler.begin_playing_song()
         
         while True:
             
@@ -64,8 +70,15 @@ class MenuHandler:
                 if not MenuHandler.running:
                     break
                 if MenuHandler.in_level or MenuHandler.in_level_editor:
+                    # stop playing music if in level or editor
+                    if MenuHandler.audio_handler.song_playing:
+                        MenuHandler.audio_handler.stop_playing_song()
                     sleep(0.01) # do nothing if in level or editor, they have their own loops
                     continue
+                else:
+                    # start playing music if on any other screen
+                    if not MenuHandler.audio_handler.song_playing:
+                        MenuHandler.audio_handler.begin_playing_song()
                 
                 val = ...
                 with GDConstants.term.cbreak():
@@ -97,7 +110,8 @@ class MenuHandler:
                         case "editor":
                             MenuHandler._render_page("custom_levels")  
                         case "play_level":
-                            
+                            # stop playing the music when you enter a level
+                            MenuHandler.audio_handler.stop_playing_song()
                             MenuHandler.run_level(OfficialLevelsMenu.get_selected_level_filepath())
                         
                         ### CUSTOM LEVELS PAGE
@@ -110,8 +124,10 @@ class MenuHandler:
 
                         ### CREATED LEVELS PAGE
                         case "play_created_level":
+                            MenuHandler.audio_handler.stop_playing_song()
                             MenuHandler.run_level(CreatedLevelsMenu.get_selected_level_filepath())
                         case "edit_current_level":
+                            MenuHandler.audio_handler.stop_playing_song()
                             MenuHandler.edit_level(CreatedLevelsMenu.get_selected_level_filepath())
                             
                         ### CREATE NEW LEVEL PAGE

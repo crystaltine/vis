@@ -5,6 +5,7 @@ import traceback
 
 from logger import Logger
 from render.constants import CameraConstants
+from engine.constants import EngineConstants
 from render.utils import fcode, closest_quarter, len_no_ansi
 from render.texture_manager import TextureManager
 from render.camera_frame import CameraFrame
@@ -306,6 +307,7 @@ class Camera:
         """
 
         x_pos, y_pos = self.get_screen_coordinates(x, y)
+        y_pos -= EngineConstants.PLAYER_HITBOX_Y * CameraConstants.BLOCK_HEIGHT
         # weird issue where checkpoint is in ground if player is on ground level - move it up if it is
         frame.add_pixels_topleft(x_pos, y_pos, TextureManager.base_textures.get("checkpoint"))
         

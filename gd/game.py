@@ -409,11 +409,11 @@ class Game:
                     self.highest_percent_this_session = 0
                     
                     self.practicemodeobj.clear_checkpoints()
-                    self.restart() # restart the level if changing to normal mode
                 else:
                     # save highest progress to normal, then dont reset
                     self.write_highest_progress_to_file("normal")
-                    
+                self.restart() # restart the level if changing to normal mode
+                
             elif self.pausemenuselectindex == 3:
                 self.exiting = True
                 KeyboardListener.remove_on_press(self._pause_menu_keydown_handler)
