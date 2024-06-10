@@ -14,7 +14,7 @@ term=Terminal()
 def print_text(text):
     #words=f'{fcode(fcode_color)}{text}{'\033[0m'}'
     for char in text:
-        sleep(0.05)
+        sleep(0.030)
         print(char, end='', flush=True)
 
 def draw_loading_animation(time_limit):
@@ -22,7 +22,7 @@ def draw_loading_animation(time_limit):
     start_time = time.time()
     while True:
         for i in range(4):
-            time.sleep(0.2)  # Feel free to experiment with the speed here
+            time.sleep(0.1)  # Feel free to experiment with the speed here
             sys.stdout.write("\r " + animation[i % len(animation)])
             sys.stdout.flush()
         if time.time() - start_time > time_limit:  # The animation will last for 10 seconds
@@ -56,7 +56,7 @@ def main():
     if command=='run discord':
        
         print_text(f'{fcode('#12A1ED')}Launching Discord... \n \n {fcode('#ED125F')}')
-        draw_loading_animation(4)
+        draw_loading_animation(2)
         print_text(f'{fcode('#12A1ED')} \n \nDone... \n \n')
         time.sleep(1)
         
@@ -66,9 +66,9 @@ def main():
     elif command=='run geometry_dash':
         
         print_text(f'{fcode('#12A1ED')}Launching Geometry Dash... \n \n {fcode('#ED125F')}')
-        draw_loading_animation(2)
+        draw_loading_animation(1.5)
         print_text(f'{fcode('#12A1ED')} \n \nDone... \n \n')
-        time.sleep(1)
+        time.sleep(.75)
                 
         os.chdir('./gd')
         os.system('python main.py')
@@ -76,7 +76,7 @@ def main():
     elif command=='exit' or command=='q' or command=='quit':
 
         print_text(f'{fcode('#FA2C03')}Exiting... \n \n {STYLE_CODES['reset']}')
-        time.sleep(2)
+        time.sleep(1)
         sys.exit()
 
 
