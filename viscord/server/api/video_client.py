@@ -177,7 +177,7 @@ def handle_client(conn, addr):
             if len(full_bytes) == 9000:
                 for target in global_state.connected_clients[user_id]:
                     try:
-                        global_state.connected_clients[user_id][target].send(data)
+                        global_state.connected_clients[user_id][target].sendall(data)
                     except Exception as e:
                         print(e)
                         pass
