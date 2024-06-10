@@ -183,6 +183,10 @@ class CameraFrame:
         Can also specify what part of the rectangle x and y refer to. (default is top left)"""
 
         # add alpha to color/outline if it's an rgb tuple
+        
+        if color is None:
+            return
+        
         if len(color) == 3:
             color = (*color, 255)
         if len(outline_color) == 3:

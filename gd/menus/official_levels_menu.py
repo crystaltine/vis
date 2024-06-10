@@ -181,7 +181,7 @@ class OfficialLevelsMenu(GenericMenu):
         for level in OfficialLevelsMenu.levels:
             if level['path'] == filepath:
                 Logger.log(f"ladies and gentlemen, we got him: {level['name']}")
-                level[key] = new_value
+                level[key] = max(level[key], new_value)
                 break
     
     def get_selected_level_filepath():
