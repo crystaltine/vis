@@ -2,5 +2,8 @@ pyfiglet
 psycopg2
 blessed
 numpy
+pillow
+pygame
+cursor
 pynput
 scikit-image
