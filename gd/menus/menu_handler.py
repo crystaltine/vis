@@ -11,6 +11,7 @@ from menus.create_level_menu import CreateLevelMenu
 from menus.created_levels_menu import CreatedLevelsMenu
 from menus.online_levels_menu import OnlineLevelsMenu
 from editor.level_editor import LevelEditor
+from audio import AudioHandler
 
 from game import Game
 from level import Level
@@ -45,8 +46,9 @@ class MenuHandler:
     
     in_level = False
     in_level_editor = False
+    # loads in main menu music
+    audio_handler = AudioHandler("./assets/audio/mainmenu.mp3", loops=-1)
 
-    
     def run():
         """ 
         Initializes the game menu system, rendering the main menu and beginning the key input loop 
@@ -56,16 +58,24 @@ class MenuHandler:
         
         MenuHandler.running = True
         MenuHandler._render_page(MenuHandler.current_page)
+
+        # start playing main menu music
+        MenuHandler.audio_handler.begin_playing_song()
         
         while True:
             
             try:
             
                 if not MenuHandler.running:
+                    MenuHandler.audio_handler.stop_playing_song()
                     break
+                
                 if MenuHandler.in_level or MenuHandler.in_level_editor:
                     sleep(0.01) # do nothing if in level or editor, they have their own loops
                     continue
+                
+                if not MenuHandler.audio_handler.song_playing:
+                    MenuHandler.audio_handler.begin_playing_song()
                 
                 val = ...
                 with GDConstants.term.cbreak():
@@ -75,7 +85,7 @@ class MenuHandler:
                 if (val or val.name) in GDConstants.QUIT_KEYS:
                     if MenuHandler.current_page == 'main':
                         MenuHandler.running = False
-                        break
+
                     else:
                         prev_page = MenuHandler.PREV_PAGES[MenuHandler.current_page]
                         MenuHandler._render_page(prev_page)
@@ -91,13 +101,13 @@ class MenuHandler:
                         case "quit":
                             #Logger.log("[MenuHandler] quitting game")
                             MenuHandler.running = False
-                            return
+
                         case "play":
                             MenuHandler._render_page("official_levels")
                         case "editor":
                             MenuHandler._render_page("custom_levels")  
                         case "play_level":
-                            
+                            # stop playing the music when you enter a level
                             MenuHandler.run_level(OfficialLevelsMenu.get_selected_level_filepath())
                         
                         ### CUSTOM LEVELS PAGE
@@ -110,8 +120,10 @@ class MenuHandler:
 
                         ### CREATED LEVELS PAGE
                         case "play_created_level":
+                            MenuHandler.audio_handler.stop_playing_song()
                             MenuHandler.run_level(CreatedLevelsMenu.get_selected_level_filepath())
                         case "edit_current_level":
+                            MenuHandler.audio_handler.stop_playing_song()
                             MenuHandler.edit_level(CreatedLevelsMenu.get_selected_level_filepath())
                             
                         ### CREATE NEW LEVEL PAGE
@@ -123,18 +135,20 @@ class MenuHandler:
                 Logger.log(f"[MenuHandler] Error: {traceback.format_exc()}")
                 print(traceback.format_exc())
                 MenuHandler.running = False
-                break
     
     def run_level(filepath: str) -> None:
         
         """ Enters into the actual level loop, running the specified level file """
 
         MenuHandler.in_level = True
+        #del MenuHandler.audio_handler # can only have one audio handler at a time
+        MenuHandler.audio_handler.stop_playing_song()
 
         game = Game(Level.parse_from_file(filepath))
         game.start_level()
         
         MenuHandler.in_level = False
+        #MenuHandler.audio_handler = AudioHandler("./assets/audio/mainmenu.mp3", loops=-1)
         
         # TODO - this is kinda unsafe, depends on directory where we store levels (might change)
         if "official" in game.level.filepath:

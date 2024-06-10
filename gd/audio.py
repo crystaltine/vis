@@ -7,14 +7,21 @@ mixer.init()
 
 class AudioHandler:
     """ Does music/sfx related stuff in the game loop. Objects of this class contain a dedicated music thread,
-    which is changed (recreated) every time the song/crash is played again. """
+    which is changed (recreated) every time the song/crash is played again. 
+    
+    IMPORTANT - having multiple instances of this object doesnt actually work, as the mixer object is global.
+    
+    TODO - make this class static/singleton.
+    """
     
     CRASH_SOUND_PATH = "./assets/audio/crash.mp3"
 
-    def __init__(self, song_filepath: str, start_offset: float = 0):
+    def __init__(self, song_filepath: str, start_offset: float = 0, loops: int = 0):
+        """ To play a song indeifnitely, pass in `loops = -1`."""
         self.song_filepath = song_filepath
         self.start_offset = start_offset
         self.song_playing = False
+        self.loops = loops
         self.thread: Thread = None
         """ The thread object the music is playing on. Is None until begin_playing_song is called at least once. """
         
@@ -27,7 +34,7 @@ class AudioHandler:
         
         def play():
             mixer.music.load(self.song_filepath)
-            mixer.music.play(start=self.start_offset)
+            mixer.music.play(start=self.start_offset, loops=self.loops)
             self.song_playing = True
             
             while mixer.music.get_busy() and self.song_playing:
