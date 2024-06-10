@@ -163,6 +163,7 @@ def handle_client(conn, addr):
     while True:
         try:
             data = conn.recv(1)
+            #print(data)
         except Exception as e:
             global_state.purge(user_id)
             break
