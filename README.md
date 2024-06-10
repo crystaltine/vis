@@ -3,30 +3,20 @@ A collection of app remakes in the terminal. This is a recreational project and 
 
 Design Doc (Incomplete as of 1:43 AM, Jun 9): https://docs.google.com/document/d/13SuaRq5GfgQj59z0zWa9jua5XY7AGnjDIIRWVS-Cgh4/edit?usp=sharing
 
-## Viscord
-Viscord is a small demake of the popular chatting app Discord. It uses our own backend and user accounts, and allows for text chatting, voice chatting, and video streaming.
-
-### Running
+## Instructions for Running
 ```
 pip install -r requirements.txt
-cd viscord
-cd client
-py main.py
+python launcher.py
 ```
+
+## Viscord
+Viscord is a small demake of the popular chatting app Discord. It uses our own backend and user accounts, and allows for text chatting, voice chatting, and video streaming.
 
 ### More README info coming soon. For now, check out [our design doc](https://docs.google.com/document/d/13SuaRq5GfgQj59z0zWa9jua5XY7AGnjDIIRWVS-Cgh4/edit?usp=sharing)
 
 ## Untitled Geometry Dash Remake
 Using ANSI color codes and block elements [listed here](https://en.wikipedia.org/wiki/Block_Elements) to make the screen look like an actual game.
 Surprisingly, with correct optimizations, we have achieved framerates of around 30 per second (in most cases - but further optimizing the renderer is high priority)
-
-### Running
-```
-pip install -r requirements.txt
-cd gd
-python main.py
-```
-This should take you to the homescreen, from which the entire game is accessible.
 
 ### Demo video
 https://github.com/crystaltine/vis/assets/114899328/f9b28906-b2b6-49e3-9c6a-caaf476c83d6
