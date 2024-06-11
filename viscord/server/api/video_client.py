@@ -192,7 +192,6 @@ def handle_client(conn, addr):
                 # convert byte (data) to int
 
                 buffer.append(int.from_bytes(data, "big"))
-                continue
             if buffer == [0x24, 0x2a, 0x31]:
                 buffer = []
                 continue
