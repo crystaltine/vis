@@ -196,7 +196,7 @@ def handle_client(conn, addr):
             if buffer == [0x24, 0x2a, 0x31]:
                 buffer = []
                 continue
-            to_send = buffer[0]
+            to_send = buffer.pop(0)
             for target in global_state.connected_clients[user_id]:
                 try:
                     global_state.connected_clients[user_id][target].sendall(to_send.to_bytes(1, "big"))
