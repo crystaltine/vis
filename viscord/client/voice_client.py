@@ -18,7 +18,7 @@ import cv2
 from PIL import Image
 import time
 
-FPS = 10
+FPS = 24
 
 global selection
 selection = 0
@@ -46,8 +46,9 @@ transmitting = True
 audio = pyaudio.PyAudio()
 
 
-width = 90
-height = 50
+width = 60
+height = 34
+FRAME_SIZE = width * height * 2
 
 def split_large(n):
     byte1 = n & 0xFF
@@ -288,9 +289,9 @@ def create_video_listener(user_id, target, chat_id):
         # print("A")
         # print(len(full_bytes))
         if data:
-            if len(full_bytes) >= 9000:
-                data = full_bytes[:9000]
-                full_bytes = full_bytes[9000:]
+            if len(full_bytes) >= FRAME_SIZE:
+                data = full_bytes[:FRAME_SIZE]
+                full_bytes = full_bytes[FRAME_SIZE:]
                 video_data = decode_video(data)
 
                 printed = term.move_yx((term.height - height) // 2, (term.width - width) // 2)
@@ -314,7 +315,8 @@ def create_video_listener(user_id, target, chat_id):
 
                         char = "▀"
                         printed = printed + (term.on_color_rgb(r2 * 16, g2 * 16, b2 * 16) + term.color_rgb(r1 * 16, g1 * 16, b1 * 16) + char + term.normal)
-                    printed = printed + term.move_yx(term.height // 2 - height // 2 + y // 2, (term.width - width) // 2)
+                    printed = printed + term.move_yx(term.height // 2 - height // 4 + y // 2, (term.width - width) // 2)
+
                 print(printed, end="", flush=True)
 
         else:
