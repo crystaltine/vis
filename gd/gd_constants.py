@@ -11,7 +11,7 @@ class GDConstants:
     #screen = curses.initscr()
     #curses.start_color()
     
-    _VERSION = "b1.6"
+    _VERSION = "b1.7"
     
     KILL_KEYS = ['\x03']
     QUIT_KEYS = ['q', '\x1b', 'esc', "KEY_ESCAPE"] # active on menus
@@ -20,12 +20,13 @@ class GDConstants:
     CHECKPOINT_KEYS = ['z']
     REMOVE_CHECKPOINT_KEYS = ['x']
     
-    NUM_BLOCK_TEXTURES = 14
+    NUM_BLOCK_TEXTURES = 13
+    NUM_GHOST_BLOCK_TEXTURES = 1
     NUM_SPIKE_TALL_TEXTURES = 3
     NUM_SPIKE_SHORT_TEXTURES = 5
     NUM_SPIKE_FLAT_TEXTURES = 2
     
-    AUDIO_VOLUME = 0.5
+    AUDIO_VOLUME = 0.2
     
     class orb_types(Enum):
         yellow = "yellow"
@@ -57,9 +58,8 @@ class GDConstants:
         ball = "ball"
         ufo = "ufo"
         wave = "wave"
-        spider = "spider"
         
-    supports_jumping = [gamemodes.cube.value, gamemodes.ball.value, gamemodes.ufo.value, gamemodes.spider.value]
+    supports_jumping = [gamemodes.cube.value, gamemodes.ball.value, gamemodes.ufo.value]
         
     class speeds(Enum):
         half = "half"

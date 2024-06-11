@@ -82,6 +82,13 @@ class OBJECTS:
                 "color_channels": 2,
                 "texture_path": f"./assets/objects/block/block{blocktype}/{i}.png"
             }
+        for i in range(GDConstants.NUM_BLOCK_TEXTURES, GDConstants.NUM_BLOCK_TEXTURES+GDConstants.NUM_GHOST_BLOCK_TEXTURES):
+            locals()["MASTERLIST"][f"block{blocktype}_{i}"] = {
+                "name": f"block{blocktype}_{i}",
+                "hitbox_type": None, # deco
+                "color_channels": 2,
+                "texture_path": f"./assets/objects/block/block{blocktype}/{i}.png"
+            }
         
     for i in range(GDConstants.NUM_SPIKE_TALL_TEXTURES):
         locals()["MASTERLIST"][f"spike_tall{i}"] = {

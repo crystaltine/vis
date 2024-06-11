@@ -16,6 +16,7 @@ class AudioHandler:
     """
     
     CRASH_SOUND_PATH = "./assets/audio/crash.mp3"
+    WIN_SOUND_PATH = "./assets/audio/win.mp3"
 
     def __init__(self, song_filepath: str, start_offset: float = 0, loops: int = 0):
         """ To play a song indeifnitely, pass in `loops = -1`."""
@@ -69,4 +70,14 @@ class AudioHandler:
         self.stop_playing_song()
 
         mixer.music.load(self.CRASH_SOUND_PATH)
+        mixer.music.play()
+        
+    def stop_song_and_play_win_sfx(self) -> None:
+        """ Stops this instance's song and plays the win sound. 
+        Does not block the thread, so as soon as the play song func is called again, 
+        this sound cuts off and the song starts immediately. """
+        
+        self.stop_playing_song()
+
+        mixer.music.load(self.WIN_SOUND_PATH)
         mixer.music.play()

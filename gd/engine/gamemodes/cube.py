@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from logger import Logger
 from engine.constants import EngineConstants
-from engine.gamemodes.catch_player import catch_player
+from engine.catch_player import catch_player
 
 if TYPE_CHECKING:
     from engine.player import Player
@@ -77,12 +77,12 @@ def tick_cube(player: "Player", timedelta: float) -> None:
         player.last_on_ground_time = time_ns()
     
     #Logger.log(f"[BEFORE CATCH] player ypos={player.pos[1]}, yvel = {player.yvel} grav={player.gravity}")
-    special_yvel_case = catch_player(player, timedelta)
-    #Logger.log(f"[AFTER CATCH] player ypos={player.pos[1]}, yvel = {player.yvel} grav={player.gravity}")
+    catch_player(player, timedelta)
+    #Logger.log(f"[CUBE AFTER CATCH] player ypos={player.pos[1]}, yvel={player.yvel} grav={player.gravity}")
     #if not special_yvel_case:
     player.pos[1] += player.yvel * timedelta
     
 def jump_cube(player: "Player") -> None:
     player.yvel = EngineConstants.PLAYER_JUMP_STRENGTH * player.sign_of_gravity()
     player.in_air = True
-    Logger.log(f"finished jump-cube func")
+    #Logger.log(f"finished jump-cube func")

@@ -217,10 +217,10 @@ class Level:
         
         row_index_in_list = len(self.leveldata) - y - 1
         
-        if x < 0 or y < 0:
-            return None
-        
-        if row_index_in_list >= len(self.leveldata) or x >= len(self.leveldata[row_index_in_list]):
+        if ((x < 0 or y < 0) or 
+            (row_index_in_list >= len(self.leveldata)) or 
+            (row_index_in_list < 0) or
+            (x >= len(self.leveldata[row_index_in_list]))):
             return None
         
         return self.leveldata[row_index_in_list][x]

@@ -2,7 +2,7 @@ from logger import Logger
 from time import time_ns
 from typing import TYPE_CHECKING
 from engine.constants import EngineConstants
-from engine.gamemodes.catch_player import catch_player
+from engine.catch_player import catch_player
 
 if TYPE_CHECKING:
     from engine.player import Player

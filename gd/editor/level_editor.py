@@ -142,14 +142,18 @@ class LevelEditor:
         if self.showing_save_confirmation:
             status_text = "Saved changes!"
         elif self.mode == 'build':
-            status_text = "Build mode"
+            status_text = "[Build]"
         elif self.mode == 'edit':
-            status_text = "Edit mode"
+            status_text = "[Edit]"
             
         
         # first, find the center of the bottom menu
         center_y = LevelEditor.BOTTOM_MENU_HEIGHT // 2 + 1 # +1 to account for the border
         new_frame.add_text(2, center_y, TextureManager.font_small1, status_text, 'left')
+        
+        # if edit mode, add text in bottom right that shows current cursor pos
+        cursor_pos_str = f"{self.cursor_position[0]},{self.cursor_position[1]}"
+        new_frame.add_text(self.camera_width-2, center_y, TextureManager.font_small1, cursor_pos_str, 'right')
     
         # render the new frame
         if self.curr_bottom_menu_frame is None:

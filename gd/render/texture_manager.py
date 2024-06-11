@@ -77,11 +77,14 @@ class TextureManager:
         color2: CameraConstants.RGBTuple = (255, 255, 255),
         scale: int = 1,
         rotation: CameraConstants.OBJECT_ROTATIONS = "up",
-        reflections: CameraConstants.OBJECT_REFLECTIONS = "none"
+        reflections: CameraConstants.OBJECT_REFLECTIONS = "none",
+        convert_red_to_black: bool = False
         ) -> np.ndarray:
         """
         Internal function for "compiling" a texture from a grayscale image. (applies colors, scale, rotation, reflections)
         Turns the png file to a 2d list of pixel objects (rgba np arrays) (see ./camera_frame.py)
+        
+        `convert_red_to_black` is a special option that converts all (255, 0, 0, Any) pixels to black. This is used for the player icons.
         """
         
         im = Image.open(filepath)
@@ -110,7 +113,9 @@ class TextureManager:
                 gray = sum(px_data[0:3]) / 3 / 255
                 
                 colored_px = mco(color1, color2, gray)
-                colored_pixels[i][j] = (*colored_px, alpha) # insert original alpha back in
+                if convert_red_to_black and np.all(px_data[:3] == [255, 0, 0]):
+                    colored_px = (0, 0, 0)
+                colored_pixels[i][j] = (*colored_px, alpha)
         
         # apply any changes
         final_pixels = np.rot90(colored_pixels, ROTATION_VALUES[rotation])
@@ -301,7 +306,12 @@ class TextureManager:
     
     def get_curr_player_icon(player: "Player") -> np.ndarray:
         """ Returns the current player icon based on the player's current rotation. """
-        return TextureManager.player_icons[player.gamemode][player.get_animation_frame_index()]
+        # if gravity reverse, flip vertically
+        texture_base = TextureManager.player_icons[player.gamemode][player.get_animation_frame_index()]
+        if player.gravity < 0:
+            return np.flipud(texture_base)
+        else:
+            return texture_base
     
     def get_curr_ground_texture(level: "Level", player_x: float) -> np.ndarray:
         """ Returns current ground texture, recolored and offset based on the player's position and level colors. """
@@ -351,27 +361,39 @@ TextureManager.player_icons['cube'] = [
     TextureManager.build_grayscale_texture_to_pixels(
         f"./assets/icons/cube/0/{i}.png", 
         TextureManager.player_color1, 
-        TextureManager.player_color2
+        TextureManager.player_color2,
+        convert_red_to_black=True
     ) for i in range(4)
+]
+TextureManager.player_icons['ship'] = [
+    TextureManager.build_grayscale_texture_to_pixels(
+        f"./assets/icons/ship/0/{i}.png", 
+        TextureManager.player_color1, 
+        TextureManager.player_color2,
+        convert_red_to_black=True
+    ) for i in range(5)
 ]
 TextureManager.player_icons['ball'] = [
     TextureManager.build_grayscale_texture_to_pixels(
         f"./assets/icons/ball/0/{i}.png", 
         TextureManager.player_color1, 
-        TextureManager.player_color2
+        TextureManager.player_color2,
+        convert_red_to_black=True
     ) for i in range(2)
 ]
 TextureManager.player_icons['ufo'] = [
     TextureManager.build_grayscale_texture_to_pixels(
         f"./assets/icons/ufo/0/0.png", 
         TextureManager.player_color1, 
-        TextureManager.player_color2
+        TextureManager.player_color2,
+        convert_red_to_black=True
     )
 ]
 TextureManager.player_icons['wave'] = [
     TextureManager.build_grayscale_texture_to_pixels(
         f"./assets/icons/wave/0/{i}.png", 
         TextureManager.player_color1, 
-        TextureManager.player_color2
+        TextureManager.player_color2,
+        convert_red_to_black=True
     ) for i in range(3)
 ]

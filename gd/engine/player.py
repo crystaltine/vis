@@ -7,6 +7,7 @@ from gd_constants import GDConstants
 from engine.constants import EngineConstants, SPEEDS
 from engine.collision import Collision
 from engine.gamemodes.cube import tick_cube, jump_cube
+from engine.gamemodes.ship import tick_ship
 from engine.gamemodes.ball import tick_ball, jump_ball
 from engine.gamemodes.ufo import tick_ufo, jump_ufo
 from engine.gamemodes.wave import tick_wave
@@ -23,6 +24,7 @@ class Player:
     
     tick_funcs = {
         "cube": tick_cube,
+        "ship": tick_ship,
         "ball": tick_ball,
         "ufo": tick_ufo,
         "wave": tick_wave
@@ -33,7 +35,7 @@ class Player:
         (OPTIONAL) `start_settings` format (mainly used for startpos):
         ```python
         {
-            pos: [int, int], # [x, y] to start at, default [-10, 0]
+            pos: [int, int], # [x, y] to start at
             speed: "half", "normal", ... "quadruple" # see constants.SPEEDS
             gravity: int # set a starting gravity. EngineConstants.gravity for default, negative that for reverse
         }
@@ -176,6 +178,19 @@ class Player:
                     return 1
                 else:
                     return 2
+                
+            case "ship":
+                # this code looks terrible :skull:
+                if self.yvel < -EngineConstants.SHIP_TEXTURE_CHANGE_THRESHOLD_2:
+                    return 0 # diagonal down
+                elif self.yvel < -EngineConstants.SHIP_TEXTURE_CHANGE_THRESHOLD_1:
+                    return 1 # semi-down
+                elif self.yvel > EngineConstants.SHIP_TEXTURE_CHANGE_THRESHOLD_2:
+                    return 4 # up
+                elif self.yvel > EngineConstants.SHIP_TEXTURE_CHANGE_THRESHOLD_1:
+                    return 3 # flat
+                else:
+                    return 2
     
     def set_yvel_magnitude(self, strength: float):
         """
@@ -217,7 +232,10 @@ class Player:
             self.create_wave_pivot()
         else:
             self.clear_wave_pivots()
-            
+        
+        if gamemode == "cube":
+            self.jump_requested = False # TEMPORARY FIX 
+        
         self.gamemode = gamemode
         
     def change_speed(self, speed: GDConstants.speeds):

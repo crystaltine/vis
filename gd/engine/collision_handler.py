@@ -145,8 +145,10 @@ class CollisionHandler:
             self.game.player.reverse_gravity()
             
         elif effect == 'crash-block':
+            Logger.log("Crashed into block.")
             self.game.crash()
         elif effect == 'crash-obstacle':
+            Logger.log("Crashed into obstacle.")
             self.game.crash()
             
         elif effect == 'yellow-orb':
@@ -174,6 +176,7 @@ class CollisionHandler:
             gamemode = effect[9:]
             self.game.player.change_gamemode(gamemode)
             Logger.log(f"set player gameode to {gamemode}.")
+            Logger.log(f"stats: pos={self.game.player.pos[0]:.2f},{self.game.player.pos[1]:.2f}, yvel={self.game.player.yvel:.2f}, jump_req={self.game.player.jump_requested}, in_air={self.game.player.in_air}, grav_dir={self.game.player.gravity}")
         
         elif effect.startswith("speed-"):
             gamemode = effect[6:]
@@ -212,8 +215,8 @@ class CollisionHandler:
         
         #Logger.log(f"highest solid obj: player pos is {self.game.player.pos[0]:2f},{self.game.player.pos[1]:2f}, left->right is {left}->{right}, top is {top}, num_rows_to_check is {num_rows_to_check}.")
         
-        for x in range(left, right+1):
-            for y in range(top, max(-1, top-num_rows_to_check-1), -1):
+        for y in range(top, max(-1, top-num_rows_to_check-1), -1): # go from top row downard so we wind up with the highest block
+            for x in range(left, right+1):
                 if (obj := self.game.level.get_object_at(x, y)) is not None:
                     if obj.data.get("hitbox_type") == "solid":
                         return obj # return first SOLID object we find (since it is leftmost and highest)
@@ -252,11 +255,14 @@ class CollisionHandler:
         
         num_rows_to_check = ceil(abs(self.game.player.yvel) * timedelta)
         
-        for x in range(left, right+1):
-            for y in range(bottom, bottom+num_rows_to_check+1):
-                if (obj := self.game.level.get_object_at(x, y)) is not None:
-                    if obj.data.get("hitbox_type") == "solid":
-                        return obj # return first SOLID object we find 
         
+        for y in range(bottom, bottom+num_rows_to_check+1):
+            for x in range(left, right+1):
+                try:
+                    if (obj := self.game.level.get_object_at(x, y)) is not None:
+                        if obj.data.get("hitbox_type") == "solid":
+                            return obj # return first SOLID object we find 
+                except IndexError:
+                    Logger.log(f">>>>><<<<< [lowest solid obj index error: attempted to get idx {x},{y} but failed.")
         return None
     

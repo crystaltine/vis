@@ -3,18 +3,19 @@ from time import time_ns
 from typing import TYPE_CHECKING
 from keyboard.keyboard_listener import KeyboardListener
 from engine.constants import EngineConstants
+from engine.catch_player import catch_player
 from gd_constants import GDConstants
 
 if TYPE_CHECKING:
     from engine.player import Player
 
-def tick_wave(player: "Player", timedelta: float) -> None:
+def tick_ship(player: "Player", timedelta: float) -> None:
     """ 
-    Physics tick for the player in the wave gamemode
-    (no jump/gravity - yvel is constant, based solely on if jump key is HELD or not)
+    Physics tick for the player in the ship gamemode
+    (no jump - constant accel while holding UNTIL yvel passes max)
     
     This function should be called by a generalized 'tick' function inside
-    the player class if the player's current gamemode is wave.
+    the player class if the player's current gamemode is ship.
     """
     
     #Logger.log(f"Tick: td={timedelta}, pos={player.pos[0]:.2f},{player.pos[1]:.2f}, yvel={player.yvel:.2f}, jump_req={player.jump_requested}, in_air={player.in_air}, grav_dir={player.gravity}")
@@ -30,7 +31,6 @@ def tick_wave(player: "Player", timedelta: float) -> None:
         player.yvel = 0
         player.in_air = False  
         #Logger.log(f"[wve] on ground!!!!!")
-        player.create_wave_pivot()
     
     # otherwise, apply yvel based on if jump key is held or not
     else:
@@ -42,13 +42,20 @@ def tick_wave(player: "Player", timedelta: float) -> None:
                 holding = True
                 break
         
-        player.yvel = EngineConstants.BLOCKS_PER_SECOND * player.speed * (1 if holding else -1)
+        #if -EngineConstants.SHIP_TERMINAL_VEL < player.yvel < EngineConstants.SHIP_TERMINAL_VEL:
+        if holding: # if we are holding jump, apply acceleration
+            if player.yvel < EngineConstants.SHIP_TERMINAL_VEL:
+                player.yvel += player.gravity * EngineConstants.SHIP_GRAVITY_MULTIPLIER_UP * timedelta
+        else: # if we are not holding jump, apply gravity
+            if player.yvel > -EngineConstants.SHIP_TERMINAL_VEL:
+                player.yvel -= player.gravity * EngineConstants.SHIP_GRAVITY_MULTIPLIER_DOWN * timedelta  
     
-        #Logger.log(f"wave yvel: {player.yvel:.2f}, pos={player.pos[0]:.2f},{player.pos[1]:.2f}")
+        catch_player(player, timedelta, gravity_override='falling' if player.yvel < 0 else 'rising')
+        # we have to override here because catch player determines direction based on accel
+    
         player.pos[1] += player.yvel * timedelta
+        Logger.log(f"[SHIPPPPPPPPP AFTER CATCH] player ypos={player.pos[1]}, yvel={player.yvel} grav={player.gravity}")
         #Logger.log(f"[2] wave yvel: {player.yvel:.2f}, pos={player.pos[0]:.2f},{player.pos[1]:.2f}")
         if player.pos[1] < 0: # catch spasming on ground (for animation function)
             player.yvel = 0
             player.pos[1] = 0
-            player.create_wave_pivot()
-            Logger.log(f"WAVE LANDED ON GROUND (i think)")

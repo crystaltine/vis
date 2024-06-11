@@ -1,5 +1,6 @@
 from logger import Logger
 from time import time_ns
+from engine.catch_player import catch_player
 from typing import TYPE_CHECKING
 from engine.constants import EngineConstants
 
@@ -69,8 +70,9 @@ def tick_ufo(player: "Player", timedelta: float) -> None:
         player.last_on_ground_time = time_ns()
     
     #Logger.log(f"End of tick: updating pos[1] to {player.pos[1]:.4f} since yvel={player.yvel:.4f} and timedelta={timedelta:.4f}")
+    catch_player(player, timedelta, gravity_override='falling' if player.yvel < 0 else 'rising')
     player.pos[1] += player.yvel * timedelta
     
 def jump_ufo(player: "Player") -> None:
-    player.yvel = EngineConstants.PLAYER_JUMP_STRENGTH * player.sign_of_gravity()
+    player.yvel = EngineConstants.UFO_JUMP_STRENGTH * player.sign_of_gravity()
     player.in_air = True

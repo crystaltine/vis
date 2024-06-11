@@ -129,7 +129,7 @@ class CameraFrame:
         #Logger.log(f"(raw) refreshing curses screen")
         GDConstants.screen.refresh()
 
-    # XXX - main render func - render1_5 is also pretty fast. This can still be improved by adding a huge chunk of pixels at once
+    # XXX - main render func, This can still be improved by adding a huge chunk of pixels at once
     # if there is a lot of pixels with the same color, then skipping to the next different color
     def render(self, prev_frame: "CameraFrame") -> None:
         """ Prints the frame to the screen.
@@ -189,6 +189,63 @@ class CameraFrame:
            # print3(GDConstants.term.move_xy(int(start)+self.pos[0], i+self.pos[1]//2) + string)
             #print_buffer.append(((int(start)+self.pos[0], i+self.pos[1]//2), string))
             final_string += string
+            i += 1
+            #Logger.log(f"[CameraFrame/render]: strlen={len(string)}: {perf_counter()-start_time_2:4f}")
+        
+        # combine all the print calls into a single call
+        #for coords, string in print_buffer:
+        #    final_string += GDConstants.term.move_xy(*coords) + string
+            
+        print3(final_string)
+        
+        #Logger.log(f"[CameraFrame/render]: print to terminal: {perf_counter()-start_time:4f}")
+    
+    # similar to func above, but should be rendering even less (only intervals of diffs, not first change -> last change)
+    # so idk why tf this one is so much slower
+    def render_intervaled(self, prev_frame: "CameraFrame") -> None:
+        """ Prints the frame to the screen.
+        Optimized by only printing the changes from the previous frame. """
+        
+        final_string = ""
+
+        i = 0
+        for top_row_index in range(0, self.height, 2):       
+            row1_diff_intervals = get_diff_intervals(self.pixels[top_row_index], prev_frame.pixels[top_row_index])
+            row2_diff_intervals = get_diff_intervals(self.pixels[top_row_index+1], prev_frame.pixels[top_row_index+1])
+            
+            combined_intervals: List[Tuple[int, int]] = combine_intervals(*row1_diff_intervals, *row2_diff_intervals)
+            """ List of (starts -> ends) on which this strip of pixels is different from the previous frame. 
+            Only render pixels along these intervals. """
+            
+            if len(combined_intervals) == 0: # if there are no differences, skip this row
+                i += 1
+                continue
+            
+            color_strip = self.pixels[i*2:i*2+2,:]
+            colors_diffs = np.any(color_strip[:, 1:] != color_strip[:, :-1], axis=(0, 2))
+            """ [diff(1, 0), diff(2, 1), ...]. True if different, False if same. """
+
+            for interval in combined_intervals:
+                
+                start, end = interval
+                # end is exclusive
+                
+                # goto the start of the interval
+                final_string += GDConstants.term.move_xy(start+self.pos[0], i+self.pos[1]//2)
+                
+                # add the first pixel
+                string = fco(self.pixels[i*2,start], self.pixels[i*2+1,start]) + '▀'
+
+                for j in range(start+1, end):
+                    # if colors_diffs is True for the current pixel, that means the colors are different from the previous pixel
+                    # in that case we have to re-fcode
+                    if colors_diffs[j-1]:
+                        string += fco(self.pixels[i*2,j], self.pixels[i*2+1,j]) + '▀'
+                    else:
+                        string += '▀'
+               
+                final_string += string
+                
             i += 1
             #Logger.log(f"[CameraFrame/render]: strlen={len(string)}: {perf_counter()-start_time_2:4f}")
         

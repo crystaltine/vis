@@ -52,6 +52,8 @@ class Game:
         
         self.last_tick = None
         
+        self.level_complete = False
+        
         self.activated_objects = []
         """ Stores which objects had their activated properties set to true, so we can reset them on crash. """        
 
@@ -74,8 +76,13 @@ class Game:
             KeyboardListener.stop()
             return
         elif str(event) in GDConstants.PAUSE_KEYS and not self.is_crashed:
-            self.pause()
-            return
+            if self.level_complete:
+                self.exiting = True
+                KeyboardListener.stop()
+                return
+            else:
+                self.pause()
+                return
         # place a checkpoint if a user attempts to
         elif str(event) in GDConstants.CHECKPOINT_KEYS and self.practice_mode:
             self.practicemodeobj.add_checkpoint(self.player.pos)
@@ -129,12 +136,10 @@ class Game:
             _total_frames_rendered = 0
             render_start_time = time_ns()
             
-            try:
-                last_frame = time_ns()
-                while True:
-                    
+            last_frame = time_ns()
+            while True:
+                try:        
                     if self.exiting:
-                        Logger.log(f">>>>>>>>>> [Game/render_thread] Exiting render thread; Average FPS: {1e9*_total_frames_rendered/(time_ns()-render_start_time):.2f}")
                         break 
                     
                     if not self.running or self.is_crashed:
@@ -157,9 +162,9 @@ class Game:
                         self.camera.render(self, render_raw=True)
                         self.need_to_render_raw = False
                     else:
-                        start = time_ns()
+                        #start = time_ns()
                         self.camera.render(self)
-                        Logger.log(f"[Game/render thread]: Rendered frame in {((time_ns()-start)/1e9):2f}s")
+                        #Logger.log(f"[Game/render thread]: Rendered frame in {((time_ns()-start)/1e9):2f}s")
                     
                     # renders the most recent checkpoint if it exists
                     # note: this has been moved to Camera.render
@@ -171,20 +176,32 @@ class Game:
                     _total_frames_rendered += 1
 
                     #sleep(1/CameraConstants.RENDER_FRAMERATE)
-            except:
-                Logger.log(f"[Render Thread] ERROR: {traceback.format_exc()}")
-                self.exiting = True    
+                except:
+                    Logger.log(f"[Render Thread] ERROR: {traceback.format_exc()}")
+                    self.exiting = True    
 
         def check_if_level_complete():
             if self.player.pos[0]-EngineConstants.END_OF_LEVEL_PADDING>=self.level.length:
 
                 self.running = False
+                self.audio_handler.stop_song_and_play_win_sfx()
+                
+                self.level_complete = True
+                
+                # TODO - this is bad code but its 5 am
+                # popup goes from 20%, 20% -> 80%, 80%
+                horiz_center = int(self.camera.curr_frame.width*0.5)
+                vert_center = int(self.camera.curr_frame.height*0.5)
+                
+                popup_width = int(self.camera.curr_frame.width*0.6)
+                popup_height = int(self.camera.curr_frame.height*0.6)
                 
                 new_frame=self.camera.curr_frame.copy()
-                new_frame.add_rect((0,0,0), 0, 0, new_frame.width, new_frame.height)
-                new_frame.add_text(int(new_frame.width*0.5), int(new_frame.height*0.1), TextureManager.font_title, 'Level Complete')
-                new_frame.add_text(int(new_frame.width*0.5), int(new_frame.height*0.5), TextureManager.font_small1, f"Total Attempts: {self.attempt_number}")
-                new_frame.render(self.camera.curr_frame)
+                new_frame.add_rect((147, 120, 78, 255), horiz_center, vert_center, popup_width, popup_height, anchor="center", outline_color=(255, 255, 255), outline_width=2)
+                new_frame.add_text(int(new_frame.width*0.5), int(new_frame.height*0.3), TextureManager.font_title, 'Level Complete!', color=(25, 225, 25))
+                new_frame.add_text(int(new_frame.width*0.5), int(new_frame.height*0.5), TextureManager.font_small1, f"Attempts: {self.attempt_number}")
+                new_frame.add_text(int(new_frame.width*0.5), int(new_frame.height*0.7), TextureManager.font_small1, f"Esc to quit")
+                new_frame.render(self.camera.curr_frame)                
 
                 self.highest_percent_this_session = 100
                 self.write_highest_progress_to_file()
@@ -204,6 +221,7 @@ class Game:
                     if self.is_crashed or not self.running:
                         #Logger.log(f"[Physics Thread] Physics paused due to is_crashed being true. player@{[f'{num:2f}' for num in self.player.pos]}.")
                         sleep(0.01) # TODO - replace with continue or alternatively sleep until crash period ends
+                        self.last_tick = time_ns() # keep last_tick updated so we dont get a huge jump in time when we unpause
                         continue
                         # continuing here is a bad idea, because we need to sleep to prevent the thread from running too fast
                         # and slowing everything down.
@@ -231,15 +249,22 @@ class Game:
                     
                     # after collisions is updated, tick physics.                
                     curr_time = time_ns()
-                    #try:
-                    self.player.tick((curr_time - self.last_tick)/1e9)
-                    #except:
-                    #    Logger.log(f"tick error: {traceback.format_exc()}")
-                    #    self.exiting = True
+                    try:
+                        self.player.tick((curr_time - self.last_tick)/1e9)
+                        Logger.log(f"tick timedelta: {(curr_time - self.last_tick)/1e9:.2f}, player x,y: {self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, yvel: {self.player.yvel:.2f}")
+                    except:
+                        Logger.log(f"tick error: {traceback.format_exc()}")
+                        self.exiting = True
+                    
+                    self.last_tick = curr_time
+                    
+                    # if player ypos > max level y, crash
+                    if self.player.pos[1] > EngineConstants.MAX_LEVEL_Y:
+                        Logger.log(f"[Physics Thread] Player ypos > max level y. Crashing.")
+                        self.crash()
 
                     _tps_str = f"{1e9/((curr_time-self.last_tick)):.2f}" if (curr_time-self.last_tick != 0) else "inf"
                     #Logger.log(f"[Physics Thread] Player ticked. pos={self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, yvel={self.player.yvel:.2f}, TPS: {_tps_str}")
-                    self.last_tick = curr_time
                     
                     # DO NOT REMOVE. removing this slows down the renderer by A LOT
                     # even if the physics fps is like 389429 it still speeds things up a lot
@@ -264,7 +289,7 @@ class Game:
     def crash(self):
         """ Run when a player DIES (not when they click restart button) """
         
-        Logger.log(f"[Game/crash_normal]: Player crashed! (died, not restarted)")
+        Logger.log(f"[Game/crash_normal]: Player crashed! pos is {self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, yvel={self.player.yvel:.2f}")
         
         self.audio_handler.stop_song_and_play_crash()
         self.is_crashed = True
@@ -306,7 +331,6 @@ class Game:
         self.player.reset_physics(new_pos)
         for obj in self.activated_objects:
             obj.has_been_activated = False
-        self.last_tick = time_ns() # this is to prevent moving forward while we are dead lol
 
         self.player.clear_wave_pivots()
 
@@ -336,6 +360,10 @@ class Game:
         
         # start song again
         self.audio_handler.begin_playing_song()
+        
+        self.last_tick = time_ns() # this is to prevent moving forward while we are dead lol
+        
+        Logger.log(f"END OF RESET LEVEL - player pos is {self.player.pos[0]:.2f},{self.player.pos[1]:.2f}")
         
     def get_progress_percentage(self) -> int:
         #return 1# test
