@@ -188,10 +188,8 @@ def handle_client(conn, addr):
         if role == "sender":
             if user_id not in global_state.connected_clients:
                 conn.close()
-            if len(buffer) < 3:
-                # convert byte (data) to int
 
-                buffer.append(int.from_bytes(data, "big"))
+            buffer.append(int.from_bytes(data, "big"))
             if buffer == [0x24, 0x2a, 0x31]:
                 buffer = []
                 continue
