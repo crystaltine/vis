@@ -33,7 +33,7 @@ def init_starting_info():
     sys.stdout.reconfigure(encoding="utf-8")
     os.system('cls')
 
-    print_text(f"{fcode('#12A1ED')}Welcome to {fcode('#ED125F')}Terminal Suite, {fcode('#12A1ED')}a collection of popular apps recreated in the terminal!{STYLE_CODES['reset']}'+'\n \n")
+    print_text(f"{fcode('#12A1ED')}Welcome to {fcode('#ED125F')}Terminal Suite, {fcode('#12A1ED')}a collection of popular apps recreated in the terminal!{STYLE_CODES['reset']}"+"\n \n")
     
     print_text(f"{fcode('#12A1ED')}To run {fcode('#2FEF15')}Discord, {fcode('#12A1ED')}please type {fcode('#2FEF15')}\"run discord\".{STYLE_CODES['reset']} \n \n")
     print_text(f"{fcode('#12A1ED')}To run {fcode('#F98C10')}Geometry Dash, {fcode('#12A1ED')}please type {fcode('#F98C10')}\"run geometry_dash\".{STYLE_CODES['reset']} \n \n")
