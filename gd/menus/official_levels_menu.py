@@ -1,13 +1,14 @@
-from typing import TypedDict, Tuple
+from typing import TypedDict, Tuple, Literal
 from logger import Logger
-from bottom_menu import *
+#from bottom_menu import *
 from render.camera_frame import CameraFrame
 from render.texture_manager import TextureManager
 from draw_utils import print2
 from render.utils import fcode_opt as fco
+from blessed.keyboard import Keystroke
 import os, json
-
-os.system('cls')
+from gd_constants import GDConstants
+from menus.MENU_GENERIC import GenericMenu
 
 class LevelPreviewData(TypedDict):
     name: str
@@ -23,69 +24,15 @@ corner_deco_BR = TextureManager.reflect_texture(corner_deco_BL, 'horizontal')
 corner_deco_TL = TextureManager.reflect_texture(corner_deco_BL, 'vertical')
 corner_deco_TR = TextureManager.reflect_texture(corner_deco_BL, 'both')
 
-class LevelSelector:
-    """ Level selector page for the MAIN levels menu """
+class OfficialLevelsMenu(GenericMenu):
+    """ Level selector page for the OFFICIAL levels menu """
     
     frame: CameraFrame = None
     """ The frame that the level selector is drawn on. None until the init_level_selector is called at least once """
     
-    # NOTE - this should eventually be autoloaded from the levels directory, this is just for tests
-   
-    
-    # levels = [
-    #     {
-    #         'name':'Stereo Madness',
-    #         'color': (63, 72, 210),
-    #         'path': './levels/official/stereo_madness.json',
-    #         'progress_normal': 0.95,
-    #         'progress_practice': 1,
-    #     },
+    selected_level_idx = 0
+    """ Index of the currently selected level """
 
-    #     {
-    #         'name':'Back On Track',
-    #         'color': (223, 45, 180),
-    #         'path': './levels/created3.json',
-    #         'progress_normal': 0.58,
-    #         'progress_practice': 0.26,
-    #     }, 
-    #     {
-    #         'name':'Polargeist',
-    #         'color': (92, 215, 62),
-    #         'path': './levels/created3.json',
-    #         'progress_normal': 1,
-    #         'progress_practice': 1,
-    #     }, 
-    #     {
-    #         'name':'Dry Out',
-    #         'color': (154, 73, 19),
-    #         'path': './levels/created3.json',
-    #         'progress_normal': 0.36,
-    #         'progress_practice': 1,
-    #     }, 
-    #     {
-    #         'name':'Base After Base',
-    #         'color': (225, 184, 71),
-    #         'path': './levels/created3.json',
-    #         'progress_normal': 0.05,
-    #         'progress_practice': 0.78,
-    #     }, 
-    #     {
-    #         'name':'Cant Let Go',
-    #         'color': (254, 246, 29),
-    #         'path': './levels/created3.json',
-    #         'progress_normal': 0,
-    #         'progress_practice': 0,
-    #     }, 
-    #     {
-    #         'name':'Jumper',
-    #         'color': (97, 241, 14),
-    #         'path': './levels/created3.json',
-    #         'progress_normal': 0,
-    #         'progress_practice': 0,
-    #     }, 
-    # ]
-    """ List of OFFICIAL levels parsed from its directory, from which we render pages """
-    
     PADDING_Y = 0.125
     PADDING_X = 0.15
     ARROW_BUTTON_PADDING_X_PX = 5 # IN PIXELS
@@ -98,9 +45,8 @@ class LevelSelector:
     NORMAL_BAR_COLOR = (123, 255, 0)
     PRACTICE_BAR_COLOR = (140, 255, 251)
     
-    def parse_level_file():
+    def parse_level_files():
 
-        
         levels=[]
 
         path_to_json = 'levels/official'
@@ -109,20 +55,26 @@ class LevelSelector:
         for file in json_files:
             f = open('levels/official/'+file)
             data = json.load(f)['metadata']
-            levels.append({'name':data['name'], 'color':data['start_settings']['bg_color'], 
-                        'path':'./levels/official/'+file, 'progress_normal':data['progress_normal'],
-                        'progress_practice':data['progress_practice']})
+            levels.append(
+                {
+                    'name':data['name'], 
+                    'color':data['start_settings']['bg_color'], 
+                    'path':'./levels/official/'+file, 
+                    'progress_normal':data['progress_normal'],
+                    'progress_practice':data['progress_practice']
+                }
+            )
 
-        Logger.log(levels)
         return levels
     
-    levels=parse_level_file()
-
+    levels = parse_level_files()
 
     @classmethod
-    def draw_level(c, idx: int):
+    def render(c):
         
-        level_data = c.levels[idx]
+        level_data = c.levels[c.selected_level_idx]
+        
+        Logger.log(f"rendering officl level menu, selected idx: {c.selected_level_idx}, level_data: {level_data}")
         
         c.frame = CameraFrame()
         c.frame.fill(level_data['color'])
@@ -220,14 +172,34 @@ class LevelSelector:
         text_fcode = fco((255, 255, 255), halfdark_level_color)
         print2(GDConstants.term.move_xy(center - len(normal_text)//2, (normalbar_top - 4)//2) + text_fcode+normal_text)
         print2(GDConstants.term.move_xy(center - len(practice_text)//2, (practicebar_top - 4)//2) + text_fcode+practice_text)
-
     
-
-    #         name: str
-    # color: Tuple[int, int, int]
-    # path: str
-    # progress_normal: float
-    # progress_practice: float
-
+    def update_level_progress(filepath: str, new_value: float, key: Literal["normal", "practice"]):
+        """ Update the progress field of the metadata in the levels field of this class (not the file, thats handled in game.py) """
     
+        Logger.log("Updating level progress in mem, filepath: "+filepath+" key: "+key+" new_value: "+str(new_value))
+    
+        for level in OfficialLevelsMenu.levels:
+            if level['path'] == filepath:
+                Logger.log(f"ladies and gentlemen, we got him: {level['name']}")
+                level[key] = max(level[key], new_value)
+                break
+    
+    def get_selected_level_filepath():
+        return OfficialLevelsMenu.levels[OfficialLevelsMenu.selected_level_idx]['path']
+    
+    @classmethod
+    def on_key(c, val: Keystroke) -> Literal["play_level"] | None:
+        if val.name in ["KEY_LEFT", "KEY_BTAB"]:
+            OfficialLevelsMenu.selected_level_idx = (OfficialLevelsMenu.selected_level_idx - 1) % len(OfficialLevelsMenu.levels)
+            c.render()
+            
+        elif val.name in ["KEY_RIGHT", "KEY_TAB"]:
+            OfficialLevelsMenu.selected_level_idx = (OfficialLevelsMenu.selected_level_idx + 1) % len(OfficialLevelsMenu.levels)
+            c.render()
+
+        elif val.name == "KEY_ENTER":
+            return 'play_level' # menuhandler can use cls.selected_level_idx to get the level to play
+
+        
+        
     

@@ -76,9 +76,9 @@ def tick_cube(player: "Player", timedelta: float) -> None:
     if not player.in_air:
         player.last_on_ground_time = time_ns()
     
-    Logger.log(f"[BEFORE CATCH] player ypos={player.pos[1]}, yvel = {player.yvel} grav={player.gravity}")
+    #Logger.log(f"[BEFORE CATCH] player ypos={player.pos[1]}, yvel = {player.yvel} grav={player.gravity}")
     special_yvel_case = catch_player(player, timedelta)
-    Logger.log(f"[AFTER CATCH] player ypos={player.pos[1]}, yvel = {player.yvel} grav={player.gravity}")
+    #Logger.log(f"[AFTER CATCH] player ypos={player.pos[1]}, yvel = {player.yvel} grav={player.gravity}")
     #if not special_yvel_case:
     player.pos[1] += player.yvel * timedelta
     

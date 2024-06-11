@@ -21,122 +21,53 @@ class OBJECTS:
     Object dicts are stored in `OBJECTS.MASTERLIST`.
     """
     
-    MASTERLIST = {
-        "yellow_orb": {
-            "name": "yellow_orb",
-            "hitbox_xrange": [-0.3, 1.3],
-            "hitbox_yrange": [-0.3, 1.3],
-            "hitbox_type": "any-touch", 
-            "collide_effect": "yellow-orb",
-            "requires_click": True, # if player needs to click to activate
-            "multi_activate": False,
-            "color_channels": 0,
-        },
-        "blue_orb": {
-            "name": "blue_orb",
-            "hitbox_xrange": [-0.3, 1.3],
-            "hitbox_yrange": [-0.3, 1.3],
-            "hitbox_type": "any-touch", 
-            "collide_effect": "blue-orb",
-            "requires_click": True, # if player needs to click to activate
-            "multi_activate": False,
-            "color_channels": 0,
-        },
-        "purple_orb": {
-            "name": "purple_orb",
-            "hitbox_xrange": [-0.3, 1.3],
-            "hitbox_yrange": [-0.3, 1.3],
-            "hitbox_type": "any-touch",
-            "collide_effect": "purple-orb",
-            "requires_click": True, # if player needs to click to activate
-            "multi_activate": False,
-            "color_channels": 0,
-        },
-        "green_orb": {
-            "name": "green_orb",
-            "hitbox_xrange": [-0.3, 1.3],
-            "hitbox_yrange": [-0.3, 1.3],
-            "hitbox_type": "any-touch",
-            "collide_effect": "green-orb",
-            "requires_click": True, # if player needs to click to activate
-            "multi_activate": False,
-            "color_channels": 0,
-        },
-        "red_orb": {
-            "name": "red_orb",
-            "hitbox_xrange": [-0.3, 1.3],
-            "hitbox_yrange": [-0.3, 1.3],
-            "hitbox_type": "any-touch",
-            "collide_effect": "red-orb",
-            "requires_click": True, # if player needs to click to activate
-            "multi_activate": False,
-            "color_channels": 0,
-        },
-        "black_orb": {
-            "name": "black_orb",
-            "hitbox_xrange": [-0.3, 1.3],
-            "hitbox_yrange": [-0.3, 1.3],
-            "hitbox_type": "any-touch", 
-            "collide_effect": "black-orb",
-            "requires_click": True, # if player needs to click to activate
-            "multi_activate": False,
-            "color_channels": 0,
-        }  ,  
-        "yellow_pad": {
-            "name": "yellow_pad",
-            "hitbox_xrange": [0, 1],
-            "hitbox_yrange": [0, 0.5],
-            "hitbox_type": "any-touch",
-            "collide_effect": "yellow-pad",
-            "requires_click": False, # if player needs to click to activate
-            "multi_activate": False,
-            "color_channels": 0,
-        },
-        "purple_pad": {
-            "name": "purple_pad",
-            "hitbox_xrange": [0, 1],
-            "hitbox_yrange": [0, 0.5],
-            "hitbox_type": "any-touch",
-            "collide_effect": "purple-pad",
-            "requires_click": False, # if player needs to click to activate
-            "multi_activate": False,
-            "color_channels": 0,
-        },
-        "blue_pad": {
-            "name": "blue_pad",
-            "hitbox_xrange": [0, 1],
-            "hitbox_yrange": [0, 0.5],
-            "hitbox_type": "any-touch",
-            "collide_effect": "blue-pad",
-            "requires_click": False, # if player needs to click to activate
-            "multi_activate": False,
-            "color_channels": 0,
-        },
-        "red_pad": {
-            "name": "red_pad",
-            "hitbox_xrange": [0, 1],
-            "hitbox_yrange": [0, 0.5],
-            "hitbox_type": "any-touch",
-            "collide_effect": "red-pad",
-            "requires_click": False, # if player needs to click to activate
-            "multi_activate": False,
-            "color_channels": 0,
-        },        
+    MASTERLIST = {       
         "glow_corner": {
             "name": "glow_corner",
-            "invis": True,
             "hitbox_type": None, # deco 
             "color_channels": 1,
+            "texture_path": "./assets/objects/deco/glow_corner.png"
         },
         "glow_edge": {
             "name": "glow_edge",
-            "invis": True,
             "hitbox_type": None, # deco 
             "color_channels": 1,
+            "texture_path": "./assets/objects/deco/glow_edge.png"
         },
+        "chain_base": {
+            "name": "chain_base",
+            "hitbox_type": None, # deco
+            "color_channels": 1,
+            "texture_path": "./assets/objects/deco/chain_base.png"
+        },
+        "chain_middle": {
+            "name": "chain_middle",
+            "hitbox_type": None, # deco
+            "color_channels": 1,
+            "texture_path": "./assets/objects/deco/chain_middle.png"
+        },
+        "fake_spike_0": {
+            "name": "fake_spike_0",
+            "hitbox_type": None, # deco
+            "color_channels": 1,
+            "texture_path": "./assets/objects/deco/fake_spike_0.png"
+        },
+        "fake_spike_1": {
+            "name": "fake_spike_1",
+            "hitbox_type": None, # deco
+            "color_channels": 1,
+            "texture_path": "./assets/objects/deco/fake_spike_1.png"
+        },
+        "color_trigger": {
+            "name": "color_trigger",
+            "invisible": True, # invisible to player, visible on editor
+            "hitbox_type": None, # deco
+            "color_channels": 1,
+            "texture_path": "./assets/objects/triggers/color_trigger.png"
+        }
     }
     """ A Dictionary mapping object types (names) to backend object data. 
-    Contains definitions for all objects in the game. """
+    Contains definitions for all objects in the game. """         
     
     for blocktype in range(3):
         for i in range(GDConstants.NUM_BLOCK_TEXTURES):
@@ -149,6 +80,7 @@ class OBJECTS:
                 "requires_click": False, # if player needs to click to activate
                 "multi_activate": False,
                 "color_channels": 2,
+                "texture_path": f"./assets/objects/block/block{blocktype}/{i}.png"
             }
         
     for i in range(GDConstants.NUM_SPIKE_TALL_TEXTURES):
@@ -161,6 +93,7 @@ class OBJECTS:
             "requires_click": False, # if player needs to click to activate
             "multi_activate": False,
             "color_channels": 2,
+            "texture_path": f"./assets/objects/obstacle/spike_tall/spike_tall{i}.png"
         }
     for i in range(GDConstants.NUM_SPIKE_SHORT_TEXTURES):
         locals()["MASTERLIST"][f"spike_short{i}"] = {
@@ -172,6 +105,7 @@ class OBJECTS:
             "requires_click": False, # if player needs to click to activate
             "multi_activate": False,
             "color_channels": 2,
+            "texture_path": f"./assets/objects/obstacle/spike_short/spike_short{i}.png"
         }
     for i in range(GDConstants.NUM_SPIKE_FLAT_TEXTURES):
         locals()["MASTERLIST"][f"spike_flat{i}"] = {
@@ -183,7 +117,34 @@ class OBJECTS:
             "requires_click": False, # if player needs to click to activate
             "multi_activate": False,
             "color_channels": 2,
+            "texture_path": f"./assets/objects/obstacle/spike_flat/spike_flat{i}.png"
         }
+        
+    for orbtype in GDConstants.orb_types:
+        locals()["MASTERLIST"][f"{orbtype.value}_orb"] = {
+            "name": f"{orbtype.value}_orb",
+            "hitbox_xrange": [-0.3, 1.3],
+            "hitbox_yrange": [-0.3, 1.3],
+            "hitbox_type": "any-touch", 
+            "collide_effect": f"{orbtype.value}-orb",
+            "requires_click": True, # if player needs to click to activate
+            "multi_activate": False,
+            "color_channels": 0,
+            "texture_path": f"./assets/objects/effect/orbs/orb_{orbtype.value}.png",
+        }  
+        
+    for padtype in GDConstants.pad_types:
+        locals()["MASTERLIST"][f"{padtype.value}_pad"] = {
+            "name": f"{padtype.value}_pad",
+            "hitbox_xrange": [0, 1],
+            "hitbox_yrange": [0, 0.5],
+            "hitbox_type": "any-touch",
+            "collide_effect": f"{padtype.value}-pad",
+            "requires_click": False, # if player needs to click to activate
+            "multi_activate": False,
+            "color_channels": 0,
+            "texture_path": f"./assets/objects/effect/pads/pad_{padtype.value}.png"
+        }   
     
     for gravity in GDConstants.gravities:
         locals()["MASTERLIST"][f"grav_portal_{gravity.value}"] ={
@@ -195,6 +156,7 @@ class OBJECTS:
             "requires_click": False, # if player needs to click to activate
             "multi_activate": False,
             "color_channels": 0,
+            "texture_path": f"./assets/objects/effect/grav_portals/grav_portal_{gravity.value}.png"
         }
     
     for speed in GDConstants.speeds:
@@ -207,6 +169,7 @@ class OBJECTS:
             "requires_click": False, # if player needs to click to activate
             "multi_activate": False,
             "color_channels": 0,
+            "texture_path": f"./assets/objects/effect/speed_portals/speed_portal_{speed.value}.png"
         }
         
     for gamemode in GDConstants.gamemodes:
@@ -219,6 +182,7 @@ class OBJECTS:
             "requires_click": False, # if player needs to click to activate
             "multi_activate": False,
             "color_channels": 0,
+            "texture_path": f"./assets/objects/effect/mode_portals/mode_portal_{gamemode.value}.png"
         }
         
     OBJECT_NAMES = list(MASTERLIST)

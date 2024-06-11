@@ -1,10 +1,10 @@
-from typing import Literal, Callable, Dict, List
-import win32gui
+from typing import Literal, Callable, Dict, Set
 from uuid import uuid4
-import os
+from copy import copy
 from pynput.keyboard import Listener, Key, KeyCode
 from logger import Logger
 from keyboard.key_event import KeyEvent
+from gd_constants import GDConstants
 
 SpecialKey = Literal[
     'space', 'tab',
@@ -59,16 +59,18 @@ class KeyboardListener:
     ```
     """
     
-    listener = None
+    listener: Listener | None = None
     """ The pynput Listener object represented by this class. Is None if not started. """
     window_name = uuid4().hex
     """ Starting the listener will set the terminal window name to this, exactly once per start(). Used to check if key events are from the current window."""
     keys: Dict[NormalKey | SpecialKey, bool] = {}
     """ A dict mapping every key name to a boolean indicating whether or not it is currently held down. """
-    on_presses: List[Callable[[KeyEvent], None]] = []
+    on_presses: Set[Callable[[KeyEvent], None]] = set()
     """ list of handlers for when a key is pressed down. All get run on event emit """
-    on_releases: List[Callable[[KeyEvent], None]] = []
+    on_releases: Set[Callable[[KeyEvent], None]] = set()
     """ list of handlers for when a key is released. All get run on event emit """
+    
+    temp_n = 0
     
     def start():
         """ Starts a separate thread to start collecting keyboard info (updates `keys` dict continuously).
@@ -82,12 +84,13 @@ class KeyboardListener:
         if KeyboardListener.listener is not None:
             KeyboardListener.stop()
         
-        os.system(f"title {KeyboardListener.window_name}")
+        #os.system(f"title {KeyboardListener.window_name}")
         
         def get_listener_func(event: Literal['keybown', 'keyup']) -> Callable[[Key | KeyCode], None]:
-            def listener_inner(key: Key | KeyCode) -> None:               
+            def listener_inner(key: Key | KeyCode) -> None:            
                 
-                if win32gui.GetWindowText(win32gui.GetForegroundWindow()) != KeyboardListener.window_name: return
+                # disabling for now since only supports windows
+                #if win32gui.GetWindowText(win32gui.GetForegroundWindow()) != KeyboardListener.window_name: return
                 if key is None: return
                 
                 identifier = (
@@ -97,27 +100,59 @@ class KeyboardListener:
                 )
 
                 KeyboardListener.keys[identifier] = event == "keydown"
+                listeners_to_use = KeyboardListener.on_presses if event == "keydown" else KeyboardListener.on_releases
                 
                 # run handlers
                 KeyEvent.update_modifiers(key, event)
                 ke = KeyEvent.create_from(key)
                 
-                if event == "keydown":
-                    [func(ke) for func in KeyboardListener.on_presses]
-                elif event == "keyup":
-                    [func(ke) for func in KeyboardListener.on_releases]
-                    
+                KeyboardListener.temp_n += 1   
+                copied_listeners = copy(listeners_to_use) # MUST USE SHALLOW COPY
+                for func in copied_listeners:
+                    #Logger.log(f"[b4] running {func.__name__} with {ke}, #handlers in copy={len(copied_listeners)} #real = {len(listeners_to_use)}, {KeyboardListener.temp_n}th time looping thru")
+                    func(ke)
+                    #Logger.log(f"[af] running {func.__name__} with {ke}, #handlers in copy={len(copied_listeners)} #real = {len(listeners_to_use)}, {KeyboardListener.temp_n}th time looping thru")
+                
             return listener_inner
 
         KeyboardListener.listener = Listener(on_press=get_listener_func('keydown'), on_release=get_listener_func('keyup'))
         KeyboardListener.listener.start()
         
     def stop():
-        """ Stops the listener thread. Does nothing if listener is not started. """
+        """ Stops the listener thread, resetting class state and removing all key listeners. Does nothing if listener is None. """
         if KeyboardListener.listener is not None:
             KeyboardListener.listener.stop()
             KeyboardListener.listener = None
-            
+            KeyboardListener.keys = {}
+            KeyboardListener.on_presses = set()
+            KeyboardListener.on_releases = set()
+    
+    def add_on_press(func: Callable[[KeyEvent], None]):
+        """ Adds a function to the list of functions to run when a key is pressed down. """
+        KeyboardListener.on_presses.add(func)
+        
+    def add_on_release(func: Callable[[KeyEvent], None]):
+        """ Adds a function to the list of functions to run when a key is released. """
+        KeyboardListener.on_releases.add(func)
+        
+    def remove_on_press(func: Callable[[KeyEvent], None]):
+        """ Removes a function from the list of functions to run when a key is pressed down. """
+        if not func in KeyboardListener.on_presses: 
+            #Logger.log(f"not removing on press cuz function {func.__name__} not in set({[f.__name__ for f in KeyboardListener.on_presses]})")
+            return
+        
+        #Logger.log(f"removing on press {func.__name__}!!!!!!!!!!!!!!")
+        KeyboardListener.on_presses.remove(func)
+        
+    def remove_on_release(func: Callable[[KeyEvent], None]):
+        """ Removes a function from the list of functions to run when a key is released. """
+        if not func in KeyboardListener.on_releases: 
+            #Logger.log(f"not removing on release cuz function {func.__name__} not in set({[f.__name__ for f in KeyboardListener.on_releases]})")
+            return
+    
+        #Logger.log(f"removing on release {func.__name__}!!!!!!!!!!!!!!")
+        KeyboardListener.on_releases.remove(func)
+       
     def is_held(identifier: NormalKey | SpecialKey) -> bool:
         """ Returns whether or not a key is currently held down. None if identifier is not found/supported. """
         return KeyboardListener.keys.get(identifier)

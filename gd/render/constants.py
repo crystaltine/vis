@@ -2,6 +2,7 @@ import blessed
 from render.utils import nearest_quarter
 from typing import Tuple
 from enum import Enum
+from gd_constants import GDConstants
 
 class CameraConstants:
     BLOCK_WIDTH = 8
@@ -9,7 +10,7 @@ class CameraConstants:
     BLOCK_HEIGHT = 8
     """ How tall a block is in pixels (half of a character: ▀) """
 
-    CAMERA_LEFT_OFFSET = 10
+    CAMERA_LEFT_OFFSET = int(GDConstants.term.width * 0.3 / BLOCK_WIDTH)
     """ Amount of BLOCKS the camera_left is behind the player x position """
 
     MIN_PLAYER_SCREEN_OFFSET = 0.25
@@ -22,6 +23,14 @@ class CameraConstants:
 
     GROUND_HEIGHT = 3
     """ Max height of the ground in BLOCKS. This determines how much the rest of the level is "pushed up" """
+    
+    GROUND_TEXTURE_PERIOD = 22
+    """ How many blocks the ground texture repeats every. THIS IS DEPENDENT ON THE ACTUAL ASSET"""
+    
+    PROGRESS_BAR_MARGIN_TOP_PX = 3 # px
+    PROGRESS_BAR_PADDING_PX = 1 # px
+    PROGRESS_BAR_HEIGHT_PX = 1 # px
+    PROGRESS_BAR_WIDTH = 0.4 # proportion of screen width
     
     # for renderer only - physics runs at ~240
     # also, this is a target rate only.
@@ -76,21 +85,21 @@ class CameraConstants:
     RGBTuple = Tuple[int, int, int]
     RGBATuple = Tuple[int, int, int, int]
 
-    def screen_width_blocks(term: blessed.Terminal) -> float:
+    def screen_width_blocks() -> float:
         """
         Returns the width of the screen in BLOCKS. does NOT round.
         See `CameraConstants.BLOCK_WIDTH` for pixel width of each block.
         """
 
-        return term.width / CameraConstants.BLOCK_WIDTH
+        return GDConstants.term.width / CameraConstants.BLOCK_WIDTH
 
-    def screen_height_blocks(term: blessed.Terminal) -> float:
+    def screen_height_blocks() -> float:
         """
         Returns the height of the screen in BLOCKS. Does NOT round.
         See `CameraConstants.BLOCK_HEIGHT` for character width of each block.
         """
 
-        return term.height*2 / CameraConstants.BLOCK_HEIGHT
+        return GDConstants.term.height*2 / CameraConstants.BLOCK_HEIGHT
     
     def get_screen_x(camera_left: int, x: float) -> int:
         """ Returns the screen x-coordinate (relative to left of frame) 

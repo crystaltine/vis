@@ -210,7 +210,7 @@ class CollisionHandler:
         
         num_rows_to_check = ceil(abs(self.game.player.yvel) * timedelta)
         
-        Logger.log(f"highest solid obj: player pos is {self.game.player.pos[0]:2f},{self.game.player.pos[1]:2f}, left->right is {left}->{right}, top is {top}, num_rows_to_check is {num_rows_to_check}.")
+        #Logger.log(f"highest solid obj: player pos is {self.game.player.pos[0]:2f},{self.game.player.pos[1]:2f}, left->right is {left}->{right}, top is {top}, num_rows_to_check is {num_rows_to_check}.")
         
         for x in range(left, right+1):
             for y in range(top, max(-1, top-num_rows_to_check-1), -1):

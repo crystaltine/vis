@@ -3,6 +3,7 @@ from time import time_ns
 from typing import TYPE_CHECKING
 from keyboard.keyboard_listener import KeyboardListener
 from engine.constants import EngineConstants
+from gd_constants import GDConstants
 
 if TYPE_CHECKING:
     from engine.player import Player
@@ -28,22 +29,26 @@ def tick_wave(player: "Player", timedelta: float) -> None:
         player.pos[1] = 0
         player.yvel = 0
         player.in_air = False  
-        player._create_wave_pivot()
+        #Logger.log(f"[wve] on ground!!!!!")
+        player.create_wave_pivot()
     
     # otherwise, apply yvel based on if jump key is held or not
     else:
         player.in_air = True
         
         holding = False
-        for jump_key in EngineConstants.JUMP_KEYS:
+        for jump_key in GDConstants.JUMP_KEYS:
             if KeyboardListener.is_held(jump_key):
                 holding = True
                 break
         
         player.yvel = EngineConstants.BLOCKS_PER_SECOND * player.speed * (1 if holding else -1)
     
-    #Logger.log(f"wave yvel: {player.yvel:.2f}, pos={player.pos[0]:.2f},{player.pos[1]:.2f}")
-    player.pos[1] += player.yvel * timedelta
-    if player.pos[1] < 0: # catch spasming on ground (for animation function)
-        player.yvel = 0
-        player.pos[1] = 0
+        #Logger.log(f"wave yvel: {player.yvel:.2f}, pos={player.pos[0]:.2f},{player.pos[1]:.2f}")
+        player.pos[1] += player.yvel * timedelta
+        #Logger.log(f"[2] wave yvel: {player.yvel:.2f}, pos={player.pos[0]:.2f},{player.pos[1]:.2f}")
+        if player.pos[1] < 0: # catch spasming on ground (for animation function)
+            player.yvel = 0
+            player.pos[1] = 0
+            player.create_wave_pivot()
+            Logger.log(f"WAVE LANDED ON GROUND (i think)")

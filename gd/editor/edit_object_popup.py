@@ -61,8 +61,9 @@ class EditObjectPopup:
         ]
         """ List of tuples of (setting name, number of selectable buttons it has) """
 
-        self.selected_setting_idx = 0
-        self.selected_button_idx = 0
+        self.selected_setting_idx = 0 if self.obj.data["color_channels"] != 0 else 2
+        
+        self.selected_button_idx = self.get_selected_button_index()
         """ SHOULD ONLY BE USED FOR COLOR CHANNEL SETTINGS """
         
         self.right = int(EditObjectPopup.FRACTION_OF_SCREEN_WIDTH * frame.width)
@@ -94,6 +95,8 @@ class EditObjectPopup:
         BUTTON_STARTING_X_POS = self.right - EditObjectPopup.PADDING_X - int(3.5*EditObjectPopup.BUTTON_SIZE) - 3*EditObjectPopup.GAP_X
 
         ####### Color 1
+        has_color_1 = self.obj.data["color_channels"] > 0
+        
         curr_x_pos = BUTTON_STARTING_X_POS
         if self.selected_setting_idx == 0: # draw shaded rect if selected
             new_frame.add_rect(
@@ -101,7 +104,7 @@ class EditObjectPopup:
                 self.left, curr_y_pos-EditObjectPopup.GAP_Y//2-EditObjectPopup.BUTTON_SIZE//2//2,
                 self.width, TextureManager.font_small1.font_height+EditObjectPopup.GAP_Y
             )
-        new_frame.add_text(self.left + EditObjectPopup.PADDING_X, curr_y_pos, TextureManager.font_small1, "Color 1", anchor='left')
+        new_frame.add_text(self.left + EditObjectPopup.PADDING_X, curr_y_pos, TextureManager.font_small1, "Color 1", anchor='left', color=(255, 255, 255) if has_color_1 else (255, 255, 255, 80))
         # draw color preview
         new_frame.add_rect(
             self.level.get_colors_of(self.obj)[0],
@@ -111,24 +114,26 @@ class EditObjectPopup:
         )
         curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
 
+        if has_color_1:
         # draw minus button
-        button = getattr(EditObjectPopup, f"minus_button{'_pressed' if self.selected_button_idx == 0 and self.selected_setting_idx == 0 else ''}")
-        new_frame.add_pixels_centered_at(curr_x_pos, curr_y_pos, button)
-        curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
+            button = getattr(EditObjectPopup, f"minus_button{'_pressed' if self.selected_button_idx == 0 and self.selected_setting_idx == 0 else ''}")
+            new_frame.add_pixels_centered_at(curr_x_pos, curr_y_pos, button)
+            curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
 
-        # draw color number
-        new_frame.add_text(curr_x_pos, curr_y_pos, TextureManager.font_small1, str(self.obj.color1_channel))
-        curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
+            # draw color number
+            new_frame.add_text(curr_x_pos, curr_y_pos, TextureManager.font_small1, str(self.obj.color1_channel))
+            curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
 
-        # draw plus button
-        button = getattr(EditObjectPopup, f"plus_button{'_pressed' if self.selected_button_idx == 1 and self.selected_setting_idx == 0 else ''}")
-        new_frame.add_pixels_centered_at(curr_x_pos, curr_y_pos, button)
+            # draw plus button
+            button = getattr(EditObjectPopup, f"plus_button{'_pressed' if self.selected_button_idx == 1 and self.selected_setting_idx == 0 else ''}")
+            new_frame.add_pixels_centered_at(curr_x_pos, curr_y_pos, button)
 
         curr_y_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_Y
         
 
 
         ####### Color 2
+        has_color_2 = self.obj.data["color_channels"] > 1
         curr_x_pos = BUTTON_STARTING_X_POS
         if self.selected_setting_idx == 1: # draw shaded rect if selected
             new_frame.add_rect(
@@ -136,7 +141,7 @@ class EditObjectPopup:
                 self.left, curr_y_pos-EditObjectPopup.GAP_Y//2-EditObjectPopup.BUTTON_SIZE//2//2,
                 self.width, TextureManager.font_small1.font_height+EditObjectPopup.GAP_Y
             )
-        new_frame.add_text(self.left + EditObjectPopup.PADDING_X, curr_y_pos, TextureManager.font_small1, "Color 2", anchor='left')
+        new_frame.add_text(self.left + EditObjectPopup.PADDING_X, curr_y_pos, TextureManager.font_small1, "Color 2", anchor='left', color=(255, 255, 255) if has_color_2 else (255, 255, 255, 80))
         # draw color preview
         new_frame.add_rect(
             self.level.get_colors_of(self.obj)[1],
@@ -146,18 +151,19 @@ class EditObjectPopup:
         )
         curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
 
+        if has_color_2:
         # draw minus button
-        button = getattr(EditObjectPopup, f"minus_button{'_pressed' if self.selected_button_idx == 0 and self.selected_setting_idx == 1 else ''}")
-        new_frame.add_pixels_centered_at(curr_x_pos, curr_y_pos, button)
-        curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
+            button = getattr(EditObjectPopup, f"minus_button{'_pressed' if self.selected_button_idx == 0 and self.selected_setting_idx == 1 else ''}")
+            new_frame.add_pixels_centered_at(curr_x_pos, curr_y_pos, button)
+            curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
 
-        # draw color number
-        new_frame.add_text(curr_x_pos, curr_y_pos, TextureManager.font_small1, str(self.obj.color2_channel))
-        curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
-        
-        # draw plus button
-        button = getattr(EditObjectPopup, f"plus_button{'_pressed' if self.selected_button_idx == 1 and self.selected_setting_idx == 1 else ''}")
-        new_frame.add_pixels_centered_at(curr_x_pos, curr_y_pos, button)
+            # draw color number
+            new_frame.add_text(curr_x_pos, curr_y_pos, TextureManager.font_small1, str(self.obj.color2_channel))
+            curr_x_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_X
+            
+            # draw plus button
+            button = getattr(EditObjectPopup, f"plus_button{'_pressed' if self.selected_button_idx == 1 and self.selected_setting_idx == 1 else ''}")
+            new_frame.add_pixels_centered_at(curr_x_pos, curr_y_pos, button)
 
         curr_y_pos += EditObjectPopup.BUTTON_SIZE + EditObjectPopup.GAP_Y
         
@@ -237,11 +243,27 @@ class EditObjectPopup:
         """ Performs actions on this instance based on key pressed. Returns True if popup closed, False otherwise. """
         if key == "\x1b":
             return "close"
+        
+        # these selected setting idx changers are super janky but its 3am and i dont care
         elif key.name in ["KEY_TAB", "KEY_DOWN"]: # go down (forward) one row
             self.selected_setting_idx = (self.selected_setting_idx + 1) % 4
+            if self.selected_setting_idx == 0 and self.obj.data["color_channels"] == 0:
+                self.selected_setting_idx = 2
+            if self.selected_setting_idx == 1 and self.obj.data["color_channels"] <= 1:
+                self.selected_setting_idx = 2
+                
             self.selected_button_idx = self.get_selected_button_index()
         elif key.name in ["KEY_BTAB", "KEY_UP"]: # shift+tab; key code is \x1b[Z, go up (back) one row
             self.selected_setting_idx = (self.selected_setting_idx - 1) % 4
+            
+            if self.selected_setting_idx == 0 and self.obj.data["color_channels"] == 0:
+                self.selected_setting_idx = 3
+            if self.selected_setting_idx == 1:
+                if self.obj.data["color_channels"] == 0:
+                    self.selected_setting_idx = 3
+                elif self.obj.data["color_channels"] == 1:
+                    self.selected_setting_idx = 0
+                
             self.selected_button_idx = self.get_selected_button_index()
 
         # L/R arrow keys - change the currently selected button

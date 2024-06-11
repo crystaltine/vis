@@ -8,6 +8,7 @@ from render.utils import mix_colors_opt as mco
 from render.font import Font
 from render.constants import CameraConstants
 from level import Level, LevelObject, AbstractLevelObject
+from engine.objects import OBJECTS
 
 if TYPE_CHECKING:
     from engine.player import Player
@@ -33,11 +34,6 @@ class ColorfulTextureOptions(TypedDict):
 
 class TextureManager:
     
-    bg_color: tuple = (24, 67, 240)
-    """ Can change throughout the level using triggers. keep as rgb tuple. """
-    ground_color: tuple = (8, 32, 170)
-    """ Can change throughout the level using triggers. keep as rgb tuple. """
-    
     player_color1: CameraConstants.RGBTuple = (111, 255, 83)
     player_color2: CameraConstants.RGBTuple = (90, 250, 255)
     player_icons: Dict[str, List[np.ndarray]] = {}
@@ -52,6 +48,11 @@ class TextureManager:
     
     `{object name}_{rotation}_{reflection}_{color1|None}_{color2|None}`
     """
+    
+    # currently unused
+    ground_texture_cache = {}
+    """ Cache for ground textures.
+    Key is color, value is a list of CameraConstants.GROUND_TEXTURE_PERIOD textures that correspond to the different offsets."""
     
     # load fonts
     font_small1 = Font("./assets/fonts/small1.png")
@@ -206,8 +207,8 @@ class TextureManager:
         grayscale_weights = grayscale_weights[:, :, np.newaxis]
         
         colorized = ...
-        if color2 == None: # single-colored objects
-            colorized = (1 - grayscale_weights) * color1
+        if color2 is None: # single-colored objects
+            colorized = (grayscale_weights) * color1
         else:
             colorized = (1 - grayscale_weights) * color1 + grayscale_weights * color2
         
@@ -231,14 +232,19 @@ class TextureManager:
         #Logger.log_on_screen(GDConstants.term, f"[TextureManager/set_transparency] Set a={alpha}.")
         return pixels
     
-    def get_base_texture(object: "LevelObject | AbstractLevelObject") -> np.ndarray:
-        """ Returns the base texture (no options like rotations, reflections, colorization applied) for a given LevelObject | AbstractLevelObject. """
+    def get_base_texture(object: "LevelObject | AbstractLevelObject", hide_invis: bool = False) -> np.ndarray:
+        """ 
+        Returns the base texture (no options like rotations, reflections, colorization applied)
+        for a given LevelObject | AbstractLevelObject. If hide_invis is True, returns a blank texture if the object is invisible. """
         if TextureManager.base_textures.get(object.type) is None:
             raise ValueError(f"Base texture for object {object.type} not found.")
         
-        return TextureManager.base_textures[object.type]
+        if hide_invis and object.data.get("invisible", False):
+            return np.zeros((1, 1, 4), dtype=np.uint8)
+        else:    
+            return TextureManager.base_textures[object.type].copy()
     
-    def get_transformed_texture(level: "Level", object: "LevelObject | AbstractLevelObject") -> np.ndarray:
+    def get_transformed_texture(level: "Level", object: "LevelObject | AbstractLevelObject", hide_invis: bool = False) -> np.ndarray:
         """
         Given a `LevelObject` or `AbstractLevelObject`, attempts to search & return its specific texture in the cache.
         If not found, calculates the transformed texture of the object,
@@ -247,6 +253,14 @@ class TextureManager:
         
         Saves to texture cache. Returns the texture.
         """
+        
+        if hide_invis and object.data.get("invisible"):
+            return np.zeros((1, 1, 4), dtype=np.uint8)
+        
+        # if object is trigger (cant be rotated/reflected) return ase
+        if object.type == "color_trigger": # TODO - this is very hacky
+            return TextureManager.get_base_texture(object).copy()
+        
         # search in cache
         transformed_key = TextureManager.get_transformed_key(level, object)
         cached = TextureManager.texture_cache.get(transformed_key)
@@ -289,60 +303,47 @@ class TextureManager:
         """ Returns the current player icon based on the player's current rotation. """
         return TextureManager.player_icons[player.gamemode][player.get_animation_frame_index()]
     
-####### preload all base textures
+    def get_curr_ground_texture(level: "Level", player_x: float) -> np.ndarray:
+        """ Returns current ground texture, recolored and offset based on the player's position and level colors. """
+        
+        ground_offset = round(player_x*CameraConstants.BLOCK_WIDTH)%CameraConstants.GROUND_TEXTURE_PERIOD
+        
+        # ground texture cache system, disabled cuz it wasnt working and not using a cache is fine cuz its numpy...
+        #Logger.log(f"player dist from start={player.get_dist_from_start()}: offset={ground_offset}")
+        
+        #ground_color = tuple(level.ground_color)
+        
+        # try to find in cache
+        #cached_list = TextureManager.ground_texture_cache.get(ground_color)
+        #if cached_list is None:
+        #    TextureManager.ground_texture_cache[ground_color] = [] # init cache list
+        #else: # cache list exists, but index might not
+        #    if ground_offset < len(cached_list):
+        #        # cache hit!
+        #        Logger.log(f"ground offset: {ground_offset}, len: {len(cached_list)}")
+        #        return cached_list[ground_offset].copy()
+            
+        # not found in cache, calculate and save
+        
+        recolored_ground = TextureManager.colorize_texture(TextureManager.base_textures["ground"].copy(), level.ground_color, None)
+    
+        # the ground texture is periodic with period CameraConstants.GROUND_TEXTURE_PERIOD px. 
+        # calculate player position in px, mod ^^, and offset the texture by that amount
+        recolored_ground = np.roll(recolored_ground, -ground_offset, axis=1)
+        #TextureManager.ground_texture_cache[ground_color].append(recolored_ground)
+        
+        return recolored_ground
+    
+####### preload all objects' base textures
+for object_name in OBJECTS.MASTERLIST:
+    TextureManager.base_textures.update({
+        object_name: TextureManager.compile_texture(OBJECTS.MASTERLIST[object_name]["texture_path"])
+    })
 
-# load objects
+##### Special non-object texture loading
 TextureManager.base_textures.update({
     "ground": TextureManager.compile_texture("./assets/objects/general/ground.png"),
     "checkpoint": TextureManager.compile_texture("./assets/objects/general/checkpoint.png"),
-    
-    "yellow_orb": TextureManager.compile_texture(f"./assets/objects/effect/orbs/orb_yellow.png"),
-    "purple_orb": TextureManager.compile_texture(f"./assets/objects/effect/orbs/orb_purple.png"),
-    "blue_orb": TextureManager.compile_texture(f"./assets/objects/effect/orbs/orb_blue.png"),
-    "green_orb": TextureManager.compile_texture(f"./assets/objects/effect/orbs/orb_green.png"),
-    "red_orb": TextureManager.compile_texture(f"./assets/objects/effect/orbs/orb_red.png"),
-    "black_orb": TextureManager.compile_texture(f"./assets/objects/effect/orbs/orb_black.png"),
-    
-    "yellow_pad": TextureManager.compile_texture(f"./assets/objects/effect/pads/pad_yellow.png"),
-    "purple_pad": TextureManager.compile_texture(f"./assets/objects/effect/pads/pad_purple.png"),
-    "blue_pad": TextureManager.compile_texture(f"./assets/objects/effect/pads/pad_blue.png"),
-    "red_pad": TextureManager.compile_texture(f"./assets/objects/effect/pads/pad_red.png"),
-
-    "glow_edge": TextureManager.compile_texture(f"./assets/objects/deco/glow_edge.png"),
-    "glow_corner": TextureManager.compile_texture(f"./assets/objects/deco/glow_corner.png"),
-    
-    "color_trigger": TextureManager.compile_texture(f"./assets/objects/triggers/color_trigger.png"),
-})
-
-# speed portals
-TextureManager.base_textures.update({
-    f"speed_portal_{speed.value}": TextureManager.compile_texture(f"./assets/objects/effect/speed_portals/speed_portal_{speed.value}.png") for speed in GDConstants.speeds
-})
-
-# mode portals
-TextureManager.base_textures.update({
-    f"mode_portal_{gamemode.value}": TextureManager.compile_texture(f"./assets/objects/effect/mode_portals/mode_portal_{gamemode.value}.png") for gamemode in GDConstants.gamemodes
-})
-
-# grav portals
-TextureManager.base_textures.update({
-    f"grav_portal_{grav.value}": TextureManager.compile_texture(f"./assets/objects/effect/grav_portals/grav_portal_{grav.value}.png") for grav in GDConstants.gravities
-})
-
-# blocks
-TextureManager.base_textures.update({
-    f"block{j}_{i}": TextureManager.compile_texture(f"./assets/objects/block/block{j}/{i}.png") for i in range(GDConstants.NUM_BLOCK_TEXTURES) for j in range(3)
-})
-
-# spikes
-TextureManager.base_textures.update({
-    f"spike_tall{i}": TextureManager.compile_texture(f"./assets/objects/obstacle/spike_tall/spike_tall{i}.png") for i in range(GDConstants.NUM_SPIKE_TALL_TEXTURES)
-})
-TextureManager.base_textures.update({
-    f"spike_short{i}": TextureManager.compile_texture(f"./assets/objects/obstacle/spike_short/spike_short{i}.png") for i in range(GDConstants.NUM_SPIKE_SHORT_TEXTURES)
-})
-TextureManager.base_textures.update({
-    f"spike_flat{i}": TextureManager.compile_texture(f"./assets/objects/obstacle/spike_flat/spike_flat{i}.png") for i in range(GDConstants.NUM_SPIKE_FLAT_TEXTURES)
 })
 
 # load player icons

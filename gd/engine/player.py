@@ -1,5 +1,5 @@
 from typing import List, Tuple, TYPE_CHECKING
-from time import time_ns
+from time import time_ns, time
 from copy import deepcopy
 
 from logger import Logger
@@ -80,6 +80,10 @@ class Player:
             raise Exception(f"[Player/tick] gamemode {self.gamemode} not set up in Player.tick()")
 
         tickfunc(self, timedelta)
+        
+    def get_dist_from_start(self) -> float:
+        """ Get the TRUE distance from the player's starting position, since we start at a negative x. """
+        return self.pos[0] - self.ORIGINAL_START_POS[0]
     
     def reset_physics(self, new_pos: Tuple[int, int] = None) -> None:
         """
@@ -155,6 +159,19 @@ class Player:
                     return 0
                 seconds_since_last_on_ground = (time_ns() - self.last_on_ground_time) / 1e9
                 return int(seconds_since_last_on_ground / 0.1) % 4
+            case "ball":
+                return int(time() / 0.25) % 2
+            
+            case "ufo":
+                return 0
+            
+            case "wave":
+                if self.yvel < 0:
+                    return 0
+                elif self.yvel > 0:
+                    return 1
+                else:
+                    return 2
     
     def set_yvel_magnitude(self, strength: float):
         """
@@ -185,12 +202,34 @@ class Player:
         """ Flips the gravity to the negative of what it currently is. """
         self.gravity *= -1
         
-    def _create_wave_pivot(self) -> None:
+    def change_gamemode(self, gamemode: GDConstants.gamemodes):
+        """ Change the gamemode of the player, running any associated logic """
+        
+        if gamemode == "wave":
+            self.pos[0] += (1 - EngineConstants.PLAYER_WAVE_HITBOX_X) / 2
+            self.pos[1] += (1 - EngineConstants.PLAYER_WAVE_HITBOX_Y) / 2
+            
+            # add a wave pivot here
+            self.create_wave_pivot()
+        else:
+            self.clear_wave_pivots()
+            
+        self.gamemode = gamemode
+        
+    def change_speed(self, speed: GDConstants.speeds):
+        """ Change the speed of the player. """
+        self.speed = SPEEDS.decode(speed)
+        
+    def clear_wave_pivots(self):
+        """ Clears the wave pivot points list. """
+        self.wave_pivot_points.clear()
+        
+    def create_wave_pivot(self) -> None:
         """ adds the current player position (center of hitbos) to self.wave_pivot_points """
         
         hb_size = self.get_hitbox_size()
-        center_x = self.pos[0] + hb_size / 2
-        center_y = self.pos[1] + hb_size / 2        
+        center_x = self.pos[0] + hb_size[0] / 2
+        center_y = self.pos[1] + hb_size[1] / 2        
         
         self.wave_pivot_points.append((center_x, center_y))
         

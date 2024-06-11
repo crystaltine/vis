@@ -1,22 +1,27 @@
-![image](https://github.com/crystaltine/vis/assets/114899328/b1327bb5-e791-4126-bfcb-4d656db853aa)# Vis
+# Vis
 A collection of app remakes in the terminal. This is a recreational project and these apps are only intended for casual use.
 
+Design Doc (Incomplete as of 1:43 AM, Jun 9): https://docs.google.com/document/d/13SuaRq5GfgQj59z0zWa9jua5XY7AGnjDIIRWVS-Cgh4/edit?usp=sharing
+
+## Instructions for Running
+```
+pip install -r requirements.txt
+python main.py
+```
+
 ## Viscord
-[]
+Viscord is a small demake of the popular chatting app Discord. It uses our own backend and user accounts, and allows for text chatting, voice chatting, and video streaming.
+
+### More README info coming soon. For now, check out [our design doc](https://docs.google.com/document/d/13SuaRq5GfgQj59z0zWa9jua5XY7AGnjDIIRWVS-Cgh4/edit?usp=sharing)
 
 ## Untitled Geometry Dash Remake
 Using ANSI color codes and block elements [listed here](https://en.wikipedia.org/wiki/Block_Elements) to make the screen look like an actual game.
-Surprisingly, with correct optimizations, we have achieved framerates of around 30 per second.
+Surprisingly, with correct optimizations, we have achieved framerates of around 30 per second (in most cases - but further optimizing the renderer is high priority)
 
-### Running
-```
-pip install -r requirements.txt
-cd gd
-python main.py
-```
-This should take you to the homescreen, from which the entire game is accessible.
+### Demo video
+https://github.com/crystaltine/vis/assets/114899328/9152d696-dd3b-4cfa-87c2-2a35898a1ae2
 
-[]
+### More README info coming soon. For now, check out [our design doc](https://docs.google.com/document/d/13SuaRq5GfgQj59z0zWa9jua5XY7AGnjDIIRWVS-Cgh4/edit?usp=sharing)
 
 ### Visage
 A scrapped framework inspired by HTML for creating graphical user interfaces (GUIs) inside modern terminals.

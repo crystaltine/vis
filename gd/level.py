@@ -1,6 +1,7 @@
-from typing import List, Tuple, Dict, TYPE_CHECKING, Literal, TypedDict
+from typing import List, Tuple, Dict, TYPE_CHECKING, Literal, TypedDict, NotRequired
 from copy import deepcopy
 import json
+from time import time
 
 from logger import Logger
 from gd_constants import GDConstants
@@ -14,7 +15,7 @@ class StartSettings(TypedDict):
     gamemode: GDConstants.gamemodes
     speed: GDConstants.speeds
     gravity: GDConstants.gravities
-    default_color_channels: Dict[int, CameraConstants.RGBTuple]
+    default_color_channels: Dict[str, CameraConstants.RGBTuple]
 
 class OfficialLevelMetadata(TypedDict):
     """ Metadata schema for official (built-in) levels """
@@ -67,8 +68,6 @@ LEVEL_TYPES: Dict[str, LevelMetadata] = {
     "online": OnlineLevelMetadata
 }
 
-
-
 class LevelParseError(Exception):
     pass
 
@@ -78,7 +77,13 @@ class Level:
     The 2D list should also be rectangular - all rows should be the same length.
     """
 
-    def __init__(self, metadata: LevelMetadata, leveldata: List[List["LevelObject"]]):
+    def __init__(
+        self, 
+        metadata: LevelMetadata, 
+        color_trigger_locs: Dict[Tuple[int, int], Tuple[str | int, int, int, int]], 
+        leveldata: List[List["LevelObject"]]):
+        """ Programmatically construct a Level instance. If you're looking to parse from file, use Level.parse_from_file instead. """
+        
         self.metadata: LevelMetadata = metadata
         self.leveldata: List[List["LevelObject"]] = leveldata
         """ The backend level data. SHOULD be rectangular - see level_parser """
@@ -91,8 +96,15 @@ class Level:
         self.color_channels: Dict[int, Tuple[int, int, int]] = {}
         """ Dict of id -> RGB color. Objects can reference these IDs to get their color. """
         
-        self.bg_color = metadata["start_settings"]["bg_color"]
-        self.ground_color = metadata["start_settings"]["ground_color"]
+        self.bg_color = tuple(metadata["start_settings"]["bg_color"])
+        self.ground_color = tuple(metadata["start_settings"]["ground_color"])
+        
+        self.color_trigger_locs: Dict[Tuple[int, int], Tuple[str | int, int, int, int]] = color_trigger_locs
+        """ A dict of (x, y) : (channel, r, g, b)) for efficiency in checking/activating color triggers. """
+        self._ordered_color_trigger_locs: List[Tuple[int, int]] = []
+        """ A list of color trigger locations, sorted with lower x-pos ones being last, that changes whenever a color trigger is passed 
+        This optimizes the color trigger checking process so that we dont have to look at a huge number of objects every tick. """
+        self.reset_color_trigger_cache()        
         
         self.filepath: str = ...
         """ Stores the filepath of the level. ONLY SET IF parse_from_file IS USED. """
@@ -142,12 +154,21 @@ class Level:
             if len_diff > 0:
                 # pad with a lot of Nones
                 row.extend([None] * len_diff)
+                
+        # process color trigger locs
+        # all the keys are stringified tuples. unstringify them.
+        raw_color_trigger_locs = levelfile["color_trigger_locs"]
+        
+        # TODO - this is kinda dirty
+        color_trigger_locs = {}
+        for k, v in raw_color_trigger_locs.items():
+            color_trigger_locs[tuple(map(int, k[1:-1].split(", ")))] = v
 
-        level = Level(metadata, leveldata)
+        level = Level(metadata, color_trigger_locs, leveldata)
         level.filepath = filepath
 
         # parse & set default color channels    
-        default_color_channels = metadata["start_settings"]["default_color_channels"]
+        default_color_channels = metadata["start_settings"]["default_color_channels"].copy()
         # assign default color channels to the level
         for channel_id, color in default_color_channels.items():
             level.set_color_channel(channel_id, color)
@@ -163,11 +184,26 @@ class Level:
         # convert self.leveldata into List[List[dict]] so it can be written back to a json file
         jsonized_leveldata = [[obj.to_json() if obj else None for obj in row] for row in self.leveldata]
         
+        # cant store tuples as keys in JSON, so convert keys to stringified tuples
+        color_trigger_locs = {str(k): v for k, v in self.color_trigger_locs.items()}
+        
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump({
                 'metadata': self.metadata,
+                'color_trigger_locs': color_trigger_locs, # no need to convert this to JSON, it's already a dict
                 'leveldata': jsonized_leveldata
             }, f)
+    
+    def reset_colors(self) -> None:
+        #Logger.log(f"resetting bg color to {self.metadata['start_settings']['bg_color']}")
+        #Logger.log(f"resetting ground color to {self.metadata['start_settings']['ground_color']}")
+        self.bg_color = tuple(self.metadata["start_settings"]["bg_color"])
+        self.ground_color = tuple(self.metadata["start_settings"]["ground_color"])
+        self.color_channels = {int(k): v for k, v in self.metadata["start_settings"]["default_color_channels"].items()}
+    
+    def reset_color_trigger_cache(self) -> None:
+        """ Resets the color trigger cache based on self.color_trigger_locs. """
+        self._ordered_color_trigger_locs = sorted(self.color_trigger_locs.keys(), key=lambda x: x[0], reverse=True)
     
     def get_object_at(self, x: int, y: int) -> "LevelObject | None":
         """
@@ -194,6 +230,7 @@ class Level:
         x and y must both be nonnegative. If x or y are greater than level length/height, expands the level.
         
         If obj is None, sets the object at coordinates x, y to None (delete object at that position)
+        Will update any caches that change depending on the level data (such as color trigger cache)
         
         Otherwise:        
         Sets the object at coordinates x, y to a COPY of `obj`, converting
@@ -223,8 +260,45 @@ class Level:
         # set the new object    
         row_index_in_list = self.height - y - 1
         new_obj = LevelObject.copy_from(obj, x, y) if obj is not None else None
-        self.leveldata[row_index_in_list][x] = new_obj
         
+        if new_obj is None: # check if object being deleted is a color trigger
+            if (x, y) in self.color_trigger_locs: # remove from color trigger cache
+                del self.color_trigger_locs[(x, y)]      
+                
+        elif new_obj.type == "color_trigger": # sync color trigger cache if placing a color trigger
+            self.color_trigger_locs[(x, y)] = (new_obj.color1_channel, 255, 255, 255)
+    
+        self.leveldata[row_index_in_list][x] = new_obj
+    
+    def check_color_triggers(self, player_x: float) -> None:
+        """ Checks if the player x is past any color triggers in self._ordered_color_trigger_locs.
+        If it is, activate the trigger and remove it from that cache, so it cant be activated again. """
+        
+        if len(self._ordered_color_trigger_locs) == 0:
+            return
+        
+        #closest_trigger = self._ordered_color_trigger_locs[-1]
+        # iterate backward through ordered color triggers. 
+        # keep all the ones with the same x-value
+        
+        upcoming_triggers = [self._ordered_color_trigger_locs[-1]]
+        for trigger in range(len(self._ordered_color_trigger_locs)-2, -1, -1):
+            if self._ordered_color_trigger_locs[trigger][0] == upcoming_triggers[0][0]:
+                upcoming_triggers.append(self._ordered_color_trigger_locs[trigger])
+            else:
+                break
+        
+        if player_x >= upcoming_triggers[0][0]: # player has passed the trigger line
+            # activate all the upcoming color triggers
+            
+            #Logger.log(f">>>>>>> PLAYER PASSED TRIGGERS!!!!!! UPCOMING TRIGGERS len: {len(upcoming_triggers)}")
+            
+            for trigger_loc in upcoming_triggers:
+                #Logger.log(f"trigger loc is {trigger_loc}, upcoming_triggers len={len(upcoming_triggers)}")
+                self.set_color_channel(self.color_trigger_locs[trigger_loc][0], self.color_trigger_locs[trigger_loc][1:])
+                #self.color_trigger_locs.pop(trigger_loc)
+                self._ordered_color_trigger_locs.pop() # this SHOULD be fine since we ensure that upcoming_triggers is in the opposite order as _ordered_color_trigger_locs
+    
     def get_row(self, y: int, start: int = 0, end: int = None) -> List["LevelObject"]:
         """ Return a list of LevelObjects in a specific row, based on y-coordinate (remember, 0 is bottom row)
         Optionally can specify a start and end index to slice the row. If end is None, will go till the end of the row. """
@@ -253,6 +327,13 @@ class Level:
         self.color_channels.setdefault(id, (255, 255, 255))
         return self.color_channels[id]
     
+    def edit_color_trigger_at(self, x: int, y: int, new_channel: str | int, new_color: CameraConstants.RGBTuple) -> None:
+        """ Edit the properties of a color trigger at a specific position (with new channel and color). 
+        This function will do nothing if there is no color trigger at that position. """
+        
+        if (x, y) in self.color_trigger_locs:
+            self.color_trigger_locs[(x, y)] = (new_channel, *new_color)
+    
     def get_colors_of(self, object: "LevelObject") -> Tuple[CameraConstants.RGBTuple | None, CameraConstants.RGBTuple | None]:
         """
         Returns a tuple (color1, color2) of the colors a LevelObject currently has.
@@ -267,12 +348,28 @@ class Level:
         
         #Logger.log(f"Level.get_colors_of: {object} has colors {curr_color1}, {curr_color2}")
         return curr_color1, curr_color2      
+    
+    def create_new_file(name: str) -> None:
+        """ Creates a new (created-type) level file with the specified name, default metadata for everything else. """
+    
+        # default created level template is in ./levels/DEFAULT_CREATED_LEVEL.json
+        default_data = json.load(f:=open("./levels/DEFAULT_CREATED_LEVEL.json", 'r'))
+        f.close()
         
+        default_data["metadata"]["name"] = name
+        default_data["metadata"]["created_timestamp"] = time()
+        default_data["metadata"]["modified_timestamp"] = time()
+        
+        # save it as a new file at ./levels/created/name.json
+        new_filepath = f"./levels/created/{name}.json"
+        json.dump(default_data, f2:=open(new_filepath, 'w'))
+        f2.close()
+    
 class ObjectData(TypedDict):
     name: str
     hitbox_type: str
     color_channels: int
-    invis: bool | None # optional
+    invisible: bool | None # optional
     hitbox_xrange: List[float] | None # optional
     hitbox_yrange: List[float] | None # optional
     collide_effect: str | None # optional
@@ -285,6 +382,9 @@ class LevelObjectDefSchema(TypedDict):
     reflection: CameraConstants.OBJECT_REFLECTIONS
     color1_channel: int | None
     color2_channel: int | None
+    trigger_target: NotRequired[str | int | None] # optional - COLOR TRIGGERS ONLY
+    trigger_color: NotRequired[CameraConstants.RGBTuple | None] # optional - COLOR TRIGGERS ONLY
+    has_been_activated: NotRequired[bool | None] # optional - ACTIVATABLE OBJECTS ONLY
 
 class LevelObject:
     """
@@ -324,6 +424,12 @@ class LevelObject:
         self.color2_channel: int | None = definition["color2_channel"] if self.data["color_channels"] > 1 else None
         """ the id of the color channel this object's color2 (replaces bright) conforms to. Can be None if the object only has 1 color."""
         
+        self.trigger_target: str | int | None = definition.get("trigger_target") or "bg"
+        """ the id of the object this color trigger will activate. """
+        
+        self.trigger_color: CameraConstants.RGBTuple | None = definition.get("trigger_color") or (255, 255, 255)
+        """ the color this color trigger will activate with. """
+        
         self.has_been_activated = False
         """ flag for objects that can been activated by the player exactly once. """
 
@@ -342,6 +448,8 @@ class LevelObject:
         new.color1_channel = other.color1_channel
         new.color2_channel = other.color2_channel
         new.has_been_activated = other.has_been_activated
+        new.trigger_target = other.trigger_target
+        new.trigger_color = other.trigger_color
         
         return new
         
@@ -356,6 +464,8 @@ class LevelObject:
         new.color1_channel = self.color1_channel
         new.color2_channel = self.color2_channel
         new.has_been_activated = self.has_been_activated
+        new.trigger_target = self.trigger_target
+        new.trigger_color = self.trigger_color
         
         return new
     
@@ -390,7 +500,9 @@ class LevelObject:
             "rotation": "up",
             "reflection": "none",
             "color1_channel": null,
-            "color2_channel": null
+            "color2_channel": null,
+            "trigger_target": "bg",
+            "trigger_color": [255, 255, 255],
         }
         """
         return {
@@ -398,7 +510,9 @@ class LevelObject:
             "rotation": self.rotation,
             "reflection": self.reflection,
             "color1_channel": self.color1_channel,
-            "color2_channel": self.color2_channel
+            "color2_channel": self.color2_channel,
+            "trigger_target": self.trigger_target,
+            "trigger_color": self.trigger_color
         }
 
 class AbstractLevelObject: # not inheriting since all functions are different lol
@@ -433,6 +547,12 @@ class AbstractLevelObject: # not inheriting since all functions are different lo
         """ the id of the color channel this object's color1 (replaces dark) conforms to. Can be None if the object cannot be recolored. """
         self.color2_channel: int | None = definition["color2_channel"]
         """ the id of the color channel this object's color2 (replaces bright) conforms to. Can be None if the object only has 1 color."""
+        
+        self.trigger_target: str | int | None = definition.get("trigger_target") or "bg"
+        """ the id of the object this color trigger will activate. """
+        
+        self.trigger_color: CameraConstants.RGBTuple | None = definition.get("trigger_color") or (255, 255, 255)
+        """ the color this color trigger will activate with. """
         
         self.has_been_activated = False
         """ flag for objects that can been activated by the player exactly once. """
