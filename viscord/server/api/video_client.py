@@ -6,7 +6,7 @@ from flask import request, Response
 from .flask_app import app
 from .helpers import *
 import requests
-from .server_config import URI, VOICE_PORT, HOST
+from .server_config import URI, VIDEO_PORT, HOST
 from typing import *
 import ctypes
 
@@ -15,7 +15,7 @@ import threading
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-s.bind((HOST, VOICE_PORT))
+s.bind((HOST, VIDEO_PORT))
 
 class GlobalState:
     def __init__(self):
@@ -82,8 +82,8 @@ global_state = GlobalState()
 
 
 
-@app.route("/api/voice/join", methods=["POST"])
-def join_voice() -> Literal["success", "failure"]:
+@app.route("/api/video/join", methods=["POST"])
+def join_video() -> Literal["success", "failure"]:
     global global_state
 
     """
@@ -135,7 +135,7 @@ def handle_client(conn, addr):
 
     data = conn.recv(1024)
     data = json.loads(data.decode())
-
+    
     user_id = data["id"]
     role = data["role"]
     if role == "receiver":
@@ -159,10 +159,26 @@ def handle_client(conn, addr):
         # TODO
         global_state.add_to_clients(user_id, None, None, blank_dict=True)
         print(f"SENDER ESTABLISHED: {user_id}")
+        
+    frame_sync = False
 
+    buffer = [0x00, 0x00, 0x00]
+    while not frame_sync:
+        try:
+            data = conn.recv(1)
+            buffer.append(data[0])
+            buffer.pop(0)
+            if buffer == [0x24, 0x2a, 0x31]:
+                frame_sync = True
+        except Exception as e:
+            global_state.purge(user_id)
+            return
+
+    buffer = []
     while True:
         try:
-            data = conn.recv(2048)
+            data = conn.recv(1)
+            #print(data)
         except Exception as e:
             global_state.purge(user_id)
             break
@@ -172,9 +188,19 @@ def handle_client(conn, addr):
         if role == "sender":
             if user_id not in global_state.connected_clients:
                 conn.close()
+            buffer.append(int.from_bytes(data, "big"))
+            if len(buffer) < 3:
+                # convert byte (data) to int
+
+                continue
+            
+            if buffer == [0x24, 0x2a, 0x31]:
+                buffer = []
+                continue
+            to_send = buffer.pop(0)
             for target in global_state.connected_clients[user_id]:
                 try:
-                    global_state.connected_clients[user_id][target].send(data)
+                    global_state.connected_clients[user_id][target].sendall(to_send.to_bytes(1, "big"))
                 except Exception as e:
                     print(e)
                     pass
