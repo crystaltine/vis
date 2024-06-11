@@ -237,7 +237,7 @@ def create_video_sender(user_id, channel):
             # im = Image.fromarray(image)
             # im = im.resize((width, height))
 
-            im = cv2.resize(image, (width, height))  # Resize the image
+            im = cv2.resize(image, (width, height), interpolation=cv2.INTER_NEAREST)  # Resize the image
 
             # Convert the image to RGB format
             # im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
@@ -284,6 +284,7 @@ def create_video_listener(user_id, target, chat_id):
             data = s.recv(1)
             full_bytes += data
         except Exception as e:
+            print(e)
             s.close()
             break
         # print("A")
