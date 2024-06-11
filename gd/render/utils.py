@@ -1,11 +1,11 @@
-from typing import Union, Tuple, TYPE_CHECKING
+from typing import Union, Tuple, TYPE_CHECKING, List
 from logger import Logger
 import re
 import os
 import numpy as np
 from skimage.draw import line, disk
 from gd_constants import GDConstants
-from draw_utils import print2
+from draw_utils import print3
 
 if TYPE_CHECKING:
     from render.constants import CameraConstants
@@ -275,7 +275,7 @@ def draw_text(text:str, x:int, y:int, bold=False, underline=False, color: str | 
         line+=GDConstants.term.underline
     
     line += fcode(color, bg_color) + text + GDConstants.term.normal
-    print2(line)
+    print3(line)
 
 def len_no_ansi(string: str) -> str:
     """
@@ -393,3 +393,95 @@ def greater(a: int | None, b: int | None) -> int | None:
     if b is None:
         return a
     return max(a, b)
+
+def get_diff_intervals(arr1: np.ndarray, arr2: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Given two 1D np arrays of THE SAME LENGTH, return a tuple
+    of ndarrays (starts, ends) that represent the intervals on which the original arrays are different.
+
+    (the intervals are go from start -> end-1, inclusive.)
+    """
+
+    diffs = np.any(arr1 != arr2, axis=1).astype(int)
+    
+    changes = np.diff(diffs, prepend=0, append=0)
+    starts = np.where(changes == 1)[0]
+    ends = np.where(changes == -1)[0]
+    
+    return starts, ends
+
+def combine_intervals(starts1: np.ndarray, ends1: np.ndarray, starts2: np.ndarray, ends2: np.ndarray) -> List[Tuple[int, int]]:
+    """ Combines arbitrary intervals defined by starts1, ends1, and starts2, 
+    ends2 into one giant LIST of intervals (tuple (start, end), exclusive of end).
+    Could technically be optimized 
+    """
+    intervals = []
+    
+    starts1 = add_row_of(starts1, 1) # 1st ele being 1 means its a start
+    starts2 = add_row_of(starts2, 1)
+    ends1 = add_row_of(ends1, -1) # 2nd ele being -1 means its an end
+    ends2 = add_row_of(ends2, -1) 
+    
+    combined = np.vstack((starts1, starts2, ends1, ends2)).tolist()
+    combined.sort(key=lambda x: x[0])
+    
+    intervals = []
+    excess_starts = 0
+    curr_start_index = 0
+    for i in range(len(combined)):
+        excess_starts += combined[i][1] # +1 for starts, -1 for ends
+        
+        if excess_starts == 0:
+            intervals.append((combined[curr_start_index][0], combined[i][0]))
+            curr_start_index = i+1
+            
+    return intervals    
+
+def add_row_of(arr: np.ndarray, num: int) -> np.ndarray:
+    """ For a 1D array arr, "enumerates" the array (similar to python's enumerate func) 
+    by adding another row filled with `num` underneath the original list. """
+    result = np.vstack((arr, np.full_like(arr, num)))
+    return result.transpose()
+
+def distances_to_false(bool_array: np.ndarray) -> np.ndarray:
+    """
+    Given a 1D array of booleans, returns a 1D array of integers representing the distances between
+    consecutive False values. If there are no False values, returns an empty array.
+    """
+    # Find the indices where the array is False
+    false_indices = np.where(bool_array)[0]
+    
+    # Calculate the distances between consecutive False indices
+    if len(false_indices) == 0:
+        return np.array([])  # Return an empty list if there are no False values
+
+    # Distances between consecutive Falses
+    distances = np.diff(false_indices) - 1
+
+    # Include distance from the start to the first False if it starts with True
+    if false_indices[0] != 0:
+        distances = np.insert(distances, 0, false_indices[0])
+
+    return distances
+
+def get_false_chunk_sizes(bool_array: np.ndarray) -> np.ndarray:
+    """ Given a 1D boolean np array, returns a 1D np array of ints that contains the lengths
+    of the consecutive false intervals. Does not include any 0-length intervals (skips through true chunks). """
+
+    if len(bool_array) == 0:
+        return np.array([])
+
+    diffs = np.diff(bool_array)
+    changes = np.where(diffs == True)[0] + 1
+
+    # edge cases - count chunks at start or end of input
+    if bool_array[0] == False:
+        changes = np.insert(changes, 0, 0)
+    if bool_array[-1] == False:
+        changes = np.append(changes, len(bool_array))
+
+
+    # every even index is the start of a false chunk
+    # every odd index is the end of a false chunk (exclusive)
+    # return odd - even elements (those are the sizes)
+    return changes[1::2] - changes[::2]

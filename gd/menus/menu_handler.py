@@ -15,8 +15,8 @@ from audio import AudioHandler
 import sys
 from game import Game
 from level import Level
-sys.path.append("..")
-import launcher
+#sys.path.append("..")
+#import launcher
 
 class MenuHandler:
     """ General class that manages the game's menu flow 
@@ -70,7 +70,7 @@ class MenuHandler:
             
                 if not MenuHandler.running:
                     MenuHandler.audio_handler.stop_playing_song()
-                    launcher.run_apps_command()
+                    #launcher.run_apps_command()
                     break
                 
                 if MenuHandler.in_level or MenuHandler.in_level_editor:

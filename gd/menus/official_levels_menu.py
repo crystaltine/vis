@@ -3,7 +3,7 @@ from logger import Logger
 #from bottom_menu import *
 from render.camera_frame import CameraFrame
 from render.texture_manager import TextureManager
-from draw_utils import print2
+from draw_utils import print3
 from render.utils import fcode_opt as fco
 from blessed.keyboard import Keystroke
 import os, json
@@ -170,8 +170,8 @@ class OfficialLevelsMenu(GenericMenu):
         # now add text
         halfdark_level_color = (level_data['color'][0]//2, level_data['color'][1]//2, level_data['color'][2]//2)
         text_fcode = fco((255, 255, 255), halfdark_level_color)
-        print2(GDConstants.term.move_xy(center - len(normal_text)//2, (normalbar_top - 4)//2) + text_fcode+normal_text)
-        print2(GDConstants.term.move_xy(center - len(practice_text)//2, (practicebar_top - 4)//2) + text_fcode+practice_text)
+        print3(GDConstants.term.move_xy(center - len(normal_text)//2, (normalbar_top - 4)//2) + text_fcode+normal_text)
+        print3(GDConstants.term.move_xy(center - len(practice_text)//2, (practicebar_top - 4)//2) + text_fcode+practice_text)
     
     def update_level_progress(filepath: str, new_value: float, key: Literal["normal", "practice"]):
         """ Update the progress field of the metadata in the levels field of this class (not the file, thats handled in game.py) """

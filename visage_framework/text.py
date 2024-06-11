@@ -1,5 +1,5 @@
 from element import Element
-from utils import fcode, convert_to_chars, print2
+from utils import fcode, convert_to_chars, print3
 from typing import Literal, Tuple, Unpack
 from globalvars import Globals
 from logger import Logger
@@ -135,7 +135,7 @@ class Text(Element):
             
             #Logger.log(f"<text> w/text={self.text}: align style is {self.style.get('text_align')} and text_left_padding is {text_left_padding}, {self.client_left=}")
             #with Globals.__vis_document__.term.hidden_cursor():
-            print2(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=curr_bg_color, style=style_string) + text_left_padding*" " + text_chunk)
+            print3(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=curr_bg_color, style=style_string) + text_left_padding*" " + text_chunk)
             #Logger.log(f"[t={time()}] text with text={self.text} just got drawn")
             #Logger.log_on_screen(f"just wrote {self.text}")
 
@@ -226,7 +226,7 @@ class Text(Element):
                 text_to_render = text_to_render[:max_bounds.right-self.client_right]
 
             #with Globals.__vis_document__.term.hidden_cursor():
-            print2(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=curr_bg_color, style=style_string) + text_left_padding*" " + text_chunk)
+            print3(Globals.__vis_document__.term.move_xy(self.client_left, row) + fcode(self.style.get("color"), background=curr_bg_color, style=style_string) + text_left_padding*" " + text_chunk)
             text_chunk_index += 1
 
     def _determine_dimensions(partial_container_bounds: Boundary) -> Tuple[int, int]:

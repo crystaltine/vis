@@ -1,5 +1,5 @@
 from element import Element
-from utils import fcode, convert_to_chars, print2
+from utils import fcode, convert_to_chars, print3
 from typing import TYPE_CHECKING, List, Unpack, Callable, Any
 from globalvars import Globals
 from logger import Logger
@@ -101,7 +101,7 @@ class Button(Element):
             active_bg_fcode = fcode(background=bg_color_to_use)
             for i in range(self.client_top, self.client_bottom):
                 #with Globals.__vis_document__.term.hidden_cursor():
-                print2(Globals.__vis_document__.term.move_xy(self.client_left, i) + active_bg_fcode + " " * self.client_width)
+                print3(Globals.__vis_document__.term.move_xy(self.client_left, i) + active_bg_fcode + " " * self.client_width)
 
         Logger.log(f"button drawn, moving to children")
          

@@ -1,5 +1,6 @@
 import re
 import os
+import sys
 from logger import Logger
 from gd_constants import GDConstants
 
@@ -220,6 +221,10 @@ def print2(*args, **kwargs) -> None:
     """
     print(*args, **kwargs, end='\r\x1b[0m')
 
+def print3(text: str) -> None:
+    """ Slightly faster (?) print3, which uses sys.stdout.write instead of print. Still adds the reset code at the end. """
+    sys.stdout.write(text + '\r\x1b[0m')
+
 def convert_to_chars(container_dim: int, dimvalue: int | str | None) -> int | None:
     """
     Returns the actual value of the dimension (in characters) based on the container size,
@@ -343,7 +348,7 @@ def draw_rect(
     
     # draw the rectangle
     for i in range(true_top, true_top + true_height):
-        print2(GDConstants.term.move_yx(i, true_left) + fcode(color) + "█"*true_width)
+        print3(GDConstants.term.move_yx(i, true_left) + fcode(color) + "█"*true_width)
 
 def colorize_pixel(grayscale_value: int, primary_color: str | tuple, secondary_color: str | tuple) -> tuple:
     """

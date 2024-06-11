@@ -36,7 +36,7 @@ class Game:
         self.camera = Camera(self.level)
         self.collision_handler = CollisionHandler(self)
         self.audio_handler = AudioHandler(level.metadata.get("song_filepath"), level.metadata.get("song_start_time"))
-        self.player = Player(self)
+        self.player = Player(self, level.metadata["start_settings"])
 
         self.is_crashed = False
         """ Special flag for when the player has crashed. (kinda like a pause)"""
@@ -125,20 +125,25 @@ class Game:
         
         self.camera.render_init()
         def render_thread():
+            
+            _total_frames_rendered = 0
+            render_start_time = time_ns()
+            
             try:
                 last_frame = time_ns()
                 while True:
                     
                     if self.exiting:
+                        Logger.log(f">>>>>>>>>> [Game/render_thread] Exiting render thread; Average FPS: {1e9*_total_frames_rendered/(time_ns()-render_start_time):.2f}")
                         break 
                     
-                    if not self.running:
+                    if not self.running or self.is_crashed:
                         sleep(0.01)
                         continue
                     
                     curr_frame = time_ns()
                     
-                    fps_str = f"{(1e9/(curr_frame-last_frame)):2f}" if (curr_frame-last_frame != 0) else "inf"
+                    #fps_str = f"{(1e9/(curr_frame-last_frame)):2f}" if (curr_frame-last_frame != 0) else "inf"
                     #if self.is_crashed:
                     #    Logger.log(f"[Game/render_thread] Rendering CRASHED frame, player@{[f'{num:2f}' for num in self.player.pos]}. FPS: {fps_str}")
                     #else:
@@ -152,7 +157,9 @@ class Game:
                         self.camera.render(self, render_raw=True)
                         self.need_to_render_raw = False
                     else:
+                        start = time_ns()
                         self.camera.render(self)
+                        Logger.log(f"[Game/render thread]: Rendered frame in {((time_ns()-start)/1e9):2f}s")
                     
                     # renders the most recent checkpoint if it exists
                     # note: this has been moved to Camera.render
@@ -161,8 +168,9 @@ class Game:
                     
                     #Logger.log(f"Just rendered frame with player@{[f'{num:2f}' for num in self.player.pos]}. It has been {((curr_frame-last_frame)/1e9):2f}s since last f.")
                     last_frame = curr_frame
+                    _total_frames_rendered += 1
 
-                    sleep(1/CameraConstants.RENDER_FRAMERATE)
+                    #sleep(1/CameraConstants.RENDER_FRAMERATE)
             except:
                 Logger.log(f"[Render Thread] ERROR: {traceback.format_exc()}")
                 self.exiting = True    
@@ -223,8 +231,12 @@ class Game:
                     
                     # after collisions is updated, tick physics.                
                     curr_time = time_ns()
+                    #try:
                     self.player.tick((curr_time - self.last_tick)/1e9)
-                    
+                    #except:
+                    #    Logger.log(f"tick error: {traceback.format_exc()}")
+                    #    self.exiting = True
+
                     _tps_str = f"{1e9/((curr_time-self.last_tick)):.2f}" if (curr_time-self.last_tick != 0) else "inf"
                     #Logger.log(f"[Physics Thread] Player ticked. pos={self.player.pos[0]:.2f},{self.player.pos[1]:.2f}, yvel={self.player.yvel:.2f}, TPS: {_tps_str}")
                     self.last_tick = curr_time

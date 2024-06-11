@@ -1,6 +1,7 @@
 from pygame import mixer
 from threading import Thread
 from gd_constants import GDConstants
+from logger import Logger
 import time
 
 mixer.init()
@@ -33,7 +34,11 @@ class AudioHandler:
         self.stop_playing_song()
         
         def play():
-            mixer.music.load(self.song_filepath)
+            try:
+                mixer.music.load(self.song_filepath)
+            except FileNotFoundError as e:
+                Logger.log(f"Error: {e}")
+                return
             mixer.music.play(start=self.start_offset, loops=self.loops)
             self.song_playing = True
             

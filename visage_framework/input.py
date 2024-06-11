@@ -1,5 +1,5 @@
 from element import Element
-from utils import fcode, convert_to_chars, print2, len_no_ansi, remove_ansi
+from utils import fcode, convert_to_chars, print3, len_no_ansi, remove_ansi
 from typing import Literal, Unpack, Callable, TYPE_CHECKING
 from globalvars import Globals
 from boundary import Boundary
@@ -318,4 +318,4 @@ class Input(Element):
         #Logger.log(f"Input renderer: final stripped text_to_render is {remove_ansi(text_to_render)}")
 
         #with Globals.__vis_document__.term.hidden_cursor():
-        print2(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + text_to_render)
+        print3(Globals.__vis_document__.term.move_xy(self.client_left, self.client_top) + text_to_render)

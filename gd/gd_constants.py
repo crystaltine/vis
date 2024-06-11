@@ -1,13 +1,17 @@
 from blessed import Terminal
 from typing import List, Tuple, Dict
 from enum import Enum
+import curses
 
 class GDConstants:
     """ General constants for the game and stuff """
     
     term = Terminal()
     
-    _VERSION = "b1.5.1"
+    #screen = curses.initscr()
+    #curses.start_color()
+    
+    _VERSION = "b1.6"
     
     KILL_KEYS = ['\x03']
     QUIT_KEYS = ['q', '\x1b', 'esc', "KEY_ESCAPE"] # active on menus

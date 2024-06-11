@@ -304,16 +304,19 @@ class Level:
         Optionally can specify a start and end index to slice the row. If end is None, will go till the end of the row. """
         return self.leveldata[self.height - y - 1][start:end]
     
-    def set_color_channel(self, id: Literal["bg", "grnd"] | int, new_color: CameraConstants.RGBTuple):
+    def set_color_channel(self, id: Literal["bg", "grnd"] | int, new_color: CameraConstants.RGBTuple, is_default: bool = False):
         """ Update the color of a color channel. id must be int, "bg", or "grnd"
         Creates a new channel if it doesn't exist. """
         
         if id == "bg":
             self.bg_color = new_color
+            if is_default: self.metadata["start_settings"]["bg_color"] = new_color
         elif id == "grnd":
             self.ground_color = new_color
+            if is_default: self.metadata["start_settings"]["ground_color"] = new_color
         else:
             self.color_channels[id] = new_color
+            if is_default: self.metadata["start_settings"]["default_color_channels"][id] = new_color
         
     def get_color_channel(self, id: Literal["bg", "grnd"] | int) -> CameraConstants.RGBTuple:
         """ Get the current color of a color channel. If the channel was never set, sets it to `(255, 255, 255)` (white) and returns that. """

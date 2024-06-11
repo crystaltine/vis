@@ -288,6 +288,10 @@ def print2(*args, **kwargs) -> None:
     uhh, i guess you could supply the end kwarg if you want to change it.
     """
     print(*args, **kwargs, end='\r\x1b[0m')
+    
+def print3(text: str) -> None:
+    """ Slightly faster (?) print3, which uses sys.stdout.write instead of print. Still adds the reset code at the end. """
+    sys.stdout.write(text + '\r\x1b[0m')
 
 def len_no_ansi(string: str) -> str:
     """
@@ -354,3 +358,4 @@ def show_cursor():
     elif os.name == 'posix':
         sys.stdout.write("\033[?25h")
         sys.stdout.flush()
+        

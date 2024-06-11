@@ -5,7 +5,7 @@ from logger import Logger
 from render.texture_manager import TextureManager
 from render.camera_frame import CameraFrame
 from render.constants import CameraConstants
-from draw_utils import print2
+from draw_utils import print3
 from render.utils import fcode_opt as fco
 from gd_constants import GDConstants
 
@@ -141,7 +141,7 @@ class LevelSettingsPopup:
         # print the current input content
         fcode = fco((255, 255, 255), LevelSettingsPopup.SELECTED_OPTION_BG_COLOR)
         term_loc = GDConstants.term.move_xy(text_rightmost-len(self.curr_input)-1, round(filepath_text_center_y/2))
-        print2(term_loc + fcode + self.curr_input)
+        print3(term_loc + fcode + self.curr_input)
 
     def handle_key(self, key: "Keystroke") -> Literal["open-colors", "save-quit", "close"] | None:
         """ Performs actions on this instance based on key pressed. Returns True if popup closed, False otherwise. """

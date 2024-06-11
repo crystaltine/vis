@@ -219,7 +219,7 @@ class EditColorPopup:
         elif key.name in ["KEY_TAB", "KEY_DOWN"]: # go down (forward) one row
             self.selected_option = (self.selected_option + 1) % 5
         elif key.name == "KEY_ENTER" and self.selected_option == 4: # save button
-            self.level.set_color_channel(self.target_channel, self.get_color())
+            self.level.set_color_channel(self.target_channel, self.get_color(), is_default=True)
             return "close"
         elif key.name in ["KEY_BTAB", "KEY_UP"]: # shift+tab; key code is \x1b[Z, go up (back) one row
             self.selected_option = (self.selected_option - 1) % 5

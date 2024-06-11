@@ -10,6 +10,8 @@ from engine.gamemodes.cube import tick_cube, jump_cube
 from engine.gamemodes.ball import tick_ball, jump_ball
 from engine.gamemodes.ufo import tick_ufo, jump_ufo
 from engine.gamemodes.wave import tick_wave
+from level import StartSettings
+from copy import copy
 
 if TYPE_CHECKING:
     from game import Game
@@ -26,7 +28,7 @@ class Player:
         "wave": tick_wave
     }
 
-    def __init__(self, game: "Game", start_settings: dict = {}):
+    def __init__(self, game: "Game", start_settings: StartSettings = {}):
         """
         (OPTIONAL) `start_settings` format (mainly used for startpos):
         ```python
@@ -42,20 +44,22 @@ class Player:
         """
         self.START_SETTINGS = start_settings
         
-        self.speed: GDConstants.speeds = SPEEDS.decode(start_settings.get("speed")) or SPEEDS.normal
+        self.speed: GDConstants.speeds = SPEEDS.decode(start_settings["speed"])
         
         self.wave_pivot_points: List[Tuple[int, int]] = []
         """ A persistent list (reset upon crash) that keeps track of whenever the wave changes direction, in order to render the trail. """
         
-        self.gamemode: GDConstants.gamemodes = start_settings.get("gamemode") or "cube"
+        self.gamemode: GDConstants.gamemodes = start_settings["gamemode"]
         """ One of "cube", "ship", "ball", "ufo", "wave", "robot", "spider" (swing maybe? idk)"""
         
-        self.ORIGINAL_START_POS = start_settings.get("pos") or [-10, 0] # used for resetting
-        self.pos = start_settings.get("pos") or [-10, 0]
+        self.ORIGINAL_START_POS = copy(start_settings["position"])
+        self.pos = copy(start_settings["position"])
         """ [x, y], where x is horiz (progress). BOTTOM LEFT of player. y=0 means on the ground, and y cannot be negative."""
 
         self.yvel = 0
-        self.gravity: GDConstants.gravities = start_settings.get("gravity") or EngineConstants.GRAVITY
+        Logger.log(f"start settings grav is {start_settings['gravity']}")
+        self.gravity = EngineConstants.GRAVITY * (1 if start_settings["gravity"] == "normal" else -1)
+        Logger.log(f"self.gravity is {self.gravity}")
         
         self.jump_requested = False
         """ variable to store when the player jumps before the next physics tick. """
@@ -98,9 +102,9 @@ class Player:
         self.jump_requested = False
         self.wave_pivot_points = []    
         self.curr_collisions.clear()
-        self.gamemode = self.START_SETTINGS.get("gamemode") or "cube"
-        self.speed = SPEEDS.decode(self.START_SETTINGS.get("speed")) or SPEEDS.normal
-        self.gravity = self.START_SETTINGS.get("gravity") or EngineConstants.GRAVITY
+        self.gamemode = self.START_SETTINGS["gamemode"]
+        self.speed = SPEEDS.decode(self.START_SETTINGS["speed"])
+        self.gravity = EngineConstants.GRAVITY * (1 if self.START_SETTINGS["gravity"] == "normal" else -1)
         self.last_on_ground_time = time_ns()
     
     def request_jump(self):

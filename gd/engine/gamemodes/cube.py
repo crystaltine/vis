@@ -85,3 +85,4 @@ def tick_cube(player: "Player", timedelta: float) -> None:
 def jump_cube(player: "Player") -> None:
     player.yvel = EngineConstants.PLAYER_JUMP_STRENGTH * player.sign_of_gravity()
     player.in_air = True
+    Logger.log(f"finished jump-cube func")

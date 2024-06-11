@@ -2,7 +2,7 @@ from gd_constants import GDConstants
 from PIL import Image
 from img2term.utils import fcode_opt
 from typing import List, Tuple, Literal
-from draw_utils import Position, print2
+from draw_utils import Position, print3
 from logger import Logger
 import numpy as np
 
@@ -76,7 +76,7 @@ def draw(
         # dont draw if out of bounds
         if not 0 <= true_top+row < GDConstants.term.height: continue
         if not true_left < GDConstants.term.width or true_left+len(final_chars[row]) < 0: continue
-        print2(GDConstants.term.move_xy(true_left, true_top+row) + ''.join(final_chars[row]))
+        print3(GDConstants.term.move_xy(true_left, true_top+row) + ''.join(final_chars[row]))
 
 def draw_from_pixel_array(
     _pixels: np.ndarray | List[List[List[int]]],
@@ -116,7 +116,7 @@ def draw_from_pixel_array(
         # dont draw if out of bounds
         if not 0 <= abs_pos.top+row < GDConstants.term.height: continue
         if not abs_pos.left < GDConstants.term.width or abs_pos.left+len(final_chars[row]) < 0: continue
-        print2(GDConstants.term.move_xy(abs_pos.left, abs_pos.top+row) + ''.join(final_chars[row]))
+        print3(GDConstants.term.move_xy(abs_pos.left, abs_pos.top+row) + ''.join(final_chars[row]))
 
 # demo i guess
 # draw("demo.png", pos=(0, 0), maxsize=(200, 100), overflow_behavior="crop")

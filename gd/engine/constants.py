@@ -1,7 +1,7 @@
 class EngineConstants:
     BLOCKS_PER_SECOND = 8.5
-    GRAVITY = 55
-    PLAYER_JUMP_STRENGTH = 16
+    GRAVITY = 65
+    PLAYER_JUMP_STRENGTH = 18
     """ How much the player's yvel is set to when they jump. """
     TERMINAL_VEL = 30
     """ The maximum downward velocity the player can accumulate due to GRAVITY (can exceed if using a black orb, for example). """

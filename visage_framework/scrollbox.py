@@ -1,5 +1,5 @@
 from element import Element
-from utils import fcode, convert_to_chars, print2, indexof_first_larger_than
+from utils import fcode, convert_to_chars, print3, indexof_first_larger_than
 from typing import List, Tuple, Unpack
 from globalvars import Globals
 from logger import Logger
@@ -92,7 +92,7 @@ class Scrollbox(Element):
         if curr_bg_color != 'transparent':
             for i in range(self.client_top, self.client_bottom):
                 #with Globals.__vis_document__.term.hidden_cursor():
-                print2(Globals.__vis_document__.term.move_xy(self.client_left, i) + fcode(background=curr_bg_color) + " " * self.client_width)
+                print3(Globals.__vis_document__.term.move_xy(self.client_left, i) + fcode(background=curr_bg_color) + " " * self.client_width)
                     
         # scrollbox child rendering
         #Logger.log(f"\n<Scrollbox render func: child rendering:> (num children: {len(self.children)})")

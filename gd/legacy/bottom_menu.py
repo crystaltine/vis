@@ -1,6 +1,6 @@
 from gd_constants import GDConstants 
 import os
-from draw_utils import fcode, print2, draw_rect, Position
+from draw_utils import fcode, print3, draw_rect, Position
 from typing import Literal
 
 def draw_spike(height, x: int, y: int, color: str, orientation: Literal["right", "left", "up"] = "up") -> None:
@@ -22,14 +22,14 @@ def draw_spike(height, x: int, y: int, color: str, orientation: Literal["right",
                 
                 for j in range(i):
                     dots+="█"
-            print2(GDConstants.term.move_yx(y+i-1, x) + dots+GDConstants.term.normal)
+            print3(GDConstants.term.move_yx(y+i-1, x) + dots+GDConstants.term.normal)
         
         for i in range(height-1, 0, -1):
             dots=f"{fcode(color)}"
             for k in range(int(height*0.4)):
                 for j in range(i):
                     dots+="█"
-            print2(GDConstants.term.move_yx(y+height+(height-i-1), x) + dots+GDConstants.term.normal)
+            print3(GDConstants.term.move_yx(y+height+(height-i-1), x) + dots+GDConstants.term.normal)
 
     elif orientation == 'left':
 
@@ -43,7 +43,7 @@ def draw_spike(height, x: int, y: int, color: str, orientation: Literal["right",
                     line+=" "
                 for j in range(i):
                     line+=f"{fcode(color)}█"
-            print2(GDConstants.term.move_yx(y+i-1, x) + line+GDConstants.term.normal)
+            print3(GDConstants.term.move_yx(y+i-1, x) + line+GDConstants.term.normal)
         
         for i in range(height-1, 0, -1):
             line=f"{GDConstants.term.on_black}"
@@ -53,7 +53,7 @@ def draw_spike(height, x: int, y: int, color: str, orientation: Literal["right",
                 
                 for j in range(i):
                     line+=f"{fcode(color)}█"
-            print2(GDConstants.term.move_yx(y+height+(height-i-1), x) + line+GDConstants.term.normal)
+            print3(GDConstants.term.move_yx(y+height+(height-i-1), x) + line+GDConstants.term.normal)
     
     else:
         # Generating an ascii pyramid line by line
@@ -66,7 +66,7 @@ def draw_spike(height, x: int, y: int, color: str, orientation: Literal["right",
                 dots+="█"
             line=f"{fcode(color)}"+spaces+ dots + spaces + GDConstants.term.normal
 
-            print2(GDConstants.term.move_yx(i, x) + line)
+            print3(GDConstants.term.move_yx(i, x) + line)
     
 # Writes text on the screen, assuming the background color is blue
 def draw_text(text:str, x:int, y:int, bold=False, underline=False, color: str | tuple = "#ffffff", bg_color: str | tuple = None):
@@ -77,7 +77,7 @@ def draw_text(text:str, x:int, y:int, bold=False, underline=False, color: str | 
         line+=GDConstants.term.underline
     
     line += fcode(color, bg_color) + text + GDConstants.term.normal
-    print2(line)
+    print3(line)
 
 ORB_COLORS = {
     'turquoise': ['#00ffff', '#00cccc'],

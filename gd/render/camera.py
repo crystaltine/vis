@@ -2,6 +2,7 @@ import blessed
 from typing import TYPE_CHECKING, List, Tuple
 from math import floor, ceil
 import traceback
+from time import time_ns
 
 from logger import Logger
 from render.constants import CameraConstants
@@ -123,16 +124,23 @@ class Camera:
         and to only redraw the differences.
         """
         
+        times = {}
+        total_start_time = time_ns()
+        
         if game.is_crashed:
             # if crashed, don't render anything
+            #Logger.log("crashed")
             return
         
+        start_time = time_ns()
         new_frame = CameraFrame()
         new_frame.fill(self.level.bg_color)
+        times['create frame'] = (time_ns() - start_time)/1e6
         
         # move camera to player
-        #Logger.log(f"[1] screen pos for playher: {self.player_y_info['screen_pos']}")
+        start_time = time_ns()
         self.update_camera_y_pos(game.player.pos)
+        times['update camera y pos'] = (time_ns() - start_time)/1e6
         #Logger.log(f"[2] screen pos for playher: {self.player_y_info['screen_pos']}")
         self.camera_left = game.player.pos[0] - CameraConstants.CAMERA_LEFT_OFFSET
         camera_right = self.camera_left + CameraConstants.screen_width_blocks()
@@ -150,6 +158,7 @@ class Camera:
         curr_screen_y_pos = ground_screen_y_pos - CameraConstants.BLOCK_HEIGHT*(1+visible_vert_range[0])
 
         #Logger.log(f"[Camera/render] visible_vert_slice = {visible_vert_slice}, initial curr_screen_y_pos = {curr_screen_y_pos}")
+        start_time = time_ns()
         for row in range(*visible_vert_range):
             # horizontal range of grid cells that are in the camera range. Includes any partially visible cells on the sides.
             visible_horiz_range = (max(0, floor(self.camera_left)), min(self.level.length, ceil(camera_right))) # last index is exclusive
@@ -178,7 +187,7 @@ class Camera:
                     
             curr_screen_y_pos -= CameraConstants.BLOCK_HEIGHT
         
-        
+        times['add objs TOTAL'] = (time_ns() - start_time)/1e6
         #Logger.log(f"[Camera/render] camera_top: {camera_top:2f}, camera_bottom: {self.camera_bottom:2f}")
         #Logger.log(f"slice: {visible_vert_slice}, range: {visible_vert_range}")
         
@@ -191,14 +200,18 @@ class Camera:
         new_frame.add_pixels_topleft(round(player_xpos_on_screen), round(self.player_y_info['screen_pos']), TextureManager.get_curr_player_icon(game.player))
         
         # draw attempt number
+        start_time = time_ns()
         self.draw_attempt(new_frame, game.player.ORIGINAL_START_POS[0], game.attempt_number) # draw the attempt number
+        times['draw attempt #'] = (time_ns() - start_time)/1e6
         
         # draw wave trail
         if game.player.gamemode == "wave":
             self.render_wave_trail(new_frame, game)
         
         # draw progress bar
+        start_time = time_ns()
         self.render_progress_bar(new_frame, game.get_progress_percentage())
+        times['draw progress bar'] = (time_ns() - start_time)/1e6
         
         # draw any checkpoints TODO - render multiple checkpoints, OOP-ize practice mode?
         # draw most recent checkpoint if the game is in practice mode and has a checkpoint
@@ -207,12 +220,18 @@ class Camera:
             self.draw_checkpoint(new_frame, x, y)
         
         # render the new frame
+        #Logger.log(f"[Camera/render] BEGIN LOGS (cf first) --------------------------- ")
         if not render_raw:
             new_frame.render(self.curr_frame)
         else: 
             new_frame.render_raw()
             
         self.curr_frame = new_frame
+        
+        
+        #for time_key in times:
+            #Logger.log(f"[Camera/render] {time_key}: {times[time_key]:.2f}ms")
+        #Logger.log(f"[Camera/render] END LOG, TOTAL TIME: {(time_ns() - total_start_time)/1e6:.2f}ms ")
 
     def render_wave_trail(self, frame: CameraFrame, game: "Game") -> None:
         "draws a line between all the wave pivots that are on the screen"
