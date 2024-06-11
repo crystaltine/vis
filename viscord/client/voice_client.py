@@ -18,7 +18,7 @@ import cv2
 from PIL import Image
 import time
 
-FPS = 24
+FPS = 12
 
 global selection
 selection = 0
@@ -46,8 +46,8 @@ transmitting = True
 audio = pyaudio.PyAudio()
 
 
-width = 60
-height = 34
+width = 70
+height = 40
 FRAME_SIZE = width * height * 2
 
 def split_large(n):
@@ -234,22 +234,19 @@ def create_video_sender(user_id, channel):
                 break
             # s.sendall(data)
             # TODO
-            im = Image.fromarray(image)
-            im = im.resize((width, height))
+            # im = Image.fromarray(image)
+            # im = im.resize((width, height))
 
+            im = cv2.resize(image, (width, height))  # Resize the image
 
-            pixels = im.load()
-            pixels = [[pixels[x, y] for x in range(width)] for y in range(height)]
-            pixels = [[
-                (r // 16, g // 16, b // 16)
-                for r, g, b in row
-            ] for row in pixels]
+            # Convert the image to RGB format
+            # im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
 
-            pixels = [
-                r << 8 | g << 4 | b
-                for row in pixels
-                for r, g, b in row
-            ]
+            # Reshape the image into a 2D array and reduce the color depth
+            pixels = im.reshape(-1, 3) // 16
+
+            # Convert the pixels to your desired format
+            pixels = [r << 8 | g << 4 | b for r, g, b in pixels]
 
             
             temp = bytes(encode_video(pixels))
