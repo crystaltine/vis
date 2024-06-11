@@ -379,8 +379,6 @@ def main(user_token, server_id, channel_id):
         else:
             threading.Thread(target=create_video_listener, args=(user_id, target, channel_id)).start()
 
-    threading.Thread(target=create_video_listener, args=(user_id, user_id, channel_id)).start()
-
     threading.Thread(target=create_video_sender, args=(user_id, channel_id)).start()
 
 
