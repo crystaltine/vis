@@ -160,6 +160,21 @@ def handle_client(conn, addr):
         global_state.add_to_clients(user_id, None, None, blank_dict=True)
         print(f"SENDER ESTABLISHED: {user_id}")
         
+    frame_sync = False
+
+    buffer = [0x00, 0x00, 0x00]
+    while not frame_sync:
+        try:
+            data = conn.recv(1)
+            buffer.append(data[0])
+            buffer.pop(0)
+            if buffer == [0x24, 0x2a, 0x31]:
+                frame_sync = True
+        except Exception as e:
+            global_state.purge(user_id)
+            return
+
+    buffer = []
     while True:
         try:
             data = conn.recv(1)
@@ -173,9 +188,18 @@ def handle_client(conn, addr):
         if role == "sender":
             if user_id not in global_state.connected_clients:
                 conn.close()
+            if len(buffer) < 3:
+                # convert byte (data) to int
+
+                buffer.append(int.from_bytes(data, "big"))
+                continue
+            if buffer == [0x24, 0x2a, 0x31]:
+                buffer = []
+                continue
+            to_send = buffer[0]
             for target in global_state.connected_clients[user_id]:
                 try:
-                    global_state.connected_clients[user_id][target].sendall(data)
+                    global_state.connected_clients[user_id][target].sendall(to_send.to_bytes(1, "big"))
                 except Exception as e:
                     print(e)
                     pass

@@ -225,6 +225,9 @@ def create_video_sender(user_id, channel):
 
     while transmitting:
         try:
+            s.sendall(0x24.to_bytes(1, byteorder="big"))
+            s.sendall(0x2a.to_bytes(1, byteorder="big"))
+            s.sendall(0x31.to_bytes(1, byteorder="big"))
             start = time.time()
             success, image = vidcap.read()
             if not success:
