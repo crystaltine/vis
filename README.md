@@ -18,6 +18,13 @@ Viscord is a small demake of the popular chatting app Discord. It uses our own b
 Using ANSI color codes and block elements [listed here](https://en.wikipedia.org/wiki/Block_Elements) to make the screen look like an actual game.
 Surprisingly, with correct optimizations, we have achieved framerates of around 30 per second (in most cases - but further optimizing the renderer is high priority)
 
+### Update! The game's rendering engine is now a standalone library!
+Try it now (hopefully it isnt broken):
+
+`pip install pixelterm`
+
+[PyPI Project](https://pypi.org/project/pixelterm/)
+
 ### Demo video
 https://github.com/crystaltine/vis/assets/114899328/9152d696-dd3b-4cfa-87c2-2a35898a1ae2
 
